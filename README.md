@@ -11,7 +11,7 @@ Disclaimer: there is no guarantee that approved proposals/design documents will 
 New documents are processed through PRs targeting `master` branch.
 As a result, all documents that are present in the repository are the ones that have been approved.
 All closed (not merged) PRs represent declined documents.
-All open PRs represent open/abandoned PRs. Abandoned PRs may be closed as irrelevant.
+All open PRs represent open/abandoned documents. Abandoned PRs may be closed as irrelevant.
 
 ## The Workflow
 
