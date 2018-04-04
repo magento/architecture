@@ -1,4 +1,10 @@
-The Architecture repository purpose is to support architectural discussions around design documents, proposals or any other architectural documents
+The purpose of the Architecture repository is to support architectural discussions around design documents, proposals or any other architectural documents
+
+---
+
+Disclaimer: there is no guarantee that approved proposals/design documents will be implemented by Magento core team. The purpose of the repository is to support discussions, and does not guarantee resources dedicated to the implementation.
+
+---
 
 ## Documents in the Repository
 
