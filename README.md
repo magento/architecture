@@ -1,7 +1,9 @@
 This repository is created by initiative of Magento architects to discuss with the Magento community any open questions around Magento 2 architecture such as design documents, proposals, or any other architectural artifacts.
 
 ---
+
 NOTE: We do not guarantee that approved changes will be delivered into Magento code base. The purpose of the repository is to start open discussions with the Magento community around architectural concepts of the Magento 2 platform.
+
 ---
 
 ## Documents in the Repository
