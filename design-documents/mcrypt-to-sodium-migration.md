@@ -26,7 +26,7 @@ Include both `phpseclib/mcrypt_compat` and `paragonie/sodium_compat` as Composer
 
 Create adapters for Mcrypt and Sodium:
 
-[[images/encryption-adapter.png]]
+![Encryption Adapter](/images/encryption-adapter.png)
 
 `Mcrypt` implementation uses `phpseclib/mcrypt_compat`.
 * Old `\Magento\Framework\Encryption\Crypt` class is deprecated, and reuses the new implementation for avoiding code duplication.
