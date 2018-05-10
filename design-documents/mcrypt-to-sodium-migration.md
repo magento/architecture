@@ -33,6 +33,8 @@ Create adapters for Mcrypt and Sodium:
 `Sodium` implementation uses `paragonie/sodium_compat`.
 * Use `crypto_aead_xchacha20poly1305_ietf*` methods for encryption/decryption. See [recommendations](https://paragonie.com/blog/2017/06/libsodium-quick-reference-quick-comparison-similar-functions-and-which-one-use).
 
+`\Magento\Framework\Encryption\Encryptor` is a public API (`@api` annotation should be added) for encryption, which uses `EncryptionAdapterInterface` under the hood.
+
 Please, see [Implementation](https://github.com/magento-engcom/php-7.2-support/pull/135) for details.
 
 ## 3. Data migration
@@ -43,7 +45,7 @@ Please, see [Implementation](https://github.com/magento-engcom/php-7.2-support/p
 
 ## 4. What does this mean for extension developers
 
-* Extension developers should use the new `EncryptionAdapterInterface` interface for encryption.
+* Extension developers should use `\Magento\Framework\Encryption\Encryptor` for encryption.
 * They may also implement a DB patch to re-encrypt the data, if amount of data is not expected to be large.
 
 ## 5. Resources
