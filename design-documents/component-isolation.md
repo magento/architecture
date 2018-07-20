@@ -18,6 +18,7 @@ In consequent releases more service contracts were introduced, and more modules 
 
 On data level, ability to split checkout and order management databases was introduced. This improved scalability of Magento instances.
 
+![Current State](component-isolation/current-state.png)
 
 ### PWA & Component isolation
 The decision to move all UI to browser as a part of PWA effort significantly reduces number of undesired dependencies in codebase: most dependencies reside in UI, and will not be present in PWA implementation.
@@ -43,10 +44,13 @@ Downsides:
 * Instance maintenance – it is harder to manage distributed Magento instance. This needs to be compensated with improved logging, tracking, debugging, and deployment capabilities.
 * Any component can be replaced with a remote implementation
 
+![Desired State](component-isolation/desired-state.png)
+
 Current deployment model (single app) must be supported
 
-
 Following application components are identified to be isolated:
+
+![Isolatd magento components](component-isolation/magento-components.png) 
 
 ### Implementation
 To achieve the desired state two sets of changes are required: platform modifications and component isolation.
