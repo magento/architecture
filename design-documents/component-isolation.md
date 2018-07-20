@@ -1,13 +1,13 @@
 # Magento Component Isolation
 
-## Historical Context
+## Historical context
 Magento Commerce was designed as a monolithic modular application: all codebase is split to functional modules but is deployed together. This has following implications:
 
 * Application has to be deployed as a whole. No ability to deploy updated versions of separate components independently
 * Application has to be scaled as a whole. No ability to scale separate components independently. Only X-axis and Z-axis scaling are supported
 * Even though modular code structure groups related behavior, it is easy to introduce an undesired dependency between application components as components are not deployed and tested independently. Only static modularity analysis is performed.
 
-## Current State
+## Current state
 Introduction of service contracts in Magento 2.0 was the first step towards component isolation:
 
 * Every component defines its API (service contracts) – PHP interfaces that can both be called from within PHP process or remotely through REST, SOAP or AMQP APIs
@@ -55,7 +55,7 @@ Following application components are identified to be isolated:
 ### Implementation
 To achieve the desired state two sets of changes are required: platform modifications and component isolation.
 
-### Platform Modifications
+### Platform modifications
 To support current ecosystem the platform and main APIs will have to stay the same (PHP, Magento Framework).
 
 Part of platform work is required to allow independent component deployment (module separation, application framework, configurable service invokers, backends for frontends, support for split extensions in marketplace), other part is good to have to make independently deployed components manageable (cloud native, development environments).
@@ -111,7 +111,7 @@ Current data model of Marketplace does not support multiple packages per extensi
 
 Example: MyVendorShippingMethod extension modifies shipment and checkout components. MyVendorShippingMethod extension consists of 2 composer packages in Marketplace: MyVendorShipment and MyVendorCheckout.
 
-### Cloud Native
+### Cloud-native
 Following changes to Magento Commerce platform are required to make it friendly for cloud deployments
 
 ### Application configuration
@@ -134,14 +134,34 @@ Expansion-cleanup stages should be introduced into schema deployment tool to red
 
 NOTE: declarative schema in 2.3 makes automated distinction possible
 
-### Development Environment
+### Development environment
+
 To make development of distributed instances easier, new developer environment must be created.
 
 A prototype that uses Minikube VM with Kubernetes cluster is available.
 
 NOTE: Distributed component deployment will make current Commerce/B2B linking approach impossible, so new approach of internal development environment installation must be used: installation of Magento modules from “path” type composer repositories (prototype working with Minikube is available).
 
-### Component Isolation
+### Design principles
+
+General principles to follow for component isolation:
+
+* Current service contracts must be preserved for backward compatibility
+* All new service contracts must follow design principles described in technical guidelines + following principles:
+* Idempotence
+* Network communication is unreliable. Retries will be required, and some messages will be delivered more than once. To make these conditions safe, operations must be idempotent
+* Sagas for consistency of distributed operations
+* All new service contracts expose asynchronous APIs
+* All new state modifying operations expose bulk APIs
+* All service operations must be stateless
+* No data dependencies between component. Every component has own data.
+* Command & query responsibility segregation – storefront APIs for data immutable in storefront (catalog) should be optimized for data retrieval
+* For every component that should support distributed deployment a ComponentNameWebapi module must be created that will have dependency on the root component package and will contain webapi declarations for this component.
+
+Detailed design must be prepared for every component.
+
+### Implementation approach
+
 Iterative approach must be used for component isolation: one component at a time.
 
 Based on component sizes and dependencies and priorities, following isolation sequence is proposed:
@@ -163,19 +183,3 @@ Based on component sizes and dependencies and priorities, following isolation se
 1. Company
 1. Marketing
 1. Risk
-
-Detailed design must be prepared for every component.
-
-General principles to follow for component isolation:
-
-* Current service contracts must be preserved for backward compatibility
-* All new service contracts must follow design principles described in technical guidelines + following principles:
-* Idempotence
-* Network communication is unreliable. Retries will be required, and some messages will be delivered more than once. To make these conditions safe, operations must be idempotent
-* Sagas for consistency of distributed operations
-* All new service contracts expose asynchronous APIs
-* All new state modifying operations expose bulk APIs
-* All service operations must be stateless
-* No data dependencies between component. Every component has own data.
-* Command & query responsibility segregation – storefront APIs for data immutable in storefront (catalog) should be optimized for data retrieval
-* For every component that should support distributed deployment a ComponentNameWebapi module must be created that will have dependency on the root component package and will contain webapi declarations for this component.
