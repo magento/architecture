@@ -1,6 +1,6 @@
 # Overview
 
-Magento Functional Testing Framework (MFTF) with 2.3.0 release is going to be a require-dev dependency in main magento composer.json. Details described in this document https://wiki.corp.magento.com/display/QMT/Mftf+Composer+Package+and+Decoupled+Structure
+Magento Functional Testing Framework (MFTF) with 2.3.0 release is going to be a require-dev dependency in main magento composer.json because test location was changed from `dev/tests/acceptance` to `app/code/<vendor_name>/<module_name>/Test/Mftf`.
 This leads us to open question where to keep Framework packages.
 
 MFTF have two options:
