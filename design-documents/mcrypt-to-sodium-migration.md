@@ -4,7 +4,7 @@
    1. Possibly, 2.3.x patch version. The implementation should be fully backward compatible
 2. Use Sodium library for encryption, as this is the latest encryption library supported natively by the latest PHP version (PHP 7.2)
 3. Ensure encryption is possible on PHP 7.1, which is also supported by Magneto 2.3
-4. Data is migrated to the new algorithm if necessary
+4. Data is migrated to be compatible with the new algorithm if necessary
    1. On-the-fly migration (data is re-encrypted when being read/written during application run) is acceptable
    2. Upgrade time should not increase significantly on large stores
  
@@ -41,7 +41,7 @@ Please, see [Implementation](https://github.com/magento-engcom/php-7.2-support/p
 
 * Limited or expected-to-be small amount of data to be converted during upgrade process
 * Large amount of data to be migrated on the fly: the data is re-encrypted when read and stored again during application work. Currently used encryption algorithms are secure enough to allow the data stay.
-   * Additionally, a Magento CLI command can be implemented that converts the data after the application is upgraded. This should not cause issues as both old and new data is supported by the application.
+   * Additionally, a Magento CLI command can be implemented that converts the data after the application is upgraded. This should not cause issues as both old and new data is supported by the application. The command is implemented for potentially large amounts of data - https://github.com/magento-engcom/php-7.2-support/pull/135/files#diff-9da6c367f822ceff09c7dd810c6bfb85
 
 ## 4. What does this mean for extension developers
 
