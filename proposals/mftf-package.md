@@ -7,6 +7,19 @@ MFTF have two options:
 1. repo.magento.com
 2. packagist.org
 
+**Note:** Test Packages are definitely going to be pushed to repo.magento.com. This topic touches only [Magento Functional Testing Framework](https://github.com/magento/magento2-functional-testing-framework).
+
+## Problem overview
+Because Magento encourage Merchants and Extension developers to install Magento via repo.magento.com,
+we think it is good idea to put Magento Functional Testing Framework to our own composer repository,
+but we also have Community and Internal developers cloning Magento via github and they probably never configured composer to get packages from repo.magento.com. 
+Issues:
+1. Community contributors will have to update local auth.json by adding repo.magento.com credentials.
+2. CICD tools must be updated (same auth.json).
+3. Magento already have several packages in packagist.org (MTF, ZF1, magento/composer)
+
+Let's review both solutions:
+
 # repo.magento.com
 Is the Composer package repository which owned by Magento.
 
