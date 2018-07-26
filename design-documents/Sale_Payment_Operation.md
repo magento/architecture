@@ -3,7 +3,7 @@
 
 This operation is available for the majority of payment methods.
 
-Now, each payment method should implement an own workaround for `sale` payment operation, because OrderPayment calls capture instead sale:
+Now, each payment method should implement an own workaround for `sale` payment operation, because [Order\Payment](https://github.com/magento/magento2/blob/2.2-develop/app/code/Magento/Sales/Model/Order/Payment.php#L445) calls capture instead sale:
 
 **Magento\Sales\Model\Order\Payment**
 ```php
@@ -33,15 +33,46 @@ All payment integrations implement boilerplate code for `sale` operation:
 For the current moment, we have next relations in order payment workflow.
 ![](sale_payment_operation_img/order_payment_current.png)
 
-I propose to introduce `SaleOperationInterface` and `Magento\Payment\Model\Method\Adapter` should implement this interface along with `Magento\Payment\Model\MethodInterface`.
+I propose to introduce `Magento\Payment\Model\SaleOperationInterface` and `Magento\Payment\Model\Method\Adapter` should implement this interface along with `Magento\Payment\Model\MethodInterface`.
+```php
+<?php
+namespace Magento\Payment\Model;
 
-`CaptureOperation` includes logic responsible for invoice creating and invoice processing.
-Logic responsible for invoice processing should be extracted from `CaptureOperation` into separate command `ProcessInvoiceOperation`.
+/**
+ * Responsible for support of `sale` payment operation via Magento payment provider gateway.
+ *
+ * @api
+ */
+interface SaleOperationInterface
+{
+    /**
+     * Checks `sale` payment operation availability.
+     *
+     * @return bool
+     *
+     */
+    public function canSale(): bool;
+
+    /**
+     * Executes `sale` payment operation.
+     *
+     * @param InfoInterface $payment
+     * @param float $amount
+     * @return $this
+     *
+     */
+    public function sale(InfoInterface $payment, float $amount);
+}
+```
+
+
+`Magento\Sales\Model\Order\Payment\Operations\CaptureOperation` includes logic responsible for invoice creating and invoice processing.
+Logic responsible for invoice processing should be extracted from `CaptureOperation` into separate command `Magento\Sales\Model\Order\Payment\Operations\ProcessInvoiceOperation`.
 
 `SaleOperation` and `CaptureOperation` commands will use `ProcessInvoiceOperation` for invoice processing and calls to [Magento payment provider gateway](https://devdocs.magento.com/guides/v2.2/payments-integrations/bk-payments-integrations.html).
 ![](sale_payment_operation_img/order_payment_new.png)
 
-`OrderPayment` will call `SaleOpertion` if `sale` operation is available for payment method. Otherway, `CaptureOperation` will be called for backward compatibility with existing payment integrations.
+`Order\Payment` will call `SaleOpertion` if `sale` operation is available for payment method. Otherway, `CaptureOperation` will be called for backward compatibility with existing payment integrations.
 
 **Magento\Sales\Model\Order\Payment**
 ```php
