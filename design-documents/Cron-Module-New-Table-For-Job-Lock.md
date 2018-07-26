@@ -31,7 +31,7 @@ B) I also created an index on `schedule_id` which normally has no affect, but if
 ### Disadvantages
 1. In use cases where there aren't many rows in cron_schedule, this may seem like overkill.  But, it shouldn't cause any noticeable negative impact.
 
-Also, if anyone is wondering why I didn't create the schedule_id as a foreign key, that is because I believe that if it were a foreign key that had a trigger set to automatically delete on foreign key being deleted, I felt that would trigger the same deadlock issues that I was trying to fix.
+Also, if anyone is wondering why I didn't create the schedule_id as a foreign key, that is because I believe that if it were a foreign key that had a trigger set to automatically delete on foreign key being deleted, I felt that would trigger the same deadlock issues that I was trying to fix.  (Please feel free to prove me wrong!)
 
 So, instead of a foreign key, I added a method called `setStatus` in Cron\Model\Schedule that does the deleting using the `schedule_id` index to keep it fast.
 
