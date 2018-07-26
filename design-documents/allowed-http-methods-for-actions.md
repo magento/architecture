@@ -5,31 +5,37 @@ There are many vulnerabilities caused by actions processing both GET and POST re
 
 ### Theory of Operation
 
-Since we use by-convention routing it would be inconsistent to defined actions’ allowed HTTP methods in a config file, so it’s better to add an interface for Actions to implement:
+Since we use by-convention routing it would be inconsistent to defined actions’ allowed HTTP methods in a config file, so it’s better to create marker interfaces like these:
 
->interface HttpMethodAwareActionInterface extends ActionInterface
+>interface HttpGetActionInterface extends ActionInterface
 >
 >{
 >
->&nbsp;&nbsp;&nbsp;&nbsp;/**
+>}
 >
->&nbsp;&nbsp;&nbsp;&nbsp; * @return string[]|null
 >
->&nbsp;&nbsp;&nbsp;&nbsp;*/
+>interface HttpPostActionInterface extends ActionInterface
 >
->&nbsp;&nbsp;&nbsp;&nbsp;public function getAllowedHttpMethods(): ?array;
+>{
+>
+>}
+>
+>
+>interface HttpPutActionInterface extends ActionInterface
+>
+>{
 >
 >}
 
-If getAllowedHttpMethods returns null – all methods are allowed.
+etc.
 
-This interface will be used in the FrontController and requests will be validated there somewhat like this:
+One interface per each HTTP method (using list of HTTP methods from \Zend\Http\Request::METHOD_* constants). We will have an exentable map *interface* => *HTTP method* passed to the validator to allow custom HTTP methods to be processed.
 
->if ($actionInstance instanceof HttpMethodAwareActionInterface) {
+Request method will be validated in the FrontController before executing a matched action, somewhat like this:
+
+>foreach ($interfaceMap as $interface => $httpMethod) {
 >
->&nbsp;&nbsp;&nbsp;&nbsp;$allowedMethods = $actionInstance-> getAllowedHttpMethods();
->
->&nbsp;&nbsp;&nbsp;&nbsp;If ($allowedMethods && !in_array($request->getMethod(), $allowedMethods, true) {
+>&nbsp;&nbsp;&nbsp;&nbsp;if ($actionInstance instanceof $interface && $request->getMethod() !== $httpMethod) {
 >
 >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw new NotFoundException(__(‘Page not found.’));
 >
@@ -38,13 +44,13 @@ This interface will be used in the FrontController and requests will be validate
 >}
 
  
-To limit already existing Actions and get developers to know this new interface a temporary event listener will be added for controller_action_postdispatch event to log HTTP methods used with actions and then the full suite of functional tests (MTF and MFTF) would be ran to get information on as much actions as possible.
+To limit already existing Actions and get developers to know these new interfaces a temporary event listener will be added for controller_action_postdispatch event to log HTTP methods used with actions and then the full suite of functional tests (MTF and MFTF) would be ran to get information on as much actions as possible.
 
-After the HttpMethodAwareActionInterface will be added to every Action class we have information on. If an action is logged to be accessed only by GET methods it will allow only GET, if only by POST – allowing only POST, if by more than one methods – the Action class will not be updated.
+After corresponding Http*Method*ActionInterface will be added to every Action class we have information on. If an action is logged to be accessed only by GET methods it will allow only GET, if only by POST – allowing only POST etc. If by more than one methods – the Action class will not be updated.
 
 ### Work Breakdown
- * Add HttpMethodAwareActionInterface and implement request validation in the FrontController
+ * Add Http*Method*ActionInterface and implement request validation in the FrontController
  * Create logging mechanism for Actions
  * Log HTTP methods used when running full functional tests’ suite
- * Create script to add HttpMethodAwareActionInterface to Action classes we’ve collection information about
+ * Create script to add Http*Method*ActionInterface to Action classes we’ve collection information about
  * Update Action Classes
