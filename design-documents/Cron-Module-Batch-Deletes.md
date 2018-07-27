@@ -39,3 +39,7 @@ It should be possible to also solve this problem in another way by setting the T
 
 # Summary
 In my opinion, batching the deletes seems like an easy solution to this problem.  I will also be making another proposal for another solution using a new index that also helps solve this problem in a different way for a different use case.
+
+# prototype
+To see an example of this and my other proposed changes, you can look at the prototype I made.
+https://github.com/magento/magento2/compare/2.2-develop...JacobBrownAustin:MAGECLOUD-2503-2.2-develop?expand=1
