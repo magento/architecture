@@ -16,3 +16,7 @@ Adding a multi column index ('status', 'job_code') to this table will increase t
 
 # Summary
 When there is lots of rows in the database, but not that many that are old enough to be deleted, the delete queries spend most of their time searching.  This new index fixes that, so it makes the query faster, but also reduces load on the SQL server.
+
+# prototype
+To see an example of this and my other proposed changes, you can look at the prototype I made.
+https://github.com/magento/magento2/compare/2.2-develop...JacobBrownAustin:MAGECLOUD-2503-2.2-develop?expand=1
