@@ -14,3 +14,7 @@ Because there is already code in Magento's Mysql adapter that retries under othe
 
 # Summary
 It is safe to retry single query transactions that fail because of deadlocks.  This will help our program be more robust when these situations are unavoidable.
+
+# prototype
+To see an example of this and my other proposed changes, you can look at the prototype I made.
+https://github.com/magento/magento2/compare/2.2-develop...JacobBrownAustin:MAGECLOUD-2503-2.2-develop?expand=1
