@@ -37,3 +37,7 @@ So, instead of a foreign key, I added a method called `setStatus` in Cron\Model\
 
 # Summary
 The UPDATE queries in trySetJobUniqueStatusAtomic() can have a huge performance impact on large cron_schedule table.  Creating a new table for this method saves us a lot of time, and other resources.
+
+# prototype
+To see an example of this and my other proposed changes, you can look at the prototype I made.
+https://github.com/magento/magento2/compare/2.2-develop...JacobBrownAustin:MAGECLOUD-2503-2.2-develop?expand=1
