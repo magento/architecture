@@ -21,7 +21,7 @@ type AddGiftCardProductsToCartOutput {
     cart: Cart
 }
 
-type ConfigurableCartItem implements CartItemInterface {
+type GiftCardCartItem implements CartItemInterface {
     sender_name: String!
     recepient_name: String!
     amount: Money!
