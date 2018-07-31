@@ -1,0 +1,48 @@
+type Mutation {
+    addBundleProductsToCart(input: AddBundleProductsToCartInput): AddBundleProductsToCartOutput
+}
+
+input AddBundleProductsToCartInput {
+    cartId: String!
+    cartItems: [BundleProductCartItemInput!]!
+}
+
+input BundleProductCartItemInput {
+    sku: String!
+    quantity: Float!
+    bundle_options:[BundleOptionInput!]!
+    customizable_options:[CustomizableOptionInput!]
+}
+
+input BundleOptionInput {
+    id: Int!
+    quantity: Float!
+    value: [String!]!
+}
+
+type AddBundleProductsToCartOutput {
+    cart: Cart
+}
+
+type BundleCartItem implements CartItemInterface {
+    customizable_options: [SelectedCustomizableOption]!
+    bundle_options: [SelectedBundleOption!]!
+}
+
+type SelectedBundleOption {
+    id: Int!
+    label: String!
+    type: String!
+    # No quantity here even though it is set on option level in the input
+    values: [SelectedBundleOptionValue!]!
+    sort_order: Int!
+}
+
+type SelectedBundleOptionValue {
+    id: Int!
+    label: String!
+    quantity: Float! # Quantity is displayed on option value level, while is set on option level
+    price: CartItemSelectedOptionValuePrice!
+    sort_order: Int!
+}
+

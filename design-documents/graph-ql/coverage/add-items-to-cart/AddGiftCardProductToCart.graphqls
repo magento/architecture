@@ -1,0 +1,30 @@
+type Mutation {
+    addGiftCardProductsToCart(input: AddGiftCardProductsToCartInput): AddGiftCardProductsToCartOutput
+}
+
+input AddGiftCardProductsToCartInput {
+    cartId: String!
+    cartItems: [GiftCardProductCartItemInput!]!
+}
+
+input GiftCardProductCartItemInput {
+    sku: String!
+    quantity: Float!
+    sender_name: String!
+    recepient_name: String!
+    amount: Money!
+    message: String
+    customizable_options:[CustomizableOptionInput!]
+}
+
+type AddGiftCardProductsToCartOutput {
+    cart: Cart
+}
+
+type ConfigurableCartItem implements CartItemInterface {
+    sender_name: String!
+    recepient_name: String!
+    amount: Money!
+    message: String
+    customizable_options: [SelectedCustomizableOption]!
+}

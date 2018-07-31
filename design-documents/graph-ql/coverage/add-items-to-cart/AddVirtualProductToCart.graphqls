@@ -1,0 +1,24 @@
+type Mutation {
+    # for now this mutation is identical to addSimpleProductsToCart and exists as a syntax sugar. Also it allows product type based customizations
+    addVirtualProductsToCart(input: AddVirtualProductsToCartInput): AddVirtualProductsToCartOutput
+}
+
+input AddVirtualProductsToCartInput {
+    cartId: String!
+    cartItems: [VirtualProductCartItemInput!]!
+}
+
+input VirtualProductCartItemInput {
+    sku: String!
+    quantity: Float!
+    customizable_options:[CustomizableOptionInput!]
+}
+
+type AddVirtualProductsToCartOutput {
+    cart: Cart
+}
+
+# Custom cart item type can be used to customize rendering when there are no physical producs available, e.g. skip shipping
+type VirtualCartItem implements CartItemInterface {
+    customizable_options: [SelectedCustomizableOption]
+}

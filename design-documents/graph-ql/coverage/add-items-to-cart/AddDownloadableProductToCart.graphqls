@@ -1,0 +1,34 @@
+type Mutation {
+    addDownloadableProductsToCart(input: AddDownloadableProductsToCartInput): AddDownloadableProductsToCartOutput
+}
+
+input AddDownloadableProductsToCartInput {
+    cartId: String!
+    cartItems: [DownloadableProductCartItemInput!]!
+}
+
+input DownloadableProductCartItemInput {
+    sku: String!
+    quantity: Int!
+    downloadable_links: [DownloadableLinksInput!]
+    customizable_options:[CustomizableOptionInput!]
+}
+
+input DownloadableLinksInput {
+    id: [Int!]!
+}
+
+type AddDownloadableProductsToCartOutput {
+    cart: Cart
+}
+
+type DownloadableCartItem implements CartItemInterface {
+    links_label: String!
+    links: [DownloadableCartItemLink!]!
+    configurable_options: [SelectedConfigurableOption!]!
+}
+
+type DownloadableCartItemLink {
+    id: Int!
+    label: String!
+}

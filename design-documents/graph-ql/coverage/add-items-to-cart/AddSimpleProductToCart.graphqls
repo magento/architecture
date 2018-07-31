@@ -1,0 +1,79 @@
+type Mutation {
+    addSimpleProductsToCart(input: AddSimpleProductsToCartInput): AddSimpleProductsToCartOutput
+}
+
+input AddSimpleProductsToCartInput {
+    cartId: String!
+    cartItems: [SimpleProductCartItemInput!]!
+}
+
+input SimpleProductCartItemInput {
+    sku: String!
+    quantity: Float!
+    customizable_options:[CustomizableOptionInput!]
+}
+
+input CustomizableOptionInput {
+    id: Int!
+    value: String!
+}
+
+type AddSimpleProductsToCartOutput {
+    cart: Cart
+}
+
+type Cart {
+    id: String
+    items: [CartItemInterface]
+}
+
+interface CartItemInterface @typeResolver(class: "Magento\\CatalogCheckoutGraphQl\\Model\\CartItemInterfaceTypeResolverComposite") {
+    id: Int!
+    qty: Float!
+    product: CartItemProduct!
+    image: CartItemImage!
+    prices: CartItemPrices!
+}
+
+type CartItemImage {
+    alt_text: String!
+    thumbnail: ProductMediaGalleryEntriesContent!
+}
+
+type CartItemPrices {
+    price: Money!
+    subtotal: Money!
+}
+
+type CartItemProduct {
+    sku: String!
+    name: String!
+    type: String!
+    # Does it make sense to provide several basic fields (with potentially better performance) in addition to the ful product object?
+    details: ProductInterface!
+}
+
+type SimpleCartItem implements CartItemInterface {
+    customizable_options: [SelectedCustomizableOption]
+}
+
+type SelectedCustomizableOption {
+    id: Int!
+    label: String!
+    type: String!
+    values: [SelectedCustomizableOptionValue!]!
+    sort_order: Int!
+}
+
+type SelectedCustomizableOptionValue {
+    id: Int
+    label: String!
+    price: CartItemSelectedOptionValuePrice!
+    sort_order: Int!
+}
+
+type CartItemSelectedOptionValuePrice {
+    value: Float!
+    units: String!
+    type: PriceTypeEnum!
+}

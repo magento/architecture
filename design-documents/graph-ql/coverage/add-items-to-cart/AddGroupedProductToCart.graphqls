@@ -1,0 +1,18 @@
+type Mutation {
+    addGroupedProductsToCart(input: AddGroupedProductsToCartInput): AddGroupedProductsToCartOutput
+}
+
+input AddGroupedProductsToCartInput {
+    cartId: String!
+    cartItems: [GroupedProductCartItemInput!]!
+}
+
+input GroupedProductCartItemInput {
+    sku: String!
+    quantity: Float!
+    # the difference from simple products is that grouped products do not support customizable options
+}
+
+type AddGroupedProductsToCartOutput {
+    cart: Cart
+}

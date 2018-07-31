@@ -1,0 +1,37 @@
+type Mutation {
+    addConfigurableProductsToCart(input: AddConfigurableProductsToCartInput): AddConfigurableProductsToCartOutput
+}
+
+input AddConfigurableProductsToCartInput {
+    cartId: String!
+    cartItems: [ConfigurableProductCartItemInput!]!
+}
+
+input ConfigurableProductCartItemInput {
+    sku: String!
+    quantity: Float!
+    configurable_options:[ConfigurableOptionInput!]!
+    customizable_options:[CustomizableOptionInput!]
+}
+
+input ConfigurableOptionInput {
+    id: Int!
+    value: Int!
+}
+
+type AddConfigurableProductsToCartOutput {
+    cart: Cart
+}
+
+type ConfigurableCartItem implements CartItemInterface {
+    customizable_options: [SelectedCustomizableOption]!
+    configurable_options: [SelectedConfigurableOption!]!
+}
+
+type SelectedConfigurableOption {
+    id: Int!
+    option_label: String!
+    value_id: Int!
+    value_label: String!
+}
+
