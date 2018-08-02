@@ -30,27 +30,13 @@ type Cart {
 interface CartItemInterface @typeResolver(class: "Magento\\CatalogCheckoutGraphQl\\Model\\CartItemInterfaceTypeResolverComposite") {
     id: Int!
     qty: Float!
-    product: CartItemProduct!
-    image: CartItemImage!
+    product: ProductInterface!
     prices: CartItemPrices!
-}
-
-type CartItemImage {
-    alt_text: String!
-    thumbnail: ProductMediaGalleryEntriesContent!
 }
 
 type CartItemPrices {
     price: Money!
     subtotal: Money!
-}
-
-type CartItemProduct {
-    sku: String!
-    name: String!
-    type: String!
-    # Does it make sense to provide several basic fields (with potentially better performance) in addition to the ful product object?
-    details: ProductInterface!
 }
 
 type SimpleCartItem implements CartItemInterface {
