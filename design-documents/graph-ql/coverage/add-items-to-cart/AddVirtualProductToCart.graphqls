@@ -4,7 +4,7 @@ type Mutation {
 }
 
 input AddVirtualProductsToCartInput {
-    cartId: String!
+    cart_id: String!
     cartItems: [VirtualProductCartItemInput!]!
 }
 
@@ -15,7 +15,7 @@ input VirtualProductCartItemInput {
 }
 
 type AddVirtualProductsToCartOutput {
-    cart: Cart
+    cart: Cart!
 }
 
 # Custom cart item type can be used to customize rendering when there are no physical producs available, e.g. skip shipping

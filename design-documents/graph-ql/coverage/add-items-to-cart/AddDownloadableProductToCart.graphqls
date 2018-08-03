@@ -3,7 +3,7 @@ type Mutation {
 }
 
 input AddDownloadableProductsToCartInput {
-    cartId: String!
+    cart_id: String!
     cartItems: [DownloadableProductCartItemInput!]!
 }
 
@@ -19,7 +19,7 @@ input DownloadableLinksInput {
 }
 
 type AddDownloadableProductsToCartOutput {
-    cart: Cart
+    cart: Cart!
 }
 
 type DownloadableCartItem implements CartItemInterface {

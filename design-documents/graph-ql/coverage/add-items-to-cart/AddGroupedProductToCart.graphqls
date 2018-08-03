@@ -3,7 +3,7 @@ type Mutation {
 }
 
 input AddGroupedProductsToCartInput {
-    cartId: String!
+    cart_id: String!
     cartItems: [GroupedProductCartItemInput!]!
 }
 
@@ -14,5 +14,5 @@ input GroupedProductCartItemInput {
 }
 
 type AddGroupedProductsToCartOutput {
-    cart: Cart
+    cart: Cart!
 }

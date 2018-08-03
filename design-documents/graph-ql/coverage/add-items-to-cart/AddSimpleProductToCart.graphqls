@@ -3,7 +3,7 @@ type Mutation {
 }
 
 input AddSimpleProductsToCartInput {
-    cartId: String!
+    cart_id: String!
     cartItems: [SimpleProductCartItemInput!]!
 }
 
@@ -19,7 +19,7 @@ input CustomizableOptionInput {
 }
 
 type AddSimpleProductsToCartOutput {
-    cart: Cart
+    cart: Cart!
 }
 
 type Cart {

@@ -3,7 +3,7 @@ type Mutation {
 }
 
 input AddConfigurableProductsToCartInput {
-    cartId: String!
+    cart_id: String!
     cartItems: [ConfigurableProductCartItemInput!]!
 }
 
@@ -20,7 +20,7 @@ input ConfigurableOptionInput {
 }
 
 type AddConfigurableProductsToCartOutput {
-    cart: Cart
+    cart: Cart!
 }
 
 type ConfigurableCartItem implements CartItemInterface {

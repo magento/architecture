@@ -3,7 +3,7 @@ type Mutation {
 }
 
 input AddBundleProductsToCartInput {
-    cartId: String!
+    cart_id: String!
     cartItems: [BundleProductCartItemInput!]!
 }
 
@@ -21,7 +21,7 @@ input BundleOptionInput {
 }
 
 type AddBundleProductsToCartOutput {
-    cart: Cart
+    cart: Cart!
 }
 
 type BundleCartItem implements CartItemInterface {
