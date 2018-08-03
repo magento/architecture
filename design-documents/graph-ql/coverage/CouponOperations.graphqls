@@ -1,6 +1,6 @@
 type Mutation {
     applyCouponToCart(input: ApplyCouponToCartInput): ApplyCouponToCartOutput
-    cancelCouponForCart(input: CancelCouponForCartInput): CancelCouponForCartOutput
+    removeCouponFromCart(input: RemoveCouponFromCartInput): RemoveCouponFromCartOutput
 }
 
 input ApplyCouponToCartInput {
@@ -21,10 +21,10 @@ type AppliedCoupon {
     code: String!
 }
 
-input CancelCouponForCartInput {
+input RemoveCouponFromCartInput {
     cart_id: String!
 }
 
-type CancelCouponForCartOutput {
+type RemoveCouponFromCartOutput {
     cart: Cart
 }
