@@ -1,6 +1,6 @@
 **Overview**
 
-As a Magento developer, I need to manipulate the shopping cart via GraphQL so that I can build basic ecommerce experiences for shoppers on the front-end using only GraphQL.
+As a Magento developer, I need to manipulate the shopping cart via GraphQL so that I can programmatically create orders on behalf of a shopper.
 
 GraphQL needs to provide sufficient mutations (ways to create/update/delete data) for a developer to build out the storefront checkout experience for a shopper.
 
