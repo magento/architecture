@@ -181,6 +181,71 @@ To achieve this goal any element may declare `disabled` boolean attribute:
 </config>
 ```
 
+### Deprecation of Magento\Elasticsearch\Model\Adapter\Index\Config\EsConfigInterface
+
+Current `@api` interface `Magento\Elasticsearch\Model\Adapter\Index\Config\EsConfigInterface` violates Interface Segregation principle. It extending is impossible as that would be backward incompatible.
+
+As a solution `Magento\Elasticsearch\Model\Adapter\Index\Config\EsConfigInterface` should be deprecated and instead of it new set of interfaces should be introduced. Each new interface should be responsible for a single aspect of ElasticSearch configuration.
+
+```php
+
+namespace Magento\Elasticsearch\Model\Adapter\Index\Config;
+
+/**
+ * @api
+ * @deprecated
+ */
+interface EsConfigInterface extends EsStemmerConfigInterface, EsStopWordsConfigInterface
+{
+    public function getStemmerInfo();
+    public function getStopwordsInfo();
+}
+
+/**
+ * @api
+ */
+interface EsStemmerConfigInterface
+{
+    public function getStemmerInfo();
+}
+
+/**
+ * @api
+ */
+interface EsStopWordsConfigInterface
+{
+    public function getStopwordsInfo();
+}
+
+/**
+ * @api
+ */
+interface EsTokenizerConfigInterface
+{
+    public function getTokenizerInfo(): array;
+}
+
+/**
+ * @api
+ */
+interface EsTokenFilterConfigInterface
+{
+    public function getTokenFiltersInfo(): array;
+    public function getTokenFiltersList(): array;
+}
+
+/**
+ * @api
+ */
+interface EsCharFilterConfigInterface
+{
+    public function getCharFiltersInfo(): array;
+    public function getCharFiltersList(): array;
+}
+```
+
+Class `Magento\Elasticsearch\Model\Adapter\Index\Config\EsConfig` will implement all of these interfaces to simplify backward compatible implementation.
+
 ### Prototype
 
 Prototype of proposed changes is implemented in [magento/magento2-l10n#1](https://github.com/magento/magento2-l10n/pull/1) by [Hirokazu Nishi](https://github.com/HirokazuNishi) from [Veriteworks](https://veriteworks.co.jp/) in collaboration wit Magento Community Engineering Team.
