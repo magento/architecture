@@ -145,6 +145,7 @@ String values are converted to text node:
 #### Numbers
 
 Numeric values are converted to text node. This type utilize both integer and float numbers depend on provided decimal part:
+
 | JSON        | XML           | 
 | ------------- |-------------|
 | `{key: 42}`  | `<key xsi:type="number">42</key>` |
@@ -152,6 +153,7 @@ Numeric values are converted to text node. This type utilize both integer and fl
 #### Booleans
 
 Boolean values are converted to text node and may contain "true" or "false":
+
 | JSON        | XML           | 
 | ------------- |-------------|
 | `{key: true}`  | `<key xsi:type="boolean">true</key>` |
@@ -159,6 +161,7 @@ Boolean values are converted to text node and may contain "true" or "false":
 #### Least
 
 Array values represented as series of `item` nodes:
+
 | JSON        | XML           | 
 | ------------- |-------------|
 | `{key: ['v1', 'v2']}`  | `<key xsi:type="list"><item>v1</item><item>v2</item></key>` |
@@ -189,7 +192,7 @@ As a solution `Magento\Elasticsearch\Model\Adapter\Index\Config\EsConfigInterfac
 
 ```php
 
-namespace Magento\Elasticsearch\Model\Adapter\Index\Config;
+
 
 /**
  * @api
