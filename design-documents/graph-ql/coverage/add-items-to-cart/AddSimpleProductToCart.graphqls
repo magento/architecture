@@ -31,12 +31,6 @@ interface CartItemInterface @typeResolver(class: "Magento\\CatalogCheckoutGraphQ
     id: Int!
     qty: Float!
     product: ProductInterface!
-    prices: CartItemPrices!
-}
-
-type CartItemPrices {
-    price: Money!
-    subtotal: Money!
 }
 
 type SimpleCartItem implements CartItemInterface {
