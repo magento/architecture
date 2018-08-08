@@ -58,4 +58,8 @@ The `token_ttl` value can be populated via new resolver for this field or from t
 **Action items**
 
 1. Modify schema for all existing queries and mutations
-1. Make sure that this requirement is documented and followed for the new GraphQL coverage 
+1. Make sure that this requirement is documented and followed for the new GraphQL coverage
+
+**Open questions**
+
+1. What can be one about queries and mutations, which do not require arguments at the moment? We cannot create wrapper type without fields. Would be nice to enable extensibility for sich argument lists as well. 

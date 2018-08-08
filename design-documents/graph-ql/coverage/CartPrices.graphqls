@@ -4,8 +4,6 @@ interface CartItemInterface {
 
 type Cart {
     prices: CartPrices
-    addresses: [CartAddress]
-    # additional fields will be added later
 }
 
 type CartAddress {

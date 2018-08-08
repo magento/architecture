@@ -1,0 +1,33 @@
+type Query {
+    cart(input: CartQueryInput): CartQueryOutput
+}
+
+input CartQueryInput {
+    cart_id: String!
+}
+
+type CartQueryOutput {
+    cart: Cart
+}
+
+type Cart {
+    id: String!
+    addresses: [CartAddress]
+    line_items_count: Int!
+    items_quantity: Float!
+    selected_payment_method: SelectedPaymentMethod
+}
+
+type SelectedPaymentMethod {
+    code: String!
+    label: String!
+}
+
+type CartAddress {
+    selected_shipping_method: SelectedShippingMethod
+}
+
+type SelectedShippingMethod {
+    code: String!
+    label: String!
+}

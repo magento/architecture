@@ -27,11 +27,7 @@ GraphQL needs to provide sufficient mutations (ways to create/update/delete data
 - Hashed IDs for cart items
 - Single input object
 - Async nature of the flow must be supported on the client side (via AJAX calls)
-
-
-**Open questions:**
-
-- Do we want to implement server-side asynchronous mutations by default?
+- Server-side asynchronous mutations can be supported in the future on framework level in a way similar to Async REST.
 
 **Proposed schema for adding items to cart:**
 

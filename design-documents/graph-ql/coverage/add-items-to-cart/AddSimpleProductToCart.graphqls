@@ -23,7 +23,6 @@ type AddSimpleProductsToCartOutput {
 }
 
 type Cart {
-    id: String
     items: [CartItemInterface]
 }
 
