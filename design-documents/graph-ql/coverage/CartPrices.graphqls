@@ -1,15 +1,15 @@
 interface CartItemInterface {
-    prices: CartItemTotals
+    prices: CartItemPrices
 }
 
 type Cart {
-    prices: CartTotals
+    prices: CartPrices
     addresses: [CartAddress]
     # additional fields will be added later
 }
 
 type CartAddress {
-    pices: CartAddressTotals
+    prices: CartAddressPrices
     # additional fields will be added later
 }
 
