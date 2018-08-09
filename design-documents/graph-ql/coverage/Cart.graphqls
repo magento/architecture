@@ -15,19 +15,47 @@ type Cart {
     addresses: [CartAddress]
     line_items_count: Int!
     items_quantity: Float!
-    selected_payment_method: SelectedPaymentMethod
+    selected_payment_method: CheckoutPaymentMethod
+    available_payment_methods: [CheckoutPaymentMethod]!
 }
 
-type SelectedPaymentMethod {
+type CheckoutPaymentMethod {
     code: String!
     label: String!
 }
 
 type CartAddress {
-    selected_shipping_method: SelectedShippingMethod
+    selected_shipping_method: CheckoutShippingMethod
+    available_shipping_methods: [CheckoutShippingMethod]!
+
+    address_type: AdressTypeEnum
+    customer_email: String
+    customer_name: CartAddressCustomerName
+    company: String
+
+    street: [String] # Should this be an array?
+    city: String
+    region: CartAddressRegion
 }
 
-type SelectedShippingMethod {
+type CartAddressRegion {
+    id: Int # Do we need to expose region ID?
+    label: String
+}
+
+type CartAddressCustomerName {
+    first: String
+    last: String
+    prefix: String
+    suffix: String
+}
+
+enum AdressTypeEnum {
+    SHIPPING
+    BILLING
+}
+
+type CheckoutShippingMethod {
     code: String!
     label: String!
 }
