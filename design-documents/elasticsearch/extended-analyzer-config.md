@@ -166,7 +166,21 @@ Array values represented as series of `item` nodes:
 | ------------- |-------------|
 | `{key: ['v1', 'v2']}`  | `<key xsi:type="list"><item>v1</item><item>v2</item></key>` |
 
-Item node may declare `ref` attribute that should be unique inside list. `ref` attribute should be used to provide a possibility to override list element by Magento configuration merging mechanism.
+Item node may declare `ref` attribute that should be unique inside list. `ref` attribute should be used to provide a possibility to override list element by Magento configuration merging mechanism. If module B want to add element to list in ElasticSearch config declared by module A then `ref` attribute should be used as well.
+
+```xml
+<!-- module A-->
+<articles xsi:type="list">
+    <item ref="overridableArticleItem" xsi:type="string">may be overridden</item>
+    <item>can not be referenced so is can not be changed</item>
+</articles>
+
+<!-- module B which has module A in sequence at module.xml -->
+<articles xsi:type="list">
+    <item ref="overridableArticleItem" xsi:type="string">overridden value</item>
+    <item ref="addedArticleItem">added value</item><!-- after merge articles list will have 3 items -->
+</articles>
+```
 
 ### Disabling Configuration Element
 
@@ -178,7 +192,7 @@ To achieve this goal any element may declare `disabled` boolean attribute:
 <config>
     <token_filters>
         <default>
-            <my_token_filter dsiable="true"/><!-- disable customized filter declared in other config file -->
+            <my_token_filter disabled="true"/><!-- disable customized filter declared in other config file -->
         </default>
     </token_filters>
 </config>
