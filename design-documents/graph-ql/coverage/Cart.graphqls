@@ -36,6 +36,26 @@ type CartAddress {
     street: [String] # Should this be an array?
     city: String
     region: CartAddressRegion
+    postcode: String
+    country: CartAddressCountry
+    telephone: String
+    fax: String
+    same_as_billing: Bool
+
+    items_weight: Float
+    customer_notes: String
+
+    gift_cards_amount_used: Money
+    applied_gift_cards: [CartGiftCard]
+}
+
+type CartGiftCard {
+    code: String!
+}
+
+type CartAddressCountry {
+    code: String
+    label: String
 }
 
 type CartAddressRegion {
