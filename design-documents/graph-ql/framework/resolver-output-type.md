@@ -41,9 +41,43 @@ Response type unification is one of the reasons why *deferred* was made the only
 **Proposed solution**
 
 In addition to *deferred*, allow scalars and arrays of scalars as return types for `\Magento\CatalogGraphQl\Model\Resolver\Product::resolve`.
-Proposed solution is backward compatible.
+
+It will also be easier to customize resolver with plugins, if it returns array/scalar instead of `deferred` object.
 
 **Action items**
 
 1. Modify existing resolvers, which have boilerplate code and do not require solving N+1 problem
+
+   Change 
+   ```php
+    public function resolve(
+        Field $field,
+        $context,
+        ResolveInfo $info,
+        array $value = null,
+        array $args = null
+    ) : Value;
+   ```
+   to 
+   ```php
+    public function resolve(
+        Field $field,
+        $context,
+        ResolveInfo $info,
+        array $value = null,
+        array $args = null
+    );
+   ```
+   Also, replace boilerplate code in resolvers
+   ```php
+   $result = function () use ($data) {
+       return $data;
+   };
+   
+   return $this->valueFactory->create($result);
+   ```
+   with 
+   ```php
+   return $data;
+   ```
 1. Document the decision and make sure that all new resolvers return *deferred* only when necessary
