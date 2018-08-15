@@ -13,10 +13,38 @@ type CartQueryOutput {
 type Cart {
     id: String!
     addresses: [CartAddress]
+
     line_items_count: Int!
     items_quantity: Float!
+
     selected_payment_method: CheckoutPaymentMethod
     available_payment_methods: [CheckoutPaymentMethod]!
+
+    customer: CheckoutCustomerInfo
+
+    gift_cards_amount_used: Money
+    applied_gift_cards: [CartGiftCard]
+
+    is_multishipping: Bool!
+    is_virtual: Bool!
+}
+
+type CheckoutCustomer {
+    is_guest: Bool!
+    email: String!
+    prefix: String
+    first_name: String!
+    last_name: String!
+    middle_name: String
+    suffix: String
+    gender: GenderEnum
+    date_of_birth: String
+    vat_number: String # Do we need it at all on storefront? Do we need more details
+}
+
+enum GenderEnum {
+    MALE
+    FEMALE
 }
 
 type CheckoutPaymentMethod {
@@ -29,8 +57,9 @@ type CartAddress {
     available_shipping_methods: [CheckoutShippingMethod]!
 
     address_type: AdressTypeEnum
-    customer_email: String
-    customer_name: CartAddressCustomerName
+
+    customer: CheckoutCustomer
+
     company: String
 
     street: [String] # Should this be an array?
@@ -61,13 +90,6 @@ type CartAddressCountry {
 type CartAddressRegion {
     id: Int # Do we need to expose region ID?
     label: String
-}
-
-type CartAddressCustomerName {
-    first: String
-    last: String
-    prefix: String
-    suffix: String
 }
 
 enum AdressTypeEnum {
