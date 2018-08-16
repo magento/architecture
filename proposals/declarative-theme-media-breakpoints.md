@@ -33,78 +33,34 @@ For instance the file for both `luma` and `blank` contains the following nodes:
 
 We would look to unify the breakpoint configuration for all themes under a single node and not specific for a particular module. 
 
-We have 3 different options for this proposal
+### Long Term Solution
 
-### Define full breakpoint
+In the long term we'd like to be able to support population of LESS variables from the themes XML configuration. This allows for the greater Magento system to have an understanding of when various different content should be displayed, this could be represented in the themes XML as follows:
 
-```xml
-<breakpoints>
-    <breakpoint name="large">@media(-webkit-min-device-pixel-ratio:1.5),(min--moz-device-pixel-ratio:1.5),(-o-min-device-pixel-ratio:3/2),(min-resolution:1.5dppx)</breakpoint>
-    <breakpoint name="desktop">@media all and (min-width: 960px) and (max-width: 1199px)</breakpoint>
-    <breakpoint name="tablet">@media all and (min-width: 767px)</breakpoint>
-    <breakpoint name="mobile">@media all and (min-width: 480px)</breakpoint>
-</breakpoints>
+```
+<theme_variables>
+    <var name="screen__m">767px</var>
+    <var name="default_font_size">14px</var>
+</theme_variables>
 ```
 
-**Pros:**
+These variables names would be converted over to `@screen__m` and `@default_font_size` respectively.
 
-- Greater control over the point at which we display mobile content
+### Short Term Page Builder Specific Solution
 
-**Cons:**
+The long term solution has a large requirement of resource and careful design to ensure it's implementation fits it's purpose correctly.
 
-- Harder to import into the LESS files at a later date
+Page Builder requires an understanding of break points now ,_similar to how Magento_Catalog does currently_, due to this we can introduce new configuration specific for our module, within the `blank` and `luma` themes` as follows:
 
-### Define variables to be later determined how to be consumed
-
-```xml
-<var name="breakpoints_variables">
-    <var name="large">767px</var>
-    <var name="desktop">767px</var>
-    <var name="mobile">480px</var>
-    <var name="ratio">1.5</var>
-</var>
+```
+<vars module="Magento_PageBuilder">
+    <var name="breakpoints">
+        <var name="mobile">767px</var>
+    </var>
+</vars>
 ```
 
-**Pros:**
-
-- Much simpler configuration
-- Could be imported into LESS via `@screen__NAME`, similar to how we currently implement this.
-
-**Cons:**
-
-- Values may seem confusing as the underlying logic which determines whether these are max-width / min-width or other properties is hidden within LESS, PHP, JS.
-
-### Build conditions in the XML
-
-```xml
-<var name="breakpoints">
-    <var name="mobile">
-        <var name="conditions">
-        	<var name="max-width">767px</var>
-        </var>
-    </var>
-    <var name="desktop">
-        <var name="conditions">
-            <var name="min-width">960px</var>
-        	<var name="max-width">1280px</var>
-        </var>
-    </var>
-    <var name="large">
-    	<var name="conditions">
-        	<var name="min-resolution">1.5dppx</var>
-        </var>
-    </var>
-</var>
-```
-
-**Pros:**
-
-- Existing `Magento_Catalog` entries already use this approach
-- We have a better understanding of what the breakpoint wants to acheive without having to anaylse the string as in option 1
-
-**Cons:**
-
-- Might be difficult to build certain complex media queries
+This allows us to understand the mobile breakpoint and correctly render our dynamic CSS. Utilising `view.xml` file we can also add defaults to our module within `Magento_PageBuilder/etc/view.xml` to ensure that mobile background images are always displayed.
 
 ## Overall Concerns
 
