@@ -21,16 +21,17 @@ type Cart {
     available_payment_methods: [CheckoutPaymentMethod]!
 
     customer: CheckoutCustomerInfo
+    customer_notes: String
 
     gift_cards_amount_used: Money
     applied_gift_cards: [CartGiftCard]
 
-    is_multishipping: Bool!
-    is_virtual: Bool!
+    is_multishipping: Boolean!
+    is_virtual: Boolean!
 }
 
 type CheckoutCustomer {
-    is_guest: Bool!
+    is_guest: Boolean!
     email: String!
     prefix: String
     first_name: String!
@@ -50,6 +51,7 @@ enum GenderEnum {
 type CheckoutPaymentMethod {
     code: String!
     label: String!
+    # Do we need more info from quote_payment DB table?
 }
 
 type CartAddress {
@@ -69,13 +71,16 @@ type CartAddress {
     country: CartAddressCountry
     telephone: String
     fax: String
-    same_as_billing: Bool
+    same_as_billing: Boolean
 
     items_weight: Float
     customer_notes: String
 
     gift_cards_amount_used: Money
     applied_gift_cards: [CartGiftCard]
+
+    save_in_address_book: Boolean!
+    free_shipping: Boolean! # Do we need this field? Should it be moved to CheckoutShippingMethod type?
 }
 
 type CartGiftCard {

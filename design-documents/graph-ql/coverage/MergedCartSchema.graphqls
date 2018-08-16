@@ -1,0 +1,441 @@
+type Query {
+    cart(input: CartQueryInput): CartQueryOutput
+}
+
+type Mutation {
+    applyCouponToCart(input: ApplyCouponToCartInput): ApplyCouponToCartOutput
+    removeCouponFromCart(input: RemoveCouponFromCartInput): RemoveCouponFromCartOutput
+    addBundleProductsToCart(input: AddBundleProductsToCartInput): AddBundleProductsToCartOutput
+    addConfigurableProductsToCart(input: AddConfigurableProductsToCartInput): AddConfigurableProductsToCartOutput
+    addDownloadableProductsToCart(input: AddDownloadableProductsToCartInput): AddDownloadableProductsToCartOutput
+    addGiftCardProductsToCart(input: AddGiftCardProductsToCartInput): AddGiftCardProductsToCartOutput
+    addGroupedProductsToCart(input: AddGroupedProductsToCartInput): AddGroupedProductsToCartOutput
+    addSimpleProductsToCart(input: AddSimpleProductsToCartInput): AddSimpleProductsToCartOutput
+    # for now this mutation is identical to addSimpleProductsToCart and exists as a syntax sugar. Also it allows product type based customizations
+    addVirtualProductsToCart(input: AddVirtualProductsToCartInput): AddVirtualProductsToCartOutput
+}
+
+input CartQueryInput {
+    cart_id: String!
+}
+
+type CartQueryOutput {
+    cart: Cart
+}
+
+type Cart {
+    id: String!
+    addresses: [CartAddress]
+
+    line_items_count: Int!
+    items_quantity: Float!
+
+    selected_payment_method: CheckoutPaymentMethod
+    available_payment_methods: [CheckoutPaymentMethod]!
+
+    customer: CheckoutCustomer
+    custome_notes: String
+
+    gift_cards_amount_used: Money
+    applied_gift_cards: [CartGiftCard]
+
+    is_multishipping: Boolean!
+    is_virtual: Boolean!
+}
+
+type CheckoutCustomer {
+    is_guest: Boolean!
+    email: String!
+    prefix: String
+    first_name: String!
+    last_name: String!
+    middle_name: String
+    suffix: String
+    gender: GenderEnum
+    date_of_birth: String
+    vat_number: String # Do we need it at all on storefront? Do we need more details
+}
+
+enum GenderEnum {
+    MALE
+    FEMALE
+}
+
+type CheckoutPaymentMethod {
+    code: String!
+    label: String!
+    # Do we need more info from quote_payment DB table?
+}
+
+type CartAddress {
+    selected_shipping_method: CheckoutShippingMethod
+    available_shipping_methods: [CheckoutShippingMethod]!
+
+    address_type: AdressTypeEnum
+
+    customer: CheckoutCustomer
+
+    company: String
+
+    street: [String] # Should this be an array?
+    city: String
+    region: CartAddressRegion
+    postcode: String
+    country: CartAddressCountry
+    telephone: String
+    fax: String
+    same_as_billing: Boolean
+
+    items_weight: Float
+    customer_notes: String
+
+    gift_cards_amount_used: Money
+    applied_gift_cards: [CartGiftCard]
+
+    save_in_address_book: Boolean!
+    free_shipping: Boolean! # Do we need this field? Should it be moved to CheckoutShippingMethod type?
+}
+
+type CartGiftCard {
+    code: String!
+}
+
+type CartAddressCountry {
+    code: String
+    label: String
+}
+
+type CartAddressRegion {
+    id: Int # Do we need to expose region ID?
+    label: String
+}
+
+enum AdressTypeEnum {
+    SHIPPING
+    BILLING
+}
+
+type CheckoutShippingMethod {
+    code: String!
+    label: String!
+}
+
+
+interface CartItemInterface {
+    prices: CartItemPrices
+}
+
+type Cart {
+    prices: CartPrices
+}
+
+type CartAddress {
+    prices: CartAddressPrices
+    # additional fields will be added later
+}
+
+interface CartPricesInterface {
+    grand_total: Money
+
+    # price display settings should be requested via store config query
+    subtotal_including_tax: Money
+    subtotal_excluding_tax: Money
+
+    subtotal_with_discount_excluding_tax: Money
+    discount_tax_compensation: Money #Should we have subtotal with discount including tax instead, is it different from grand_total?
+
+    applied_taxes: [CartTaxItem]! # Should include regular taxes and WEEE taxes
+    applied_discounts: [CartDiscountItem]!
+}
+
+type CartItemPrices implements CartPricesInterface {
+    price_including_tax: Money
+    price_excluding_tax: Money
+
+    custom_price: Money
+}
+
+type CartAddressPrices implements CartPricesInterface {
+
+    shipping_including_tax: Money
+    shipping_excluding_tax: Money
+
+    shipping_discount: Money # Do we need shipping_with_discount_including_tax?
+    shipping_discount_tax_compensation: Money
+}
+
+type CartPrices implements CartPricesInterface {
+}
+
+type CartTaxItem {
+    amount: Money!
+    label: String!
+}
+
+type CartDiscountItem {
+    amount: Money!
+    label: String!
+}
+
+input ApplyCouponToCartInput {
+    cart_id: String!
+    coupon_code: String!
+}
+
+type ApplyCouponToCartOutput {
+    cart: Cart!
+}
+
+type Cart {
+    applied_coupon: AppliedCoupon
+}
+
+type CartAddress {
+    applied_coupon: AppliedCoupon
+}
+
+type AppliedCoupon {
+    # Wrapper allows for future extension of coupon info
+    code: String!
+}
+
+input RemoveCouponFromCartInput {
+    cart_id: String!
+}
+
+type RemoveCouponFromCartOutput {
+    cart: Cart
+}
+
+input AddBundleProductsToCartInput {
+    cart_id: String!
+    cartItems: [BundleProductCartItemInput!]!
+}
+
+input BundleProductCartItemInput {
+    sku: String!
+    quantity: Float!
+    bundle_options:[BundleOptionInput!]!
+    customizable_options:[CustomizableOptionInput!]
+}
+
+input BundleOptionInput {
+    id: Int!
+    quantity: Float!
+    value: [String!]!
+}
+
+type AddBundleProductsToCartOutput {
+    cart: Cart!
+}
+
+type BundleCartItem implements CartItemInterface {
+    customizable_options: [SelectedCustomizableOption]!
+    bundle_options: [SelectedBundleOption!]!
+}
+
+type SelectedBundleOption {
+    id: Int!
+    label: String!
+    type: String!
+    # No quantity here even though it is set on option level in the input
+    values: [SelectedBundleOptionValue!]!
+    sort_order: Int!
+}
+
+type SelectedBundleOptionValue {
+    id: Int!
+    label: String!
+    quantity: Float! # Quantity is displayed on option value level, while is set on option level
+    price: CartItemSelectedOptionValuePrice!
+    sort_order: Int!
+}
+
+input AddConfigurableProductsToCartInput {
+    cart_id: String!
+    cartItems: [ConfigurableProductCartItemInput!]!
+}
+
+input ConfigurableProductCartItemInput {
+    sku: String!
+    quantity: Float!
+    configurable_options:[ConfigurableOptionInput!]!
+    customizable_options:[CustomizableOptionInput!]
+}
+
+input ConfigurableOptionInput {
+    id: Int!
+    value: Int!
+}
+
+type AddConfigurableProductsToCartOutput {
+    cart: Cart!
+}
+
+type ConfigurableCartItem implements CartItemInterface {
+    customizable_options: [SelectedCustomizableOption]!
+    configurable_options: [SelectedConfigurableOption!]!
+}
+
+type SelectedConfigurableOption {
+    id: Int!
+    option_label: String!
+    value_id: Int!
+    value_label: String!
+}
+
+input AddDownloadableProductsToCartInput {
+    cart_id: String!
+    cartItems: [DownloadableProductCartItemInput!]!
+}
+
+input DownloadableProductCartItemInput {
+    sku: String!
+    quantity: Int!
+    downloadable_links: [DownloadableLinksInput!]
+    customizable_options:[CustomizableOptionInput!]
+}
+
+input DownloadableLinksInput {
+    id: [Int!]!
+}
+
+type AddDownloadableProductsToCartOutput {
+    cart: Cart!
+}
+
+type DownloadableCartItem implements CartItemInterface {
+    links_label: String!
+    links: [DownloadableCartItemLink!]!
+    configurable_options: [SelectedConfigurableOption!]!
+}
+
+type DownloadableCartItemLink {
+    id: Int!
+    label: String!
+}
+
+input AddGiftCardProductsToCartInput {
+    cart_id: String!
+    cartItems: [GiftCardProductCartItemInput!]!
+}
+
+input GiftCardProductCartItemInput {
+    sku: String!
+    quantity: Float!
+    sender_name: String!
+    recepient_name: String!
+    amount: Money!
+    message: String
+    customizable_options:[CustomizableOptionInput!]
+}
+
+type AddGiftCardProductsToCartOutput {
+    cart: Cart!
+}
+
+type GiftCardCartItem implements CartItemInterface {
+    sender_name: String!
+    recepient_name: String!
+    amount: Money!
+    message: String
+    customizable_options: [SelectedCustomizableOption]!
+}
+
+input AddGroupedProductsToCartInput {
+    cart_id: String!
+    cartItems: [GroupedProductCartItemInput!]!
+}
+
+input GroupedProductCartItemInput {
+    sku: String!
+    quantity: Float!
+    # the difference from simple products is that grouped products do not support customizable options
+}
+
+type AddGroupedProductsToCartOutput {
+    cart: Cart!
+}
+
+input AddSimpleProductsToCartInput {
+    cart_id: String!
+    cartItems: [SimpleProductCartItemInput!]!
+}
+
+input SimpleProductCartItemInput {
+    sku: String!
+    quantity: Float!
+    customizable_options:[CustomizableOptionInput!]
+}
+
+input CustomizableOptionInput {
+    id: Int!
+    value: String!
+}
+
+type AddSimpleProductsToCartOutput {
+    cart: Cart!
+}
+
+type Cart {
+    items: [CartItemInterface]
+}
+
+interface CartItemInterface @typeResolver(class: "Magento\\CatalogCheckoutGraphQl\\Model\\CartItemInterfaceTypeResolverComposite") {
+    id: Int!
+    qty: Float!
+    product: ProductInterface!
+}
+
+type SimpleCartItem implements CartItemInterface {
+    customizable_options: [SelectedCustomizableOption]
+}
+
+type SelectedCustomizableOption {
+    id: Int!
+    label: String!
+    type: String!
+    values: [SelectedCustomizableOptionValue!]!
+    sort_order: Int!
+}
+
+type SelectedCustomizableOptionValue {
+    id: Int
+    label: String!
+    price: CartItemSelectedOptionValuePrice!
+    sort_order: Int!
+}
+
+type CartItemSelectedOptionValuePrice {
+    value: Float!
+    units: String!
+    type: PriceTypeEnum!
+}
+
+input AddVirtualProductsToCartInput {
+    cart_id: String!
+    cartItems: [VirtualProductCartItemInput!]!
+}
+
+input VirtualProductCartItemInput {
+    sku: String!
+    quantity: Float!
+    customizable_options:[CustomizableOptionInput!]
+}
+
+type AddVirtualProductsToCartOutput {
+    cart: Cart!
+}
+
+# Custom cart item type can be used to customize rendering when there are no physical producs available, e.g. skip shipping
+type VirtualCartItem implements CartItemInterface {
+    customizable_options: [SelectedCustomizableOption]
+}
+
+
+
+
+
+
+
+

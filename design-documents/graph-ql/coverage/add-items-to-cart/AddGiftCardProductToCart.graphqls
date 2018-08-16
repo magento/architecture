@@ -12,9 +12,14 @@ input GiftCardProductCartItemInput {
     quantity: Float!
     sender_name: String!
     recepient_name: String!
-    amount: Money!
+    amount: MoneyInput! # Do we need complex type here or just Float?
     message: String
     customizable_options:[CustomizableOptionInput!]
+}
+
+input MoneyInput {
+    value: Float @doc(description: "A number expressing a monetary value")
+    currency: CurrencyEnum @doc(description: "A three-letter currency code, such as USD or EUR")
 }
 
 type AddGiftCardProductsToCartOutput {
