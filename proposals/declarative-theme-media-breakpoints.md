@@ -46,7 +46,7 @@ In the long term we'd like to be able to support population of LESS variables fr
 
 These variables names would be converted over to `@screen__m` and `@default_font_size` respectively.
 
-### Short Term Page Builder Specific Solution
+### [Preferred] Short Term Page Builder Specific Solution
 
 The long term solution has a large requirement of resource and careful design to ensure it's implementation fits it's purpose correctly.
 
@@ -61,6 +61,8 @@ Page Builder requires an understanding of break points now ,_similar to how Mage
 ```
 
 This allows us to understand the mobile breakpoint and correctly render our dynamic CSS. Utilising `view.xml` file we can also add defaults to our module within `Magento_PageBuilder/etc/view.xml` to ensure that mobile background images are always displayed.
+
+**Note:** would look to implement the short term solution to resolve this issue with Page Builder but with a  mindset to consider the long term solution in a later release.
 
 ## Overall Concerns
 
