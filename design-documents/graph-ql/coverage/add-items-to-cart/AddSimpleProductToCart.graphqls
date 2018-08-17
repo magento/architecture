@@ -1,5 +1,16 @@
 type Mutation {
     addSimpleProductsToCart(input: AddSimpleProductsToCartInput): AddSimpleProductsToCartOutput
+    updateSimpleProductsInCart(input: UpdateSimpleProductsInCartInput): UpdateSimpleProductsInCartOutput
+}
+
+input UpdateSimpleProductsInCartInput {
+    cart_id: String!
+    cartItems: [UpdateSimpleProductCartItemInput!]!
+}
+
+input UpdateSimpleProductCartItemInput {
+    details: UpdateCartItemDetailsInput!
+    customizable_options:[CustomizableOptionInput]
 }
 
 input AddSimpleProductsToCartInput {
@@ -8,9 +19,18 @@ input AddSimpleProductsToCartInput {
 }
 
 input SimpleProductCartItemInput {
+    details: CartItemDetailsInput!
+    customizable_options:[CustomizableOptionInput!]
+}
+
+input CartItemDetailsInput {
     sku: String!
     quantity: Float!
-    customizable_options:[CustomizableOptionInput!]
+}
+
+input UpdateCartItemDetailsInput {
+    cart_item_id: String!
+    quantity: Float
 }
 
 input CustomizableOptionInput {
@@ -27,7 +47,7 @@ type Cart {
 }
 
 interface CartItemInterface @typeResolver(class: "Magento\\CatalogCheckoutGraphQl\\Model\\CartItemInterfaceTypeResolverComposite") {
-    id: Int!
+    id: String! # Hashed cart item ID
     qty: Float!
     product: ProductInterface!
 }

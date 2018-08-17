@@ -1,5 +1,17 @@
 type Mutation {
     addBundleProductsToCart(input: AddBundleProductsToCartInput): AddBundleProductsToCartOutput
+    updateBundleProductsInCart(input: UpdateBundleProductsInCartInput): UpdateBundleProductsInCartOutput
+}
+
+input UpdateBundleProductsInCartInput {
+    cart_id: String!
+    cartItems: [UpdateBundleProductCartItemInput!]!
+}
+
+input UpdateBundleProductCartItemInput {
+    details: UpdateCartItemDetailsInput!
+    bundle_options:[BundleOptionInput!]
+    customizable_options:[CustomizableOptionInput]
 }
 
 input AddBundleProductsToCartInput {
@@ -8,8 +20,7 @@ input AddBundleProductsToCartInput {
 }
 
 input BundleProductCartItemInput {
-    sku: String!
-    quantity: Float!
+    details: CartItemDetailsInput!
     bundle_options:[BundleOptionInput!]!
     customizable_options:[CustomizableOptionInput!]
 }

@@ -1,5 +1,17 @@
 type Mutation {
     addDownloadableProductsToCart(input: AddDownloadableProductsToCartInput): AddDownloadableProductsToCartOutput
+    updateDownloadableProductsInCart(input: UpdateDownloadableProductsInCartInput): UpdateDownloadableProductsInCartOutput
+}
+
+input UpdateDownloadableProductsInCartInput {
+    cart_id: String!
+    cartItems: [UpdateDownloadableProductCartItemInput!]!
+}
+
+input UpdateDownloadableProductCartItemInput {
+    details: UpdateCartItemDetailsInput!
+    downloadable_links: [DownloadableLinksInput]
+    customizable_options:[CustomizableOptionInput]
 }
 
 input AddDownloadableProductsToCartInput {
@@ -8,8 +20,7 @@ input AddDownloadableProductsToCartInput {
 }
 
 input DownloadableProductCartItemInput {
-    sku: String!
-    quantity: Int!
+    details: CartItemDetailsInput!
     downloadable_links: [DownloadableLinksInput!]
     customizable_options:[CustomizableOptionInput!]
 }

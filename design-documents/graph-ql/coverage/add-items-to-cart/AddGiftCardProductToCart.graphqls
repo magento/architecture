@@ -1,5 +1,20 @@
 type Mutation {
     addGiftCardProductsToCart(input: AddGiftCardProductsToCartInput): AddGiftCardProductsToCartOutput
+    updateGiftCardProductsInCart(input: UpdateGiftCardProductsInCartInput): UpdateGiftCardProductsInCartOutput
+}
+
+input UpdateGiftCardProductsInCartInput {
+    cart_id: String!
+    cartItems: [UpdateGiftCardProductCartItemInput!]!
+}
+
+input UpdateGiftCardProductCartItemInput {
+    details: UpdateCartItemDetailsInput!
+    sender_name: String
+    recepient_name: String
+    amount: MoneyInput # Do we need complex type here or just Float?
+    message: String
+    customizable_options:[CustomizableOptionInput]
 }
 
 input AddGiftCardProductsToCartInput {
@@ -8,8 +23,7 @@ input AddGiftCardProductsToCartInput {
 }
 
 input GiftCardProductCartItemInput {
-    sku: String!
-    quantity: Float!
+    details: CartItemDetailsInput!
     sender_name: String!
     recepient_name: String!
     amount: MoneyInput! # Do we need complex type here or just Float?

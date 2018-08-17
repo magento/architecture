@@ -1,6 +1,17 @@
 type Mutation {
     # for now this mutation is identical to addSimpleProductsToCart and exists as a syntax sugar. Also it allows product type based customizations
     addVirtualProductsToCart(input: AddVirtualProductsToCartInput): AddVirtualProductsToCartOutput
+    updateVirtualProductsInCart(input: UpdateVirtualProductsInCartInput): UpdateVirtualProductsInCartOutput
+}
+
+input UpdateVirtualProductsInCartInput {
+    cart_id: String!
+    cartItems: [UpdateVirtualProductCartItemInput!]!
+}
+
+input UpdateVirtualProductCartItemInput {
+    details: UpdateCartItemDetailsInput!
+    customizable_options:[CustomizableOptionInput]
 }
 
 input AddVirtualProductsToCartInput {
@@ -9,8 +20,7 @@ input AddVirtualProductsToCartInput {
 }
 
 input VirtualProductCartItemInput {
-    sku: String!
-    quantity: Float!
+    details: CartItemDetailsInput!
     customizable_options:[CustomizableOptionInput!]
 }
 

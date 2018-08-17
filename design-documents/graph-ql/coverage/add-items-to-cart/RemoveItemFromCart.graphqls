@@ -1,0 +1,12 @@
+type Mutation {
+    removeItemFromCart(input: RemoveItemFromCartInput): RemoveItemFromCartOutput
+}
+
+input RemoveItemFromCartInput {
+    cart_id: String!
+    cart_item_id: String!
+}
+
+type RemoveItemFromCartOutput {
+    cart: Cart!
+}
