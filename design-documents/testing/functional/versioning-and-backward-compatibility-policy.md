@@ -1,13 +1,10 @@
 # Magento MFTF Tests Versioning and Backward compatibility Policy
  
 ## Goals and Requirements
-1. Target Magento version is 2.3
+1. Release MFTF Tests as separate magento package on repo.magento.com
 2. Define versioning strategy for MFTF test packages
 3. Outline all what is considered Backward Incompatible change in MFTF Tests
 4. List of what should be implemented
-    
-The MFTF Tests need to be released the same way as we do releases for Magento modules. Each Module package will have a developer package containing only Mftf Tests.
-This leads us to a question on how versions should be set for MFTF Test packages and what changes to tests we assume backward compatible and not.
 
 ## Backwards Compatibility Definition for MFTF Tests
 Backwards compatibility is when tests undergoes changes, but allows to achieve same testing results as before and be compatible with potential test customizations.
@@ -48,6 +45,7 @@ An approach of defining what each release should include was taken from [Semanti
 1. Add Semantic Version analyzer to be able automatically define release type of MFTF tests package.
 2. Update publication infrastructure to exclude tests from `magento2-module` package type.
 3. Introduce publication functionality for publishing `magento2-test-module` package type.
+4. Create metapackage with test packages only for each Magento edition.
 
 ## Entity's id attributes
 Changing any of this attribute will cause Backward Incompatible change.
@@ -56,11 +54,7 @@ Changing any of this attribute will cause Backward Incompatible change.
   
   |xPath|idAttribute|
   |---|---|
-  |`/tests`| - |
   |`/tests/test`|name|
-  |`/tests/test/annotation`| - |
-  |`/tests/test/before`| - |
-  |`/tests/test/after`| - |
   |`/tests/test/<ACTION> ⃰`|stepKey|
   |`/tests/test/before/<ACTION> ⃰`|stepKey|
   |`/tests/test/after/<ACTION> ⃰`|stepKey| 
@@ -69,9 +63,7 @@ Changing any of this attribute will cause Backward Incompatible change.
 
   |xPath|idAttribute|
   |---|---|
-  |`/actionGroups`| - |
   |`/actionGroups/actionGroup`|name|
-  |`/actionGroups/actionGroup/arguments`| - |
   |`/actionGroups/actionGroup/arguments/argument`|name|
   |`/actionGroups/actionGroup/<ACTION> ⃰`|stepKey|
 
@@ -79,7 +71,6 @@ Changing any of this attribute will cause Backward Incompatible change.
   
   |xPath|idAttribute|
   |---|---|
-  |`/entities`| - |
   |`/entities/entitie`|name|
   |`/entities/entitie/data`|key|
   |`/entities/entitie/array`|key|
@@ -90,23 +81,18 @@ Changing any of this attribute will cause Backward Incompatible change.
   
   |xPath|idAttribute|
   |---|---|
-  |`/operations`| - |
   |`/operations/operation`|name|
-  |`/operations/operation/contentType`| - |
   |`/operations/operation/field`|key|
   |`/operations/operation(/object)+`|key|
   |`/operations/operation(/object)+/field`|key|
   |`/operations/operation(/object)+/array`|key|
-  |`/operations/operation(/object)+/array/value`|key|
   |`/operations/operation/array`|key|
   |`/operations/operation/array/object`|key|
-  |`/operations/operation/array/value`| - |
   
 **Page entity:**
 
   |xPath|idAttribute|
   |---|---|
-  |`/pages`| - |
   |`/pages/page`|name|
   |`/pages/page/section`|name|
   
@@ -114,7 +100,6 @@ Changing any of this attribute will cause Backward Incompatible change.
 
   |xPath|idAttribute|
   |---|---|
-  |`/sections`| - |
   |`/sections/section`|name|
   |`/sections/section/element`|name|
 
