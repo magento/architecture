@@ -61,10 +61,6 @@ To support current ecosystem the platform and main APIs will have to stay the sa
 
 Part of platform work is required to allow independent component deployment (module separation, application framework, configurable service invokers, backends for frontends, support for split extensions in marketplace), other part is good to have to make independently deployed components manageable (cloud native, development environments).
 
-### Separation of UI modules
-
-As mentioned earlier, many undesired inter-module dependencies reside in UI. To make independent component instances lighter by avoiding installation of all current module dependencies, all UI code must be extracted from Magento modules to separate ModuleNameUI modules.
-
 ### Application framework
 
 Following library components are currently implemented as Magento modules. Many modules depend on these library components. It clutters module dependency graph. Effectively they will be required for most application components. So these library components (or application-agnostic parts of them) should be moved to Magento\Framework to reduce clutter in module dependencies:
@@ -106,6 +102,24 @@ Two entry point components need to be created for two main application clients: 
   * token based authentication
   * ACL-based authorization.
   * REST
+  
+### Split modules
+
+The described separation of UI from APIs, and admin from storefront requires extracting all UI and Admin application logic to separate modules. For storefront application UI code will be moved to separate modules in PWA.
+
+To support real and proxied implementation of modules, the APIs should be extracted to separate modules. Webapi should be extracted to separate modules to glue API, implementation and Webapi declarations together.
+
+Following diagram demonstrates the split:
+
+![Split module](component-isolation/split-module.png)
+
+* *CatalogAdmin* - deployed on Admin BFF
+* *CatalogStorefront* - deployed on Stroefront BFF
+* *CatalogPWA* - js module deployed on PWA host
+* *CatalogWebapi* - deployed on Catalog service instance and depeonds on CatalogApi and Catalog modules
+* *CatalogAPI* - contains module service contracts
+* *Catalog* - contains implementation of Catalog; deployed on Catalog instance
+* *CatalogProxy* - contains proxy implementations of Catalog services. Deployed on client services (Checkout, OMS)
 
 ### Support for split extensions on Marketplace
 
@@ -121,12 +135,14 @@ Following changes to Magento Commerce platform are required to make it friendly 
 
 Magento components must support centralized application configuration management.
 
-NOTE: supported since 2.2 with configuration stored in env.php.
+**NOTE:** supported since 2.2 with configuration stored in env.php.
 
 #### Tracing
 Correlation IDs must be added to internal calls to make tracing easier.
 
 #### Tooling
+
+##### Magento CLI
 Current magento tool depends on application codebase being present on same machine. This makes it hard to manage a distributed instance of Magento.
 
 New endpoint must be introduced that can be exposed on an secure network adapter and that would listen to commands from remote magento tool and execute them.
@@ -137,6 +153,10 @@ New standalone magento tool must be created. The tool should have following comm
 * ```magento instance:list``` - list registered remote instances
 * ```magento instance:update``` - load list of commands supported by the instance
 * ```magento context:set [name]``` - select the default instance to be used in commands
+
+##### Instance builder
+
+With distributed deployment and split modules, composer.json management for different services will be complicated. A tool to build instance composer.json files for specific services based on enabled features or installed extensions should be built.
 
 #### Schema migrations
 Expansion-cleanup stages should be introduced into schema deployment tool to reduce downtime during service deployment
@@ -149,7 +169,7 @@ To make development of distributed instances easier, new developer environment m
 
 A prototype that uses Minikube VM with Kubernetes cluster is available.
 
-NOTE: Distributed component deployment will make current Commerce/B2B linking approach impossible, so new approach of internal development environment installation must be used: installation of Magento modules from “path” type composer repositories (prototype working with Minikube is available).
+**NOTE:** Distributed component deployment will make current Commerce/B2B linking approach impossible, so new approach of internal development environment installation must be used: installation of Magento modules from “path” type composer repositories (prototype working with Minikube is available).
 
 ## Design principles
 
