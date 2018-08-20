@@ -52,15 +52,16 @@ Following application components are identified to be isolated:
 
 ![Isolatd magento components](component-isolation/magento-components.png) 
 
-### Implementation
+## Implementation
 To achieve the desired state two sets of changes are required: platform modifications and component isolation.
 
 ### Platform modifications
+
 To support current ecosystem the platform and main APIs will have to stay the same (PHP, Magento Framework).
 
 Part of platform work is required to allow independent component deployment (module separation, application framework, configurable service invokers, backends for frontends, support for split extensions in marketplace), other part is good to have to make independently deployed components manageable (cloud native, development environments).
 
-### UI module separation
+### Separation of UI modules
 
 As mentioned earlier, many undesired inter-module dependencies reside in UI. To make independent component instances lighter by avoiding installation of all current module dependencies, all UI code must be extracted from Magento modules to separate ModuleNameUI modules.
 
@@ -92,6 +93,7 @@ First iteration of remote implementation should be based on existing synchronous
 Long-term goal: To avoid the leaky abstraction of remote invocations, new generation of service contracts has to expose asynchronous nature in APIs.
 
 ### Backends for frontends
+
 Two entry point components need to be created for two main application clients: storefront and admin apps (admin, integrations). These endpoint components (backends for frontends) should act as façades to corresponding functionality:
 
 * Storefront backend
@@ -112,29 +114,36 @@ Current data model of Marketplace does not support multiple packages per extensi
 Example: MyVendorShippingMethod extension modifies shipment and checkout components. MyVendorShippingMethod extension consists of 2 composer packages in Marketplace: MyVendorShipment and MyVendorCheckout.
 
 ### Cloud-native
+
 Following changes to Magento Commerce platform are required to make it friendly for cloud deployments
 
-### Application configuration
+#### Application configuration
+
 Magento components must support centralized application configuration management.
 
 NOTE: supported since 2.2 with configuration stored in env.php.
 
-### Tracing
+#### Tracing
 Correlation IDs must be added to internal calls to make tracing easier.
 
-### Tooling
+#### Tooling
 Current magento tool depends on application codebase being present on same machine. This makes it hard to manage a distributed instance of Magento.
 
 New endpoint must be introduced that can be exposed on an secure network adapter and that would listen to commands from remote magento tool and execute them.
 
-New standalone magento tool must be created.
+New standalone magento tool must be created. The tool should have following commands:
+* ```magento instance:add [name] [url]``` - register a new managed remote instance
+* ```magento instance:remove [name]``` - unregister a managed instance from the tool instance list
+* ```magento instance:list``` - list registered remote instances
+* ```magento instance:update``` - load list of commands supported by the instance
+* ```magento context:set [name]``` - select the default instance to be used in commands
 
-### Schema migrations
+#### Schema migrations
 Expansion-cleanup stages should be introduced into schema deployment tool to reduce downtime during service deployment
 
 NOTE: declarative schema in 2.3 makes automated distinction possible
 
-### Development environment
+#### Development environment
 
 To make development of distributed instances easier, new developer environment must be created.
 
@@ -142,7 +151,7 @@ A prototype that uses Minikube VM with Kubernetes cluster is available.
 
 NOTE: Distributed component deployment will make current Commerce/B2B linking approach impossible, so new approach of internal development environment installation must be used: installation of Magento modules from “path” type composer repositories (prototype working with Minikube is available).
 
-### Design principles
+## Design principles
 
 General principles to follow for component isolation:
 
@@ -160,16 +169,16 @@ General principles to follow for component isolation:
 
 Detailed design must be prepared for every component.
 
-### Implementation approach
+## Implementation approach
 
 Iterative approach must be used for component isolation: one component at a time.
 
 Based on component sizes and dependencies and priorities, following isolation sequence is proposed:
 
-1. Inventory (started in MSI project)
 1. Platform changes
-1. Pricing
 1. Checkout
+1. Pricing
+1. Inventory
 1. Tax
 1. Order Management
 1. Customer
