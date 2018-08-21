@@ -17,18 +17,16 @@ Such declaration has several issues:
 - It is not possible to evolve arguments list and output type of our API in the future. Even if we decide to do breaking changes, there is no way to deprecate existing arguments and output data first
 
 
-**Proposed solution: Wrappers for arguments and output**
+**Proposed solution: Wrappers for output and merger for arguments**
 
-Wrappers for arguments and output type can solve extensibility and deprecation issues.
+Wrappers for output type along with merging capabilities for arguments can solve extensibility and deprecation issues.
 
 ```$graphqls
 type Mutation {
-    generateCustomerToken(input: GenerateCustomerTokenInput!): GenerateCustomerTokenOutput!
-}
-
-input GenerateCustomerTokenInput {
-    email: String!
-    password: String!
+    generateCustomerToken(
+            email: String!,
+            password: String!
+    ): GenerateCustomerTokenOutput!
 }
 
 type GenerateCustomerTokenOutput {
@@ -36,11 +34,15 @@ type GenerateCustomerTokenOutput {
 }
 ```
 
-With such schema it is easy to extend the list of arguments. For example, if system integrator got a new requirement to enable multi-factor authentication, the schema can be extended from 3rd party module to support this requirement as follows.
+With such schema it is possible to extend the list of arguments (not reduce, however). For example, if system integrator got a new requirement to enable multi-factor authentication, the schema can be extended from 3rd party module to support this requirement as follows. All arguments from different modules will be merged and the resulting schema will contain all of them.
 
 ```$graphqls
-input GenerateCustomerTokenInput {
-    multi_factor_auth_token: String!
+type Mutation {
+    generateCustomerToken(
+            email: String!,
+            password: String!,
+            multi_factor_auth_token: String!
+    ): GenerateCustomerTokenOutput!
 }
 ```
 Additionally, plugin can be added for the `generateCustomerToken` mutation resolver to implement additional verification step.
@@ -57,9 +59,5 @@ The `token_ttl` value can be populated via new resolver for this field or from t
 
 **Action items**
 
-1. Modify schema for all existing queries and mutations
+1. Modify schema for all existing queries and mutations to use wrappers as output types
 1. Make sure that this requirement is documented and followed for the new GraphQL coverage
-
-**Open questions**
-
-1. What can be one about queries and mutations, which do not require arguments at the moment? We cannot create wrapper type without fields. Would be nice to enable extensibility for sich argument lists as well. 
