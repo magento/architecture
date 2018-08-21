@@ -61,3 +61,4 @@ The `token_ttl` value can be populated via new resolver for this field or from t
 
 1. Modify schema for all existing queries and mutations to use wrappers as output types
 1. Make sure that this requirement is documented and followed for the new GraphQL coverage
+1. Implement merging of arguments for the same query/mutation defined in different modules. GraphQL functional tests should be added
