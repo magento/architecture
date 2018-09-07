@@ -10,7 +10,7 @@ input UpdateConfigurableProductsInCartInput {
 
 input UpdateConfigurableProductCartItemInput {
     details: UpdateCartItemDetailsInput!
-    configurable_options:[ConfigurableOptionInput!]
+    variant_sku: String
     customizable_options:[CustomizableOptionInput]
 }
 
@@ -21,13 +21,8 @@ input AddConfigurableProductsToCartInput {
 
 input ConfigurableProductCartItemInput {
     details: CartItemDetailsInput!
-    configurable_options:[ConfigurableOptionInput!]!
+    variant_sku: String!
     customizable_options:[CustomizableOptionInput!]
-}
-
-input ConfigurableOptionInput {
-    id: Int!
-    value: Int!
 }
 
 type AddConfigurableProductsToCartOutput {
