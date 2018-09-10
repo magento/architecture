@@ -26,10 +26,8 @@ facilitator
 
 ## The Workflow
 
-1. Fork the repository and add or edit a document in your branch
-   1. Design Documents must be stored in `design-documents` directory. Contributions are expected from Magento core engineers mostly, although the community members are able to contribute.
-   1. Proposals are contributed into the `proposals` directory. Contributions are expected from both Magento core engineers and the community members.
-   1. We may add more categories in future
+1. Fork the repository and add or edit a document in your branch.
+Contributions are expected from Magento core engineers mostly, although the community members are able to contribute.
 1. Create a PR with the new or updated document to discuss
 1. Share the PR with internal team(s) and the Magento community through existing channels (Twitter, Slack, blog post, etc)
    1. Suggestion: include deadline for receiving feedback
@@ -37,14 +35,14 @@ facilitator
    1. Comments into the PR thread
    1. Likes/dislikes/other emojis to the comments or the PR itself. We kindly encourage contributors to submit explanations about pros and cons that they have noticed.
 1. Update the PR to the received feedback accordingly or submit a reply if the proposed changes are not applicable with clear explanation.
-1. When all participants of the discussion have come to agreement and confirmed their approval, add "approved" label to the PR.
-1. A Magento core architect merges the PR. 
+   1. Add `needs update` label while the PR is in work, so it's not 
+1. When all participants of the discussion have come to agreement and confirmed their approval, a Magento core architect merges the PR.
 
 ### Design Documents Review Requirements
 
 * Required reviewers are architects assigned to the [affected components](https://github.com/magento/magento2/wiki/Magento-Components-Assignment)
 * Anybody else may join the review and provide feedback, but they're not obligated to review the entire document or to meet deadlines
-* For existing (running or about to run) projects, a minimum time frame given for one round of review is 2 business days from the notification notice. The author may spewcify due date. For documents that do not block any existing projects (proposals or design documents that describe features for unforeable future), no due date is guaranteed.
+* For existing (running or about to run) projects, a minimum time frame given for one round of review is 2 business days from the notification notice. The author may specify due date. For documents that do not block any existing projects (proposals or design documents that describe features for unforeseeable future), no due date is guaranteed.
 
 ### Assigned Reviewer Responsibilities
 
