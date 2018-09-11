@@ -6,7 +6,7 @@ The `cron_schedule` table sometimes has a large amount of rows in it.  This can 
 
 Having a lot of records in this table causes problems with some of our SQL queries in the cron-module.  This propososal's goal is to help fix the problem when the DELETE query has to search several rows to see what needs to be deleted, but no rows, or only a small amount of rows need to be deleted.
 
-Adding a multi column index ('status', 'job_code') to this table will increase the performance in this use-case a lot.  For example, when I had about 800,000 rows, and 0 needed to be deleted, It took about 13 seconds to delete, but with the addition of this index, it was less than a second.
+Adding a multi column index (job_code, status, scheduled_at) to this table will increase the performance in this use-case a lot.  For example, when I had about 800,000 rows, and 0 needed to be deleted, It took about 13 seconds to delete, but with the addition of this index, it was less than a second.
 
 ### Benefits
 1. A lot faster delete queries.
