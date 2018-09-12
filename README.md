@@ -27,7 +27,7 @@ facilitator
 ## The Workflow
 
 1. Fork the repository and add or edit a document in your branch.
-Contributions are expected from Magento core engineers mostly, although the community members are able to contribute.
+Contributions are expected from Magento core engineers mostly, although the community members are able to contribute as well.
 1. Create a PR with the new or updated document to discuss
 1. Share the PR with internal team(s) and the Magento community through existing channels (Twitter, Slack, blog post, etc)
    1. Suggestion: include deadline for receiving feedback
@@ -35,7 +35,7 @@ Contributions are expected from Magento core engineers mostly, although the comm
    1. Comments into the PR thread
    1. Likes/dislikes/other emojis to the comments or the PR itself. We kindly encourage contributors to submit explanations about pros and cons that they have noticed.
 1. Update the PR to the received feedback accordingly or submit a reply if the proposed changes are not applicable with clear explanation.
-   1. Add `needs update` label while the PR is in work, so it's not 
+   1. Add `needs update` label while the PR is in work
 1. When all participants of the discussion have come to agreement and confirmed their approval, a Magento core architect merges the PR.
 
 ### Design Documents Review Requirements
