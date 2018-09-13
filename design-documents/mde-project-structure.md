@@ -30,12 +30,12 @@ Preferred way of linking the project is using [Composer path repository](https:/
     ```
 1. Add dependencies on all relevant MDE modules to the `require` section of `<project_root>/magento2ce/composer.json`. Use `*` as a package version
 1. Run `composer update`, which will create symlinks to the requested MDE modules inside of `<project_root>/magento2ce/vendor`. 
-   On Windows environment packages will be copied by composer (instead of being symlinked), that's why on Windows hosts it is better to link MDE using EE linking tool, or perform linking inside of linux VM
+   On Windows environment packages will be copied by composer (instead of being symlinked), that's why on Windows hosts it is better to link MDE using [EE linking tool](https://github.com/magento/magento2ee/blob/2.3-develop/dev/tools/build-ee.php), or perform linking inside of linux VM
 1. In case Magento has already been installed, the new modules must be enabled and setup upgrade executed
 
 
 ## Alternative options
 
-1. Link MDE using the same script which is used for linking EE (the tool should be open sourced)
+1. Link MDE using the same [script](https://github.com/magento/magento2ee/blob/2.3-develop/dev/tools/build-ee.php) which is used for linking EE (the tool should be open sourced)
 2. Manually create symlinks for each MDE modules to `<project_root>/magento2ce/app/code`
 
