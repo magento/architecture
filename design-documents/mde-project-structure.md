@@ -7,35 +7,27 @@ Currently, MSI is developed in a fork of main Magento repository, while Page Bui
 ## MDE project structure for Git-based installations
 
 MDE project must be structured as Magento B2B:
- 1. Modules must be placed under `app/code`
+ 1. Modules must be placed under `<mde_root>`
  1. Each module must have valid `composer.json` with no version specified. Package version must be generated and added to the `composer.json` during release publication
  1. No core modules must be committed to the MDE repository
- 1. Unit and MFTF tests must be distributed between modules (since they are modular). All other tests must be put inside `dev/tests` like it is done in Magento Open Source repository (because these testing frameworks do not support modularity)
+ 1. All tests must be distributed between modules. This is true even for kinds of tests which do not support modularity yet
+ 1. Optionally, create composer metapackage inside of `<mde_root>` which will be used to require all MDE modules at once
 
 ## Git-based project linking for local development
 
 Preferred way of linking the project is using [Composer path repository](https://getcomposer.org/doc/05-repositories.md#path).
 
 1. Check out magento 2 open source edition from Git into `<project_root>/magento2ce`
-1. Check out MDE into `<project_root>/magento2ce/<mde-name>`
-1. Add path composer repository declaration to `<project_root>/magento2ce/composer.json`:
-    ```json
-    "minimum-stability": "dev",
-    "repositories": [
-        {
-            "type": "path",
-            "url": "./<mde-name>/app/code/*/*"
-        }
-    ]
-    ```
-1. Add dependencies on all relevant MDE modules to the `require` section of `<project_root>/magento2ce/composer.json`. Use `*` as a package version
-1. Run `composer update`, which will create symlinks to the requested MDE modules inside of `<project_root>/magento2ce/vendor`. 
-   On Windows environment packages will be copied by composer (instead of being symlinked), that's why on Windows hosts it is better to link MDE using [EE linking tool](https://github.com/magento/magento2ee/blob/2.3-develop/dev/tools/build-ee.php), or perform linking inside of linux VM
-1. In case Magento has already been installed, the new modules must be enabled and setup upgrade executed
+1. Check out MDE into `<project_root>/<mde-name>`
+1. [Install MDE extension](https://devdocs.magento.com/guides/v2.3/comp-mgr/install-extensions.html) as if it was installed from remote composer repo. Specify `*` as package version.
+   **On Windows environments only** installation must be done inside of a linux VM to avoid MDE files being copied to vendor directory instead of being symlinked.
 
+## Blockers
+1. [Allow templates loading outside of the project](https://jira.corp.magento.com/browse/MAGETWO-95040)
+2. [Add support for MDEs via composer path repository](https://jira.corp.magento.com/browse/MAGETWO-95041)
 
-## Alternative options
+## Alternative options considered (not recommended)
 
-1. Link MDE using the same [script](https://github.com/magento/magento2ee/blob/2.3-develop/dev/tools/build-ee.php) which is used for linking EE (the tool should be open sourced)
-2. Manually create symlinks for each MDE modules to `<project_root>/magento2ce/app/code`
+1. Link MDE using the same [script](https://github.com/magento/magento2ee/blob/2.3-develop/dev/tools/build-ee.php) which is used for linking EE (the tool should be open sourced). The tool needs to be adjusted to support MDE repository structure without `app/code`
+2. Manually create symlinks for each MDE modules to `<project_root>/magento2ce/app/code`. Copy 3rd party package dependencies from MDE modules to `<project_root>/magento2ce/composer.json`
 
