@@ -11,7 +11,18 @@ MDE project must be structured as Magento B2B:
  1. Each module must have valid `composer.json` with no version specified. Package version must be generated and added to the `composer.json` during release publication
  1. No core modules must be committed to the MDE repository
  1. All tests must be distributed between modules. This is true even for kinds of tests which do not support modularity yet
- 1. Optionally, create composer metapackage inside of `<mde_root>` which will be used to require all MDE modules at once
+ 1. Optionally, create composer metapackage inside of `<mde_root>` which will be used to require all MDE modules at once. For example:
+     ```json
+    {
+        "name": "magento/pagebuilder",
+        "type": "metapackage",
+        "require": {
+            "magento/module-page-builder": "*",
+            "magento/module-page-builder-analytics": "*"
+        }
+    }
+    
+    ```
 
 ## Git-based project linking for local development
 
