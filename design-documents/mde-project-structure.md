@@ -35,7 +35,9 @@ Preferred way of linking the project is using [Composer path repository](https:/
 
 ## Blockers
 1. [Allow templates loading outside of the project](https://jira.corp.magento.com/browse/MAGETWO-95040)
+   Workaround: place MDE project inside of `<project_root>/magento2ce` and adjust composer path repository declaration accordingly. 
 2. [Add support for MDEs via composer path repository](https://jira.corp.magento.com/browse/MAGETWO-95041)
+   Workaround: declare composer path repositories manually in `<project_root>/magento2ce/composer.json`
 
 ## Alternative options considered (not recommended)
 
