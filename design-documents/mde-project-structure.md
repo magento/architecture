@@ -38,6 +38,7 @@ Preferred way of linking the project is using [Composer path repository](https:/
    Workaround: place MDE project inside of `<project_root>/magento2ce` and adjust composer path repository declaration accordingly. 
 2. [Add support for MDEs via composer path repository](https://jira.corp.magento.com/browse/MAGETWO-95041)
    Workaround: declare composer path repositories manually in `<project_root>/magento2ce/composer.json`
+3. [Add static test to prevent accidental MDE dependencies in root composer.json](https://jira.corp.magento.com/browse/MAGETWO-95088)
 
 ## Alternative options considered (not recommended)
 
