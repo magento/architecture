@@ -1,0 +1,84 @@
+type Query {
+    addBillingAddressToCart(input: AddBillingAddressToCartInput): AddBillingAddressToCartOutput
+    addShippingAddressToCart(input: AddShippingAddressToCartInput): AddShippingAddressToCartOutput
+}
+
+input AddBillingAddressToCartInput {
+    address_id: Int
+    address: CartAddressInput!
+}
+
+input AddShippingAddressToCartInput {
+    address_id: Int # Can be provided in one-page checkout and is required for multi-shipping checkout
+    address: CartAddressInput
+    shipping_method_code: String # Should be on address level for multi-shipping checkout
+}
+
+input CartAddressInput {
+    firstname: String!
+    lastname: String!
+    company: String
+    street: [String!]!
+    city: String!
+    region: String
+    postcode: String
+    country_code: String!
+    telephone: String!
+    fax: String
+    save_in_address_book: Boolean!
+}
+
+type AddShippingAddressToCartOutput {
+    cart: Cart!
+}
+
+type AddBillingAddressToCartOutput {
+    cart: Cart!
+}
+
+type Cart {
+    addresses: [CartAddress]!
+}
+
+type CartAddress {
+    firstname: String!
+    lastname: String!
+    company: String
+    street: [String!]!
+    city: String!
+    region: CartAddressRegion
+    postcode: String
+    country: CartAddressCountry!
+    telephone: String!
+    fax: String
+    address_type: AdressTypeEnum!
+
+    selected_shipping_method: CheckoutShippingMethod
+    available_shipping_methods: [CheckoutShippingMethod]!
+
+    items_weight: Float
+    customer_notes: String
+    gift_cards_amount_used: Money
+    applied_gift_cards: [CartGiftCard]
+}
+
+type CartAddressCountry {
+    code: String
+    label: String
+}
+
+type CartAddressRegion {
+    code: String
+    label: String
+}
+
+enum AdressTypeEnum {
+    SHIPPING
+    BILLING
+}
+
+type CheckoutShippingMethod {
+    code: String!
+    label: String!
+    free_shipping: Boolean!
+}

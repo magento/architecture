@@ -12,7 +12,6 @@ type CartQueryOutput {
 
 type Cart {
     id: String!
-    addresses: [CartAddress]
 
     line_items_count: Int!
     items_quantity: Float!
@@ -20,7 +19,7 @@ type Cart {
     selected_payment_method: CheckoutPaymentMethod
     available_payment_methods: [CheckoutPaymentMethod]!
 
-    customer: CheckoutCustomerInfo
+    customer: CheckoutCustomer
     customer_notes: String
 
     gift_cards_amount_used: Money
@@ -54,55 +53,6 @@ type CheckoutPaymentMethod {
     # Do we need more info from quote_payment DB table?
 }
 
-type CartAddress {
-    selected_shipping_method: CheckoutShippingMethod
-    available_shipping_methods: [CheckoutShippingMethod]!
-
-    address_type: AdressTypeEnum
-
-    customer: CheckoutCustomer
-
-    company: String
-
-    street: [String] # Should this be an array?
-    city: String
-    region: CartAddressRegion
-    postcode: String
-    country: CartAddressCountry
-    telephone: String
-    fax: String
-    same_as_billing: Boolean
-
-    items_weight: Float
-    customer_notes: String
-
-    gift_cards_amount_used: Money
-    applied_gift_cards: [CartGiftCard]
-
-    save_in_address_book: Boolean!
-    free_shipping: Boolean! # Do we need this field? Should it be moved to CheckoutShippingMethod type?
-}
-
 type CartGiftCard {
     code: String!
-}
-
-type CartAddressCountry {
-    code: String
-    label: String
-}
-
-type CartAddressRegion {
-    id: Int # Do we need to expose region ID?
-    label: String
-}
-
-enum AdressTypeEnum {
-    SHIPPING
-    BILLING
-}
-
-type CheckoutShippingMethod {
-    code: String!
-    label: String!
 }
