@@ -229,24 +229,6 @@ Detailed design must be prepared for every component.
 
 ## Implementation approach
 
-Iterative approach must be used for component isolation: one component at a time.
+Iterative approach must be used for component isolation: one component at a time is extracted from monolithic application.
 
-Based on component sizes and dependencies and priorities, following isolation sequence is proposed:
-
-1. Platform changes
-1. Checkout
-1. Pricing
-1. Inventory
-1. Tax
-1. Order Management
-1. Customer
-1. CMS
-1. Reports
-1. Payments
-1. Shipping
-1. Promotions
-1. Wishlist
-1. Rewards
-1. Company
-1. Marketing
-1. Risk
+Checkout is proposed to be the first service to extract.
