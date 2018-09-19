@@ -21,6 +21,7 @@ interface VisualContentNode {
   descendentRoles: [String]
   children: [VisualContentNode]
   html: String
+}
 ```
 
 (ID arguments would be necessary here but are omitted for simplicity).
@@ -59,6 +60,7 @@ type PageBuilder_Column implements VisualContentNode {
   backgroundAttachment: String
   minHeight: Int
   verticalAlign: String
+}
 ```
 
 In this case, `ColumnAppearance` is a subtype declared for the use of `PageBuilder_Column`, but it has no meaning in the `VisualContentNode` render cycle otherwise.
@@ -167,10 +169,12 @@ The PWA would handle this response:
             fragment PageBuilder_Banner_Config on PageBuilder_Banner {
               appearance
               backgroundType
-              //(etc)
+              "More banner config here."
             }
 
-            //(other fragments)
+            """
+            Additional fragments here.
+            """
 
             content {
               ...PageBuilder_Column_Config
