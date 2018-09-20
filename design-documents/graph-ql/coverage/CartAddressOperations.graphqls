@@ -1,17 +1,32 @@
 type Query {
-    addBillingAddressToCart(input: AddBillingAddressToCartInput): AddBillingAddressToCartOutput
-    addShippingAddressToCart(input: AddShippingAddressToCartInput): AddShippingAddressToCartOutput
+    setBillingAddressOnCart(input: SetBillingAddressOnCartInput): SetBillingAddressOnCartOutput
+    setShippingAddressesOnCart(input: SetShippingAddressesOnCartInput): SetShippingAddressesOnCartOutput
+    setShippingMethodsOnCart(input: SetShippingMethodsOnCartInput): SetShippingMethodsOnCartOutput
 }
 
-input AddBillingAddressToCartInput {
-    address_id: Int
-    address: CartAddressInput!
+input SetShippingMethodsOnCartInput {
+    shipping_methods: [ShippingMethodForAddressInput!]!
 }
 
-input AddShippingAddressToCartInput {
-    address_id: Int # Can be provided in one-page checkout and is required for multi-shipping checkout
+input ShippingMethodForAddressInput {
+    cart_address_id: String!
+    shipping_method_code: String!
+}
+
+input SetBillingAddressOnCartInput {
+    customer_address_id: Int
     address: CartAddressInput
-    shipping_method_code: String # Should be on address level for multi-shipping checkout
+}
+
+input SetShippingAddressesOnCartInput {
+    customer_address_id: Int # Can be provided in one-page checkout and is required for multi-shipping checkout
+    address: CartAddressInput
+    cart_items: [CartItemQuantityInput!]
+}
+
+input CartItemQuantityInput {
+    cart_item_id: String!
+    quantity: Float!
 }
 
 input CartAddressInput {
@@ -24,15 +39,18 @@ input CartAddressInput {
     postcode: String
     country_code: String!
     telephone: String!
-    fax: String
     save_in_address_book: Boolean!
 }
 
-type AddShippingAddressToCartOutput {
+type SetShippingAddressesOnCartOutput {
     cart: Cart!
 }
 
-type AddBillingAddressToCartOutput {
+type SetShippingMethodsOnCartOutput {
+    cart: Cart!
+}
+
+type SetBillingAddressOnCartOutput {
     cart: Cart!
 }
 
@@ -50,7 +68,6 @@ type CartAddress {
     postcode: String
     country: CartAddressCountry!
     telephone: String!
-    fax: String
     address_type: AdressTypeEnum!
 
     selected_shipping_method: CheckoutShippingMethod
@@ -60,6 +77,13 @@ type CartAddress {
     customer_notes: String
     gift_cards_amount_used: Money
     applied_gift_cards: [CartGiftCard]
+
+    cart_items: [CartItemQuantity]
+}
+
+type CartItemQuantity {
+    cart_item_id: String!
+    quantity: Float!
 }
 
 type CartAddressCountry {
@@ -78,7 +102,9 @@ enum AdressTypeEnum {
 }
 
 type CheckoutShippingMethod {
-    code: String!
-    label: String!
+    code: String
+    label: String
     free_shipping: Boolean!
+    error_message: String
+    # TODO: Add more complex structure for shipping rates
 }

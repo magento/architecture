@@ -50,7 +50,8 @@ enum GenderEnum {
 type CheckoutPaymentMethod {
     code: String!
     label: String!
-    # Do we need more info from quote_payment DB table?
+    balance: Money
+    sort_order: Int
 }
 
 type CartGiftCard {
