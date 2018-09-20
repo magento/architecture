@@ -2,12 +2,12 @@
 
 Magento Commerce was designed as a monolithic modular application: all codebase is split to functional modules but is deployed together. This has following implications:
 
-* Application has to be deployed as a whole. No ability to deploy updated versions of separate components independently
-* Application has to be scaled as a whole. No ability to scale separate components independently
-* Even though modular code structure groups related behavior, it is easy to introduce an undesired dependency between application components as components are not deployed and tested independently. Only static modularity analysis is performed.
+* Application has to be deployed as a whole. No ability to deploy updated versions of separate services independently
+* Application has to be scaled as a whole. No ability to scale separate services independently
+* Even though modular code structure groups related behavior, it is easy to introduce an undesired dependency between application services as services are not deployed and tested independently. Only static modularity analysis is performed.
 
 ## Current state
-Introduction of service contracts in Magento 2.0 was the first step towards component isolation:
+Introduction of service contracts in Magento 2.0 was the first step towards service isolation:
 
 * Every module defines its API (service contracts) – PHP interfaces that can be called either from within PHP process or remotely through REST, SOAP or AMQP APIs
 * Every module is allowed to call other modules only through their service contracts
@@ -17,7 +17,7 @@ In consequent releases more service contracts were introduced, and more modules 
 
 On data level, ability to split checkout and order management databases was introduced. This improved scalability of Magento instances.
 
-![Current State](component-isolation/current-state.png)
+![Current State](service-isolation/current-state.png)
 
 ### PWA & Service isolation
 The decision to move all UI to browser as a part of PWA effort significantly reduces number of undesired dependencies in codebase: most dependencies reside in UI, and will not be present in PWA implementation.
@@ -67,7 +67,7 @@ Downsides:
 
 Current deployment model (single app) must be supported for clients that don't require advanced scalability.
 
-Following application services are identified to be isolated as of now (the list is not final):
+Following application services are identified to be isolated as of now (green - Magento Open Source, yellow - Magento Commerce, red - Magento B2B):
 
 ![Isolatd magento services](service-isolation/magento-services.png) 
 
