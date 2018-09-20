@@ -1,4 +1,4 @@
-# Magento Component Isolation
+# Magento Service Isolation
 
 Magento Commerce was designed as a monolithic modular application: all codebase is split to functional modules but is deployed together. This has following implications:
 
@@ -19,15 +19,15 @@ On data level, ability to split checkout and order management databases was intr
 
 ![Current State](component-isolation/current-state.png)
 
-### PWA & Component isolation
+### PWA & Service isolation
 The decision to move all UI to browser as a part of PWA effort significantly reduces number of undesired dependencies in codebase: most dependencies reside in UI, and will not be present in PWA implementation.
 
 ## Desired state
-Magento _components_ (Catalog, Checkout, Order Management, ...) are isolated and only communicate through service contracts.
+Magento _services_ (Catalog, Checkout, Order Management, ...) are isolated and only communicate through service contracts.
 
-A _component_ is a part of Magento application that consists of one or more modules and is responsible for an distinct business behavior.
+A _service_ is a part of Magento application that consists of one or more modules and is responsible for an distinct business behavior.
 
-Examples of components:
+Examples of services:
    
 - Catalog
     - Magento/Catalog
@@ -43,46 +43,46 @@ Examples of components:
     - Magento/CheckoutAgreements
     - ...
     
-Unlike in the initial plan, the requirement to communicate through service contracts only applies to components, not modules. This significantly reduces the scope of required modifications and makes implementations and customizations easier. 
+Unlike in the initial plan, the requirement to communicate through service contracts only applies to services, not modules. This significantly reduces the scope of required modifications and makes implementations and customizations easier. 
 
 Upsides:
 
-* scalability – components can be scaled independently on Magento instances
-* deployment – components can be deployed independently
-* replaceability – it is easier for System Integrators to replace Magento built-in components with third-party systems
+* scalability – services can be scaled independently on Magento instances
+* deployment – services can be deployed independently
+* replaceability – it is easier for System Integrators to replace Magento built-in services with third-party systems
 * teams have clear ownership boundaries
-* easier to comprehend components
-* clear contracts between components
-* granular releases - components can be released independently
-* in isolated components it is easier to use data storage with more appropriate storage models.
-* easier to experiment and replace components
+* easier to comprehend services
+* clear contracts between services
+* granular releases - services can be released independently
+* in isolated services it is easier to use data storage with more appropriate storage models.
+* easier to experiment and replace services
 
 Downsides:
 
-* Performance hit of inter-component communication
+* Performance hit of inter-service communication
 * Instance maintenance – it is harder to manage distributed Magento instance. This needs to be compensated with improved logging, tracking, debugging, and deployment capabilities.
-* Any component can be replaced with a remote implementation
+* Any service can be replaced with a remote implementation
 
-![Desired State](component-isolation/desired-state.png)
+![Desired State](service-isolation/desired-state.png)
 
 Current deployment model (single app) must be supported for clients that don't require advanced scalability.
 
-Following application components are identified to be isolated as of now (the list is not final):
+Following application services are identified to be isolated as of now (the list is not final):
 
-![Isolatd magento components](component-isolation/magento-components.png) 
+![Isolatd magento services](service-isolation/magento-services.png) 
 
 ## Implementation
-To achieve the desired state two sets of changes are required: platform modifications and component isolation.
+To achieve the desired state two sets of changes are required: platform modifications and service isolation.
 
 ### Platform modifications
 
 To support current ecosystem the platform and main APIs will have to stay the same (PHP, Magento Framework).
 
-Part of platform work is required to allow independent component deployment (module separation, application framework, configurable service invokers, backends for frontends, support for split extensions in marketplace), other part is good to have to make independently deployed components manageable (cloud native, development environments).
+Part of platform work is required to allow independent service deployment (module separation, application framework, configurable service invokers, backends for frontends, support for split extensions in marketplace), other part is good to have to make independently deployed services manageable (cloud native, development environments).
 
 ### Application framework
 
-Following library components are currently implemented as Magento modules. Many modules depend on these library components. It clutters module dependency graph. Effectively they will be required for most application components. So these library components (or application-agnostic parts of them) should be moved to `Magento\Framework` to reduce clutter in module dependencies:
+Following library components are currently implemented as Magento modules. Many modules depend on these library components. It clutters module dependency graph. Effectively they will be required for most application services. So these library components (or application-agnostic parts of them) should be moved to `Magento\Framework` to reduce clutter in module dependencies:
 
 * Amqp
 * Config
@@ -99,19 +99,19 @@ Following library components are currently implemented as Magento modules. Many 
 
 As of 2.3-develop, Magento service contracts can be called in process, or through REST, SOAP, and AMQP APIs by remote clients. But remote calls require manual implementation of client. Magento should be able to invoke service contracts either locally or remotely (if a service whose contract is called is deployed remotely). Two options to implement this are discussed:
 
-* Introduce service contract invoker that should be used by every client to invoke service contract. For local calls such invoker would just call a service contract, for remote components it would do a remote call. This option gives more control over service contract invocation, but requires modification of all current service contract clients
+* Introduce service contract invoker that should be used by every client to invoke service contract. For local calls such invoker would just call a service contract, for remote services it would do a remote call. This option gives more control over service contract invocation, but requires modification of all current service contract clients
 
-* Auto-generated remote call proxies for service contracts that represent remote components. This option does not require code modifications but will produce harder to debug code
+* Auto-generated remote call proxies for service contracts that represent remote services. This option does not require code modifications but will produce harder to debug code
 
-Remote invoker must contain improved logging, timeouts, retry logic, and circuit breakers to avoid failure state propagation between components.
+Remote invoker must contain improved logging, timeouts, retry logic, and circuit breakers to avoid failure state propagation between services.
 
 First iteration of remote implementation should be based on existing synchronous APIs.
 
-Long-term goal: To avoid the leaky abstraction of remote invocations, new generation of service contracts has to expose asynchronous nature in APIs to avoid runtime coupling between components.
+Long-term goal: To avoid the leaky abstraction of remote invocations, new generation of service contracts has to expose asynchronous nature in APIs to avoid runtime coupling between services.
 
 ### Backends for frontends
 
-Following entry point components need to be created for two main application clients: storefront and admin apps (admin, integrations). These endpoint components (backends for frontends or BFFs) should act as façades to corresponding functionality:
+Following entry point services need to be created for two main application clients: storefront and admin apps (admin, integrations). These endpoint services (backends for frontends or BFFs) should act as façades to corresponding functionality:
 
 * Storefront PWA BFF
   * launch PWA Application shell with page data (product information, category information)
@@ -134,7 +134,7 @@ To support real and proxied implementations of modules, the APIs should be extra
 
 Following diagram demonstrates the split:
 
-![Split module](component-isolation/split-modules.png)
+![Split module](service-isolation/split-modules.png)
 
 * *CatalogPWA* - js module deployed on PWA host
 * *CatalogStorefront* - deployed on GraphQL endpoint
@@ -147,9 +147,9 @@ Following diagram demonstrates the split:
 
 ### Support for split extensions on Marketplace
 
-Current data model of Marketplace does not support multiple packages per extension. Since an extension can customize multiple components, it should be possible to create an extension that consists of multiple composer packages. Such extensions must be supported by Magento Marketplace.
+Current data model of Marketplace does not support multiple packages per extension. Since an extension can customize multiple services, it should be possible to create an extension that consists of multiple composer packages. Such extensions must be supported by Magento Marketplace.
 
-Example: MyVendorShippingMethod extension modifies shipment and checkout components. MyVendorShippingMethod extension consists of 2 composer packages in Marketplace: MyVendorShipment and MyVendorCheckout.
+Example: MyVendorShippingMethod extension modifies shipment and checkout services. MyVendorShippingMethod extension consists of 2 composer packages in Marketplace: MyVendorShipment and MyVendorCheckout.
 
 ### Cloud-native
 
@@ -158,7 +158,7 @@ Following changes are proposed:
 
 #### Application configuration
 
-Magento components must support centralized application configuration management.
+Magento services must support centralized application configuration management.
 
 >NOTE: supported since 2.2 with configuration stored in env.php.
 
@@ -191,8 +191,8 @@ Output:
 The tool should be able to:
 * generate list of composer.json based on following input:
     * list of extensions that need to be installed
-    * list of components deployed separately (`composer.json` files to generate)
-* check compatibility of API versions between modules of different components
+    * list of services deployed separately (`composer.json` files to generate)
+* check compatibility of API versions between modules of different services
 * analyse the distributed instance of magento:
     * check api version compatibility
     * display the list of distributed extensions
@@ -209,11 +209,11 @@ To make development of distributed instances easier, new developer environment m
 
 A prototype that uses Minikube VM with Kubernetes cluster is prepared. 
 
->NOTE: Distributed component deployment will make current Commerce/B2B linking approach impossible, so new approach of internal development environment installation must be used: installation of Magento modules from “path” type composer repositories (prototype working with Minikube is available).
+>NOTE: Distributed service deployment will make current Commerce/B2B linking approach impossible, so new approach of internal development environment installation must be used: installation of Magento modules from “path” type composer repositories (prototype working with Minikube is available).
 
 ## Design principles
 
-General principles to follow for component isolation:
+General principles to follow for service isolation:
 
 * Current service contracts SHOULD BE preserved for backward compatibility
 * All new service contracts MUST follow design principles described in technical guidelines + following principles:
@@ -222,13 +222,13 @@ General principles to follow for component isolation:
 * All new service contracts SHOULD expose asynchronous APIs
 * All new state modifying operations SHOULD expose bulk APIs
 * All service operations MUST BE stateless
-* There MUST BE NO data dependencies between components.
+* There MUST BE NO data dependencies between services.
 * Command & query responsibility segregation – storefront APIs for data immutable in storefront (catalog) should be optimized for data retrieval
 
-Detailed design must be prepared for every component.
+Detailed design must be prepared for every service.
 
 ## Implementation approach
 
-Iterative approach must be used for component isolation: one component at a time is extracted from monolithic application.
+Iterative approach must be used for service isolation: one service at a time is extracted from monolithic application.
 
 Checkout is proposed to be the first service to extract.
