@@ -22,7 +22,10 @@ On the data level, we introduced the ability to split checkout and order managem
 The decision to move all UI to the browser as a part of PWA effort significantly reduces the number of undesired dependencies in the codebase. Most dependencies reside in the UI and will not be present in PWA implementation.
 
 ## Desired state
-Magento _services_ (Catalog, Checkout, Order Management, ...) are isolated and only communicate through service contracts.
+
+To resolve the current dependency issues, Magento should continue its path of Service isolation.
+
+Magento _services_ (Catalog, Checkout, Order Management, ...) should be isolated and only communicate through service contracts.
 
 A _service_ is a part of the Magento application that consists of one or more modules. It is responsible for distinct business behavior.
 
@@ -44,9 +47,11 @@ Examples of services:
     
 The requirement to communicate through service contracts only applies to services, not modules. This significantly reduces the scope of required modifications and makes implementations and customizations easier. 
 
-It should be possible to deploy services as independent instances. 
+It should be possible to deploy services as independent instances.
+ 
+Services must not share data store. It should be possible to deploy every service database as a separate instance.
 
-The current deployment model (single app) must be supported for clients that don't require advanced scalability.
+The current deployment model (single app & single DB) must be supported for clients that don't require advanced scalability.
 
 Magento testing builds should run Magento both as a monolithic application and as a set of independent services.
 
@@ -140,6 +145,18 @@ The following diagram demonstrates the split:
 * *Catalog* - contains an implementation of Catalog; deployed on Catalog instance
 * *CatalogProxy* - contains proxy implementations of Catalog services. Deployed on client services (Checkout, OMS)
 
+### Split database
+
+Today Magento 2 supports ability to deploy Checkout and Order Management databases separately from main database. We should go further and isolate all service databases.
+
+A service must not talk to other service database directly, only through service contracts.
+
+This will require codebase modifications similar to those that were already done for Checkout and Order Management:
+- Review application scenarios and minimize data relations in them
+- Replace the required inter-service db-level data relations, joins, and transactions with application-level relations, joins, and transactions
+
+Unlike current implementation (OS & Commerce split), the data relation decoupling should be performed in Open Source edition of Magento to simplify extension development.
+
 ### Support for split extensions on Marketplace
 
 The current data model of Marketplace does not support multiple packages per extension. Since an extension can customize multiple services, it should be possible to create an extension that consists of multiple composer packages. Such extensions must be supported by Magento Marketplace.
@@ -200,11 +217,13 @@ NOTE: The declarative schema feature in 2.3 makes automated distinction possible
 
 #### Development environment
 
-To make development of distributed instances easier, a new developer environment must be created.
+To make development of distributed instances easier, a new developer environment must be created. The environment should allow to easily manage multiple services of magento.
 
-A prototype that uses Minikube VM with Kubernetes cluster is prepared. 
+Two developer environments are evaluated:
+* Environment based on [Minikube](https://kubernetes.io/docs/setup/minikube/) VM with [Kubernetes](https://kubernetes.io/) cluster
+* Environment based on [Docker Compose](https://docs.docker.com/compose/)
 
->NOTE: Distributed service deployment will make the current Commerce/B2B linking approach impossible, so a new approach of internal development environment installation must be used: installation of Magento modules from “path” type composer repositories (prototype working with Minikube is available).
+>NOTE: Distributed service deployment will make the current Commerce/B2B linking approach inconvenient, so a new approach of internal development environment installation must be used: installation of Magento modules from “path” type composer repositories.
 
 ## Design principles
 
