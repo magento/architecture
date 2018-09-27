@@ -1,4 +1,4 @@
-This repository is created by initiative of Magento architects to discuss with the Magento community any open questions around Magento 2 architecture such as design documents, proposals, or any other architectural artifacts.
+test This repository is created by initiative of Magento architects to discuss with the Magento community any open questions around Magento 2 architecture such as design documents, proposals, or any other architectural artifacts.
 
 ---
 
