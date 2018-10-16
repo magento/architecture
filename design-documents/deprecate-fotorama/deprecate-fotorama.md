@@ -12,6 +12,9 @@ In this document, we'll propose deprecating `Fotorama`, and replacing it with an
 - https://github.com/magento/magento2/issues/14667#issuecomment-415813263 (Comment from issue linked above diving into specific bottlenecks)
 - https://github.com/magento/magento2/issues/6018
 
+## Alternatives Proposed by Community
+[Rendered](proposed-alternatives.md)
+
 ## Performance Problems with Fotorama
 
 ### Library Size
