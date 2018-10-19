@@ -14,14 +14,14 @@ us to add __sleep and __wakeup methods to ~33 classes.
 #### What has to be done
 ##### Admin session
 I propose creating 2 interfaces in the Magento\Backend\Spi namespace:
-* SessionUserSerializerInterface
-* SessionAclSerializerInterface
+* SessionUserHydratorInterface
+* SessionAclHydratorInterface
  
 Both interfaces will have 2 methods:
-* serialize(User|Acl $user|$acl): array - which will extract given object's
+* extract(User|Acl $user|$acl): array - which will extract given object's
 data into an array of scalars
-* unserialize(array $data): User|Acl - taking array of scalars
-and turning it into objects
+* hydrate(User|Acl $target, array $data): void - taking array of scalars
+and filling given object with it
  
 Only arrays of scalars will be stored in session. getUser, setUser, getAcl, setAcl methods
 must be added to the Magento\Backend\Model\Auth\Session class to prevent serializing
