@@ -1,0 +1,43 @@
+type Mutation {
+    addConfigurableProductsToCart(input: AddConfigurableProductsToCartInput): AddConfigurableProductsToCartOutput
+    updateConfigurableProductsInCart(input: UpdateConfigurableProductsInCartInput): UpdateConfigurableProductsInCartOutput
+}
+
+input UpdateConfigurableProductsInCartInput {
+    cart_id: String!
+    cartItems: [UpdateConfigurableProductCartItemInput!]!
+}
+
+input UpdateConfigurableProductCartItemInput {
+    details: UpdateCartItemDetailsInput!
+    variant_sku: String
+    customizable_options:[CustomizableOptionInput]
+}
+
+input AddConfigurableProductsToCartInput {
+    cart_id: String!
+    cartItems: [ConfigurableProductCartItemInput!]!
+}
+
+input ConfigurableProductCartItemInput {
+    details: CartItemDetailsInput!
+    variant_sku: String!
+    customizable_options:[CustomizableOptionInput!]
+}
+
+type AddConfigurableProductsToCartOutput {
+    cart: Cart!
+}
+
+type ConfigurableCartItem implements CartItemInterface {
+    customizable_options: [SelectedCustomizableOption]!
+    configurable_options: [SelectedConfigurableOption!]!
+}
+
+type SelectedConfigurableOption {
+    id: Int!
+    option_label: String!
+    value_id: Int!
+    value_label: String!
+}
+

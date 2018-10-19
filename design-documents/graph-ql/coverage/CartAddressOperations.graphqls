@@ -1,0 +1,110 @@
+type Query {
+    setBillingAddressOnCart(input: SetBillingAddressOnCartInput): SetBillingAddressOnCartOutput
+    setShippingAddressesOnCart(input: SetShippingAddressesOnCartInput): SetShippingAddressesOnCartOutput
+    setShippingMethodsOnCart(input: SetShippingMethodsOnCartInput): SetShippingMethodsOnCartOutput
+}
+
+input SetShippingMethodsOnCartInput {
+    shipping_methods: [ShippingMethodForAddressInput!]!
+}
+
+input ShippingMethodForAddressInput {
+    cart_address_id: String!
+    shipping_method_code: String!
+}
+
+input SetBillingAddressOnCartInput {
+    customer_address_id: Int
+    address: CartAddressInput
+}
+
+input SetShippingAddressesOnCartInput {
+    customer_address_id: Int # Can be provided in one-page checkout and is required for multi-shipping checkout
+    address: CartAddressInput
+    cart_items: [CartItemQuantityInput!]
+}
+
+input CartItemQuantityInput {
+    cart_item_id: String!
+    quantity: Float!
+}
+
+input CartAddressInput {
+    firstname: String!
+    lastname: String!
+    company: String
+    street: [String!]!
+    city: String!
+    region: String
+    postcode: String
+    country_code: String!
+    telephone: String!
+    save_in_address_book: Boolean!
+}
+
+type SetShippingAddressesOnCartOutput {
+    cart: Cart!
+}
+
+type SetShippingMethodsOnCartOutput {
+    cart: Cart!
+}
+
+type SetBillingAddressOnCartOutput {
+    cart: Cart!
+}
+
+type Cart {
+    addresses: [CartAddress]!
+}
+
+type CartAddress {
+    firstname: String!
+    lastname: String!
+    company: String
+    street: [String!]!
+    city: String!
+    region: CartAddressRegion
+    postcode: String
+    country: CartAddressCountry!
+    telephone: String!
+    address_type: AdressTypeEnum!
+
+    selected_shipping_method: CheckoutShippingMethod
+    available_shipping_methods: [CheckoutShippingMethod]!
+
+    items_weight: Float
+    customer_notes: String
+    gift_cards_amount_used: Money
+    applied_gift_cards: [CartGiftCard]
+
+    cart_items: [CartItemQuantity]
+}
+
+type CartItemQuantity {
+    cart_item_id: String!
+    quantity: Float!
+}
+
+type CartAddressCountry {
+    code: String
+    label: String
+}
+
+type CartAddressRegion {
+    code: String
+    label: String
+}
+
+enum AdressTypeEnum {
+    SHIPPING
+    BILLING
+}
+
+type CheckoutShippingMethod {
+    code: String
+    label: String
+    free_shipping: Boolean!
+    error_message: String
+    # TODO: Add more complex structure for shipping rates
+}

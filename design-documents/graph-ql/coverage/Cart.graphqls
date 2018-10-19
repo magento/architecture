@@ -1,0 +1,59 @@
+type Query {
+    cart(input: CartQueryInput): CartQueryOutput
+}
+
+input CartQueryInput {
+    cart_id: String!
+}
+
+type CartQueryOutput {
+    cart: Cart
+}
+
+type Cart {
+    id: String!
+
+    line_items_count: Int!
+    items_quantity: Float!
+
+    selected_payment_method: CheckoutPaymentMethod
+    available_payment_methods: [CheckoutPaymentMethod]!
+
+    customer: CheckoutCustomer
+    customer_notes: String
+
+    gift_cards_amount_used: Money
+    applied_gift_cards: [CartGiftCard]
+
+    is_multishipping: Boolean!
+    is_virtual: Boolean!
+}
+
+type CheckoutCustomer {
+    is_guest: Boolean!
+    email: String!
+    prefix: String
+    first_name: String!
+    last_name: String!
+    middle_name: String
+    suffix: String
+    gender: GenderEnum
+    date_of_birth: String
+    vat_number: String # Do we need it at all on storefront? Do we need more details
+}
+
+enum GenderEnum {
+    MALE
+    FEMALE
+}
+
+type CheckoutPaymentMethod {
+    code: String!
+    label: String!
+    balance: Money
+    sort_order: Int
+}
+
+type CartGiftCard {
+    code: String!
+}
