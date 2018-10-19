@@ -21,6 +21,9 @@ All open PRs represent *open discussions*.
 author
 : a Magento core engineer, or any community member
 
+facilitator
+: a Magento architect who makes sure the process is followed (Olga Koplyova @buskamuza)
+
 ## The Workflow
 
 1. Fork the repository and add or edit a document in your branch
@@ -36,6 +39,23 @@ author
 1. Update the PR to the received feedback accordingly or submit a reply if the proposed changes are not applicable with clear explanation.
 1. When all participants of the discussion have come to agreement and confirmed their approval, add "approved" label to the PR.
 1. A Magento core architect merges the PR. 
+
+### Design Documents Review Requirements
+
+* Required reviewers are architects assigned to the [affected components](https://github.com/magento/magento2/wiki/Magento-Components-Assignment)
+* Anybody else may join the review and provide feedback, but they're not obligated to review the entire document or to meet deadlines
+* For existing (running or about to run) projects, a minimum time frame given for one round of review is 2 business days from the notification notice. The author may spewcify due date. For documents that do not block any existing projects (proposals or design documents that describe features for unforeable future), no due date is guaranteed.
+
+### Assigned Reviewer Responsibilities
+
+* Review the entire document by specified due date (if any)
+   * If it is impossible, find a replacement
+   * Contact the facilitator in case you can't find a replacement
+   * If the due date is unreasonable for the size of the document, agree on another due date with the author
+* Include a detailed feedback
+   * Ensure the feedback is objective
+   * Ensure the feedback provides value to the document. Avoid side-notes and off-topics (or mention explicitly that this is just a note for future)
+   * If the document is rejected, include clear and objective explanation for it. Rejection is final
 
 The implementation process is out of scope in this project.
 
