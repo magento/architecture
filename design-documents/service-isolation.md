@@ -196,6 +196,7 @@ The current Magento CLI tool depends on the application codebase being present o
 With distributed deployment and split modules, `composer.json` management for different services will be complicated. A tool to build instance `composer.json` files for specific services based on enabled features or installed extensions should be built.
 
 Input: 
+* Project metadata files describing services to deploy (Catalog, Checkout, etc) and extensions to be installed
 
 Output: 
 * A list of `composer.json` files that can be deployed on different instances
