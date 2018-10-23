@@ -15,6 +15,9 @@ In this document, we'll propose deprecating `Fotorama`, and replacing it with an
 ## Alternatives Proposed by Community
 [Rendered](proposed-alternatives.md)
 
+## Minimal Viable Feature Set
+[Rendered](minimum-viable-feature-set.md)
+
 ## Performance Problems with Fotorama
 
 ### Library Size
