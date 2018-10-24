@@ -11,7 +11,7 @@ Sessions and cookies are being used in model classes.
 #### What has to be done
 Add PHPMD rule which will be triggered when a class has a constructor parameter of type
 SessionManagerInterface/CookieReaderInterface (and any of the implementations) and are not a part of HTML presentation level
-(instances of ActionInterface, AbstractBlock, DataProviderInterface, Document).
+(instances of ActionInterface, AbstractBlock, DataProviderInterface, Document, controller and block plugins).
 The rule's message should explain that UserContextInterface should be used to get current
 user instead of sessions and cookie usage should be avoided.
  
