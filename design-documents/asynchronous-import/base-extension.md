@@ -66,7 +66,8 @@ This request can accept files from different sources:
 ```
 
 Import of big file also can divided in several parts
-In this case input request will looks like, where *import_data* is a 1/N part of the whole content, and *data_hash* contains sha256 hash of full import_data body.
+In this case input request will looks like:
+
 
 ```
 {
@@ -81,13 +82,15 @@ In this case input request will looks like, where *import_data* is a 1/N part of
   }
 }
 ```
+where *import_data* is a 1/N part of the whole content, and *data_hash* contains sha256 hash of full import_data body.
+
 
 Then all following parts of imported file will look like:
 
 ```
 {
   "importEntry": {
-    "file_id": 0,
+    "file_id": 10,
     "source": {
       "import_data": "c2t1LHN0b3JlX3ZpZXdfY29kZSxhdHRyaWJ1dGVfc2V0X2NvZGUscHJvZHVjdF90eXBlLGNhdGVnb3JpZXMscHJvZHVjdF93ZWJzaXRlcyxuYW1lLGRlc2NyaXB0aW9uLHNob3J0X2Rlc2NyaXB0aW9uLHdlaWdodCxwcm9kdWN0X29ubGluZSx0YXhfY2xhc3NfbmFtZSx2aXNpYmlsaXR5LHBya...",
     }
@@ -123,16 +126,28 @@ In case of partial uploads, status will be *not_completed* till whole file will 
 
 Current Endpoint starts import process based on FileID. Where Module will read file, split it into message and send to Async API
 
-POST  `/V1/import/start`
+POST  `/V1/import/start/{fileId}`
 
 Start File Import
 
 ```
 {
-	"file_id": int,
-	"type": "products, customers ...."
+	"entity_type": "catalog_product",
+	"behaviour": "add_update, delete, update, add, replace ..."
+	"import_image_archive": "string",
+      	"import_images_file_dir": "string",
+      	"allowed_error_count": 0,
+      	"validation_strategy": "string",
+      	"empty_attribute_value_constant": "string",
+      	"csv_separator": "string",
+      	"csv_enclosure": "string",
+      	"csv_delimiter": "string",
+      	"multiple_value_separator": "string"
 }
 ```
+
+Q&A - Swagger implementation, are there a sence to move TYPE to URL? 
+POST  `/V1/import/start/{fileId}/type/catalog_product`
 
 #### Return
 
@@ -158,7 +173,7 @@ Will be returned list of objects that we tried to import
   "file_status": "string", 
   "error": "string",
   "file_id": 0,
-  "type": "products, customers ....",
+  "entity_type": "products, customers ....",
   "items": [
   {
     "id": 0,
@@ -176,7 +191,7 @@ Will be returned list of objects that we tried to import
 | file_id | Imported File ID |
 | file_status | Status of this file. Possible values: completed, not_completed, error |
 | error | Error message if exists |
-| type | Import type: eg. customers, products, etc ... |
+| entity_type | Import type: eg. customers, products, etc ... |
 | items | List of items that were imported. As an array |
 
 ##### And Item object will contain
