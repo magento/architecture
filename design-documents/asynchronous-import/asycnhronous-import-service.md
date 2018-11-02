@@ -2,7 +2,7 @@
 # Asynchronous Import as separate service
 ## Context
 
-Main idea of extension is to replace current Imporm module with new implementation that will allow to users import objects in Magento by using Asynchronous approach.
+Main idea of extension is to replace current Import module with new implementation that will allow to users import objects in Magento by using Asynchronous approach.
 
 Basic idea: 
 - User upload *.csv (or any other) file format
