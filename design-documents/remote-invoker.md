@@ -1,17 +1,15 @@
 ## Remote code invoker
 ### What for?
 Remotely calling services in proxy versions of modules
-### Why not just use REST/SOAP?
-* Not all service contracts are exposed as web API and nor should they be (for security and workflow reasons)
-_(see explaination #1)_
-* Web API methods have certain ACL resources assigned to them so the ACL checks would be
-performed every time a proxy service calls remote service unlike when a service
-is called locally _(see explaination #2)_
-* Proxy services would have to generate auth information of already authorized users (tokens etc) to access REST/SOAP
-services which is a redundant process, also some of those REST/SOAP endpoints would have limitations in
-place for certain type of users which would be useless in case of remote execution
-(like requiring an admin user) _(see explaination #3)_
-* Other application state spoofing may be required for seamless remote execution of services
+### Overview
+This documents describes remote invoking mechanism, it's functional requirements, the module's API and SPI.
+It also describes a recommended RPC-style networking gateway to call services remotely, but there can be
+multiple _Remote Code Invoker_ implementations based on existing Web APIs, Message Queue API or any other.
+### Why not just use cURL and existing Web APIs
+We need a mechanism, an abstraction around an actual network interactions that would provide a retries mechanism,
+a standard to pass local call's arguments, a request signing mechanism, authentication mechanism which would allow
+to perform authentication only once on the node that accepts user requests, and not on each node etc
+_([see explanation](#need-for-an-abstraction-around-network-calls))_.
 ### Functional requirements
 * Invoker's code is a part of Magento\Framework namespace
 * Invoker can call classes and method that were specifically enabled for remote calls via a config
@@ -19,29 +17,49 @@ place for certain type of users which would be useless in case of remote executi
 * Each HTTP request to remote sources is signed using unique source's key, timestamp and request's attributes
 * Each remote call must be given unique ID to be used by retries mechanism
 * Timeout limit and retries count can be configured globally and for each call
-* Serialized arguments string includes arguments instances' classes information for proper deserialization _(see explanation #4)_
+* Serialized arguments string includes arguments instances' classes information for proper
+deserialization _([see explanation](#inability-to-just-use-interfaces-for-arguments-and-return-types))_
+(serializer employed for RESTful gateway my be reused)
 * Serialized remote method return values string must contain type information for
 proper deserialization by the caller
 * Remote call response can provide either serialized method call result or serialized exception to be
 rethrow in order to emulate local method call
-* Remote calls are done in a synchronous manner because in order for
-to be able to utilize the possibility to make asynchronous remote calls the client code would have to know
-that certain services can be proxies and that would complicate introduction of distributed Magento and
-make monolith and distributed deploy modes coexistence harder _see explaination #5)_
+* Remote calls can be done in a synchronous manner to ease remote invoking for
+existing services _([see explanation](#using-synchronous-remote-invoking-in-existing-services))_
+and in an asynchronous manner for new services to be able to interact with other services with remote invoking in mind
 * Each Magento instance that can be used for remote calls (_Magento server_)
 has it's own unique key for signing requests
 * Remote calls can be disabled in a Magento server
 * Authenticated user's information (ID and type) is passed from caller
 to a Magento server to emulate user context
-* If timeout is reached while waiting for a Magento server to respond a configured number of retry
-requests containing remote call's ID will be sent
+* If a network error occurs during a remote invoking (timeout, connection lost etc.) a configured number of retry
+requests containing remote call's ID will be sent, the call ID will keep _Magento server_ from initiating a
+new service execution process
 * Magento server stores remote calls information that can be found by calls' IDs
 * Remote call information contains call result or empty result if the call is not finished yet
 * Remote call information can be retrieved multiple times by remote callers as a part of retries mechanism
 to prevent multiple call execution, also if remote callers were to generated meaningful call IDs for some cases
 this mechanism can be used to ensure idempotency
 * Remote call information expires after some time on Magento servers
+
 ### API
+##### Remote call response
+Result of executing the call
+```
+interface InvokeResponseInterface {
+    /**
+     * @return mixed Value that remote service returned.
+     */
+    public function getResult();
+    
+    /**
+     * Exception that remote service has thrown, if any.
+     *
+     * @return \Throwable|null
+     */
+    public function getException(): ?\Throwable
+}
+```
 ##### Remote Invoker
 Used to make a call to a Magento server
 ```
@@ -53,9 +71,9 @@ interface InvokerInterface {
      * @param array $arguments Keys - argument names.
      * @param int|null $timeout
      * @param int|null $retries
-     * @return mixed Method call result.
-     * @throws RemoteInvokeException When remote call failed.
-     * @throws \Throwable Exception thrown in the remote method.
+     * @return Promise Will provide InvokeResponseInterface when resolved,
+     *                 RemoteInvokeException on reject when networking fails,
+     *                 has "wait" method to use in synchronous way.
      */
     public function invoke(
         string $sourceId,
@@ -64,11 +82,12 @@ interface InvokerInterface {
         array $arguments,
         ?int $timeout = null,
         ?int $retries = null
-     );
+     ): Promise;
 }
 ```
+##### 
 ##### Remote sources information
-A Magento server data
+_Magento server_ information
 ```
 interface SourceInterface {
     public function getId(): string;
@@ -91,7 +110,7 @@ interface SourceRepositoryInteface {
 ##### Remote request
 Contains remote call data
 ```
-interface RevokeRequestInterface {
+interface InvokeRequestInterface {
     public function getCallId(): string;
     
     public function getSource(): SourceInterface;
@@ -129,7 +148,7 @@ interface Transport {
 }
 ```
 ##### Remote call request validator
-Validates whether request signature is correct
+Validates whether request's signature is correct
 ```
 interface RequestValidatorInterface {
     /**
@@ -143,18 +162,6 @@ Read incoming requests and extract remote call request information
 ```
 interface RequestReaderInterface {
     public function read(RequestInterface $request): InvokeRequestInterface;
-}
-```
-##### Remote call response
-Result of executing the call
-```
-interface InvokeResponseInterface {
-    /**
-     * @return mixed
-     */
-    public function getResult();
-    
-    public function getException(): ?\Throwable
 }
 ```
 ##### Remote call info storage
@@ -186,8 +193,99 @@ interface ResponseGeneratorInterface {
     public function generate(string $callId, InvokeResponseInterface $response): ResponseInterface;
 }
 ```
-### Explainantions
-#### #1
+
+
+### Networking gateway
+
+_Remote code invoker_ is an abstraction, it's not enforcing how requests and responses are actually sent and parsed.
+
+#### RPC-style gateway
+
+HTTP protocol will be used. A controller will be added to process a single URL like _magento-base-url_/invoker.
+Requests' body will contain requested class name, method name, arguments and it all encoded in json.
+Requests' headers will contain information such as authenticated user ID, call ID, issued timestamp, signature.
+Response body will contain serialized service call result or a serialized thrown exception encoded in json.
+
+#### Why RESTful web API should not be used as the network gateway for the invoker
+* Not all service contracts are exposed as web API and nor should they be (for security and workflow reasons)
+_([see explanation](#exposing-internal-logic-as-an-external-web-api))_
+* Web API methods have certain ACL resources assigned to them so the ACL checks would be
+performed every time a proxy service calls remote service unlike when a service
+is called locally _([see explanation](#redundant-acl-validations-when-using-existing-web-api))_
+* Proxy services would have to generate auth information of already authorized users (tokens etc) to access REST/SOAP
+services which is a redundant process, also some of those REST/SOAP endpoints would have limitations in
+place for certain type of users which would be useless in case of remote execution
+(like requiring an admin user) _([see explanation](#redundant-authorization-validation-when-using-existing-web-api))_
+* Other application state spoofing may be required for seamless remote execution of services
+* RESTful Web API provides access to service contracts by assigning a unique human-readable
+HTTP method/URL pair for external systems - we don't need that when writing a proxy service since we
+would always already have class and method's names
+* When an exception occurs during a service call via RESTful API the response does not contain
+all exception information which is important for a seamless Proxy modules integration
+(especially exceptions' types)
+
+#### Why webhook based network gateway shouldn't be used as the network gateway for the invoker
+Being able to send an invoking request to a _Magento server_ and to drop the connection immediately for
+the _Magento server_ to send us the result later is tempting, but given way presents such problems:
+* Webhooks are meant for situations when we can afford to receive a remote operation's results anytime in
+the future, with remote code invoking that is not the case - we need the results ASAP
+* We would need _Magento clients_ to provide web endpoint to receive results and store them in a DB - that's
+an additional work for _Magento clients_ which would be avoided if we would just receive results as responses
+for HTML requests
+* During the remote invoking we would have to check the DB where the results are stored constantly with
+an interval, make the interval short - too many queries to the DB, too decent - we would not be getting
+the results ASAP
+
+### Explanations
+#### Need for an abstraction around network calls
+Say we're writing a Proxy version of a ProductRepositoryInterface service using HTTP client and RESTful API.
+```
+class ProductRepoProxy implements ProductRepositoryInterface
+{
+
+....
+
+    public function save(ProductInterface $product): ProductInterface
+    {
+        $baseUrl = $this->config->get('product-node-url');
+        $request = new HttpRequest($baseUrl .'/V1/product');
+        $request->setHeader('X-Magento-User-Type', $this->userContext->getUserType());
+        $request->setHeader('X-Magento-User-Id', $this->userContext->getUserId());
+        $request->setBody(
+            $this->jsonSerializer->serialize(
+                ['product' => $this->objectSerializer->toArray($product, ProductInterface::class)]
+            )
+        );
+        $productCreated = null;
+        $this->transport->send($request)->then(function ($httpResponse) use (&$productCreated) {
+            $data = json_decode($httpResponse->getBody());
+            $productCreated = $this->objectSerializer->fromArray(ProductInterface::class, $data);
+        })->error(function ($exception) use ($product) {
+            if ($exception instanceof NetworkFailException) {
+                //Retrying
+                return $this->save($product);
+            }
+        })->wait();
+        
+        return $productCreated;
+    }
+    
+    public function delete(string $id): void
+    {
+        //Same stuff: using config, userContext, serializers etc.
+        ....
+    }
+
+....
+
+}
+```
+
+Clearly sending such requests involves a lot of logic and dependencies on other classes,
+and an abstraction (InvokerInterface) which will provide a simple way to pass arguments and remote source data
+to execute a remote service request.
+
+#### Exposing internal logic as an external Web API
 Let's say we have a hypothetical situation: customer places an order _(Checkout)_, but for each item ordered we have to update "ordered" count for related products _(Catalog)_
 ```
 Class OrderManagement implements OrderManagementInterface
@@ -214,7 +312,7 @@ to be exposed as Web API and could be requested via HTTP by anyone and independe
  
 If done via the Invoker the _incrOrdederedCount_ wouldn't be exposed to be requested by HTTP clients via web API and wouldn't show up on
 RESTful endpoints list.
-#### #2
+#### Redundant ACL validations when using existing Web API
 We have a hypothetical situation: admin user with access to orders _(Checkout)_, but not to products _(Catalog)_ changes an order and removes a product from the items list:
 ```
 class OrderRepository extends OrderRepositoryInterface
@@ -241,7 +339,7 @@ If the remote call to _ProductRepositoryInterface::decrOrderedCount_ was done vi
 ACL configured for it so it requires _Catalog edit access_ from admins, but our current admin only has access to _orders_ and the call would fail. However if the Catalog domain modules were not remote and the _ProductRepositoryInterface::decrOrderedCount_ call was made then no ACL validation would occur and we would save the order successsfully.
  
 With Invoker such ACL validations wouldn't occur and the remote call would be completed just as if it was local.
-#### #3
+#### Redundant authorization validation when using existing Web API 
 We have a hypothetical situation: customer updates their main address _(Customer)_ and we need to update their not-shipped orders to be
 shipped to their main address _(Checkout)_
 ```
@@ -272,7 +370,7 @@ If the remote call to _OrderRepositoryInterface::save_ was done via RESTful web 
 but, obviously, PUT /V1/order/:id would require admin access and the user who changed their address is just a customer. And certainly we can't just pick a 1st random admin user and send the HTTP request to the RESTful endpoint from their name.
  
 With Invoker we would emulate current customer user, but _OrderRepositoryInterface::save_ doesn't actually have any requirement for current user to be admin and would be executed just fine.
-#### #4
+#### Inability to just use interfaces for arguments, return types and exceptions
 Imagine we have a situation: an order is placed by an admin for a customer _(Checkout)_ and we need to add the shipment address of the order to the customer's address book _(Customer)_
 ```
 class OrderManagement implements OrderManagementInterface
@@ -322,56 +420,84 @@ have _CustomerApiModule_ enabled in them so the class must reside in that module
  
 Same goes for return types - _$this->customerAddressRepository->save($customerAddress)_ must return something, and it cannot be just
 _AddressInterface_, must be a class.
-#### #5
-See an example of a proxy service implementation:
+ 
+Also it is of upmost importance to preserve exceptions instances' types during serialization, consider this:
+
 ```
-class ProxyOrderRepsoitory implements OrderRepositoryInterface
+class OrderManagement implements OrderManagementInterface
 {
- 
+
 ....
- 
+
     public function place(OrderInterface $order): void
     {
-        $this->invoker->invoke('checkout', OrderRepositoryInterface::class, 'place', [$order]);
+        ....
+        
+        try {
+            $this->customerAddresses->create($this->convertAddress($order->getShipingAddress()));
+        } catch (AlreadyExistsException $exception) {
+            $order->getShipingAddress()->setCustomerAddressId($exception->getExistingId());
+        }
     }
 }
 ```
-All proxy methods would look about the same: calling a remote method with the same name, there would never be multiple calls inside a
-proxy method so there is no need for the "invoke" to return a promise and be asynchronous.
- 
-Another possiblity is to change existing methods to return promises and for client code to call different services asynchronously:
+
+If the _customerAddresses_ is a remote service and we just deserialize the exception it has thrown
+as a \Throwable the code processes certain types of exception would just fail unlike when the _customerAddresses_
+service is local.
+
+#### Using synchronous remote invoking in existing services
+Say we're placing an order and need to check whether the products are available
 ```
-interface OrderRepositoryInterface
-{
- 
-....
- 
-    public function place(OrderInterface $order): Promise;
- 
-....
- 
-}
- 
-class AddressRepository implements AddressRepositoryInterface
+class OrderManagement implements OrderManagementInterface
 {
 
 ....
 
-    public function save(AddressInterface $address): void
+    public function place(OrderInterface $order): void
     {
         ....
-        foreach ($orders as $order)
+        
+        foreach ($order->getItems() as $item)
         {
-            $order->setAddress($address);
-            $pool->add($this->orderRepository->save($order));
+            if (!$this->inventoryManagement->isAvailable($item->getProductId(), $item->getQty())) {
+                throw new LocalizedException('Product is not available');
+            }
         }
-        $pool->wait();
+        
+        ....
     }
 
 ....
 
 }
 ```
-But this would require us to change all our existing service contracts and to rewrite our code to work with async code, and I don't think that's an option.
+Now we trying to run this code on a distributed Magento deployment so the _inventoryManagement_ is a remote
+service. We cannot change the _InventoryManagementInterface::isAvailable_ return type to be a promise
+(because of backward-compatibility)
+and we don't want to rewrite OrderManagement to consider _isAvailable_ being asynchronous
+(because rewriting all existing services in order for them to use all other modulus' services in an async way
+is way too big of a task) so _isAvailable_ must keep returning boolean.
  
-That's why remote calls should be done in a synchronous way.
+So the promise the invoker returns must have "wait" method so we can wait for result to be in and then return it
+```
+class InventoryManagementProxy implements InventoryManagementInterface
+{
+
+....
+
+    public function isAvailable(string $productId, int $qty): bool
+    {
+        $isIt = null;
+        $this->invoker->invoke('inventory', InventoryManagementInterface::class, 'isAvailable', [$productId, $qty])
+            ->then(function (InvokeResponseInterface $response) use (&$isIt) { $isIt = $response->getResult(); })
+            ->wait();
+        //$isIt is definetly set because we've waited for when the promise is fulfilled.
+        //If we didn't have the "wait" method $isIt would probably always return "null"
+        return $isIt;
+    }
+
+....
+
+}
+```
