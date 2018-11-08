@@ -75,7 +75,9 @@ In this case input request will looks like:
     "file_id": 0,
     "source": {
       "import_data": "c2t1LHN0b3JlX3ZpZXdfY29kZSxhdHRyaWJ1dGVfc2V0X2NvZGUscHJvZHVjdF90eXBlLGNhdGVnb3JpZXMscHJvZHVjdF93ZWJzaXRlcyxuYW1lLGRlc2NyaXB0aW9uLHNob3J0X2Rlc2NyaXB0aW9uLHdlaWdodCxwcm9kdWN0X29ubGluZSx0YXhfY2xhc3NfbmFtZSx2aXNpYmlsaXR5LHBya...",
-	  "data_hash" : "sha256 encoded data of the full 'import_data' value"
+      "data_hash" : "sha256 encoded data of the full 'import_data' value"
+      "pieces_count": "5"
+      "piece_number": "1",
       "type": "base64_encoded_data",
       "file_type": "csv"
     }
@@ -83,6 +85,11 @@ In this case input request will looks like:
 }
 ```
 where *import_data* is a 1/N part of the whole content, and *data_hash* contains sha256 hash of full import_data body.
+
+`pieces_count` - iss amount of pieces that will be transferred for 1 file. We need it to be sure that import is completed and then we could detect if it was successfully finished or failed
+
+`piece_number` - its a number that detects which part of file currently transferred. This is required to have to support Asynchronous File import when we dont need to send parts in correct sequence
+
 
 
 Then all following parts of imported file will look like:
@@ -147,7 +154,7 @@ Start File Import
 ```
 
 Q&A - Swagger implementation, are there a sence to move TYPE to URL? 
-POST  `/V1/import/start/{fileId}/type/catalog_product`
+POST  `/V1/import/type/catalog_product/start/{fileId}`
 
 #### Return
 
