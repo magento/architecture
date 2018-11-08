@@ -213,3 +213,13 @@ This values are based on magento "magento_operation" table
 | result_serialized_data | Data that Magento returned for this object after import |
 | error_code | Error code |
 | result_message | Result message of operation execution |
+
+## Profiling
+
+Main idea of Profiling is described here: [Phase 3](retry-and-profiling.md)
+
+But in scope of this task we already have to prepare some functionality for default profile. 
+
+We have to create default configuration that will work with *.csv file of current import format to be backward compartible.
+Our current idea, that for default profile we will use `config.xml` file where will will store it. That will give a possibility to developer define new profiles in their extensions without implementing Phase 3.
+
