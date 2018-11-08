@@ -4,22 +4,87 @@ Remotely calling services in proxy versions of modules
 ### Overview
 This documents describes remote invoking mechanism, it's functional requirements, the module's API and SPI.
 It also describes a recommended RPC-style networking gateway to call services remotely, but there can be
-multiple _Remote Code Invoker_ implementations based on existing Web APIs, Message Queue API or any other.
+multiple _Remote Code Invoker_ implementations based on existing Web APIs, Message Queue RPC API or any other.
+### How are remote services are going to look like with Remote Code Invoker
+\<Module name\>Proxy module will contain \<Module name\>API module's implementations that would look like this:
+```
+class ServiceProxy implements \Magento\ModuleNameApi\ServiceInterface
+{
+
+....
+
+    public function doStuff(\Magento\ModuleNameApi\Data\DTOInterface $dto): \Magento\ModuleNameApi\Data\ResultDTOInterface
+    {
+        $remoteResult = null;
+        $promise = $this->invoker->invoke(
+            'catalog',
+            \Magento\ModuleNameApi\ServiceInterface::class,
+            'doStuff',
+            [$dto]
+        );
+        $promise->then(function (\Magento\ModuleNameApi\Data\ResultDTOInterface $result) use (&$remoteResult) {
+            $remoteResult = $result;
+        });
+        $promise->wait();
+        
+        return $remoteResult;
+    }
+
+....
+
+}
+``` 
+ 
+di.xml in \<Module name\>Proxy module will specify that ServiceProxy
+is the preference for \Magento\ModuleNameApi\ServiceInterface.
+
+So when a local service uses \<Module name\>API's service it will not be aware whether the service is actually
+remote and it won't affect how we write code.
+Example:
+```
+class LocalServiceA implements ServiceAInterface
+{
+
+    /**
+     * @var \Magento\BModuleApi\ServiceBInterface
+     */
+    private $serviceB;
+
+....
+
+    public function doAStuff(): void
+    {
+        ....
+
+        $stuff = $this->serviceB->doBStuff($someVar);
+        
+        ....
+    }
+
+....
+
+}
+```
+
+Depending on whether _BModule_ or _BModuleProxy_ is deployed on the local node _ServiceBInterface_ will either
+work locally or remotely.
 ### Why not just use cURL and existing Web APIs
 We need a mechanism, an abstraction around an actual network interactions that would provide a retries mechanism,
 a standard to pass local call's arguments, a request signing mechanism, authentication mechanism which would allow
-to perform authentication only once on the node that accepts user requests, and not on each node etc
+to perform authentication only once on the node that accepts user requests and not on each node, data consistency
+mechanism etc.
 _([see explanation](#need-for-an-abstraction-around-network-calls))_.
 ### Functional requirements
 * Invoker's code is a part of Magento\Framework namespace
 * Invoker can call classes and method that were specifically enabled for remote calls via a config
+* Invoker provides a way for services to written as usual, not knowing whether other modules' services are remote or not
 * Multiple remote sources can be configured and assigned unique IDs
 * Each HTTP request to remote sources is signed using unique source's key, timestamp and request's attributes
 * Each remote call must be given unique ID to be used by retries mechanism
 * Timeout limit and retries count can be configured globally and for each call
 * Serialized arguments string includes arguments instances' classes information for proper
 deserialization _([see explanation](#inability-to-just-use-interfaces-for-arguments-and-return-types))_
-(serializer employed for RESTful gateway my be reused)
+(serializer employed for RESTful gateway will probably be reused)
 * Serialized remote method return values string must contain type information for
 proper deserialization by the caller
 * Remote call response can provide either serialized method call result or serialized exception to be
@@ -141,10 +206,11 @@ interface RequestSignerInterface {
 }
 ```
 ##### Transport
-Send request to remote source.
+Send request to a remote source.
+Returns chainable and waitable promise.
 ```
 interface Transport {
-    public function send(RequestInterface $request): void;
+    public function send(RequestInterface $request): Promise;
 }
 ```
 ##### Remote call request validator
@@ -219,7 +285,8 @@ place for certain type of users which would be useless in case of remote executi
 * Other application state spoofing may be required for seamless remote execution of services
 * RESTful Web API provides access to service contracts by assigning a unique human-readable
 HTTP method/URL pair for external systems - we don't need that when writing a proxy service since we
-would always already have class and method's names
+would always already have class and method's names, the only other thing existing RESTful Web API mechanism
+provides is it's serializer and it will be reused in the _Remote Code Invoker_
 * When an exception occurs during a service call via RESTful API the response does not contain
 all exception information which is important for a seamless Proxy modules integration
 (especially exceptions' types)
@@ -235,6 +302,11 @@ for HTML requests
 * During the remote invoking we would have to check the DB where the results are stored constantly with
 an interval, make the interval short - too many queries to the DB, too decent - we would not be getting
 the results ASAP
+
+#### Why existing MQ based RPC gateway shouldn't be used
+* it works in a synchronous way anyway, the MQ service is needlessly employed here
+* currently it only supports string argument and will need to be updated heavily anyway - no time saved
+comparing to writing a proper HTTP gateway based RPC designed for internal services communications
 
 ### Explanations
 #### Need for an abstraction around network calls
@@ -383,11 +455,12 @@ class OrderManagement implements OrderManagementInterface
         ....
         
         //WTF is $customerAddress instance of?
-        $customerAddress = $this->customerAddressFactory->create();
+        $customerAddress = $this->customerAddressInterfaceFactory->create();
         $customerAddress->setStreet($orderAddress->getStreet());
         ....
         //customerAddressRepository is a proxy
-        //WTF is $createdAddress instance of?
+        //WTF is $createdAddress actually instance of?
+        /** @var CustomerAddressInterface $createdAddress */
         $createdAddress = $this->customerAddressRepository->save($customerAddress);
         
         ....
@@ -445,6 +518,48 @@ class OrderManagement implements OrderManagementInterface
 If the _customerAddresses_ is a remote service and we just deserialize the exception it has thrown
 as a \Throwable the code processes certain types of exception would just fail unlike when the _customerAddresses_
 service is local.
+
+Also, also consider this situation:
+
+```
+class LocalServiceA implements ServiceAInterface
+{
+
+....
+
+    public function doStuff(): void
+    {
+        ....
+        
+        $this->serviceB->doOtherStuff($entityB);
+    }
+
+....
+
+}
+
+
+class LocalServiceB implements ServiceBInterface
+{
+
+....
+
+    public function doOtherStuff(DTOInterface $dtoB): void
+    {
+        ....
+        
+        if ($dtoB instanceof DTOWithAdditionalFieldsInterface) {
+            $this->doAdditionalStuff($dtoB);
+        }
+        
+        ....
+    }
+}
+```
+
+When ServiceBInterface is used locally this will work fine, but if ServiceB is a remotely deployed service
+and _$dtoB_ parameter is serialized as _DTOInterface_ only the code will fail so we need to preserve arguments
+(and return values and exceptions) classes for remote services to work as expected.
 
 #### Using synchronous remote invoking in existing services
 Say we're placing an order and need to check whether the products are available
