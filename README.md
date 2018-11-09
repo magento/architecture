@@ -79,3 +79,5 @@ To propose a topic:
 2. If there is no such issue, please create one from the "Meeting Notes" template
   1. Calculate the date based on the last meeting note. Don't worry if the date is incorrect, one of the  maintainers will fix it if necessary. Just make sure that it is a future date, so it's not missed
   1. Add your topic as a comment in format described in the issue template
+  
+During the meeting, expect that the topics will be discussed in the order they are requested. Also, the discussions may be interrupted if requested time elapses. Please, include time for the discussion in the requested duration for your topic.
