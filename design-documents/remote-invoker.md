@@ -308,6 +308,13 @@ the results ASAP
 * currently it only supports string argument and will need to be updated heavily anyway - no time saved
 comparing to writing a proper HTTP gateway based RPC designed for internal services communications
 
+#### Invoker based on RESTful web API
+To differentiate outer web APIs and inner web APIs their configuration must differ, there are 2 ways to do it:
+  * add _inner_ attribute to _route_ (webapi.xsd) element which when _true_ will mean that inner call mode would be
+  enabled for Magento when the API is used (requests would have to be signed, call ID provided etc.) and
+  some additional sub-elements/attributes maybe used/omitted (like not having to use _url_ attribute for such APIs)
+  * add another .xsd and new config files to modules to describe inner web APIs
+
 ### Explanations
 #### Need for an abstraction around network calls
 Say we're writing a Proxy version of a ProductRepositoryInterface service using HTTP client and RESTful API.
