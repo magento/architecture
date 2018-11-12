@@ -318,7 +318,7 @@ To differentiate outer web APIs and inner web APIs their configuration must diff
 ### Explanations
 #### Need for an abstraction around network calls
 Say we're writing a Proxy version of a ProductRepositoryInterface service using HTTP client and RESTful API.
-```
+```php
 class ProductRepoProxy implements ProductRepositoryInterface
 {
 
@@ -366,8 +366,8 @@ to execute a remote service request.
 
 #### Exposing internal logic as an external Web API
 Let's say we have a hypothetical situation: customer places an order _(Checkout)_, but for each item ordered we have to update "ordered" count for related products _(Catalog)_
-```
-Class OrderManagement implements OrderManagementInterface
+```php
+class OrderManagement implements OrderManagementInterface
 {
  
 ....
@@ -393,7 +393,7 @@ If done via the Invoker the _incrOrdederedCount_ wouldn't be exposed to be reque
 RESTful endpoints list.
 #### Redundant ACL validations when using existing Web API
 We have a hypothetical situation: admin user with access to orders _(Checkout)_, but not to products _(Catalog)_ changes an order and removes a product from the items list:
-```
+```php
 class OrderRepository extends OrderRepositoryInterface
 {
  
@@ -421,7 +421,7 @@ With Invoker such ACL validations wouldn't occur and the remote call would be co
 #### Redundant authorization validation when using existing Web API 
 We have a hypothetical situation: customer updates their main address _(Customer)_ and we need to update their not-shipped orders to be
 shipped to their main address _(Checkout)_
-```
+```php
 class AddressManagement implements AddressManagementInterface
 {
  
@@ -451,7 +451,7 @@ but, obviously, PUT /V1/order/:id would require admin access and the user who ch
 With Invoker we would emulate current customer user, but _OrderRepositoryInterface::save_ doesn't actually have any requirement for current user to be admin and would be executed just fine.
 #### Inability to just use interfaces for arguments, return types and exceptions
 Imagine we have a situation: an order is placed by an admin for a customer _(Checkout)_ and we need to add the shipment address of the order to the customer's address book _(Customer)_
-```
+```php
 class OrderManagement implements OrderManagementInterface
 {
 
@@ -503,7 +503,7 @@ _AddressInterface_, must be a class.
  
 Also it is of upmost importance to preserve exceptions instances' types during serialization, consider this:
 
-```
+```php
 class OrderManagement implements OrderManagementInterface
 {
 
@@ -528,7 +528,7 @@ service is local.
 
 Also, also consider this situation:
 
-```
+```php
 class LocalServiceA implements ServiceAInterface
 {
 
@@ -570,7 +570,7 @@ and _$dtoB_ parameter is serialized as _DTOInterface_ only the code will fail so
 
 #### Using synchronous remote invoking in existing services
 Say we're placing an order and need to check whether the products are available
-```
+```php
 class OrderManagement implements OrderManagementInterface
 {
 
@@ -602,7 +602,7 @@ and we don't want to rewrite OrderManagement to consider _isAvailable_ being asy
 is way too big of a task) so _isAvailable_ must keep returning boolean.
  
 So the promise the invoker returns must have "wait" method so we can wait for result to be in and then return it
-```
+```php
 class InventoryManagementProxy implements InventoryManagementInterface
 {
 
