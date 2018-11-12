@@ -314,6 +314,12 @@ To differentiate outer web APIs and inner web APIs their configuration must diff
   enabled for Magento when the API is used (requests would have to be signed, call ID provided etc.) and
   some additional sub-elements/attributes maybe used/omitted (like not having to use _url_ attribute for such APIs)
   * add another .xsd and new config files to modules to describe inner web APIs
+ 
+There is another way - not to differentiate inner and outer web APIs, that may be proven a bit more confusing
+but it is a viable option. In this case Magento will know it is accessed as a micro-service by requests providing
+call IDs. Also we should add a possibility to omit _url_ attribute of the _route_ element, when it's omitted
+the URL for such endpoint will be generated based on class name and method name - that is useful for
+inner endpoints since we don't care for how URLs look.
 
 ### Explanations
 #### Need for an abstraction around network calls
