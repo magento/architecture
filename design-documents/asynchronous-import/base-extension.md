@@ -139,17 +139,19 @@ Start File Import
 
 ```
 {
-	"entity_type": "catalog_product",
-	"behaviour": "add_update, delete, update, add, replace ..."
+  "importEntry": {
+    "entity_type": "catalog_product",
+	"behaviour": "add_update, delete, update, add, replace ...",
 	"import_image_archive": "string",
-      	"import_images_file_dir": "string",
-      	"allowed_error_count": 0,
-      	"validation_strategy": "string",
-      	"empty_attribute_value_constant": "string",
-      	"csv_separator": "string",
-      	"csv_enclosure": "string",
-      	"csv_delimiter": "string",
-      	"multiple_value_separator": "string"
+  	"import_images_file_dir": "string",
+  	"allowed_error_count": 0,
+  	"validation_strategy": "string",
+  	"empty_attribute_value_constant": "string",
+  	"csv_separator": "string",
+  	"csv_enclosure": "string",
+  	"csv_delimiter": "string",
+  	"multiple_value_separator": "string"
+  }
 }
 ```
 
