@@ -24,7 +24,7 @@ This request can accept files from different sources:
 
 ```
 {
-  "importEntry": {
+  "fileEntry": {
     "file_id": 0,
     "source": {
       "import_data": "/var/www/html/bulk-api/async-import/var/catalog_product.csv",
@@ -39,7 +39,7 @@ This request can accept files from different sources:
 
 ```
 {
-  "importEntry": {
+  "fileEntry": {
     "file_id": 0,
     "source": {
       "import_data": "http://some.domain/file.csv",
@@ -54,7 +54,7 @@ This request can accept files from different sources:
 
 ```
 {
-  "importEntry": {
+  "fileEntry": {
     "file_id": 0,
     "source": {
       "import_data": "c2t1LHN0b3JlX3ZpZXdfY29kZSxhdHRyaWJ1dGVfc2V0X2NvZGUscHJvZHVjdF90eXBlLGNhdGVnb3JpZXMscHJvZHVjdF93ZWJzaXRlcyxuYW1lLGRlc2NyaXB0aW9uLHNob3J0X2Rlc2NyaXB0aW9uLHdlaWdodCxwcm9kdWN0X29ubGluZSx0YXhfY2xhc3NfbmFtZSx2aXNpYmlsaXR5LHBya......",
@@ -66,28 +66,38 @@ This request can accept files from different sources:
 ```
 
 Import of big file also can divided in several parts
-In this case input request will looks like, where *import_data* is a 1/N part of the whole content, and *data_hash* contains sha256 hash of full import_data body.
+In this case input request will looks like:
+
 
 ```
 {
-  "importEntry": {
+  "fileEntry": {
     "file_id": 0,
     "source": {
       "import_data": "c2t1LHN0b3JlX3ZpZXdfY29kZSxhdHRyaWJ1dGVfc2V0X2NvZGUscHJvZHVjdF90eXBlLGNhdGVnb3JpZXMscHJvZHVjdF93ZWJzaXRlcyxuYW1lLGRlc2NyaXB0aW9uLHNob3J0X2Rlc2NyaXB0aW9uLHdlaWdodCxwcm9kdWN0X29ubGluZSx0YXhfY2xhc3NfbmFtZSx2aXNpYmlsaXR5LHBya...",
-	  "data_hash" : "sha256 encoded data of the full 'import_data' value"
+      "data_hash" : "sha256 encoded data of the full 'import_data' value"
+      "pieces_count": "5"
+      "piece_number": "1",
       "type": "base64_encoded_data",
       "file_type": "csv"
     }
   }
 }
 ```
+where *import_data* is a 1/N part of the whole content, and *data_hash* contains sha256 hash of full import_data body.
+
+`pieces_count` - its an amount of pieces that will be transferred for 1 file. We need it to be sure that import is completed and then we could detect if it was successfully finished or failed
+
+`piece_number` - its a number that detects which part of file currently transferred. This is required to have to support Asynchronous File import when we dont need to send parts in correct sequence
+
+
 
 Then all following parts of imported file will look like:
 
 ```
 {
-  "importEntry": {
-    "file_id": 0,
+  "fileEntry": {
+    "file_id": 10,
     "source": {
       "import_data": "c2t1LHN0b3JlX3ZpZXdfY29kZSxhdHRyaWJ1dGVfc2V0X2NvZGUscHJvZHVjdF90eXBlLGNhdGVnb3JpZXMscHJvZHVjdF93ZWJzaXRlcyxuYW1lLGRlc2NyaXB0aW9uLHNob3J0X2Rlc2NyaXB0aW9uLHdlaWdodCxwcm9kdWN0X29ubGluZSx0YXhfY2xhc3NfbmFtZSx2aXNpYmlsaXR5LHBya...",
     }
@@ -123,16 +133,30 @@ In case of partial uploads, status will be *not_completed* till whole file will 
 
 Current Endpoint starts import process based on FileID. Where Module will read file, split it into message and send to Async API
 
-POST  `/V1/import/start`
+POST  `/V1/import/start/{fileId}`
 
 Start File Import
 
 ```
 {
-	"file_id": int,
-	"type": "products, customers ...."
+  "importEntry": {
+    "entity_type": "catalog_product",
+	"behaviour": "add_update, delete, update, add, replace ...",
+	"import_image_archive": "string",
+  	"import_images_file_dir": "string",
+  	"allowed_error_count": 0,
+  	"validation_strategy": "string",
+  	"empty_attribute_value_constant": "string",
+  	"csv_separator": "string",
+  	"csv_enclosure": "string",
+  	"csv_delimiter": "string",
+  	"multiple_value_separator": "string"
+  }
 }
 ```
+
+Q&A - Swagger implementation, are there a sence to move TYPE to URL? 
+POST  `/V1/import/type/catalog_product/start/{fileId}`
 
 #### Return
 
@@ -158,7 +182,7 @@ Will be returned list of objects that we tried to import
   "file_status": "string", 
   "error": "string",
   "file_id": 0,
-  "type": "products, customers ....",
+  "entity_type": "products, customers ....",
   "items": [
   {
     "id": 0,
@@ -176,7 +200,7 @@ Will be returned list of objects that we tried to import
 | file_id | Imported File ID |
 | file_status | Status of this file. Possible values: completed, not_completed, error |
 | error | Error message if exists |
-| type | Import type: eg. customers, products, etc ... |
+| entity_type | Import type: eg. customers, products, etc ... |
 | items | List of items that were imported. As an array |
 
 ##### And Item object will contain
@@ -191,3 +215,13 @@ This values are based on magento "magento_operation" table
 | result_serialized_data | Data that Magento returned for this object after import |
 | error_code | Error code |
 | result_message | Result message of operation execution |
+
+## Profiling
+
+Main idea of Profiling is described here: [Phase 3](retry-and-profiling.md)
+
+But in scope of this task we already have to prepare some functionality for default profile. 
+
+We have to create default configuration that will work with *.csv file of current import format to be backward compartible.
+Our current idea, that for default profile we will use `config.xml` file where will will store it. That will give a possibility to developer define new profiles in their extensions without implementing Phase 3.
+

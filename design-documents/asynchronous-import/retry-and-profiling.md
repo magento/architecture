@@ -58,7 +58,7 @@ POST  `/V1/import/profile`
 | --- | --- |
 | source_attribute | Column name (tag name, key) in imported file |
 | destination_attribute | Magento attribute code |
-| processing_rules | This can be a defined set of possible transformations of imported values: str_replace. trim, .... |
+| processing_rules | This can be a defined set of possible transformations of imported values: str_replace. trim, ..... Also we will define here methods that will allow user to define how those valued will be processed. As example: category, website, tax_rule... etc... |
 | old_value | Values mapping. Current valus in imported file. As example: "Yes" in import file have to be converted to "1" in Magento import |
 | new_value | Values mapping. New value after import in Magento. As example: "Yes" in import file have to be converted to "1" in Magento import  |
 
