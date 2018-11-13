@@ -24,7 +24,7 @@ This request can accept files from different sources:
 
 ```
 {
-  "importEntry": {
+  "fileEntry": {
     "file_id": 0,
     "source": {
       "import_data": "/var/www/html/bulk-api/async-import/var/catalog_product.csv",
@@ -39,7 +39,7 @@ This request can accept files from different sources:
 
 ```
 {
-  "importEntry": {
+  "fileEntry": {
     "file_id": 0,
     "source": {
       "import_data": "http://some.domain/file.csv",
@@ -54,7 +54,7 @@ This request can accept files from different sources:
 
 ```
 {
-  "importEntry": {
+  "fileEntry": {
     "file_id": 0,
     "source": {
       "import_data": "c2t1LHN0b3JlX3ZpZXdfY29kZSxhdHRyaWJ1dGVfc2V0X2NvZGUscHJvZHVjdF90eXBlLGNhdGVnb3JpZXMscHJvZHVjdF93ZWJzaXRlcyxuYW1lLGRlc2NyaXB0aW9uLHNob3J0X2Rlc2NyaXB0aW9uLHdlaWdodCxwcm9kdWN0X29ubGluZSx0YXhfY2xhc3NfbmFtZSx2aXNpYmlsaXR5LHBya......",
@@ -71,7 +71,7 @@ In this case input request will looks like:
 
 ```
 {
-  "importEntry": {
+  "fileEntry": {
     "file_id": 0,
     "source": {
       "import_data": "c2t1LHN0b3JlX3ZpZXdfY29kZSxhdHRyaWJ1dGVfc2V0X2NvZGUscHJvZHVjdF90eXBlLGNhdGVnb3JpZXMscHJvZHVjdF93ZWJzaXRlcyxuYW1lLGRlc2NyaXB0aW9uLHNob3J0X2Rlc2NyaXB0aW9uLHdlaWdodCxwcm9kdWN0X29ubGluZSx0YXhfY2xhc3NfbmFtZSx2aXNpYmlsaXR5LHBya...",
@@ -96,7 +96,7 @@ Then all following parts of imported file will look like:
 
 ```
 {
-  "importEntry": {
+  "fileEntry": {
     "file_id": 10,
     "source": {
       "import_data": "c2t1LHN0b3JlX3ZpZXdfY29kZSxhdHRyaWJ1dGVfc2V0X2NvZGUscHJvZHVjdF90eXBlLGNhdGVnb3JpZXMscHJvZHVjdF93ZWJzaXRlcyxuYW1lLGRlc2NyaXB0aW9uLHNob3J0X2Rlc2NyaXB0aW9uLHdlaWdodCxwcm9kdWN0X29ubGluZSx0YXhfY2xhc3NfbmFtZSx2aXNpYmlsaXR5LHBya...",
