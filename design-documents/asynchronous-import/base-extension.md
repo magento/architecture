@@ -86,7 +86,7 @@ In this case input request will looks like:
 ```
 where *import_data* is a 1/N part of the whole content, and *data_hash* contains sha256 hash of full import_data body.
 
-`pieces_count` - iss amount of pieces that will be transferred for 1 file. We need it to be sure that import is completed and then we could detect if it was successfully finished or failed
+`pieces_count` - its an amount of pieces that will be transferred for 1 file. We need it to be sure that import is completed and then we could detect if it was successfully finished or failed
 
 `piece_number` - its a number that detects which part of file currently transferred. This is required to have to support Asynchronous File import when we dont need to send parts in correct sequence
 
