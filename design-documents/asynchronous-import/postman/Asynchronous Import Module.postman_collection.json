@@ -1,0 +1,106 @@
+{
+	"info": {
+		"_postman_id": "f956d80d-392d-4917-bc2e-7ef9a33e162f",
+		"name": "Asynchronous Import Module",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "LIVE - Get TOKEN",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{key}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\":\"admin\", \"password\":\"1qwerty2\"}"
+				},
+				"url": {
+					"raw": "{{URL}}rest/V1/integration/admin/token",
+					"host": [
+						"{{URL}}rest"
+					],
+					"path": [
+						"V1",
+						"integration",
+						"admin",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Import File",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"fileEntry\": {\n    \"id\": 0,\n    \"source\": {\n      \"import_data\": \"c2t1LHN0b3JlX3ZpZXdfY29kZSxhdHRyaWJ1dGVfc2V0X2NvZGUscHJvZHVjdF90eXBlLGNhdGVnb3JpZXMscHJvZHVjdF93ZWJzaXRlcyxuYW1lLGRlc2NyaXB0aW9uLHNob3J0X2Rlc2NyaXB0aW9uLHdlaWdodCxwcm9kdWN0X29ubGluZSx0YXhfY2xhc3NfbmFtZSx2aXNpYmlsaXR5LHBya......\",\n      \"type\": \"base64_encoded_data\",\n      \"file_type\": \"csv\"\n    }\n  }\n}"
+				},
+				"url": {
+					"raw": "{{URL}}rest/V1/import",
+					"host": [
+						"{{URL}}rest"
+					],
+					"path": [
+						"V1",
+						"import"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Import File Start",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{TOKEN}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"importEntry\": {\n    \n    \n  }\n}"
+				},
+				"url": {
+					"raw": "{{URL}}rest/V1/import/start/1",
+					"host": [
+						"{{URL}}rest"
+					],
+					"path": [
+						"V1",
+						"import",
+						"start",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
