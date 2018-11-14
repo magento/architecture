@@ -23,8 +23,14 @@ This interface will be used as the return type of methods returning promises.
 ```php
 interface PromiseInterface
 {
+    /**
+     * @throws PromiseProcessedException When callback was alredy provided.
+     */
     public function then(callable $callback): void;
     
+    /**
+     * @throws PromiseProcessedException When callback was alredy provided.
+     */
     public function otherwise(callable $callback): void;
     
     public function wait(): void;
