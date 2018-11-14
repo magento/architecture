@@ -7,7 +7,7 @@ It also describes a recommended RPC-style networking gateway to call services re
 multiple _Remote Code Invoker_ implementations based on existing Web APIs, Message Queue RPC API or any other.
 ### How are remote services are going to look like with Remote Code Invoker
 \<Module name\>Proxy module will contain \<Module name\>API module's implementations that would look like this:
-```
+```php
 class ServiceProxy implements \Magento\ModuleNameApi\ServiceInterface
 {
 
@@ -41,7 +41,7 @@ is the preference for \Magento\ModuleNameApi\ServiceInterface.
 So when a local service uses \<Module name\>API's service it will not be aware whether the service is actually
 remote and it won't affect how we write code.
 Example:
-```
+```php
 class LocalServiceA implements ServiceAInterface
 {
 
@@ -110,7 +110,7 @@ this mechanism can be used to ensure idempotency
 ### API
 ##### Remote call response
 Result of executing the call
-```
+```php
 interface InvokeResponseInterface {
     /**
      * @return mixed Value that remote service returned.
@@ -127,7 +127,7 @@ interface InvokeResponseInterface {
 ```
 ##### Remote Invoker
 Used to make a call to a Magento server
-```
+```php
 interface InvokerInterface {
     /**
      * @param string $sourceId
@@ -153,7 +153,7 @@ interface InvokerInterface {
 ##### 
 ##### Remote sources information
 _Magento server_ information
-```
+```php
 interface SourceInterface {
     public function getId(): string;
 
@@ -164,7 +164,7 @@ interface SourceInterface {
 ```
 ##### Remote sources repository
 Find sources' information
-```
+```php
 interface SourceRepositoryInteface {
     public function get(string $id): SourceInterface;
     
@@ -174,7 +174,7 @@ interface SourceRepositoryInteface {
 ### SPI
 ##### Remote request
 Contains remote call data
-```
+```php
 interface InvokeRequestInterface {
     public function getCallId(): string;
     
@@ -191,7 +191,7 @@ interface InvokeRequestInterface {
 ```
 ##### Request generator
 Create request based on the remote call data
-```
+```php
 interface RequestGeneratorInterface {
     public function generate(
         InvokeRequestInterface $invokeRequest
@@ -200,7 +200,7 @@ interface RequestGeneratorInterface {
 ```
 ##### Request signer
 Sign request before sending
-```
+```php
 interface RequestSignerInterface {
     public function sign(RequestInterface $request, InvokeRequestInterface $invokeRequest): RequestInterface;
 }
@@ -208,14 +208,14 @@ interface RequestSignerInterface {
 ##### Transport
 Send request to a remote source.
 Returns chainable and waitable promise.
-```
+```php
 interface Transport {
     public function send(RequestInterface $request): Promise;
 }
 ```
 ##### Remote call request validator
 Validates whether request's signature is correct
-```
+```php
 interface RequestValidatorInterface {
     /**
      * @throws ValidationException
@@ -225,14 +225,14 @@ interface RequestValidatorInterface {
 ```
 ##### Remote call request reader
 Read incoming requests and extract remote call request information
-```
+```php
 interface RequestReaderInterface {
     public function read(RequestInterface $request): InvokeRequestInterface;
 }
 ```
 ##### Remote call info storage
 Store remote call results for retries mechanism
-```
+```php
 interface InvokeResponseRepositoryInterface {
     public function createStarted(string $callId, int $timeout): void;
     
@@ -247,14 +247,14 @@ interface InvokeResponseRepositoryInterface {
 ```
 ##### Remote call processor
 Perform remote call
-```
+```php
 interface LocalInvokerInterface {
     public function invoke(InvokeRequestInterface $request): InvokeResponseInterface;
 }
 ```
 ##### Response generator
 Transform invoke response to a regular response
-```
+```php
 interface ResponseGeneratorInterface {
     public function generate(string $callId, InvokeResponseInterface $response): ResponseInterface;
 }
