@@ -10,7 +10,7 @@ operation, it will receive a single argument - a _Throwable_
 * Promises can be used in a synchronous way to prevent methods that use methods returning promises
 having to return a promise as well ([see explanation](#callback-hell)); This will be done by promises having _wait_ method
 * _wait_ method does not throw an exception if the promise is rejected
-nor does it return the result of the resolved promise
+nor does it return the result of the resolved promise ([see explanation](#wait-not-unwrapping-promises))
 * If an exception occurs during an asynchronous operation and no _otherwise_ callback is
 provided then it will just be rethrown
 ### API
@@ -48,10 +48,14 @@ interface ResultPromiseInterface extends PromiseInterface
 ```
 
 ### Implementation
-A wrapper around Guzzle Promises will be created to implement the APIs above. Guzzle Promises fit
+A wrapper around [Guzzle Promises](https://github.com/guzzle/promises) will be created to implement the APIs above. Guzzle Promises fit
 most important criteria - they allow synchronous execution as well as asynchronous. It's a mature
 and well-known library and, while we would have to add guzzle/promises to our composer.json,
 the library is already required in Magento indirectly - we won't be actually adding a new dependency.
+ 
+There are other libraries like [Reactphp Promises](https://github.com/reactphp/promise) but they either do not provide synchronous way
+to interact with promises or are not as refined.
+ 
 ### Explanations
 ##### Forwarding
 Consider this code
@@ -110,3 +114,25 @@ We cannot be sure _serviceB_ has finished doing it's stuff when we return _$proc
 So, if we cannot wait for the promise _serviceB_ returned, the only thing we can do
 is to return a promise ourselves instead of _ProcessedInterface_. But then methods using
 _ServiceA::process()_ would have to do the same - and PHP code is not supposed to be this way.
+
+##### Wait not unwrapping promises
+For _wait_ method to also unwrap promises can result in confusion. It's better to have a single way of retreiving promised results and a single way of retreiving errors.
+ 
+Consider next situation:
+```php
+class ServiceA
+{
+    public function doSmth(): void
+    {
+       $promise = $this->otherService->doSmthElse();
+       $promise->otherwise(function ($exception) { $this->logger->critical($exception); });
+       try {
+           //wait would throw the exception processed in the otherwise callback once again
+           $promise->wait();
+       } catch (\Throwable $exception) {
+           //we've already processed this
+       }
+    }
+}
+```
+That is a simple situation but it illustrates how having multiple ways of receiving promised results may lead to duplicating code
