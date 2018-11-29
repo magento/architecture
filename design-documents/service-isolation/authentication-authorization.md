@@ -39,6 +39,20 @@ between a user, Monolith/BFF, and services.
 * Could be encrypted (JWE) or just signed (JWS)
 * As it's RFC it has implementations for most of the modern programming languages, so there is no a hard
 dependency on some stack for the service implementation
+
+JWT has three parts separated by `.` (dots):
+* Header - contains type of the token and the hashing algorithm
+* Payload - contains an information about the entity
+* Signature - encoded string for a token validation
+
+The signature encoded by HMAC SHA256 algorithm might look like this:
+```
+HMACSHA256(
+    base64UrlEncode(header) + "." +
+    base64UrlEncode(payload),
+    secret
+)
+```
     
 ## General Schema
 
