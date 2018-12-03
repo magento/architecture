@@ -56,25 +56,31 @@ HMACSHA256(
     
 ## General Schema
 
+Now, current Magento authorization mechanism based on roles and assigned rules...
+
 As Magento should provide [multiple BFF](https://github.com/magento/architecture/blob/master/design-documents/service-isolation.md#backends-for-frontends)
 it makes sense to extract authentication and authorization flow to a separate `Auth Service` to avoid credentials
 validation and duplication of roles & privileges data. And the general schema might look like this:
 
 ![Authentication and Authorization General Schema](auth-general-schema.png)
 
-And the basic scenario might be as following:
+1. An unauthorized user sends request with credentials to retrieve an access token, BFF/Monolith proxies this request to
+Auth Service which performs authorization & authentication and issues access token based on a user role.
+2. The user sends request to get needed resource with access token, BFF/Monolith proxies this request to the appropriate
+service and there are few multiple strategies for token validation:
+    - BFF/Monolith just verifies the token signature (each service sends a token for validation to `Auth Service`)
+    - BFF/Monolith sends the token to `Auth Service` for validation
+3. A service sends the token for validation to `Auth Service` and, if a request is allowed, the service processes the request.
+4. In case, if the services requires additional data from another service, it creates a new request and set received token
+as in original request. So, additional service, can send the token for validation to `Auth Service` to check user permissions.
+
+The basic scenario might be as following:
 
 ![Auth Basic Scenario](auth-basic-scenario.png)
 
-Also, there are a few variants of the proposed schema like to have separate services for token validation and renewal:
-
-![Token Validation Service](token-validation-service.png)
-
-Now, each service validates a token through `Token Service` it reduces logic duplication but adds additional requests
-which might impact on performance.
-
-According to the proposed schema, user-Monolith/BFF scenario could use JWE tokens, Monolith/BFF - service could use JWS
-tokens to make the communication more secure.
+A token validation per each request on Auth Service allows keeping authorization process in the centralized place, only
+Auth Service knows about all users, roles and assigned privileges. Each service during deployment should expose their API
+to `Auth Service`, which can automatically assign API to existing roles based on default rules.
 
 ### OAuth 2.0
 
