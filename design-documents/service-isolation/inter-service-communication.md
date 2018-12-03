@@ -187,3 +187,6 @@ with strings as arguments for service contracts and daemons written in PHP to pr
 multiple requests than web servers like Nginx or Apache when using RESTful web API for gateway.
 
 #### Front node
+Front node is a Magento installation with Framework and Webapi/GraphQl modules. It will handle actual authentication and authorization and pass the auth info to remote services as well as accepting requests from clients (frontend, 3rd party systems).
+ 
+This is the node that will be available on a public network.
