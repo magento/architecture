@@ -121,6 +121,7 @@ return [
     'service_base_urls' => [
         'Magento\\Catalog' => 'http://catalog.mydomain.com/',
         'Magento\\Checkout' => 'https://checkout.mydomain.com/',
+        'Magento\\Customer' => 'http://192.168.1.1/',
     ],
 ];
 ```
@@ -158,3 +159,12 @@ finishes it and writes the response to cache, if both call ID and the result are
 we will avoid executing duplicate calls when retries mechanism is applied.
  
 The timeout and tries limit will be configured via di.xml (see the invoker API and SPI <<here>>).
+    
+#### Service mashes and balancers
+Since we going to contact services via HTTP it is possible for configured URLs to actualy lead to service mashes or balancers - 
+that way the retries and lookup mechanism may be delegated.
+
+#### MQ RPC for gateway
+Magento has another way to remotely call services - RPC via a message queue. The problem with it is that right now it can only work
+with strings as arguments for service contracts and daemons written in PHP to process queue will show slower results in handling
+multiple requests than web servers like Nginx or Apache when using RESTful web API for gateway.
