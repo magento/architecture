@@ -1,7 +1,7 @@
 ### Inter-service communications
 This documents describes how exactly services will be communicating in a distributed setup.
 #### Service declaration
-Services will be declared in Api modules with interfaces. These modules will be installed on all nodes.
+Services will be declared in Api modules using interfaces. These modules will be installed on all nodes.
 Example:
 ```php
 namespace Magento\ServiceBApi;
@@ -102,8 +102,8 @@ class BDataProxy implements BDataInterface
     }
 }
 ```
-Usually DTOs implementations are models in real modules so we need a class to be initialized when client code communicates with a
-remote service and simple DTOs will sufice.
+Usually DTOs implementations are models in real modules but we need a class to be initialized when client code communicates with a
+remote service and for that simple DTOs will suffice.
  
 #### The invoker
 The invoker will be a part of Magento\Framework and will be present in every node installation. Invoker's job is to find a remote node's
@@ -254,6 +254,7 @@ and ProductProxy is the preference for ProductInterface
 * Invoker composes URL to access inter-service endpoint on the _Catalog_ node like __/rest/inter/catalog/product-repository/save__
 * Invoker sends request to _Catalog_ node containing serialized ProductInterface argument, user type, user ID
   and returns a promise that will be fulfilled when the request finishes and return value is unserialized
+* the request is sent using Guzzle library and it's sent asynchronously (concurrently with other requests)
  
 _catalog node_
 * Receives HTTP request from the front node, let's say on https://catalog.mydomain.com/rest/inter/catalog/product-repository/save
@@ -281,5 +282,3 @@ _front node_
 * initiated ProductProxy is passed as resolve value to the promise the invoker returned
 * RESTful API mechanism takes the value and serializes it to return to the client
 * HTTP response is generated and returned to the client who made request to mydomain.com/rest/V1/product
-
-   
