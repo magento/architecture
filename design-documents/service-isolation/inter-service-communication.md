@@ -59,11 +59,11 @@ class BManagerProxy implements Magento\ServiceBApi\BManagerInterface
         $promise->otherwise(function (InvokerException $exception) { throw $exception; });
         $promise->wait();
         
-        if ($result instanceof \Throwable) {
-            throw $result;
+        if ($result->getException()) {
+            throw $result->getException();
         }
         
-        return $result;
+        return $result->getResult();
     }
     
     ....
@@ -74,7 +74,7 @@ Proxy services will use _InvokerInterface_ to call remote services. It will retu
 to _then_ callback and an exception to _otherwise_ callback if something during the remote call went wrong (like a network error). The
 service execution result may contain the return value of a service or an exception it has thrown. The promise that invoker returns may
 be used in both synchronous and asynchronous ways to be able to work with both types of services. More details about the promise
-<<<<<<<<_here_>>>>>>>.
+[here](../promises.md).
  
 Proxy DTOs will look like this:
 ```php
@@ -110,7 +110,7 @@ The invoker will be a part of Magento\Framework and will be present in every nod
 address based on given class name and method, send the request, receive response and convert it to either requested service method return type
 or an exception if it was thrown by the remote service. It returns a promise to support asynchronous services and because
 the requests to remote services will be asynchronous (depends on implementation). More details on the invokers API and SPI
-<<<<here>>>>.
+[here](invoker.md).
  
 #### Gateway
 For actualy delivering remote service requests RESTful API will be used - it's an established way to execute requested methods and to
@@ -171,7 +171,7 @@ on nodes accepting remote inter-service requests.
  
 ##### Changes for retries mechanism
 The invoker implementation based on RESTful web APIs will offer default retries mechanism, but developers will be able to disable it
-by using _di.xml_ (see Invoker API and SPI <<<<here>>>>) for when they would want to delegate this responsibility to a service mash.
+by using _di.xml_ (see Invoker API and SPI [here](invoker.md)) for when they would want to delegate this responsibility to a service mash.
  
 When default retries mechanism is enabled _X-Magento-Call-Id_ header will be added to inter-service requests to identify calls.
 It will be randomly generated. Then if a timeout reached while waiting for a service to respond the invoker will send the same request
@@ -182,7 +182,7 @@ if the cache has the call ID that would mean the service method is being execute
 finishes it and writes the response to cache, if both call ID and the result are in cache then we just return the result. That way
 we will avoid executing duplicate calls when retries mechanism is applied.
  
-The timeout and tries limit will be configured via di.xml (see the invoker API and SPI <<here>>).
+The timeout and tries limit will be configured via di.xml (see the invoker API and SPI [here](invoker.md)).
     
 #### Service mashes and balancers
 Since we going to contact services via HTTP it is possible for configured service base URLs to actually lead to service mashes or
@@ -256,7 +256,7 @@ and ProductProxy is the preference for ProductInterface
   and returns a promise that will be fulfilled when the request finishes and return value is unserialized
  
 _catalog node_
-* Receives HTTP request from the front node, let's say on _https://catalog.mydomain.com/rest/inter/catalog/product-repository/save_
+* Receives HTTP request from the front node, let's say on https://catalog.mydomain.com/rest/inter/catalog/product-repository/save
 * ProductRepositoryInterface::save() is matched because URL generation rules are the same on all nodes an managed by Framework
 * Checks inter_webapi.xml in _CatalogInterApi_ module to find if ProductRepositoryInterface::save() is available
 * Reads user type and user ID information from the request and creates a UserContextInterface instance
