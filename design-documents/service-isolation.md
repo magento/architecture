@@ -239,6 +239,9 @@ General principles to follow for service isolation:
 * All service operations MUST BE stateless
 * There MUST BE NO data dependencies between services.
 * Command & query responsibility segregation – storefront APIs for data immutable in storefront (catalog) should be optimized for data retrieval
+* Each request to service MUST contain correlation identifier to allow identify requests related to the same flow during debugging
+* Service mesh MUST BE used for communication between services: routing, load balancing, circuit breaking, statistics
+* Services MUST NOT manage session, operations have to explicitly declare all required arguments, and those arguments should be passed in request
 
 A detailed design must be prepared for every service.
 
