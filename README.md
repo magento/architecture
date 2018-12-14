@@ -11,10 +11,9 @@ NOTE: We do not guarantee that approved changes will be delivered into Magento c
 *New documents* are processed through PRs targeting the `master` branch.
 As a result, the `master` branch must contain content approved by Magento architects only.
 
-All closed (not merged) PRs represent *declined documents*.
-Note that abandoned PRs may be closed as irrelevant.
-
-All open PRs represent *open discussions*. 
+* [Active discussions](https://github.com/magento/architecture/pulls) are represented by open PRs.
+* [Approved proposals](https://github.com/magento/architecture/pulls?utf8=%E2%9C%93&q=is%3Apr+is%3Amerged+) are represented by merged PRs.
+* [Declined proposals](https://github.com/magento/architecture/pulls?utf8=%E2%9C%93&q=is%3Apr+is%3Aunmerged+is%3Aclosed) are represented by closed (not merged) PRs.
 
 ## Glossary
 
