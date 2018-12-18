@@ -35,7 +35,7 @@ As a result it leads to inconsistency and [code duplication](https://github.com/
 
 3. Assign severity to each sniff. The higher the severity, the more strict the rule is.
 
-4. Create separate `ruleset.xml` files (set of sniffs) for Magento Core and Magento Extension Quality Program (reasons in the Problem Overview section).
+4. Create one `ruleset.xml` file (set of sniffs) for both projects - Magento Core and Magento Extension Quality Program.
 
 5. For sniffs that require Magento 2 instance use [bootstrap file](https://github.com/squizlabs/PHP_CodeSniffer/wiki/Advanced-Usage#using-a-bootstrap-file).
 
