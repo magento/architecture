@@ -95,6 +95,13 @@ A token validation per each request on `Auth Service` allows keeping authorizati
 to `Auth Service`, which can automatically assign API to existing roles based on default rules. The token validation includes
 not only signature verification but authorization.
 
+### Services Deployment
+
+`Auth Service` stores allowed operations for roles and, during deployment, each service should send a list of available
+operations to `Auth Service`.
+
+![Services Deployment](services-deployment.png)
+
 ### Service-to-Service Communication
 
 As each service should be agnostic to a source of a request (in general, for a service it does not matter who sends
