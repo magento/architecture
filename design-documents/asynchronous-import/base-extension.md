@@ -13,7 +13,7 @@ With phase 1 we are planning to develop next functionality:
 ## File Upload Endpoint
 ### Main endpoint
 
-POST  `/V1/import`
+POST  `/V1/import/source/`
  
 This request can accept files from different sources:
 - Local file path
@@ -24,13 +24,10 @@ This request can accept files from different sources:
 
 ```
 {
-  "fileEntry": {
-    "file_id": 0,
-    "source": {
+  "source": {
       "import_data": "/var/www/html/bulk-api/async-import/var/catalog_product.csv",
-      "type": "local_path",
-      "file_type": "csv"
-    }
+      "import_type": "local_path",
+      "source_type": "csv"
   }
 }
 ```
@@ -39,13 +36,10 @@ This request can accept files from different sources:
 
 ```
 {
-  "fileEntry": {
-    "file_id": 0,
-    "source": {
+  "source": {
       "import_data": "http://some.domain/file.csv",
-      "type": "external",
-      "file_type": "csv"
-    }
+      "import_type": "external",
+      "source_type": "csv"
   }
 }
 ```
@@ -54,13 +48,10 @@ This request can accept files from different sources:
 
 ```
 {
-  "fileEntry": {
-    "file_id": 0,
-    "source": {
+  "source": {
       "import_data": "c2t1LHN0b3JlX3ZpZXdfY29kZSxhdHRyaWJ1dGVfc2V0X2NvZGUscHJvZHVjdF90eXBlLGNhdGVnb3JpZXMscHJvZHVjdF93ZWJzaXRlcyxuYW1lLGRlc2NyaXB0aW9uLHNob3J0X2Rlc2NyaXB0aW9uLHdlaWdodCxwcm9kdWN0X29ubGluZSx0YXhfY2xhc3NfbmFtZSx2aXNpYmlsaXR5LHBya......",
-      "type": "base64_encoded_data",
-      "file_type": "csv"
-    }
+      "import_type": "base64_encoded_data",
+      "source_type": "csv"
   }
 }
 ```
@@ -71,16 +62,13 @@ In this case input request will looks like:
 
 ```
 {
-  "fileEntry": {
-    "file_id": 0,
-    "source": {
+  "source": {
       "import_data": "c2t1LHN0b3JlX3ZpZXdfY29kZSxhdHRyaWJ1dGVfc2V0X2NvZGUscHJvZHVjdF90eXBlLGNhdGVnb3JpZXMscHJvZHVjdF93ZWJzaXRlcyxuYW1lLGRlc2NyaXB0aW9uLHNob3J0X2Rlc2NyaXB0aW9uLHdlaWdodCxwcm9kdWN0X29ubGluZSx0YXhfY2xhc3NfbmFtZSx2aXNpYmlsaXR5LHBya...",
       "data_hash" : "sha256 encoded data of the full 'import_data' value"
       "pieces_count": "5"
       "piece_number": "1",
-      "type": "base64_encoded_data",
-      "file_type": "csv"
-    }
+      "import_type": "base64_encoded_data",
+      "source_type": "csv"
   }
 }
 ```
@@ -96,11 +84,8 @@ Then all following parts of imported file will look like:
 
 ```
 {
-  "fileEntry": {
-    "file_id": 10,
-    "source": {
+  "source": {
       "import_data": "c2t1LHN0b3JlX3ZpZXdfY29kZSxhdHRyaWJ1dGVfc2V0X2NvZGUscHJvZHVjdF90eXBlLGNhdGVnb3JpZXMscHJvZHVjdF93ZWJzaXRlcyxuYW1lLGRlc2NyaXB0aW9uLHNob3J0X2Rlc2NyaXB0aW9uLHdlaWdodCxwcm9kdWN0X29ubGluZSx0YXhfY2xhc3NfbmFtZSx2aXNpYmlsaXR5LHBya...",
-    }
   }
 }
 ```
