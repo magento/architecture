@@ -89,7 +89,6 @@ Then all following parts of imported file will look like:
   }
 }
 ```
-where file_id is an ID which you will receive as return from first call.
 
 ### Return values
 
