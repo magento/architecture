@@ -28,7 +28,7 @@ As a result it leads to inconsistency and [code duplication](https://github.com/
 2. Store all related to Magento 2 sniffs in one place.
 3. Make static check consistent.
 
-## Proposal
+## Solution
 1. Consolidate all related Magento 2 sniffs to the new GitHub repository.
 
 2. Create a new Composer package with  `phpcodesniffer-standard` type and add it to the Magento 2 `composer.json` `reqiure-dev` section.
