@@ -104,13 +104,11 @@ Example:
 
 ```
 {
-	"file_id": 10,
-	"file_status": "completed",
-	"error": ""
+    "source_id": null,
+    "status": null,
+    "error": null
 }
 ```
-
-In case of partial uploads, status will be *not_completed* till whole file will be fully received by system.
 
 ## Start File Import Endpoint
 ### Main endpoint
