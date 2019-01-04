@@ -1,6 +1,6 @@
 # Front-End Technical Vision
 
-The following document is a guide for all future Magento front-end applications, for which we should be mindful of the following values:
+The following document is a guide for all _future_ Magento front-end applications outside of core, for which we should be mindful of the following values:
 
 - Portability
 - Extensibility
