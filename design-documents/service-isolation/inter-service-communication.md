@@ -24,7 +24,8 @@ interface BDataInterface
     public function getName(): string;
 }
 ```
-The API modules will just contain these declarations and nothing else (no di.xml, schema.xml, webapi.xml etc).
+The API modules will just contain these declarations and config files (like acl.xml, config.xml) describing module
+without describing actual implementation.
  
 Even services that are not written using Magento (or even PHP) will be declared in this way for nodes using Magento.
  
@@ -203,6 +204,9 @@ Magento has another way to remotely call services - RPC via a message queue. The
 with strings as arguments for service contracts and daemons written in PHP to process queues will show slower results in handling
 multiple requests than web servers like Nginx or Apache when using RESTful web API for gateway.
 
+#### Authentication and authorization
+More details [here](distributed-auth.md)
+
 #### Front node
 Front node is a Magento installation with Framework and Webapi/GraphQl modules.
 It will handle actual authentication and authorization of incoming requests and pass the auth info to remote services
@@ -251,8 +255,11 @@ _front node_
 * Client sends HTTP request to POST <magento-front-node>/rest/V1/product
   with body containing new product data and _Authorization_ containing previously obtained admin token.
 * Request is being processed as usual when it comes to REST web API:
-  * it finds corresponding service - ProductRepositoryInterface::save(); ProductRepositoryProxy returned from
+  * it finds corresponding service declaration which points to the method call -
+  ProductRepositoryInterface::save(); ProductRepositoryProxy returned from
   the _CatalogProxy_ module
+  * the endpoint declaration also contain ACL resources information - _Magento_Catalog::products_ permission
+  is required; Current user's permissions are being validated by ACL service.
   * deserializes input into ProductInterface - ProductProxy is returned from the _CatalogProxy_ module
   * calls ProductRepositoryInterface::save() with ProductInterface instance as the 1st argument
 * _CatalogProxy_ has di.xml which states that ProductRepositoryProxy is the preference for ProductRepositoryInterface
