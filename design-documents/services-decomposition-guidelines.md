@@ -1,3 +1,11 @@
+# Services decomposition guidelines
+
+## About
+
+Document contains general recommendations and principles that need be considered and followed during services decomposition.
+
+## Guidelines
+
 Services should have it's own core_config_data table that would contain settings specific to the service. Services should expose API to modify settings in core_config_data. Admin panel should support editing settings in the local database (settings for BFF) and for individual services via remote calls.
 
 Services should not have knowledge about stores/websites. As some services store information about stores/websites with it's data stores/websites may need to be validated. If validation is critical services can request information about stores/website to use use for validation. If not, validation can be omitted.
