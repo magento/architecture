@@ -6,19 +6,9 @@ This document describes design and communication of monolith application and che
 
 ## Design
 
-Service should have it's own core_config_data table that would contain settings specific to the service. Service should expose API to modify settings in core_config_data. Admin panel should support editing settings in the local database (settings for BFF) and for individual services via remote calls.
-
-Service should not have knowledge about stores/websites. However as service stores information about stores/websites within the quote stores/websites need to be validated. Service can request information about stores/website to use use for validation. Or validation can be omitted (recommended).
-
-Directory data (countries, cities, states) should be moved to configuration (preferable) or moved to a separate service/exposed on BFF.
-
 Operations that are currently per item (inventory requests) need to be done for multiple items to reduce number of calls.
 
-Dependency on session should be removed. All methods should receive customer with customer groups as an argument.
-
 Shared interfaces (product interfaces) need to be moved into API modules. For backwards compatibility we can export interfaces in the new API modules under old name. Shared configuration (configuration for extension attributes) need to be moved to a separate modules as well.
-
-BFF should expose all quote (and other services we separate from monolith) API and work like proxy for all calls to maintain backwards compatibility for web API.
 
 ## Communication Between Monolith and Checkout Service
 
@@ -103,10 +93,6 @@ Communication for place order operation looks similar. The only major difference
 Currently Quote module is responsible for creating an order. Need to move this responsibility to order service (BFF after first iteration).
 
 BFF will be responsible for loading quote and managing the transaction. If order placing failed, no additional transactions need to be rolled back after first iteration as all transactions being performed on BFF. If order placing successful, but  removing quote failed, we would need to retry removing quote instead of rolling back. Mechanism of retrying of failed operations is a general concern and should be discussed separately.
-
-
-## Reporting
-For reporting purposes, service should data to reporting service (BFF after first iteration).
 
 
 ## Open Questions
