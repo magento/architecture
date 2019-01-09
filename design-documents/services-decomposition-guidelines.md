@@ -14,7 +14,7 @@ Modules use directory data (countries, cities, states). This data need to be reu
 
 Modules have dependency on session. Handling session should be responsibility of BFF. BFF can pass user data to the service if needed.
 
-For reporting purposes, service should send data to reporting service (BFF after first iteration). Can be done by cron, real time depending on data and types of reports.
+For reporting purposes, services should publish event with data for reporting services (BFF after first iteration). Reporting service then can consume the data and aggregate it for reporting.
 
 Need to consider code reuse disadvantage for deployment when applying decomposition. Sharing code between different services means that when updating one service we would need to redeploy another service.
 
