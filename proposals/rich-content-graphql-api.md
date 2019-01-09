@@ -3,6 +3,8 @@
 A content-authoring user of a Magento PWA store should be able to use PageBuilder to create and edit as much of the storefront content as possible, without drastically reducing PWA performance.
 An integrator should be able to convert PageBuilder storage markup and Adobe Experience Manager UI languages, such as [Coral UI](https://helpx.adobe.com/experience-manager/6-3/sites/developing/using/reference-materials/coral-ui/coralui3/documentation.html) and [Granite UI](https://helpx.adobe.com/experience-manager/6-3/sites/developing/using/reference-materials/granite-ui/api/jcr_root/libs/granite/ui/index.html).
 
+:warning: **Addendum 2019/1/9: Added description of [MVP workaround for upcoming PWA Studio releases](#pwa-studio-mvp-workaround).**
+
 ## Vision
 
 PageBuilder builds its content in a tree of rows and columns of variable depth, whose leaf nodes are PageBuilder Blocks of various subtypes. Likewise, Coral UI and Granite UI, and most other rich content storage formats, use a tree structure of some kind, though it may not use rows, columns, and containers in the same manner. The GraphQL schema represents this with a recursively defined interface which all block types must implement. The interface consists of a short placeholder content string and enough type metadata to help the PWA query for the next layer of content. **The PWA loads PageBuilder content progressively**, by first requesting only the first two to three degrees of the content tree, then loading more content and functionality based on the metadata. As the PWA traverses PageBuilder content during a session, it caches type definitions and component implementations, and its content queries become more efficient over time. **The effect for the user is that the UI loads "from the outside in", with increasing speed as she navigates. The effect for the content author is that complex (deep) PageBuilder content will load in more "steps", incentivizing the content author to simplify layouts.**
@@ -303,3 +305,27 @@ Adobe Experience Manager Coral-UI and Granite-UI components are implemented as W
 PWA Studio creates an alternative storefront rendering system using ReactJS, which cannot easily integrate these components. ReactJS expects content in the form of React Components and server data as "props". It cannot easily consume and display raw HTML and JavaScript, while maintaining its PWA performance and other features as a rendering system.
 
 Therefore, for a store to support both the premier content authoring of PageBuilder and the high-performance storefront of PWA, we must provide an adapter layer that integrates PageBuilder content into the PWA render pipeline. This proposal does so by organizing PageBuilder content into a tree of nodes, which implement a known interface and then expand upon that node interface for different node types. Each query provides static HTML fallback content as metadata using the existing templates (or new HTML templates optimized for PWA) and then enough metadata for the PWA to load live React components, to upgrade progressively to dynamic PageBuilder functionality.
+
+## PWA Studio MVP workaround
+
+As of the release of Magento 2.3, this proposal has not been approved, and @melnikovi and I have agreed on a temporary workaround that we plan to use for the first iteration of PageBuilder support. This proposal should not be withdrawn, though; our workaround is for PageBuilder alone, whereas the Rich Content GraphQL API is meant to apply to content from *any CMS*, such as Adobe Experience Manager, and help us unify syndicated content into a single graph. I still think it's a good idea!
+
+### Workaround summary
+
+Currently, the GraphQL API for CMS blocks and other rich content fields simply returns the HTML contents of the entity as a string. The PageBuilder storage format is HTML with data attributes indicating structure and widget functionality. Using the native DOM parser in the web browser, the PWA can read this data directly and transform it into a data structure similar to the VisualContentNode described above.
+
+### Workaround Process
+
+1. Browser renders a `<RichContent id={id} contents={contents} />` element inside a component like `CmsBlock` or `ProductFullDetail`.
+2. After mount, `RichContent` component parses `props.contents` as a [DocumentFragment](https://www.google.com/search?q=documentfragment&oq=documentfragment&aqs=chrome.0.0l6.1759j0j7&sourceid=chrome&ie=UTF-8).
+3. Before initial render, `RichContent` component strips the fragment of dangerous HTML.
+4. For initial render, `RichContent` injects the sanitized fragment.
+5. After initial render, `RichContent` visits the DOM in the fragment to build a tree of PageBuilder rows, columns, widgets, and configurations.
+6. When the content tree is finished, `RichContent` dynamically imports the React components corresponding to all the PageBuilder widget types present in the content.
+7. When the runtime has loaded the components, `RichContent` re-renders the content tree as instances of live React components instead of HTML.
+
+### Considerations
+
+- The workaround involves DOM parsing and large string comparisons for update filters, which are both expensive operations which PWAs try to avoid.
+- If possible, expensive operations should take place off the main thread, so this implementation may want to parse and visit the content in a Web Worker or ServiceWorker.
+- React Components for each widget type are still necessary.
