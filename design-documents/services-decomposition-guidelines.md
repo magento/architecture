@@ -37,6 +37,6 @@ Web API of the BFF should not change. BFF can expose composite operations (facad
 Resources should not be shared between different services. Multiple Checkout instances can use the same database but Checkout and Catalog can't use the same database.
 
 ## Other documents
-[Communication between services](https://github.com/magento/architecture/pull/50)
-[Authentication and authorization](https://github.com/magento/architecture/pull/48)
-[Caching](https://github.com/magento/architecture/pull/52)
+* [Communication between services](https://github.com/magento/architecture/pull/50)
+* [Authentication and authorization](https://github.com/magento/architecture/pull/48)
+* [Caching](https://github.com/magento/architecture/pull/52)
