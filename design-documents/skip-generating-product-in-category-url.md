@@ -1,3 +1,5 @@
+# Skip generating url rewrites for product in categories and compute them on request
+
 ### Overview
 
 Saving a category takes too long.
