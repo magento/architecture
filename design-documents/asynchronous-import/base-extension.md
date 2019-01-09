@@ -22,10 +22,12 @@ This request can accept files from different sources:
  
 #### Local file path
 
+Path is relative from Magento Root folder
+
 ```
 {
   "source": {
-      "import_data": "/var/www/html/bulk-api/async-import/var/catalog_product.csv",
+      "import_data": "var/catalog_product.csv",
       "import_type": "local_path",
       "source_type": "csv"
   }
