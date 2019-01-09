@@ -62,7 +62,7 @@ The three possible types of caches are the following:
  - Pros: 
    - scalable, adheres to 12-factor principles
    - externalize application state
-   - possibility dynamically change the number of application instances
+   - possibility dynamically change the number of service instances
    - contains only dedicated service data
  - Cons: 
    - a slight delay in network calls
