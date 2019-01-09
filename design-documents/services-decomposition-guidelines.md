@@ -33,3 +33,10 @@ Data interfaces can be reused across different services. For instance, ProductIn
 Services can have separate interfaces. For instance, checkout service may have it's own ProductInterface that will contain only fields needed in checkout. What to do if checkout need more fields? It can easily add them to interface, but it will be breaking change to the customizations in checkout service that use this interface. To make possible extend data interface of another service, we can defined fields needed by service in the configuration and generate interface and DTO. This, however, doesn't resolve the problem with unnecessary data being sent from Catalog service. To avoid this, checkout service can request fields it needs.
 
 Web API of the BFF should not change. BFF can expose composite operations (facade that performs calls to multiple services APIs) or proxy operations to services. API of the services may change.
+
+Resources should not be shared between different services. Multiple Checkout instances can use the same database but Checkout and Catalog can't use the same database.
+
+## Other documents
+[Communication between services](https://github.com/magento/architecture/pull/50)
+[Authentication and authorization](https://github.com/magento/architecture/pull/48)
+[Caching](https://github.com/magento/architecture/pull/52)
