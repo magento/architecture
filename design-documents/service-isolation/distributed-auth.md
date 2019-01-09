@@ -20,10 +20,13 @@ explicitly in service contracts.
 
 #### What do we need for isolated services?
 Authenticating a user is an operation which will be performed for every client request. All client requests will be
-directed to _front node_ which will be calling remote service contracts who are actually doing all the work. Considering
-the circumstances it makes sense to try to avoid for front node to have to make remote requests every time we want to
-authenticate a user and since all HTTP requests will be going through the _front node_ it should be able to perform
-authenticating operations as independent as possible. 
+directed to _front node_ (BFF) which will be calling remote service contracts who are actually doing all the work.
+Considering the circumstances it makes sense to try to avoid for front node to have to make remote requests every time
+we want to authenticate a user and since all HTTP requests will be going through the _front node_ it should be able to
+perform authenticating operations as independent as possible.
+ 
+There's also the need to pass authentication information along when services communicate with each other so that
+_UserContextInterface_ may be initialized on each service node.
 
 #### What needs to be done for isolated services?
 With current situation it's already pretty easy to prepare auth mechanism for microservices - most work is done in a
@@ -42,6 +45,10 @@ services for them to be able to perform ACL permissions validations additionally
 provided in _AuthorizationProxy_ module for deployment on isolated services instances
 * A service contract to be added to _Magento\User_ module to be able to validate administrators' credentials in
 the _Integration_ module remotely
+* [The invoker](invoker.md) will be adding _X-Magento-User-Type_ and _X-Magento-User-Id_ headers to calls to remote
+services and filling them with user type and ID found in currently initiated instance of UserContextInterface
+* A _UserContextInterface_ implementation to be created - _ForwardedUserContext_ - as a part of Invoker module
+that will accept information from these headers when Magento is processing an inter-service request
 
 #### Flow
 Example flow of a customer editing their info considering described above
