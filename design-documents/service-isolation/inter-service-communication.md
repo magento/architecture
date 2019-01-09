@@ -1,7 +1,9 @@
 ### Inter-service communications
 This documents describes how exactly services will be communicating in a distributed setup.
 #### Service declaration
-Services will be declared in Api modules using interfaces. These modules will be installed on all nodes.
+Services will be declared in Api modules using interfaces. These modules will be installed on all nodes that would
+need to communicate with such services.
+ 
 Example:
 ```php
 namespace Magento\ServiceBApi;
@@ -30,8 +32,9 @@ without describing actual implementation.
 Even services that are not written using Magento (or even PHP) will be declared in this way for nodes using Magento.
  
 #### Publicly available Web APIs
-To enable publicly available APIs (that frontend and 3rd party systems can use) the _front node_ will have to have -Module-Webapi
-or -Module-Graphql modules installed.
+To enable publicly available APIs (that frontend and 3rd party systems can use) the _front node_ will have to have
+_\<Module\>Webapi_ or _\<Module\>Graphql_ modules installed that would contain necessary configurations
+(like webapi.xml or schema.graphqls) or handlers (like TypeResolvers for GraphQL etc).
  
 #### Real and proxy modules
 If a node wants to use services locally then it will just have real modules installed (e.g. "Catalog"), if a node is supposed
@@ -50,7 +53,7 @@ class BManagerProxy implements Magento\ServiceBApi\BManagerInterface
     
     public function save(BDataInterface $data): BDataInterface
     {
-        $promise = $this->invoker->invoker(
+        $promise = $this->invoker->invoke(
             \Magento\ServiceBApi\BManagerInterface::class,
             'save',
             [$data]
@@ -99,7 +102,7 @@ class BDataProxy implements BDataInterface
     
     public function setId(string $id): void
     {
-        $this->>id = $id;
+        $this->id = $id;
     }
     
     public function getName(): string
@@ -120,7 +123,7 @@ remote service and for that simple DTOs will suffice.
 The invoker will be a part of Magento\Framework and will be present in every node installation. Invoker's job is to find a remote node's
 address based on given class name and method, send the request, receive response and convert it to either requested service method return type
 or an exception if it was thrown by the remote service. It returns a promise to support asynchronous services and because
-the requests to remote services will be asynchronous (depends on implementation). More details on the invokers API and SPI
+the requests to remote services will be asynchronous (depends on implementation). More details on the invoker's API and SPI
 [here](invoker.md).
  
 #### Gateway
@@ -182,7 +185,8 @@ on nodes accepting remote inter-service requests.
  
 ##### Changes for retries mechanism
 The invoker implementation based on RESTful web APIs will offer default retries mechanism, but developers will be able to disable it
-by using _di.xml_ (see Invoker API and SPI [here](invoker.md)) for when they would want to delegate this responsibility to a service mash.
+by using _di.xml_ (see Invoker API and SPI [here](invoker.md)) for when they would want to delegate this responsibility
+to a service mash or a balancer.
  
 When default retries mechanism is enabled _X-Magento-Call-Id_ header will be added to inter-service requests to identify calls.
 It will be randomly generated. Then if a timeout reached while waiting for a service to respond the invoker will send the same request
@@ -208,7 +212,7 @@ multiple requests than web servers like Nginx or Apache when using RESTful web A
 More details [here](distributed-auth.md)
 
 #### Front node
-Front node is a Magento installation with Framework and Webapi/GraphQl modules.
+Front node is a Magento installation with Framework, *Api, *Proxy and *Webapi/*GraphQl modules.
 It will handle actual authentication and authorization of incoming requests and pass the auth info to remote services
 as well as accepting requests from clients (frontend, 3rd party systems).
  
@@ -252,10 +256,10 @@ Entities:
  What will happen:
   
 _front node_
-* Client sends HTTP request to POST <magento-front-node>/rest/V1/product
-  with body containing new product data and _Authorization_ containing previously obtained admin token.
+* Client sends HTTP request to POST <magento-front-node>/rest/V1/products
+  with body containing new product data and _Authorization_ header containing previously obtained admin token.
 * Request is being processed as usual when it comes to REST web API:
-  * it finds corresponding service declaration which points to the method call -
+  * it finds corresponding service declaration (in _CatalogWebapi_ module) which points to the method call -
   ProductRepositoryInterface::save(); ProductRepositoryProxy returned from
   the _CatalogProxy_ module
   * the endpoint declaration also contain ACL resources information - _Magento_Catalog::products_ permission
@@ -265,17 +269,18 @@ _front node_
 * _CatalogProxy_ has di.xml which states that ProductRepositoryProxy is the preference for ProductRepositoryInterface
 and ProductProxy is the preference for ProductInterface
 * ProductRepositoryProxy::save() calls the InvokerInterface and passes the service's class name, method and the argument
-* Invoker looks at env.php to find Magento\Catalog's URL (smth like https://catalog.mydomain.com/ or http://182.1.1.2)
+* Invoker looks at env.php to find Magento\Catalog's URL (something like https://catalog.mydomain.com/ or http://182.1.1.2)
 * Invoker serializes the argument as the argument type provided in ProductRepositoryInterface::save() declaration
 * Invoker gets user type and user ID from the UserContextInterface instance
-* Invoker composes URL to access inter-service endpoint on the _Catalog_ node like __/rest/inter/catalog/product-repository/save__
+* Invoker composes URL to access inter-service endpoint on the _Catalog_ node
+like __http://catalog.mydomain.com/rest/inter/catalog/product-repository/save__
 * Invoker sends request to _Catalog_ node containing serialized ProductInterface argument, user type, user ID
   and returns a promise that will be fulfilled when the request finishes and return value is unserialized
 * the request is sent using Guzzle library and it's sent asynchronously (concurrently with other requests)
  
 _catalog node_
 * Receives HTTP request from the front node, let's say on https://catalog.mydomain.com/rest/inter/catalog/product-repository/save
-* ProductRepositoryInterface::save() is matched because URL generation rules are the same on all nodes an managed by Framework
+* ProductRepositoryInterface::save() is matched because URL generation rules are the same on all nodes and managed by Framework
 * Checks inter_webapi.xml in _CatalogInterApi_ module to find if ProductRepositoryInterface::save() is available
 * Reads user type and user ID information from the request and creates a UserContextInterface instance
 * Deserializes body into the ProductInterface instance (this node also has _CatalogApi_ modules and gets the service's arguments it provides)
@@ -295,7 +300,8 @@ states that the return type is ProductInterface
 _front node_
 * Invoker has provided a callback to the promise Guzzle returned when asynchronous HTTP request was made
 * the callback unserializes return value received from the service call, in this case into ProductInterface
-* ProductProxy is actually created because that's the preference provided in the _CatalogProxy_ module this node has
+* ProductProxy is actually created because that's the preference provided in the _CatalogProxy_ module's di.xml
+this node has
 * initiated ProductProxy is passed as resolve value to the promise the invoker returned
 * RESTful API mechanism takes the value and serializes it to return to the client
-* HTTP response is generated and returned to the client who made request to mydomain.com/rest/V1/product
+* HTTP response is generated and returned to the client who made request to mydomain.com/rest/V1/products
