@@ -18,7 +18,7 @@ Every `registration.php` is included by Magento on every request. While with opc
 * Register composer installation hook that will perform magento-specific module management.
 * Eliminate `registration.php` files.
   * Composer installation hook will generate a 'magento_components.php' file that will contain all magento components and their installation paths. Only this file will be included on every request.
-  * Move module sorting behavior to composer installation hook. Use third-party topological sorting library. Write sorted modules to `magento_components.php`.
+  * Move module sorting behavior to composer installation hook. Use third-party topological sorting library. Write sorted modules to `magento_components.php`. This will allow to move module sorting from deploy stage to build stage of publication.
 * Eliminate `module.xml` - composer.json contains 'real' module name. Move 'legacy' module names in `composer.json`
 * Use `composer.json` for module declaration. 
 
