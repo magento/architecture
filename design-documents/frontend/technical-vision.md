@@ -25,10 +25,10 @@ Creating a new React project has never been easier with [CRA][], which comes out
 ### Technologies
 - Create a new React project with [CRA][].
 - [Redux](https://redux.js.org/) as a predictable state container.
-   - Handling of data fetching and side effects now have first class support with [React Suspense, React.lazy](https://reactjs.org/blog/2018/10/23/react-v-16-6.html#reactlazy-code-splitting-with-suspense) and [hooks (proposal)](https://reactjs.org/docs/hooks-intro.html).
+   - Handling of data fetching and side effects now have first class support with [React Suspense, React.lazy](https://reactjs.org/blog/2018/10/23/react-v-16-6.html#reactlazy-code-splitting-with-suspense) and [hooks](https://reactjs.org/docs/hooks-intro.html).
    - Logging with [redux-logger](https://github.com/evgenyrodionov/redux-logger).
 - **Internationalization** with [react-intl](https://www.npmjs.com/package/react-intl).
-   - _Disclaimer: the documented path here is to couple the components to this library. This will be fine for most projects, but if ultimate **portability** is required, you may want to decouple with the [container paradigm][]._
+   - _Warning: the documented path here is to couple the components to this library. This will be fine for most projects, but if ultimate **portability** is required, you will need to decouple the component from the [i18n](https://en.wikipedia.org/wiki/Internationalization_and_localization) library._
 
 ## [TypeScript][]
 
@@ -46,8 +46,11 @@ _Disclaimer: though possible to introduce [TypeScript][] into an existing [CRA][
 
 ### Technologies
 - [Adding TypeScript to CRA](https://facebook.github.io/create-react-app/docs/adding-typescript).
-- Code **consistency** is enforced via [configuration](http://www.typescriptlang.org/docs/handbook/tsconfig-json.html) and [linting with TSLint](https://palantir.github.io/tslint/).
-   - _Disclaimer: use the most strict rules before you write a single line of code, because it's much harder to introduce these rules later._
+- Code **consistency** is enforced via [configuration](http://www.typescriptlang.org/docs/handbook/tsconfig-json.html), [linting with TSLint](https://palantir.github.io/tslint/) and formatting with [Prettier](https://prettier.io/).
+   - Use the most strict tsconfig rules before you write a single line of code, because it's much harder to introduce these rules later in a project.
+   - Use [`tslint-config-prettier`](https://www.npmjs.com/package/tslint-config-prettier) to ensure there is no overlap between TSLint and Prettier.
+   - Extend `tslint-recommended` as a starting point. Introduce new rules with extreme hesitation to prevent bikeshedding over trivial and subjective preferences.
+   - With [`husky`](https://www.npmjs.com/package/husky), ensure errors are caught before CI with a [`pretty-quick`](https://www.npmjs.com/package/pretty-quick) pre-commit hook and a pre-push hook for linting.
 - Generate [TypeScript][] declarations for [CSS Modules](https://github.com/css-modules/css-modules) via [css-modules-typescript-loader](https://www.npmjs.com/package/css-modules-typescript-loader).
 - Documentation via [TSDoc](https://github.com/Microsoft/tsdoc#tsdoc).
 
@@ -65,11 +68,9 @@ On top of sharing code between different environments, we should also be concern
 For **performance** reasons, JavaScript should only be used for cheap operations on the front end, reserving expensive operations for a services layer. It's worth calling out that we could achieve even more code sharing if this API were written in JavaScript. For practical reasons, however, it makes more sense to leverage internal PHP resources for this task.
 
 ## Browser Support
-All users should have a **consistent** user experience. For the best **performance**, those with the latest browsers should not be penalized by incurring an additional payload hit than those with older browsers. To achieve this goal, we download just the [polyfills](https://remysharp.com/2010/10/08/what-is-a-polyfill) needed for our sites, tailored to each browser via [Polyfill.io](https://polyfill.io) feature detection.
+All users should have a **consistent** user experience. For the best **performance**, those with the latest browsers should not be penalized by incurring an additional payload hit than those with older browsers.
 
-> We test browser support with a test suite for each feature. A browser is considered compliant only if it passes all the tests, so this is a reasonably comprehensive test rather than a naïve feature-detect.
-
-_TODO: Investigate building two separate [TypeScript][] builds, one that compiles down to ES5 and another lighter-weight modern build, specifically for modern browsers. Depending on how well Polyfill.io works, the modern build might be all we need._
+There are [various ways](https://polyfill.io) to achieve this goal; however, an in-house approach might be warranted to prevent the stability issues of relying on 3rd party resources. One idea would be to publish multiple build targets, tailored to various environments.
 
 ## React UI Component Library
 
@@ -80,11 +81,13 @@ We should lean against downloading various UI components from different sources 
 - **Inconsistent** implementations, documentation, theming and customization.
 - Limited **accessibility** and support.
 
-[KendoReact | UI for React Developers](https://www.telerik.com/kendo-react-ui/) is a great option for those wishing to get React UI components from the same source. Still, there will be times when you need to download a 3rd-party package.
+If you have the budget to pay for [a product](https://www.telerik.com/kendo-react-ui/), it might be a good choice in this space. Why? Because it's much better to get all of your components from a single source than to have completely different paradigms scattered everywhere.
+
+_Disclaimer: there may be licensing limitations that prevent an open-source product from implementing a paid-for product._
 
 ### Downloading a 3rd-party package
 
-You may have to download a 3rd party component. When this happens, consider the following criteria before making a final choice:
+There are times when you may consider downloading a 3rd party package (e.g., a component). When this happens, consider the following criteria before making a final choice:
 
 1. First thing's first – what is the license?
    - Is it open source?
@@ -93,7 +96,7 @@ You may have to download a 3rd party component. When this happens, consider the 
    - Popularity – are there a significant number of weekly downloads?
    - Is the downloads line graph going up or down?
 1. Look for tests, ideally with 100% test coverage.
-1. Look at install size with [Package Phobia](https://packagephobia.now.sh/).
+1. Look at the bundle size with [Bundle Phobia](https://bundlephobia.com/).
 1. Does it have good/clear documentation?
 1. Is it currently maintained?
    - Look at the number of issues vs. pull requests.
@@ -107,7 +110,9 @@ You may have to download a 3rd party component. When this happens, consider the 
 
 ## Styles
 
-Bundle optimization works best when CSS Modules are imported directly into the JavaScript components that use them (a better [TypeScript][] experience is being talked about in [this CRA issue](https://github.com/facebook/create-react-app/issues/5677)). The coupling here is a bit unfortunate for some projects (e.g., libraries), but pretty standard for applications. If there is a specific reason for ultimate **portability** in your project, consider the [container paradigm][] to decouple the styles from the components, each component defining its own styles via a styles interface.
+Bundle optimization works best when CSS Modules are imported directly into the JavaScript components that use them (a better [TypeScript][] experience is being talked about in [this CRA issue](https://github.com/facebook/create-react-app/issues/5677)).
+
+The coupling here is a bit unfortunate for some projects (e.g., libraries), but pretty standard for applications. For ultimate **portability**, reusable components should be provided their styles externally.
 
 ### Resources
 
@@ -132,9 +137,8 @@ We should leverage the built-in code coverage reports that [Jest][] provides, bu
 
 ## Performance Testing
 
-_TODO: Is there a way for us to determine if components overuse actions or API calls?_
+Ideally, for each front-end project, there will be a separate project that covers both performance and critical-path testing. This project is separate so that it doesn't cripple the short feedback loops of feature development. Additionally, we would do well to have additional performance testing around the most commonly used components (e.g., used in 3+ places).
 
-[container paradigm]: https://medium.com/@dan_abramov/smart-and-dumb-components-7ca2f9a7c7d0
 [CRA]: https://facebook.github.io/create-react-app/
 [Jest]: https://jestjs.io/
 [Typescript]: http://www.typescriptlang.org/
