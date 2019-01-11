@@ -5,11 +5,6 @@ With phase 1 we are planning to develop next functionality:
 - Endpoint to start processing
 - Endpoint to receive status
 
-
-```
-```
-
-
 ## File Upload Endpoint
 ### Main endpoint
 
