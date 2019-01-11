@@ -1,22 +1,11 @@
-# Automated config file cache invalidation
+# Config file cache
 
-## Problem
+1. On every request Magento application reads, validates, and merges configuration files from `app/etc/` folder and `/etc` folders of all components. Every configuration type has its own file (`di.xml`, `webapi.xml`, `config.xml`). Every module can provide configuration for different application areas (`/etc/di.xml`, `/etc/adminhtml/di.xml`, `/etc/frontend/di.xml`)
 
-Every time a configuration file (any xml file) or Service contract is created/edited/removed in Magento, the corresponding configuration cache has to be cleared manually. This degrades developer experience, and makes invalidations more expensive as all configuration types are reloaded when config cache is cleared.
+2. Merged content is then cached to avoid expensive operations on consequent requests.
 
-External solutions for automated cache invalidation exist:
-- PHPStorm allows to configure a command to be executed whenever a file changes.
-- https://github.com/mage2tv/magento-cache-clean - IDE agnostic solution by [Vinai](https://github.com/Vinai|Vinai)
-
-## Solution
-
-To improve developer experience without reliance on external tools and additional setup, the approach similar to Opcache can be used:
-- When configuration is written to cache, in addition to content, also write the names of files used, and directories checked for the configuration type. Keeping information about directories is requried to invalidate cache when new files are created in modules that did not have them before.
-- Use [ini.opcache.validate-timestamps](http://php.net/manual/en/opcache.configuration.php#ini.opcache.validate-timestamps) and [ini.opcache.revalidate-freq](http://php.net/manual/en/opcache.configuration.php#ini.opcache.revalidate-freq) to define when configuration file timestamps should be checked
-- Whenever a file or directory modification time is updated, reload the corresponding configuration type
-
-## POC
-
-POC is implemented in https://github.com/magento-architects/magento2/tree/split-framework (see https://github.com/magento-architects/magento2/blob/split-framework/lib/internal/Magento/Framework/Config/Config/Loader.php) for `di.xml`, `webapi.xml`, `extension_attributes.xml`, and Service Contract metadata.
-
-Use https://github.com/magento-architects/magento-project for easy installation of a "hello world" applciation.
+3. Together with configuration, configuration file metadata is cached:
+  * Files read to load the configuration and their timestampls.
+  * Folders checked for configuration files, together with their timestamps. For folders that did not exist, paths are stored.
+  
+4. If [ini.opcache.validate-timestamps](http://php.net/manual/en/opcache.configuration.php#ini.opcache.validate-timestamps) is enabled in php configuration, appliaction will check if configuration files and folders were updated or created. The validate frequency can be configured with (http://php.net/manual/en/opcache.configuration.php#ini.opcache.revalidate-freq). This way, confugration cache invalidation is synchronised with PHP opcache. In development environments, revalidation should be frequent (2 seconds by default in PHP). In production revalidation should be disabled. 
