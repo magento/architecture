@@ -5,15 +5,10 @@ With phase 1 we are planning to develop next functionality:
 - Endpoint to start processing
 - Endpoint to receive status
 
-
-```
-```
-
-
 ## File Upload Endpoint
 ### Main endpoint
 
-POST  `/V1/import`
+POST  `/V1/import/source/`
  
 This request can accept files from different sources:
 - Local file path
@@ -22,15 +17,15 @@ This request can accept files from different sources:
  
 #### Local file path
 
+Path is relative from Magento Root folder
+
 ```
 {
-  "fileEntry": {
-    "file_id": 0,
-    "source": {
-      "import_data": "/var/www/html/bulk-api/async-import/var/catalog_product.csv",
-      "type": "local_path",
-      "file_type": "csv"
-    }
+  "source": {
+      "import_data": "var/catalog_product.csv",
+      "import_type": "local_path",
+      "source_type": "csv",
+      "uuid": "UUID" // Any UUID transferred by request creator. Not Required field
   }
 }
 ```
@@ -39,13 +34,11 @@ This request can accept files from different sources:
 
 ```
 {
-  "fileEntry": {
-    "file_id": 0,
-    "source": {
+  "source": {
       "import_data": "http://some.domain/file.csv",
-      "type": "external",
-      "file_type": "csv"
-    }
+      "import_type": "external",
+      "source_type": "csv",
+      "uuid": "UUID" // Any UUID transferred by request creator. Not Required field
   }
 }
 ```
@@ -54,13 +47,11 @@ This request can accept files from different sources:
 
 ```
 {
-  "fileEntry": {
-    "file_id": 0,
-    "source": {
+  "source": {
       "import_data": "c2t1LHN0b3JlX3ZpZXdfY29kZSxhdHRyaWJ1dGVfc2V0X2NvZGUscHJvZHVjdF90eXBlLGNhdGVnb3JpZXMscHJvZHVjdF93ZWJzaXRlcyxuYW1lLGRlc2NyaXB0aW9uLHNob3J0X2Rlc2NyaXB0aW9uLHdlaWdodCxwcm9kdWN0X29ubGluZSx0YXhfY2xhc3NfbmFtZSx2aXNpYmlsaXR5LHBya......",
-      "type": "base64_encoded_data",
-      "file_type": "csv"
-    }
+      "import_type": "base64_encoded_data",
+      "source_type": "csv",
+      "uuid": "UUID" // Any UUID transferred by request creator. Not Required field
   }
 }
 ```
@@ -71,16 +62,14 @@ In this case input request will looks like:
 
 ```
 {
-  "fileEntry": {
-    "file_id": 0,
-    "source": {
+  "source": {
       "import_data": "c2t1LHN0b3JlX3ZpZXdfY29kZSxhdHRyaWJ1dGVfc2V0X2NvZGUscHJvZHVjdF90eXBlLGNhdGVnb3JpZXMscHJvZHVjdF93ZWJzaXRlcyxuYW1lLGRlc2NyaXB0aW9uLHNob3J0X2Rlc2NyaXB0aW9uLHdlaWdodCxwcm9kdWN0X29ubGluZSx0YXhfY2xhc3NfbmFtZSx2aXNpYmlsaXR5LHBya...",
       "data_hash" : "sha256 encoded data of the full 'import_data' value"
       "pieces_count": "5"
       "piece_number": "1",
-      "type": "base64_encoded_data",
-      "file_type": "csv"
-    }
+      "import_type": "base64_encoded_data",
+      "source_type": "csv",
+      "uuid": "UUID" // Any UUID transferred by request creator. Not Required field
   }
 }
 ```
@@ -96,15 +85,13 @@ Then all following parts of imported file will look like:
 
 ```
 {
-  "fileEntry": {
-    "file_id": 10,
-    "source": {
+  "source": {
       "import_data": "c2t1LHN0b3JlX3ZpZXdfY29kZSxhdHRyaWJ1dGVfc2V0X2NvZGUscHJvZHVjdF90eXBlLGNhdGVnb3JpZXMscHJvZHVjdF93ZWJzaXRlcyxuYW1lLGRlc2NyaXB0aW9uLHNob3J0X2Rlc2NyaXB0aW9uLHdlaWdodCxwcm9kdWN0X29ubGluZSx0YXhfY2xhc3NfbmFtZSx2aXNpYmlsaXR5LHBya...",
-    }
+      "uuid": "UUID" // Any UUID transferred by request creator. Not Required field,
+      "data_hash" : "sha256 encoded data of the full 'import_data' value"
   }
 }
 ```
-where file_id is an ID which you will receive as return from first call.
 
 ### Return values
 
@@ -112,57 +99,73 @@ As return user will receive:
 
 | Key | Value |
 | --- | --- |
-| file_id | Imported File ID |
-| file_status | Status of this file. Possible values: completed, not_completed, error |
+| uuid | Imported File ID |
+| status | Status of this file. Possible values: completed, uploaded, failed |
 | error | Error message if exists |
 
 Example:
 
 ```
 {
-	"file_id": 10,
-	"file_status": "completed",
-	"error": ""
+    "uuid": null,
+    "status": null,
+    "error": null
 }
 ```
-
-In case of partial uploads, status will be *not_completed* till whole file will be fully received by system.
 
 ## Start File Import Endpoint
 ### Main endpoint
 
 Current Endpoint starts import process based on FileID. Where Module will read file, split it into message and send to Async API
 
-POST  `/V1/import/start/{fileId}`
+POST  `/V1/import/type/{type}/start/{uuid}`
+
+`type` - its an import type like: catalog_product, catalog_category, customer, order ... etc...
 
 Start File Import
 
 ```
 {
   "importEntry": {
-    "entity_type": "catalog_product",
-	"behaviour": "add_update, delete, update, add, replace ...",
-	"import_image_archive": "string",
-  	"import_images_file_dir": "string",
-  	"allowed_error_count": 0,
-  	"validation_strategy": "string",
-  	"empty_attribute_value_constant": "string",
-  	"csv_separator": "string",
-  	"csv_enclosure": "string",
-  	"csv_delimiter": "string",
-  	"multiple_value_separator": "string"
+      "uuid": "",
+      "profile": {
+        "profile_code": "default",
+        "behaviour": "add_update, delete, update, add, replace",
+        "import_image_archive": "string",
+        "import_images_file_dir": "string",
+        "allowed_error_count": 0,
+        "validation_strategy": "string",
+        "empty_attribute_value_constant": "string",
+        "csv_separator": "string",
+        "csv_enclosure": "string",
+        "csv_delimiter": "string",
+        "multiple_value_separator": "string"
+      }
   }
 }
 ```
 
-Q&A - Swagger implementation, are there a sence to move TYPE to URL? 
-POST  `/V1/import/type/catalog_product/start/{fileId}`
+| Key | Value |
+| --- | --- |
+| uuid | UUID that was returned by source upload call |
+| profile | Wrapper for profile object |
+| profile_code | Its a Profile code, which will be used for process import. In First version this parameter will not be intensively used, cause profiling is only in scope of Phase 3. |
+| behaviour | Import behaviour (add_update, delete, update, add, replace) |
+| import_image_archive | Relative path to product images archive file |
+| import_images_file_dir | Relative path to product images files |
+| validation_strategy | Moved from main standard Import, not sure if we will use if |
+| empty_attribute_value_constant | Default valued to empty data in import |
+| csv_separator | Csv separator |
+| csv_enclosure | Csv enclosure |
+| csv_delimiter | Csv delimiter |
+| multiple_value_separator | Multiple value separator  |
+
 
 #### Return
 
 ```
 {
-	"file_id": int
+	"uuid": string
 	"success":bool,
 	"error": "string"
 }
@@ -171,7 +174,7 @@ POST  `/V1/import/type/catalog_product/start/{fileId}`
 ### Get import status
 
 Receive information about imported file
-GET  `/V1/import/:fileId`
+GET  `/V1/import/:uuid`
 
 #### Return
 
@@ -179,13 +182,15 @@ Will be returned list of objects that we tried to import
 
 ```
 {
-  "file_status": "string", 
+  "status": "string", 
   "error": "string",
-  "file_id": 0,
-  "entity_type": "products, customers ....",
+  "uuid": 0,
+  "entity_type": "catalog_product, customers ....",
+  "user_id": "User ID who created this request",
+  "user_type": "User Type who created this request",
   "items": [
   {
-    "id": 0,
+    "uuid": 0,
     "status": "",
     "serialized_data": "",
     "result_serialized_data": "",
@@ -197,8 +202,8 @@ Will be returned list of objects that we tried to import
 
 | Key | Value |
 | --- | --- |
-| file_id | Imported File ID |
-| file_status | Status of this file. Possible values: completed, not_completed, error |
+| uuid | Imported File ID |
+| status | Status of this file. Possible values: completed, not_completed, error |
 | error | Error message if exists |
 | entity_type | Import type: eg. customers, products, etc ... |
 | items | List of items that were imported. As an array |
@@ -209,7 +214,7 @@ This values are based on magento "magento_operation" table
 
 | Key | Value |
 | --- | --- |
-| id | Imported File ID |
+| uuid | Entity UUID - defined by customer OR auto-generated by system |
 | status | Import status. "pending, failed, processing, completed" |
 | serialized_data | Data that was send to Magento, via Async endpoint |
 | result_serialized_data | Data that Magento returned for this object after import |
