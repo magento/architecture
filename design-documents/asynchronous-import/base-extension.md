@@ -107,8 +107,6 @@ As return user will receive:
 | uuid | Imported File ID |
 | status | Status of this file. Possible values: completed, uploaded, failed |
 | error | Error message if exists |
-| user_id | User ID who created this request. |
-| user_type | User Type who created this request |
 
 Example:
 
@@ -116,9 +114,7 @@ Example:
 {
     "uuid": null,
     "status": null,
-    "error": null,
-    "user_id": "User ID who created this request",
-    "user_type": "User Type who created this request",
+    "error": null
 }
 ```
 
@@ -174,7 +170,7 @@ Start File Import
 
 ```
 {
-	"uuid": int
+	"uuid": string
 	"success":bool,
 	"error": "string"
 }
