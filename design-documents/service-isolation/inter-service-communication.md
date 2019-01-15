@@ -127,8 +127,14 @@ the requests to remote services will be asynchronous (depends on implementation)
 [here](invoker.md).
  
 #### Gateway
-For actually delivering remote service requests RESTful API will be used - it's an established way to execute requested methods and to
-serialize arguments and return values. For sending HTTP requests [Guzzle](https://github.com/guzzle/guzzle) library will be used - it's
+For actually delivering remote service requests RESTful API will be used - it's an established way to execute requested
+class' methods and to
+serialize arguments and return values. Existing web API gateway will be used as an RPC to save time on developing new
+gateway - there is no need to preserve RESTful principles (like using certain HTTP methods for certain types of operations)
+for inter-service communications since requests will be generated automatically and no human developer will be working
+with inter APIs explicitly.
+ 
+For sending HTTP requests [Guzzle](https://github.com/guzzle/guzzle) library will be used - it's
 a stable and well supported library which is capable of sending concurrent requests and allows wide customization.
 Guzzle will be configured to use cUrl (cUrl multi) as a backend. When asynchronous requests are sent via Guzzle it
 returns a promise which can easily be converted to Magento's promise.
@@ -217,7 +223,13 @@ Magento has another way to remotely call services - RPC via a message queue. The
 with strings as arguments for service contracts and daemons written in PHP to process queues will show slower results in handling
 multiple requests than web servers like Nginx or Apache when using RESTful web API for gateway.
 See _Magento\Framework\MessageQueue\Rpc\*_ and _Magento\Framework\MessageQueue\UseCase\RpcCommunicationsTest_ for
-more information.
+more information. It is not a finished mechanism and it will take longer to adapt it for inter-service communications.
+ 
+#### gRPC for gateway
+Remote calls to services must coexist with local calls, and on the service it would make sens to use an RPC for that but
+microservices communications are more complex than just calling a class and a method on another node with provided
+arguments - we need to pass authentication information, call (request) IDs, sign requests - we need a customizable and
+extendable gateway for this.
 
 #### Authentication and authorization
 More details [here](distributed-auth.md)
