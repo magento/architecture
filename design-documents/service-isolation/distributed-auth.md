@@ -74,3 +74,54 @@ Example flow of a customer editing their info considering described above
   * RequestValidator uses Magento\Framework\Authorization which uses roles, found locally in _authorization_role_ table
   declared in locally installed _Authorization_ module and resources, declared in _acl.xml_'s of *Api modules installed
   on the front node to determine whether the user can perform the action
+ 
+#### Authorization of remote service calls
+In recommended distributed environment service nodes are part of closed network so it would be safe to assume that
+HTTP requests between services cannot be falsified and data (like current user ID and type) they carry can be trusted.
+But, not all 3rd-party developers may choose to do so and we may have situations when a service may need to call a
+service that is located on BFF node (like auth service or whatever a 3rd party developer decides) which is publicly
+available. For those situations we would have to have a way to confirm that a request is initiated by another service
+and not falsified by an attacker.
+ 
+The whole request would have to be validated, not just a valid user credentials, for these reasons:
+* not all endpoints require an authenticated user - we wouldn't have any user information
+* not all service contracts are exposed as public endpoints, but may be called by other services - we need to verify
+that another service made the request, and not just a valid user
+
+To sign a request it's data will be imploded into a single string: URL + body + headers + timestamp.
+The resulting string to be
+hashed with a _secret word_ (the secret word used by the _EncryptorInterface_) using _hash_hmac()_ and _sha256_
+algorithm. The hash to be added to the HTTP request going out to another service in a header _X-Magento-Signature_.
+The timestamp used when imploding request data will be added in _X-Magento-Issued_ header.
+A service receiving such request will validate the request by trying to recreate the hash by taking request's URL,
+body, headers (except for X-Magento-Signature and X-Magento-Issued), timestamp (provided in X-Magento-Issued header),
+applying _hash_hmac()_ with _sha256_ algorithm and secret word from local _env.php_ and then comparing recreated hash
+with the one provided in the request. Timestamp was added to hashed data to prevent attackers from intercepting a request
+in one point of time and then reusing it later. Timestamp provided in the header will be checked to be behind current
+timestamp for less then 3 seconds. This number of seconds maybe be configured in _env.php_ and may depend on how far
+are service node physically from each other.
+For request validation to work all nodes must have the same secret word used by EncryptorInterface.
+ 
+New method should be added to _EncryptorInterface_ - _getSignature_ that will hash string provided as the single
+argument using _hash_hmac_, _sha256_ algorithm and secret word from _env.php_. Whether a node requires for incoming
+requests to be signed will be configured through env.php:
+```php
+return [
+    'remote_deployment' => [
+        'require_signature' => true,
+    ]
+];
+```
+Whether a service should be contacted by signed request will be configured in env.php as well:
+```php
+return [
+    'remote_deployment' => [
+        'nodes' => [
+            'Magento\Checkout' => [
+                'url' => 'http://checkout.vendor.com/',
+                'signature_required' => true,
+            ]
+        ]
+    ]
+];
+```
