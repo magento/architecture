@@ -136,10 +136,12 @@ returns a promise which can easily be converted to Magento's promise.
 The information on how to reach services will be provided in env.php like this:
 ```php
 return [
-    'service_base_urls' => [
-        'Magento\\Catalog' => 'http://catalog.mydomain.com/',
-        'Magento\\Checkout' => 'https://checkout.mydomain.com/',
-        'Magento\\Customer' => 'http://192.168.1.1/',
+    'remote_deployment' => [
+        'nodes' => [
+            'Magento\Catalog' => ['url' => 'http://catalog.mydomain.com/'],
+            'Magento\Checkout' => ['url' => 'https://checkout.mydomain.com/'],
+            'Magento\Customer' => ['url' => 'http://192.168.1.1/'],
+        ]
     ],
 ];
 ```
@@ -188,10 +190,16 @@ on nodes accepting remote inter-service requests.
 ##### Changes for retries mechanism
 The invoker implementation based on RESTful web APIs will offer default retries mechanism, but developers will be able to disable it
 by using _di.xml_ (see Invoker API and SPI [here](invoker.md)) for when they would want to delegate this responsibility
-to a service mash or a balancer.
+to a service mash or a balancer. 
+The timeout and tries limit will be configured via di.xml (see the invoker API and SPI [here](invoker.md)).
+This default implementation may be used by developers who choose to avoid service mashes or for development environments.
  
-When default retries mechanism is enabled _X-Magento-Call-Id_ header will be added to inter-service requests to identify calls.
-It will be randomly generated. Then if a timeout reached while waiting for a service to respond the invoker will send the same request
+Regardless of which retries mechanism is applied when a timeout is configured a service may fail to deliver a result
+in time but will deliver it eventually, but the invoker (or a service mash) would've sent a duplicating request
+by that time. To avoid duplicating operations for such cases _X-Magento-Call-Id_ header
+will be added to inter-service requests to identify calls.
+It will be randomly generated. Then if a timeout reached while waiting for a service to respond the invoker
+(or a service mash) will send the same request
 again configured number of times with the same call ID. The node receiving requests will store the call ID in cache as a key and
 assign an empty value to it. When the node will have the service call result it will store it with the call ID. That way when a
 duplicate request comes in if the node can't find the call ID in cache it will execute the requested service method as usual,
@@ -199,7 +207,6 @@ if the cache has the call ID that would mean the service method is being execute
 finishes it and writes the response to cache, if both call ID and the result are in cache then we just return the result. That way
 we will avoid executing duplicate calls when retries mechanism is applied.
  
-The timeout and tries limit will be configured via di.xml (see the invoker API and SPI [here](invoker.md)).
     
 #### Service mashes and balancers
 Since we going to contact services via HTTP it is possible for configured service base URLs to actually lead to service mashes or
@@ -209,14 +216,14 @@ balancers - that way the retries and lookup mechanism may be delegated.
 Magento has another way to remotely call services - RPC via a message queue. The problem with it is that right now it can only work
 with strings as arguments for service contracts and daemons written in PHP to process queues will show slower results in handling
 multiple requests than web servers like Nginx or Apache when using RESTful web API for gateway.
+See _Magento\Framework\MessageQueue\Rpc\*_ and _Magento\Framework\MessageQueue\UseCase\RpcCommunicationsTest_ for
+more information.
 
 #### Authentication and authorization
 More details [here](distributed-auth.md)
 
 #### Front node (BFF)
 Front node is a Magento installation with Framework, *Api, *Proxy and *Webapi/*GraphQl modules.
-It will handle actual authentication and authorization of incoming requests and pass the auth info to remote services
-as well as accepting requests from clients (frontend, 3rd party systems).
  
 This is the node that will be available on a public network.
 

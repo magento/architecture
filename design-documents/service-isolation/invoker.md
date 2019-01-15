@@ -2,7 +2,9 @@
 Responsible for contacting remote services
 #### API
 ##### Remote call response
-Result of executing the call
+Result of executing the call.
+Can be used by 3rd party devs to add data to remote calls results or read it when they choose to modify
+remote calling mechanism.
 ```php
 interface InvokeResponseInterface {
     /**
@@ -19,7 +21,8 @@ interface InvokeResponseInterface {
 }
 ```
 ##### Remote Invoker
-Used to make a call to a Magento server
+Used to make a call to a Magento server.
+Can be used by 3rd party devs to write proxy services and modify invoker functionality/gateway.
 ```php
 interface InvokerInterface {
     /**
@@ -40,13 +43,15 @@ interface InvokerInterface {
  
 #### SPI
 ##### Base URL information
-URLs to access nodes
+Nodes data.
+Used to access nodes and provide requests for them.
 ```php
 interface ServiceSourceInterface {
     public function getUrl(): string;
+    public function isSignatureRequired(): bool;
 }
 ```
-##### Remote service sources repository
+##### Remote service sources reposit.ory
 Find service sources information
 ```php
 interface ServiceSourceRepositoryInteface {
@@ -56,7 +61,8 @@ interface ServiceSourceRepositoryInteface {
 }
 ```
 ##### Remote request data
-Information about the request to be sent for a remote service
+Information about the request to be sent for a remote service.
+Can be used by 3rd-party devs to modify remote calls like adding additional data.
 ```php
 interface InvokeRequestInterface {
 
@@ -69,10 +75,14 @@ interface InvokeRequestInterface {
     public function getArguments(): array;
     
     public function getUserContext(): UserContextInterface;
+    
+    public function getCallId(): string;
 }
 ```
 ##### Request data gatherer
-Gathers information to send
+Gathers information to send.
+Generates invoke request based on arguments provided to the invoker.
+Can be used by 3rd-party devs to modify remote call requests.
 ```php
 interface InvokerRequestGathererInterface
 {
@@ -80,7 +90,8 @@ interface InvokerRequestGathererInterface
 }
 ```
 ##### HTTP request generator
-Creates HTTP request based on request data
+Converts invoker request DTO to an HTTP request.
+Can be used by 3rd-party devs to modify gateway used by invoker.
 ```php
 interface RequestGeneratorInterface
 {
@@ -88,6 +99,8 @@ interface RequestGeneratorInterface
 }
 ```
 ##### Transport
+Actually sends the request.
+Can be used by 3rd-party devs to introduce alternative gateway for the invoker.
 ```php
 interface TransportInterface
 {
@@ -95,7 +108,8 @@ interface TransportInterface
 }
 ```
 ##### Response reader
-Reads responses from remote services
+Reads responses from remote services.
+Can be used by 3rd-party devs when introducing an alternative gateway for the invoker.
 ```php
 interface ResponseReaderInterface
 {
