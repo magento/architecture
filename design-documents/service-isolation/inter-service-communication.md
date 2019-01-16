@@ -26,7 +26,7 @@ interface BDataInterface
     public function getName(): string;
 }
 ```
-The API modules will just contain these declarations and config files (like acl.xml) describing module
+The API modules will just contain these declarations describing module
 without describing actual implementation.
  
 Even services that are not written using Magento (or even PHP) will be declared in this way for nodes using Magento.

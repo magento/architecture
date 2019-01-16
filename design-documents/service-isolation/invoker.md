@@ -56,8 +56,6 @@ Find service sources information
 ```php
 interface ServiceSourceRepositoryInteface {
     public function find(string $class, string $method): ServiceSourceInterface;
-    
-    public function getAll(): ServiceSourceInterface[];
 }
 ```
 ##### Remote request data
@@ -76,7 +74,7 @@ interface InvokeRequestInterface {
     
     public function getUserContext(): UserContextInterface;
     
-    public function getCallId(): string;
+    public function getCallId(): ?string;
 }
 ```
 ##### Request data gatherer
