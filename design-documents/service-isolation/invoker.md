@@ -81,6 +81,9 @@ interface InvokeRequestInterface {
 Gathers information to send.
 Generates invoke request based on arguments provided to the invoker.
 Can be used by 3rd-party devs to modify remote call requests.
+If a developer has a goal of editing or just reading data that is being sent to another service it's better to have a
+DTO, than for developers to read HTTP requests, or parse their body, using gatherer or invokerRequest they can just
+worry about the data being sent without knowing how a request is being rendered.
 ```php
 interface InvokerRequestGathererInterface
 {
