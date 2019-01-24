@@ -2,104 +2,71 @@
 
 ## Overview
 
-This document describes design and communication of monolith application and checkout service.
-
-## Design
-
-Operations that are currently per item (inventory requests) need to be done for multiple items to reduce number of calls.
-
-Shared interfaces (product interfaces) need to be moved into API modules. For backwards compatibility we can export interfaces in the new API modules under old name. Shared configuration (configuration for extension attributes) need to be moved to a separate modules as well.
+This document describes checkout service prototype and communication between monolith application and checkout service.
 
 ## Communication Between Monolith and Checkout Service
 
 ### Add to Cart Operation
 
-Current communication for add to cart operation (has one of the largest amount of communication).
+Below is the diagram of communication after introducing boundaries between modules and making system do network calls in the places where seams are. System on the diagram makes 23 calls and ~8.5 times slower.
 
 ![Current state](checkout-service/add-to-cart-current-state.png)
 
-Total 23 calls on Open Source. Commerce will have one more call. Customizations could increase number of calls.
+Most likely after introducing boundaries between modules performance of the system will not be satisfiable and optimizations will have to be done. Some of the possible techniques for reducing number of calls described [here](https://github.com/magento/architecture/blob/6b60580f17be4e015229d9c0f0228d789aa3269c/design-documents/services-decomposition-guidelines.md)
 
-#### Call Analysis
-
-Catalog
-* 2 calls to get list of products with different criteria
-* 1 call to get final price for QTY
-* 1 call to get product info
-* 1 call to prepare item for cart
-Possible optimizations: remove prepare item for cart call, 2 product list calls into 1 call, we will get 3 calls.
-
-Inventory
-* 2 calls to get different stock data
-* 1 call to validate 
-Possible optimizations: group stock data calls into 1, we will get 2 calls as a result.
-
-Customer
-* 7 calls to get customer data
-Possible optimizations: pass as an argument of operation.
-
-Quote/shipment
-* 2 calls
-Possible optimizations: need to investigate if we can eliminate 1 call, as a result we can potentially get 1 call.
-
-Tax
-* 2 calls
-Possible optimizations: need to investigate if we can eliminate 1 call, as a result we will get 1 call.
-
-Integration
-* 1 call that can be removed.
-
-#### Additional Optimizations
-
-* Pass customer/group/addresses as an argument.
-* Make inventory checks a separate operation (validate-cart) that will be performed after product added to cart on each cart load asynchronously and before placing order
-* Totals should not be recalculated on each cart load page, only when cart changes and before placing the order to make sure product data didn't change.
-* Create service for totals calculation to reduce number of calls to BFF
-* Group calls to the same service (request all needed data in the beginning); can lead to shared state
-
-After we applying the following optimizations, we will have communication with checkout service as shown below
-* Pass customer as an argument of add to cart operation
-* Aggregate calls to catalog and inventory services Magento\CatalogInventory\Api\StockRegistryInterface::getStockItemBySku, Magento\CatalogInventory\Api\StockRegistryInterface::getStockStatusBySku need to combine into one call
-* Prepare item for cart logic should be eliminated, service should receive cart ready to add
-* Create API that would allow to calculate totals for the quote
+Please see diagram below of communication between services after the following refactoring and optimizations
+* Inventory checks disabled on quote load. Need to be done asynchronous on the shopping cart page and synchronously before placing order
+* Customer being passed with customer groups in add to cart operation
+* Authorization and authentication disabled
+* Created new service contracts for
+    * \Magento\Catalog\Model\Product\Type\AbstractType::prepareForCartAdvanced
+    * \Magento\Quote\Model\Quote\TotalsCollector::collect
+    * Magento\Quote\Api\CartRepositoryInterface::save
+* Misc changes to avoid unnecessary initialization/queries, for instance \Magento\Catalog\Model\Product::getCustomAttributes
+* Missing fields added to interfaces to make hydration/extraction possible when sending data through the network
+* Websites/stores and directory related logic skipped
+* New modules introduced SalesProxy, QuoteProxy, QuoteApi, MultishippingProxy, CustomerProxy, CatalogProxy, CheckoutProxy, PaymentProxy, PaypalProxy
 
 ![First iteration](checkout-service/add-to-cart-first-iteration.png)
 
+System makes 4 calls and ~2 times slower than monolith. After adding caching of get product list request, it would probably be 1.5 slower. Additional optimization that can be made is to move prepare for cart logic to checkout service.
 
-If we apply these additional optimizations, communication between services will look like this
-* Have tax service return aggregated information that later can be used to display tax on product page or totals. Question: wouldn't this data be redundant in some cases?
-* Move totals to it's own service: 1) reduce number of calls to monolith, 2) cache of requested data from tax, quote and sales service and as a result reduce amount of communication.
-
+After moving more parts of the system to services, communication may looks something like this.
 
 ![Apply more decomposition](checkout-service/add-to-cart-apply-more-decomposition.png)
 
 Cons
-* More work for initial iteration as we would have to decouple more services with checkout
-
+* More work for initial iteration as we would have to decouple more services with checkout.
 
 Pros
 * Allows reduce calls to BFF
-* Allows to avoid intermediate state of calculating totals in BFF and reduce amount of backwards incompatible changes
-
-### Place Order Operation
-
-Communication for place order operation looks similar. The only major differences are that we need to save payment, load quote multiple times and save quote. This flow potentially can be optimized.
-
-
-![Apply more decomposition](checkout-service/place-order.png)
-
+* Allows to avoid intermediate state of the system when calculation totals done in BFF and reduce amount of backwards incompatible changes
 
 ## Transactions
+
 Currently Quote module is responsible for creating an order. Need to move this responsibility to order service (BFF after first iteration).
 
 BFF will be responsible for loading quote and managing the transaction. If order placing failed, no additional transactions need to be rolled back after first iteration as all transactions being performed on BFF. If order placing successful, but  removing quote failed, we would need to retry removing quote instead of rolling back. Mechanism of retrying of failed operations is a general concern and should be discussed separately.
 
+## Prototype Limitations
+
+* Add to cart flow with simple product without options, main totals (some totals might be missing or not add up correctly) and guest customer
+* Place order scenario is functional (basic flow, critical data captured)
+* Some functionality that got broken and looked easy to fix has been left broken
+
+## Backwards incompatible changes
+
+* Adding fields to interfaces
+* Introducing new service contracts in monolith that going to become a service in the future (possibly can keen backwards compatible by making these service contracts use the new service).
+* Adding new fields to service contracts, for instance passing customer in \Magento\Quote\Api\GuestCartItemRepositoryInterface::save. Potentially can keep backwards compatible by leaving monolith use old service contracts and when deployed as distributed setup new ones.
+* Most likely we don't want to send all of the data for entity over network. If we go with this approach we will have different sent of fields being passed in ase of monolith and distributed deployment.
 
 ## Open Questions
+
+* Instantiation of models for the entities that have EAV attributes leads to database queries.
+* BFF should not know about numeric quote identifiers.
 * Format of the data API receives is different from the format service contracts use in some cases (for date for instance we expect string via API, but the actual interfaces use array). A: Leave external API for backwards compatibility, introduce new types for services.
 * Hydration/extraction for certain entities triggers initialization of resource models/queries to database, ProductInterface is one of the examples. A: Some of these interfaces should not be shared, quote should have it's own ProductInterface. What to do with backwards compatibility?
-* Code reuse (reusing the same modules). It's anti pattern, but maybe for us it's ok? A: Deal on case by case basis.
 * When adding product to cart for product option of type file we need to upload the file. A: Storage of these files can be responsibility of separate service.
-* Quote uses \Magento\Catalog\Model\Product\Type\AbstractType::prepareForCartAdvanced to prepare product for cart. A: BFF should pass product that already ready to be added to cart. Later can consider exposing this API on the catalog service.
-* Quote need to get price for a product in certain QTY. We can't pass product with final price as price can depend on tier price. A: BFF need to expose API that would allow to retrieve final price for product in certain QTY.
 * A lot of fields are not part of the data interfaces. A: Add fields to interfaces or use extension attributes.
+* Number of connections to monolith increases until all of the services checkout service uses separated.
