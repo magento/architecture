@@ -180,12 +180,6 @@ _inter_webapi.xml_
 </services>
 ```
  
-We will have to pass authenticated user information to remote services so we'll add _X-Magento-User-Type_ and _X-Magento-User-Id_
-headers to requests for a _UserContextInterface_ instance to be initialized. There's no need for nodes to validate auth information of
-incoming
-requests since those requests will come from other nodes in a closed network or they will be encrypted. These headers will only be
-accepted by endpoints declared in _inter_webapi.xml_ files.
- 
 The way exceptions thrown by services are serialized right now for RESTful web API needs to be changed for inter-service endpoints.
 Exceptions are serialized without their type information provided - this info is crutial for services to communicate with each other so
 the type information will be added to the output.
@@ -230,9 +224,6 @@ Remote calls to services must coexist with local calls, and on the service it wo
 microservices communications are more complex than just calling a class and a method on another node with provided
 arguments - we need to pass authentication information, call (request) IDs, sign requests - we need a customizable and
 extendable gateway for this.
-
-#### Authentication and authorization
-More details [here](distributed-auth.md)
 
 #### Front node (BFF)
 Front node is a Magento installation with Framework, *Api, *Proxy and *Webapi/*GraphQl modules.
