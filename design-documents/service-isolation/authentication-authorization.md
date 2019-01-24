@@ -70,9 +70,14 @@ It's better to expose all available API and use entry points instead of existing
 `rest/V1/shipment/:id` and HTTP verb (like POST or GET), this approach is similar to [Amazon ARNs](https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html)
 and allows making fine-grained access control.
 
+### Authorization Schema
+
 As Magento should provide [multiple BFF](https://github.com/magento/architecture/blob/master/design-documents/service-isolation.md#backends-for-frontends)
-it makes sense to extract authentication and authorization flow to a separate `Auth Service` to avoid credentials
-validation and duplication of roles & privileges data. And the general schema might look like this:
+it makes sense to extract authentication flow to a separate `Auth Service` to avoid duplication of roles & privileges data 
+and credentials validation in multiple places.
+
+The one of the possible approaches is to perform authentication and authorization by `Auth Service`.
+And the general schema might look like this:
 
 ![Authentication and Authorization General Schema](auth-general-schema.png)
 
@@ -95,6 +100,16 @@ A token validation per each request on `Auth Service` allows keeping authorizati
 to `Auth Service`, which can automatically assign API to existing roles based on default rules. The token validation includes
 not only signature verification but authorization.
 
+Another approach is to make authorization on `Auth Service` but communication between BFF/Monolith and services does not
+require full authentication. Each service, before perform received request, just checks if a token
+contains the correct permissions.
+
+![JWT validation by Service](service-jwt-validation.png)
+
+The main difference between these approaches, that the second schema relies on the protected network and each service
+validates a token by himself (checks if token contains permissions to perform requested operation).
+[JWT libraries](https://jwt.io/#libraries-io) could be used to reduce validation logic duplication.
+
 ### Services Deployment
 
 `Auth Service` stores allowed operations for roles and, during deployment, each service should send a list of available
@@ -105,13 +120,15 @@ operations to `Auth Service`.
 ### Service-to-Service Communication
 
 As each service should be agnostic to a source of a request (in general, for a service it does not matter who sends
-a request) service-to-service communication also requires a token. The next diagram describes a possible flow:
+a request) service-to-service communication also requires a token. The next diagram describes a possible flow based on
+approach when `Auth Service` makes authentication & authorization:
 
 ![Service to Service](service-to-service.png)
 
-Before making a call to the needed service, the first service makes a call to `Auth Service` to retrieve token for the future
-communication. The second service makes a call for token validation in the same way as for other types of requests, so
-for the second service, it does not matter who sends original request.
+Before making a call to the needed service, `Checkout Service` makes a call to `Auth Service` to retrieve token for the future
+communication. The `Order Service` makes a call for token validation in the same way as for other types of requests, so
+for `Order Service`, it does not matter who sends original request.
+The token validation call might be eliminated if `Order Service` will perform token validation by himself.
 
 ### Guest-to-Service Communication
 
@@ -133,13 +150,15 @@ The usage of OAuth 2.0 framework has the next benefits:
 * JWT could be used for a client authentication and authorization ([RFC7523](https://tools.ietf.org/html/rfc7523))
 * Defines the standard for the response format, error codes
 
-## Open Questions
+## Use Cases
 
- - Anyway, each service should check if a user is allowed to perform an action (for example, if the current user is allowed
+ - Each service should check if a user is allowed to perform an action (for example, if the current user is allowed
  editing profile details because only service knows the profile owner)
  - Search WEB API operations like `getList` should be filtered by a request initiator (a customer can retrieve only his
  orders, a guest does not have customer ID, admin can get all orders, a company user - according to the allowed hierarchy)
- - Roles with hierarchy probably might use [Open Policy Agent](https://www.openpolicyagent.org/)
+ - A user might not have permissions to some services but the service which executes the user request should have such
+ permissions (user has access to a product but does not have permissions to product reviews, but Product Service should
+ have permissions to Product Review Service to get aggregated data).
 
 ## Implementation Approach
 
