@@ -26,7 +26,7 @@ Can be used by 3rd party devs to write proxy services and modify invoker functio
 ```php
 interface InvokerInterface {
     /**
-     * @param string $class
+     * @param string $interface
      * @param string $method
      * @param array $arguments Keys - argument names.
      * @return PromiseInterface Will provide InvokeResponseInterface when resolved,
@@ -34,7 +34,7 @@ interface InvokerInterface {
      *                 has "wait" method to use in synchronous way.
      */
     public function invoke(
-        string $class,
+        string $interface,
         string $method,
         array $arguments
      ): PromiseInterface;
@@ -51,7 +51,7 @@ interface ServiceSourceInterface {
     public function isSignatureRequired(): bool;
 }
 ```
-##### Remote service sources reposit.ory
+##### Remote service sources repository
 Find service sources information
 ```php
 interface ServiceSourceRepositoryInteface {
