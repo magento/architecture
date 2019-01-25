@@ -111,7 +111,7 @@ remote service and for that simple DTOs will suffice.
  
 #### The invoker
 The invoker will be a part of Magento\Framework and will be present in every node installation. Invoker's job is to find a remote node's
-address based on given class name and method, send the request, receive response and convert it to either requested service method return type
+address based on given interface name and method, send the request, receive response and convert it to either requested service method return type
 or an exception if it was thrown by the remote service. It returns a promise to support asynchronous services and because
 the requests to remote services will be asynchronous (depends on implementation). More details on the invoker's API and SPI
 [here](invoker.md).
@@ -268,7 +268,7 @@ _BFF_
   * calls CartManagementInterface::placeOrder() with string and PaymentInterface instance as arguments
 * _QuoteProxy_ has di.xml which states that CartManagementProxy is the preference for CartManagementInterface
 and PaymentProxy is the preference for PaymentInterface
-* CartManagementInterface::placeOrder() calls the InvokerInterface and passes the service's class name, method and the argument
+* CartManagementInterface::placeOrder() calls the InvokerInterface and passes the service's interface name, method and the argument
 * Invoker looks at env.php to find Magento\Quote's URL (something like https://quote.mydomain.com/ or http://182.1.1.2)
 * Invoker serializes the argument as the argument type provided in CartManagementInterface::placeOrder() declaration
 * Invoker gets user type and user ID from the UserContextInterface instance
