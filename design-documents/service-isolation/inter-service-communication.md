@@ -115,6 +115,56 @@ address based on given interface name and method, send the request, receive resp
 or an exception if it was thrown by the remote service. It returns a promise to support asynchronous services and because
 the requests to remote services will be asynchronous (depends on implementation). More details on the invoker's API and SPI
 [here](invoker.md).
+
+#### Possible gateways
+__REST__
+
+Pros
+* We already have framework that provides support for it
+* Established way to call service contracts
+* Easy to adopt by developers creating services with tools other then Magento
+
+Cons
+* Not suitable for communication between services because it has limitations on the set of primary function calls (read, replace, modify, delete)
+* Has large size of the message
+
+__gRPC__
+
+Pros
+* Specifically designed for communication between services
+* Small size of the message
+* Support of HTTP 2
+* Client code generation support for many programming languages (need to confirm if it works for PHP)
+* Potentially can save on network communication if services would be demons that invokes service application
+(Magento would have to be tested/fixed to be run as daemon)
+ 
+Cons
+* There are some support limitations in PHP (rapidly growing though)
+* Would require developers of services that are not using Magento to adopt this technology
+* Harder to customize for our needs like forwarding authenticated user info,
+duplicate operation prevention mechanism (request ID) or sending other metadata
+* Would require more development time comparing to using existing gateways
+
+__RPC + REST__
+
+Pros
+* We already have framework that provides support for it
+* Established way to call service contracts
+* Easy to adopt by developers creating services with tools other then Magento
+* No limitations on the set of primary function calls
+* Easy to add metadata between requests and to customize for Magento needs
+
+Cons
+* Existing REST web API will be used as an RPC so some of the RESTful principles will be disregarded
+* Has large size of the message
+
+__GraphQL__
+
+Pros
+* Already existing gateway
+
+Cons
+* Has complication logic behind it
  
 #### Gateway
 For actually delivering remote service requests RESTful API will be used - it's an established way to execute requested
@@ -175,7 +225,11 @@ the type information will be added to the output.
 _inter_webapi.xml_ files will be contained in separate <ModuleName>InterApi modules and will have to be installed
 on service nodes accepting remote inter-service requests.
  
-##### Changes for retries mechanism
+To make it easier for debuging and to perhaps later to be used for data consistency _X-Magento-Correlation-Id_ header will
+be added to requests to remote services with ID generated on BFF before a 1st request to a service. The ID will be
+forwarded between services to identify a single operation.  
+ 
+##### Retries mechanism
 The invoker implementation based on RESTful web APIs will offer default retries mechanism, but developers will be able to disable it
 by using _di.xml_ (see Invoker API and SPI [here](invoker.md)) for when they would want to delegate this responsibility
 to a service mash or a balancer. 
@@ -194,24 +248,15 @@ duplicate request comes in if the service node can't find the call ID in cache i
 if the cache has the call ID that would mean the service method is being executed and we'll have to wait until the original process
 finishes it and writes the response to cache, if both call ID and the result are in cache then we just return the result. That way
 we will avoid executing duplicate calls when retries mechanism is applied.
+
+#### Data consistency
+Mechanisms to preserve data consistency will described later in another document and can be built on
+top of the communications described in this one.
  
     
 #### Service mashes and balancers
 Since we going to contact services via HTTP it is possible for configured service base URLs to actually lead to service mashes or
 balancers - that way the retries and lookup mechanism may be delegated.
-
-#### MQ RPC for gateway
-Magento has another way to remotely call services - RPC via a message queue. The problem with it is that right now it can only work
-with strings as arguments for service contracts and daemons written in PHP to process queues will show slower results in handling
-multiple requests than web servers like Nginx or Apache when using RESTful web API for gateway.
-See _Magento\Framework\MessageQueue\Rpc\*_ and _Magento\Framework\MessageQueue\UseCase\RpcCommunicationsTest_ for
-more information. It is not a finished mechanism and it will take longer to adapt it for inter-service communications.
- 
-#### gRPC for gateway
-Remote calls to services must coexist with local calls, and on the service it would make sens to use an RPC for that but
-microservices communications are more complex than just calling a class and a method on another service node with provided
-arguments - we need to pass authentication information, call (request) IDs, sign requests - we need a customizable and
-extendable gateway for this.
 
 #### BFF
 BFF is a Magento installation with Framework, *Api, *Proxy and *Webapi/*GraphQl modules.
@@ -274,14 +319,20 @@ and PaymentProxy is the preference for PaymentInterface
 * Invoker gets user type and user ID from the UserContextInterface instance
 * Invoker composes URL to access inter-service endpoint on the _Quote_ service node
 like __http://quote.mydomain.com/rest/inter/quote/cart-management/place-order__
-* Invoker sends request to _Quote_ service node containing serialized ProductInterface argument, user type, user ID
-  and returns a promise that will be fulfilled when the request finishes and return value is unserialized
+* Invoker finds no active _correlation ID_ so it generates a random string and adds it to the request to be sent to the
+_Quote_ service
+* Invoker generates a _request ID_ for this remote call
+* Invoker sends request to _Quote_ service node containing serialized ProductInterface argument, user type, user ID,
+correlation ID, request ID
+and returns a promise that will be fulfilled when the request finishes and return value is unserialized
 * the request is sent using Guzzle library and it's sent asynchronously (concurrently with other requests)
  
 _quote service_
 * Receives HTTP request from the BFF, let's say on https://quote.mydomain.com/rest/inter/quote/cart-management/place-order
 * CartManagementInterface::placeOrder() is matched because URL generation rules are the same on all service nodes and managed by Framework
 * Checks inter_webapi.xml in _QuoteInterApi_ module to find if CartManagementInterface::placeOrder() is available
+* Reads _request ID_, tries storage (a cache) to see if an operation with such ID was already started or even finished -
+no record, this request is not a duplicate, continue processing
 * Reads user type and user ID information from the request and creates a UserContextInterface instance
 * Deserializes body into a string and the PaymentInterface instance (this node also has _QuoteApi_ modules and gets the service's arguments it provides)
 * Magento\Quote\Model\Quote\Payment is actually used as the argument because this node has _Quote_ module installed
@@ -290,7 +341,8 @@ and no _QuoteProxy_ module
 * QuoteManagement::placeOrder() is executed
 * QuoteManagement::placeOrder() uses StockManagerInterface::decrease() from _CatalogApi_ module
 * this node has only _CatalogProxy_ module so an instance of CatalogProxy\StockManagerProxy is used
-* it sends a request to the _catalog service_ using the invoker
+* it sends a request to the _catalog service_ using the invoker with the _correlation ID_ received from BFF
+and a new _request ID_ generated for this operation
 * the result is used by the QuoteManagement::placeOrder() method
 * QuoteManagement::placeOrder() finishes and returns order ID
 * RESTful API mechanism serializes string (order ID)
