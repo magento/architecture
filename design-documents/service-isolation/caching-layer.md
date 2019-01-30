@@ -12,7 +12,7 @@ Caching should be implemented on several levels:
  * Caching of http-responses returned by [BFF](https://github.com/magento/architecture/blob/master/design-documents/service-isolation.md#backends-for-frontends) (exposed web-server) 
  * Application data caching (results of DB queries, merged configurations etc.)
 
-### Caching of http-responses returned by BFF (exposed web-server)
+### Caching results of GET-requests to BFF (exposed web-server)
 
 [BFF](https://github.com/magento/architecture/blob/master/design-documents/service-isolation.md#backends-for-frontends) http-responses contains static assets, **public** and **private** dynamic content.
 Static assets should be cached using CDN. Reverse proxy should cache public content.
@@ -22,8 +22,7 @@ Beside performance this type of cache has next benefits:
  * Protection against outages - can optionally serve stale content when there is a problem with origin server
  * Scalability - number of caching nodes can be increased
  * Flexibility – Varnish Configuration Language (VCL) builds customized solutions, rules and modules
- * Shielding - the shield node is the only node to get the content from origin server, other cache nodes will fetch from the shield node
- 
+
  ![Public content caching](img/public-cache.jpg)
 
 A private or visitor-specific content should be stored on client-side (browser). After POST requests the cache 
@@ -37,7 +36,14 @@ Also private content cache on client-side should expire according to TTL.
   * The http-response header should include a set of tags for effective cache purging on reverse-proxy.
  The set should be created while request is going via the chain of services. Appropriate design should be prepared.
   * Caching on reverse-proxy should be aligned with request authorization approach. The presence of an authorization token should be taken into account.
-  
+
+### Caching results of GET-requests in service-to-service communication (private web-server)
+
+Services can produce a lot of GET requests to each other in the private network.
+To reduce the overall load on service origin a reverse proxy should be used.
+Varnish is offered as a proven solution. Should be aligned with request authorization approach.
+
+ ![Private content caching](img/reverse-proxy-service.png)
 
 ### Application data caching
 
@@ -56,7 +62,7 @@ The three possible types of caches are the following:
    - the information stored within an individual cache node cannot be shared with other application servers
    - not follow the 12-factor principles (any data that needs to persist must be stored in a stateful backing service)
  
- ![Local cache](img/local-app-cache.png)
+ ![Local cache](img/local-service-cache.png)
  
 #### Remote caches dedicated to each service
  - Pros: 
@@ -64,11 +70,12 @@ The three possible types of caches are the following:
    - externalize application state
    - possibility dynamically change the number of service instances
    - contains only dedicated service data
+   - multiple instances of the same service can use the same cache instance.
  - Cons: 
    - a slight delay in network calls
    - difficulties with centralized cache invalidation
  
-  ![Remote cache dedicated to each service](img/remote-dedicated-cache.png)
+  ![Remote cache dedicated to each service](img/remote-dedicated-cache1.png)
  
 #### Remote caches shared across the services
  - Pros: 
@@ -78,7 +85,7 @@ The three possible types of caches are the following:
  - Cons: 
    - cache nodes contain mixed data from different services
  
- ![Remote cache shared across the services](img/remote-cache-cluster.png)
+ ![Remote cache shared across the services](img/remote-cache-cluster1.png)
  
 Local caches are isolated on the individual nodes and cannot be leveraged within a cluster of application servers.
 Remote distributed caches on the other hand, provide low latency and higher levels of availability, when employed with read replicas and can provide a shared environment for all application servers to utilize the cached data.
@@ -101,5 +108,6 @@ Unlike Memcached, Redis offers snapshots, replication, transactions, advanced da
 ### Resolutions
  - Model "Remote cache dedicated to each service" is most suitable.
  - REST entry point on each service for cache invalidation should be created.
+ - Consider possibility of cache invalidation by publishing events in the message queue.
  - Create HLD for caching API REST requests (GET).
  
