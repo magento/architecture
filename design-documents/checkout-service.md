@@ -10,7 +10,7 @@ This document describes checkout service prototype and communication between mon
 
 Below is the diagram of communication after introducing boundaries between modules and making system do network calls in the places where seams are. System on the diagram makes 23 calls and ~8.5 times slower.
 
-![Current state](checkout-service/add-to-cart-current-state.png)
+![Current state](checkout-service/add-to-cart-first-iteration.png)
 
 Most likely after introducing boundaries between modules performance of the system will not be optimal and optimizations will have to be done. Some of the possible techniques for reducing number of calls described [here](https://github.com/magento/architecture/blob/6b60580f17be4e015229d9c0f0228d789aa3269c/design-documents/services-decomposition-guidelines.md).
 
@@ -29,9 +29,23 @@ Diagram demonstrates communication between services after the following refactor
 * New modules introduced SalesProxy, QuoteProxy, QuoteApi, MultishippingProxy, CustomerProxy, CatalogProxy, CheckoutProxy, PaymentProxy, PaypalProxy
 
 
-![First iteration](checkout-service/add-to-cart-first-iteration.png)
+![First iteration](checkout-service/add-to-cart-current-state.png)
 
 System makes 4 calls and ~2 times slower than monolith. After adding caching of get product list request, it would probably be 1.5 slower.
+
+API of add to cart should receive customer with customer group and product in full configuration.
+
+```
+{
+    "cartItem": {
+        "quote_id": "",
+        "sku": "",
+        "qty": "",
+        "product": {}
+    },
+    "customer": {}
+}
+```
 
 After moving more parts of the system to services, communication may looks something like this.
 
