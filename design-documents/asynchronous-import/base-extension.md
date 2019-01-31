@@ -127,9 +127,8 @@ Start File Import
 ```
 {
   "importEntry": {
-      "uuid": "",
       "profile": {
-        "profile_code": "default",
+        "uuid": "profile uuid, if there is one",
         "behaviour": "add_update, delete, update, add, replace",
         "import_image_archive": "string",
         "import_images_file_dir": "string",

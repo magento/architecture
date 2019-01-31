@@ -8,7 +8,7 @@ We planning to build next functionality during this phase:
 
 Main idea, is in case some operation import failure, that user could align input data and repeat import for this particular item
 
-PUT  `/V1/import/{fileId}/operation-id/{operationId}`
+PUT  `/V1/import/{uuid}/operation-id/{uuid}`
  
 ```
 {
@@ -65,17 +65,17 @@ POST  `/V1/import/profile`
 
 #### Return
 
-Returns profile ID.
+Returns profile Uuid.
 
 ```
 {
-	"profile_id": int
+	"uuid": int
 }
 ```
 
 ### Update Profile
 
-PUT  `/V1/import/profile/{profileId}`
+PUT  `/V1/import/profile/{uuid}`
 
 See “Create new profile“
 
@@ -83,7 +83,7 @@ See “Create new profile“
 
 Delete profile from system
 
-DELETE  `/V1/import/profile/{profileId}`
+DELETE  `/V1/import/profile/{uuid}`
 
 ### Get Profiles
 
@@ -91,16 +91,17 @@ Get profiles list
 GET  `/V1/import/profile`
 
 Get by ID
-GET  `/V1/import/profile/:id`
-
+GET  `/V1/import/profile/{uuid}`
 
 After implementation of Profiles logic, start import call will looks like this: 
 
 ```
 {
-	"file_id": int,
-	"profile_id": int,
-	"type": "products, customers ...."
+  "importEntry": {
+      "profile": {
+        "uuid": "profile uuid, if there is one",
+      }
+  }
 }
 ```
 
