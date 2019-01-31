@@ -8,7 +8,7 @@ We planning to build next functionality during this phase:
 
 Main idea, is in case some operation import failure, that user could align input data and repeat import for this particular item
 
-PUT  `/V1/import/{uuid}/operation-id/{uuid}`
+PUT  `/V1/import/operation-id/{uuid}`
  
 ```
 {
