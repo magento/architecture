@@ -49,13 +49,17 @@ interface InvokerInterface {
 ##### Service information
 Nodes data.
 Used to access nodes (services) and provide requests for them.
-For now it only has 1 property but more may need to be later to describe how to contacts services.
+
 May be used by 3rd-party developers to read services data for their own gateway implementation.
 ```php
 namespace Magento\Framework\Invoker\Contacts;
 
 interface ServiceInformationInterface {
     public function getUrl(): string;
+    
+    public function getCertFile(): ?string;
+    
+    public function getCertPassword(): ?string;
 }
 ```
 ##### Remote service information repository

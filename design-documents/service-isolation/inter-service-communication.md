@@ -127,7 +127,8 @@ Pros
 Cons
 * Not suitable for communication between services because it has limitations on the set of primary function calls (read, replace, modify, delete)
 * Has large size of the message
-* Not all endpoints should be exposed to frontend developers (like getting a Gift card account by ID)
+* Not all endpoints should be exposed to frontend developers
+(like getting a Gift card account by ID, service for sending emails, service for sending a payment)
 * Mix of endpoints meant for frontend devs and endpoints for other services would potentially create security problems
 * Multiple endpoints for the same service interface/method may exist with different parameters enforced - invoker
 would need only one
@@ -138,16 +139,21 @@ Pros
 * Specifically designed for communication between services
 * Small size of the message
 * Support of HTTP 2
-* Client code generation support for many programming languages (need to confirm if it works for PHP)
+* Client code generation support for many programming languages
 * Potentially can save on network communication if services would be demons that invokes service application
-(Magento would have to be tested/fixed to be run as daemon)
  
 Cons
-* There are some support limitations in PHP (rapidly growing though)
+* Writing servers is not officially supported for PHP, would have to use a hack by 3rd party developers
 * Would require developers of services that are not using Magento to adopt this technology
 * Harder to customize for our needs like forwarding authenticated user info,
 duplicate operation prevention mechanism (request ID) or sending other metadata
 * Would require more development time comparing to using existing gateways
+* Developers that are not using Magento would have to have a daemon processing requests from Magento instances
+* gRPC servers would have to be daemons and PHP doesn't have native async code support which would make daemons processing
+requests much slower than with an HTTP server like apache/nginx
+(daemon would use 1 core, HTTP servers effectively distribute processes between cores)
+* Magento would have to be adopted to be run as a daemon
+* only supports 1 dimensional maps (with values of the same type) and one dimensional arrays
 
 __RPC + REST__
 
@@ -157,6 +163,7 @@ Pros
 * Easy to adopt by developers creating services with tools other then Magento
 * No limitations on the set of primary function calls
 * Easy to add metadata between requests and to customize for Magento needs
+* Can be easily used with HTTP cache proxies like Varnish
 
 Cons
 * Existing REST web API will be used as an RPC so some of the RESTful principles will be disregarded
@@ -169,6 +176,9 @@ Pros
 
 Cons
 * Has complication logic behind it
+* We wouldn't be able to utilize GraphQL's ability to strip properties or load multiple entities at once since we would
+have no way to know what properties client service wanted because client services wouldn't know whether they're calling
+a  remote service or a local one
  
 #### Gateway
 For actually delivering remote service requests RESTful API will be used - it's an established way to execute requested
@@ -262,6 +272,30 @@ top of the communications described in this one.
 #### Service mashes and balancers
 Since we going to contact services via HTTP it is possible for configured service base URLs to actually lead to service mashes or
 balancers - that way the retries and lookup mechanism may be delegated.
+
+#### Deployment
+In default .htaccess and nginx.conf.sample files requests to /rest/inter/* will be disabled because it would be dangerous to
+allow calling any installed services from outside - only other service nodes must be able to do this. That's why it will
+be recommended to have service nodes reside in a private network (or have firewalls allowing only connections
+from trusted nodes) and then enabling requests to /rest/inter/* in .htaccess/nginx.conf.
+ 
+For cases when a service node must be publicly accessible (like BFF having some services deployed locally) developers
+would have to create SSL client-side certificates and then create a separate virtual host processing requests to /rest/inter/*
+that would require all client service nodes to use this certificates to sign their requests.
+ 
+This measures will prevent anyone other than service nodes using service comm gateway.
+ 
+To notify invoker to send requests signed an option will exist in services configuration:
+```php
+return [
+    'services' => [
+        'Magento\Catalog' => [
+            'address' => 'http://catalog.mydomain.com/',
+            'certificate' => ['file' => '../cert.pem', 'password' => 'qwerty123']
+        ],
+    ],
+];
+```
 
 #### BFF
 BFF is a Magento installation with Framework, *Api, *Proxy and *Webapi/*GraphQl modules.
