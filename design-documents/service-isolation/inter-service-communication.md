@@ -153,7 +153,8 @@ duplicate operation prevention mechanism (request ID) or sending other metadata
 requests much slower than with an HTTP server like apache/nginx
 (daemon would use 1 core, HTTP servers effectively distribute processes between cores)
 * Magento would have to be adopted to be run as a daemon
-* only supports 1 dimensional maps (with values of the same type) and one dimensional arrays
+* only supports 1 dimensional maps (with values of the same type) and one dimensional arrays which makes sending
+arbitrary structures (like template vars to an email service) impossible
 
 __RPC + REST__
 
