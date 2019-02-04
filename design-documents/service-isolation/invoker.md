@@ -46,6 +46,18 @@ interface InvokerInterface {
 ```
  
 #### SPI
+##### Authorization information
+Marker interface for auth data to pass to services.
+
+```php
+namespace Magento\Framework\Invoker\Contacts;
+
+interface AuthenticationDataInterface
+{
+
+}
+```
+
 ##### Service information
 Nodes data.
 Used to access nodes (services) and provide requests for them.
@@ -57,9 +69,7 @@ namespace Magento\Framework\Invoker\Contacts;
 interface ServiceInformationInterface {
     public function getUrl(): string;
     
-    public function getCertFile(): ?string;
-    
-    public function getCertPassword(): ?string;
+    public function getAuthData(): AuthenticationDataInterface;
 }
 ```
 ##### Remote service information repository
