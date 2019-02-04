@@ -28,6 +28,7 @@ facilitator
 1. Fork the repository and add or edit a document in your branch.
 Contributions are expected from Magento core engineers mostly, although the community members are able to contribute as well.
 1. Create a PR with the new or updated document to discuss
+   1. Use [Design Document template](https://raw.githubusercontent.com/magento/architecture/master/design-documents/README.md) for a new document
 1. Share the PR with internal team(s) and the Magento community through existing channels (Twitter, Slack, blog post, etc)
    1. Suggestion: include deadline for receiving feedback
 1. Get a feedback. We expect a feedback as:
