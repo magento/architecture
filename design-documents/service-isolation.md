@@ -239,7 +239,7 @@ General principles to follow for service isolation:
 * All service operations MUST BE stateless
 * There MUST BE NO data dependencies between services.
 * Command & query responsibility segregation – storefront APIs for data immutable in storefront (catalog) should be optimized for data retrieval
-* Services MUST NOT manage session, operations have to explicitly declare all required arguments, and those arguments should be passed in request
+* Services MUST NOT manage session, this is responsibility of BFF. APIs of the services have to explicitly declare all required arguments.
 
 A detailed design must be prepared for every service.
 
