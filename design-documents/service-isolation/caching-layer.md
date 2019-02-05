@@ -40,10 +40,11 @@ Also private content cache on client-side should expire according to TTL.
 ### Caching results of GET-requests in service-to-service communication (private web-server)
 
 Services can produce a lot of GET requests to each other in the private network.
-To reduce the overall load on service origin a reverse proxy should be used.
-Varnish is offered as a proven solution. Should be aligned with request authorization approach.
+First of all service application should be as fast as possible to avoid using reverse proxy as cache layer.
+But if application is not able to hold the load a reverse proxy can be used to reduce the overall load on service origin.
+Varnish is offered as a proven solution for such cases. Should be aligned with request authorization approach.
 
- ![Private content caching](img/reverse-proxy-service.png)
+ ![Private content caching](img/reverse-proxy-service1.png)
 
 ### Application data caching
 
@@ -106,8 +107,11 @@ Redis and Memcached offer high performance. Memcached is designed for simplicity
 Unlike Memcached, Redis offers snapshots, replication, transactions, advanced data structures. So I propose to use Redis for application data caching.
 
 ### Resolutions
- - Model "Remote cache dedicated to each service" is most suitable.
+ - Model "Remote cache dedicated to each service" is most suitable for application data cache.
+ - Don't use reverse proxy for caching requests in service-to-service communication until it's needed 
  - REST entry point on each service for cache invalidation should be created.
  - Consider possibility of cache invalidation by publishing events in the message queue.
+ - Application data cache versioning should be described in a separate document. 
  - Create HLD for caching API REST requests (GET).
+ - HTTP cache will not actually handle caching of GraphQL requests/responses since they're all done as a POST. GraphQL caching should be described in a separate document. 
  
