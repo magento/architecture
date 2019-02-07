@@ -69,7 +69,7 @@ BFF will be responsible for loading quote and managing the transaction. If order
 It is possible to allow user upload file for product option of type file. Checkout service should be responsible for storing these files. When user uploads file, BFF should receive the file and send to checkout service. Checkout service then need to receive a file and store it locally or use another service to store the file. When file need to be send to the user, BFF would retrieve file from checkout service via separate API and cache it locally.
 
 There are 3 main options for storing files
-* Use clod provided solution
+* Use cloud provided solution
 * Mount network file system
 * Create separate service for storing files
 
