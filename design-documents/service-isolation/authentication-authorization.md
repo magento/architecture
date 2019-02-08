@@ -56,8 +56,7 @@ HMACSHA256(
     
 ## General Schema
 
-Now, current Magento authorization mechanism based on roles and assigned rules. Each role has a list of allowed resources
-and ER diagram looks like this:
+Now, current Magento authorization mechanism based on roles and assigned rules. Each role has a list of allowed resources (ACL)
 
 ![Current RBAC ER](current-rbac-er.png)
 
@@ -109,6 +108,26 @@ contains the correct permissions.
 The main difference between these approaches, that the second schema relies on the protected network and each service
 validates a token by himself (checks if token contains permissions to perform requested operation).
 [JWT libraries](https://jwt.io/#libraries-io) could be used to reduce validation logic duplication.
+
+#### Fine-Grained Control
+
+The authorization mechanism does not solve all issues related to the permissions. Each service should check if the current user
+is allowed to read/modify/replace/delete requested data. The current mechanism (ACL usage) allowing checking resources but
+not the content of requested data. Also, as only a service knows which kind of privileges the user has according to the
+business rules there is no possibility (based on the current implementation) to make all validation in the one place.
+
+[Open Policy Agent](https://www.openpolicyagent.org/docs/get-started.html) might be used as possible solution.
+It has the next advantages:
+
+ - Provides declarative language to specify dynamic polices
+ - Provides RESTful API for the communication
+ - Should be deployed as separate service (as written on GoLang)
+ - Open Source (Is licensed under Apache License 2.0)
+ 
+As a [policy](https://www.openpolicyagent.org/docs/) could be declared dynamically, each service might provide own list of
+policies based on service's specific business logic and the only OPA service will be used to validate all policies for
+requests.
+
 
 ### Services Deployment
 
