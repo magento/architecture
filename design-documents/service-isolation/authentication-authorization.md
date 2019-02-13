@@ -109,6 +109,14 @@ The main difference between these approaches, that the second schema relies on t
 validates a token by himself (checks if token contains permissions to perform requested operation).
 [JWT libraries](https://jwt.io/#libraries-io) could be used to reduce validation logic duplication.
 
+### Session Usage
+
+As Magento uses session mechanism not only for authorization purposes but as temporary storage it makes sense to leave
+session usage on Monolith/BFF as is for the first implementation iteration because:
+
+ - Data, which changes dynamically (like quote ID), requires token regeneration
+ - Browser cookie has limitation (~4KB), Session ID has less size then JWT
+
 #### Fine-Grained Control
 
 The authorization mechanism does not solve all issues related to the permissions. Each service should check if the current user
