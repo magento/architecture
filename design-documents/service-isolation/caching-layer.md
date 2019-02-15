@@ -25,8 +25,8 @@ Beside performance this type of cache has next benefits:
 
  ![Public content caching](img/public-cache.jpg)
 
-A private or visitor-specific content should be stored on client-side (browser). After POST requests the cache 
-in the web browser will be flushed and an AJAX call will be done to fetch an updated copy of the private content.
+A private or visitor-specific content should be stored on client-side (browser). Every time a HTTP POST request is made 
+the cache in the web browser will be flushed and an AJAX call will be done to fetch an updated copy of the private content.
 Also private content cache on client-side should expire according to TTL.
 
  ![Private content caching](img/private-cache.jpg)
@@ -109,8 +109,7 @@ Unlike Memcached, Redis offers snapshots, replication, transactions, advanced da
 ### Resolutions
  - Model "Remote cache dedicated to each service" is most suitable for application data cache.
  - Don't use reverse proxy for caching requests in service-to-service communication until it's needed 
- - REST entry point on each service for cache invalidation should be created.
- - Consider possibility of cache invalidation by publishing events in the message queue.
+ - Cache invalidation will be event driven, should be described in separate proposal.
  - Application data cache versioning should be described in a separate document. 
  - Create HLD for caching API REST requests (GET).
  - HTTP cache will not actually handle caching of GraphQL requests/responses since they're all done as a POST. GraphQL caching should be described in a separate document. 
