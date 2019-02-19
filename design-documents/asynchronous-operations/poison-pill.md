@@ -17,4 +17,4 @@ Before process new message consumer should ask Data Storage if there are poison 
 
 #### Extension Points and Scenarios
 
-We will put poison pill into Data Storage based on common Magento extension points like events and plugins
+We will put poison pill into Data Storage based on common Magento extension points
