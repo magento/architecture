@@ -5,7 +5,7 @@ poison pill
 
 ### Overview
 
-Right now our consumer depends on config/objects in-memory state. After application was bootstrapped it initialize a lot of object that are always kept in memory after first load - config, websites, etc.., since our consumers are long-living and their live time limited only by message count it leads to wrong im-memory config/objects states and we need to introduce the way to reinit them.
+Right now our consumer depends on config/objects in-memory state. After application was bootstrapped it initialize a lot of object that are always kept in memory after first load - config, websites, etc.., since our consumers are long-living and their live time limited only by message count it leads to outdated im-memory config/objects states and we need to introduce the way to reinit them.
 
 ### Design
 
