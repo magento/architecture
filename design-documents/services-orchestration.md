@@ -1,5 +1,8 @@
-#Distributed services orchestration by using workflow (state machine)
+# Distributed services orchestration by using workflow (state machine)
 
+This is an extension to [Service Isolation](service-isolation.md) document.
+
+## Actual challenges
 The keeping of strict boundaries between services rises a new challenge on how to organize complex cross-system communication that was inherited from the Magento application. The fact sub-applications can be deployed separately lead us to an obvious conclusion that such communication will be performed through the network and this communication does not have a state that can be shared between different components. The old scenario which required interaction across multiple domains, for instance, catalog and checkout, with this model of application deployment will have to invoke such operations remotely. The purpose of this document is to propose a way how to organize and manage such scenarios.
 ![Figure 1](services-orchestration/so1.png)
 
@@ -12,4 +15,5 @@ With this decision we will get:
 * Improved replaceability, confidence that service replacement will not break extensions that depend on this service implementation.
 * Better monitoring and troubleshooting Due to the fact we have to keep our services more granular it is easier to find a cause of an issue in a small service (as well as performance drop). The fact that we do not need to debug our scenario through the multiple PHP session triggered by the nested calls is a huge plus from a development standpoint.
 
-##Introduction of state machine
+## Introduction of state machine
+
