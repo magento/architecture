@@ -48,7 +48,7 @@ Rich syntax of step definition can support the following cases:
 [Amazon Step Function example](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-choice-state.html)    
 * Exception handling
 [Amazon Step Function example](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-errors.html)    
-* Operation Terminators (Success/Failure)
+* Operation terminators (Success/Failure)
 `<step name="ScenarioSuccessfullyCompleted" xsi:type="Success" outputPath="params"/>`
 
 ### Trivial Example
@@ -74,15 +74,36 @@ Rich syntax of step definition can support the following cases:
 
 ## Routines
 Routines configuration specifies a callable resource to be used in scenario steps.
+
+Actually we have to support two base types of routines:
+* Direct PHP Calls.
+* Magento WebAPI  REST calls.
+
+### Routines declaration example
+```
+    <routine xsi:type="MagentoWebAPIRoutine"
+            name="Magento:Example:Step1"
+            method="PUT"
+            url="http:/magento2sm.local/rest/V1/example/step1"
+    />
+    <routine xsi:type="MagentoWebAPIRoutine"
+             name="Magento:Example:Step2"
+             method="PUT"
+             url="http:/magento2sm.local/rest/V1/example/step2"
+    />
+``` 
+
 [Configuration schema](https://github.com/akaplya/mage-state-machine/blob/master/lib/internal/Magento/Framework/StateMachine/etc/routines.xsd)
 
+
 ## Backward compatibility
+TBD
 
 ## Solution evolution
 Introduction of workflows does not require a separate service to manage them.
 State machine component can be deployed at service instance.
 So the workflow can be used as a part of the monolith.
-Basic routing plugin transforms network calls to direct PHP communication.
+Basic routing plugin can transform network calls to direct PHP communication.
 In another hand, the state machine component does not couple with an application and can be deployed separately and play a role of queue scheduler for asyn operations.
 
 ## Implementation details
