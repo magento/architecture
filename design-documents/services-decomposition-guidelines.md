@@ -47,7 +47,8 @@ Document contains general recommendations and principles that need be considered
     * Follow best practices around working with data.
     * Use API versioning.
     * Be cautious about code reuse. As code reuse may lead to a need to redeploy multiple services need to make sure that it will at least not require redeploying them at the same time.
-
+    
+16. Framework should not manage retries, timeouts, circuit breaking and load balancing. Trying to implement this behaviour in application is an anti-pattern. Service mesh should be used instead.
     
 ## Other documents
 * [Communication between services](https://github.com/magento/architecture/pull/50)
