@@ -77,6 +77,10 @@ Replaceability of services is one of the goals of the project, so the second opt
 
 There are could be third option, which is combination of both options (what Facebook does), it also makes sense but we have some data duplication in this case.
 
+#### Error code as HTTP status code or in message
+
+Some APIs put status code in the HTTP response code (introduce custom codes). I don't have strong openion on this, so I went with approach that Facebook, Twitter and Twilio use.
+
 ### Throw or suppress exceptions in consumers
 
 All exceptions except network exceptions we should map to exceptions declared on the service contracts that communicate through the network.
