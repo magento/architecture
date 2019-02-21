@@ -19,12 +19,71 @@ Also, debugging the application that may invoke remote services which also may i
 
 So, the decision that service should not invoke other services can simplify troubleshooting and helps us to get more predictable behaviour from extensibility standpoint.
 
-With this decision we get the following:
+With this decision we get the following:Such workflows helps to connect 
 * Isolation, a service can be responsible only for operation declared in its domain.
-* Improved replaceability, confidence that service replacement will not break extensions that depend on this service implementation.
+* Replaceability, confidence that service replacement will not break extensions that depend on this service implementation.
 * Better monitoring and troubleshooting. Due to the fact we have to keep our services more granular it is easier to find a cause of an issue in a small service (as well as performance drop). The fact that we do not need to debug our scenario through the multiple PHP session triggered by the nested calls is a huge plus from a development standpoint.
 
 ## Introduction of state machine
 
-The assumption that services should not orchestrate themselves leads us to the need to define a way how integration between services may happen. Introduction of a workflow mechanism can solve this.
-This is not a new task. Actually, exists several implementations: Step Functions made by Amazon to orchestrate lambdas, Azure Logic Apps by Microsoft (and lots more in the magic world of enterprise applications).
+The assumption that services should not orchestrate themselves leads us to the need to define a way how integration between services may happen. Introduction of a workflow mechanism can solve this. 
+Actually, this is not a new word in programming, exists several implementations: Step Functions made by Amazon to orchestrate lambdas, Azure Logic Apps by Microsoft (and lots more in the magic world of enterprise applications).
+* [Amazon Step Function](https://aws.amazon.com/step-functions/)
+* [Amazon State Language](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-amazon-states-language.html)
+* [Azure Logic Apps](https://docs.microsoft.com/en-us/azure/logic-apps/logic-apps-overview)
+
+Such workflows connect execution across multiple operations, specify enter and exit condition. 
+Due to a fact that a routine that represents step is quite isolated, it can be easily changed or replaced.
+The overall scenario becomes less fragile.
+Routine's interface is known only to the step which invokes it.
+The beauty of this way to build an application is that the target system should not evolve at moment, scenario step can relate to an existing implementation, new services, external system etc.
+Each step may specify data extraction logic to manage routine input arguments as well as output.
+
+Rich syntax of step definition can support the following cases:
+* Operation connected to routine
+`<step xsi:type="Task" name="ExecuteStep1" next="ExecuteStep2" routine="example:step:1" />`
+* Transferring arguments
+`<step xsi:type="Task" name="ExecuteStep2" next="ScenarioSuccessfullyCompleted" inputPath="params/bar" routine="example:step:2" />`
+* Conditional operator
+[Amazon Step Function example](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-choice-state.html)    
+* Exception handling
+[Amazon Step Function example](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-errors.html)    
+* Operation Terminators (Success/Failure)
+`<step name="ScenarioSuccessfullyCompleted" xsi:type="Success" outputPath="params"/>`
+
+### Trivial Example
+[Configuration schema](https://github.com/akaplya/mage-state-machine/blob/master/lib/internal/Magento/Framework/StateMachine/etc/stateMachine.xsd)
+
+
+```
+    <scenario name="ExampleRun">
+        <step xsi:type="Task" name="ExecuteStep1" next="ExecuteStep2"
+              inputPath="params/foo"
+              outputPath="params/bar"
+              routine="example:step:1"
+        />
+        <step xsi:type="Task"
+              name="ExecuteStep2"
+              next="ScenarioSuccessfullyCompleted"
+              inputPath="params/bar"
+              routine="example:step:2"
+        />
+        <step name="ScenarioSuccessfullyCompleted" xsi:type="Success" outputPath="params"/>
+    </scenario>
+```
+
+## Routines
+Routines configuration specifies a callable resource to be used in scenario steps.
+[Configuration schema](https://github.com/akaplya/mage-state-machine/blob/master/lib/internal/Magento/Framework/StateMachine/etc/routines.xsd)
+
+## Backward compatibility
+
+## Solution evolution
+Introduction of workflows does not require a separate service to manage them.
+State machine component can be deployed at service instance.
+So the workflow can be used as a part of the monolith.
+Basic routing plugin transforms network calls to direct PHP communication.
+In another hand, the state machine component does not couple with an application and can be deployed separately and play a role of queue scheduler for asyn operations.
+
+## Implementation details
+[GitHub Repo](https://github.com/akaplya/mage-state-machine)
