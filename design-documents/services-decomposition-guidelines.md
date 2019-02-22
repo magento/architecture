@@ -49,8 +49,7 @@ Document contains general recommendations and principles that need be considered
     * Be cautious about code reuse. As code reuse may lead to a need to redeploy multiple services need to make sure that it will at least not require redeploying them at the same time.
     
 16. Framework should not manage retries, timeouts, circuit breaking and load balancing. Trying to implement this behaviour in application is an anti-pattern. Service mesh should be used instead.
-    
-## Other documents
-* [Communication between services](https://github.com/magento/architecture/pull/50)
-* [Authentication and authorization](https://github.com/magento/architecture/pull/48)
-* [Caching](https://github.com/magento/architecture/pull/52)
+
+## References
+
+* [TolerantReader](https://martinfowler.com/bliki/TolerantReader.html)

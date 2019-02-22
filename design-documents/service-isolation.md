@@ -248,3 +248,9 @@ A detailed design must be prepared for every service.
 An iterative approach must be used for service isolation: one service at a time is extracted from a monolithic application.
 
 Checkout is proposed to be the first service to extract.
+
+## Other design documents
+
+* [Service decomposition guidelines](services-decomposition-guidelines.md)
+* [Checkout service](checkout-service.md)
+* [Caching](service-isolation/caching-layer.md)
