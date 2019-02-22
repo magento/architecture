@@ -37,7 +37,19 @@ Document contains general recommendations and principles that need be considered
 
 13. Extension mechanisms for the service are the same as for monolith application: framework level (modules, DI, plugins, etc) and extension points provided by individual modules.
 
-## Other documents
-* [Communication between services](https://github.com/magento/architecture/pull/50)
-* [Authentication and authorization](https://github.com/magento/architecture/pull/48)
-* [Caching](https://github.com/magento/architecture/pull/52)
+14. When working with data need to obey the following rules:
+    * Consumers should accept the unknown fields. Fields that are not used by the consumer should be ignored.
+    * Consumers should validate only against required. Only fields that are used by the consumer need to be validated.
+    * Producers should ignore unknown attributes.
+    * Returning more data is always backwards compatible, returning less data is braking change.
+    
+15. Need to design services and APIs in a way that would minimize number of services that need to redeployed when one of the services change:
+    * Follow best practices around working with data.
+    * Use API versioning.
+    * Be cautious about code reuse. As code reuse may lead to a need to redeploy multiple services need to make sure that it will at least not require redeploying them at the same time.
+    
+16. Framework should not manage retries, timeouts, circuit breaking and load balancing. Trying to implement this behaviour in application is an anti-pattern. Service mesh should be used instead.
+
+## References
+
+* [TolerantReader](https://martinfowler.com/bliki/TolerantReader.html)
