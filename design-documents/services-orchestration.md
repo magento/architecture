@@ -41,44 +41,62 @@ Each step may specify data extraction logic to manage routine input arguments as
 Development because more transparent because workflow can be easily exposed as a state machine diagram.
 As well as monitoring and troubleshooting, a clear understanding of the step that causes an issue will reduce bugfix time. 
 
-Rich syntax of step definition can support the following cases:
-* Operation connected to routine, during this step will be executed declared routine.
-`<step xsi:type="Task" name="ExecuteStep1" next="ExecuteStep2" routine="example:step:1" />`
-* Transferring arguments `<step xsi:type="Task" name="ExecuteStep2" next="ScenarioSuccessfullyCompleted" inputPath="params/bar" routine="example:step:2" />`
-    * `inputPath` specifies a path to arguments that will be transferred into a routine as parameters.
-    * `outputPath` specifies a path where will be placed a result of routine execution.
-* Conditional operator
+## State XML language
+Workflow can be described with some high level language. For instance with XML :).
+Lets consider the base syntax construction that we need to build reach application.
+As an example, we can take Step Functions syntax and land it on Magento reality.
+
+For states declaration we need the following:
+
+### Common attributes
+* Each step has to have a `name` which uniquely represents it in a scenario.
+* Attribute `next` specifies the next step in scenario after the current.
+### Task
+Operation connected to routine, during this step will be executed declared routine.
 ```xml
-        <step xsi:type="Choice" name="ExecuteStep3">
-            <choice xsi:type="Decision" name="toStep5" next="Step5">
-                <connective type="and">
-                    <condition type="eq" value="param/foo">1</condition>
-                </connective>
-            </choice>
-            <choice xsi:type="Decision" name="toStep4" next="Step4">
-                <connective type="and">
-                    <condition type="eq" value="param/bar">2</condition>
-                    <connective type="or">
-                        <condition type="eq" value="code2">2</condition>
-                        <condition type="eq" value="code2">1</condition>
-                    </connective>
-                </connective>
-            </choice>
-        </step>
+<step xsi:type="Task" name="ExecuteStep1" next="ExecuteStep2" routine="example:step:1" />
+```
+* `routine` is a pointer to corresponding callable declared as an application routine. @see routines section.
+
+### Transferring arguments
+```xml
+<step xsi:type="Task" name="ExecuteStep2" next="ScenarioSuccessfullyCompleted" inputPath="params/bar" routine="example:step:2" />
+```
+* `inputPath` specifies a path to arguments that will be transferred into a routine as parameters.
+* `outputPath` specifies a path where will be placed a result of routine execution.
+### Conditional operator
+```xml
+<step xsi:type="Choice" name="ExecuteStep3">
+    <choice xsi:type="Decision" name="toStep5" next="Step5">
+        <connective type="and">
+            <condition type="eq" value="param/foo">1</condition>
+        </connective>
+    </choice>
+    <choice xsi:type="Decision" name="toStep4" next="Step4">
+        <connective type="and">
+            <condition type="eq" value="param/bar">2</condition>
+            <connective type="or">
+                <condition type="eq" value="code2">2</condition>
+                <condition type="eq" value="code2">1</condition>
+            </connective>
+        </connective>
+    </choice>
+</step>
 ```
 The conditional operation allows to branch execution logic by specifying a set of particular conditions per start of each new branch.
 The conditional step supports complex nested condition which can be use `AND`, `OR`, `NOR`.
-* With catch node, it is possible to declare a handler for an exceptional case. Each exception may have its own handler.
-  Also, it is possible to declare retry operation, the declaration is similar to exception handling declaration.
-  The trigger for retry is an exception.
+## Error handling
+With catch node, it is possible to declare a handler for an exceptional case. Each exception may have its own handler.
+Also, it is possible to declare retry operation, the declaration is similar to exception handling declaration.
+The trigger for retry is an exception.
 ```xml
-        <step xsi:type="Task" name="ExecuteStep4" next="Exit" routine="example:step:2">
-            <catch exceptoin="InvalidArgumentException" next="Handler" />
-            <retry exceptoin="ServiceUnavailableException" attempts="3" timeout="100" />
-        </step>
+<step xsi:type="Task" name="ExecuteStep4" next="Exit" routine="example:step:2">
+    <catch exceptoin="InvalidArgumentException" next="Handler" />
+    <retry exceptoin="ServiceUnavailableException" attempts="3" timeout="100" />
+</step>
 ```
 
-* Operation terminators (Success/Failure)
+### Operation terminators (Success/Failure)
 `<step name="ScenarioSuccessfullyCompleted" xsi:type="Success" outputPath="params"/>`
 
 ### Trivial Example
@@ -101,7 +119,6 @@ The conditional step supports complex nested condition which can be use `AND`, `
     </scenario>
 ```
 
-Introduction of workflowds doe 
 ## Routines
 Routines configuration specifies a callable resource to be used in scenario steps.
 
@@ -129,7 +146,7 @@ Actually we have to support two base types of routines:
 
 Such a mechanism can be useful with the evolution of an existing application.
 Major scenarios can be described with such language.
-For monolithic app the scenario rewrote such way will be backward compatible.
+For monolithic app the scenario rewrote such way will be backward compatible because scenario will run the same operation in the monolith execution context.
 
 ## Extensibility
 Replaceability requirement limits us in options that we can guarantee.
