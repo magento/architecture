@@ -174,14 +174,55 @@ can be represented as the following scenario:
         <step name="OrderSuccessfullyPlaced" xsi:type="Success" outputPath="params/order"/>
     </scenario>
 ```
+For monolith installation this scenario will exactly the same methods with the same arguments as it is now.
+In the same time, such declaration provides new ways how to evolve such service.
+
 ## Extensibility
-Replaceability requirement limits us in options that we can guarantee.
-Literally, everything that is inside a service boundary is mutable.
-We can not expect that code inside of services will trigger the same set of events in a future version.
-(Ok the same code from the same vendor could, but as soon code will be replaced by foreign vendor we can guarantee nothing).
-So let's consider what we can guarantee by a state machine:
-* Replacing state routine:fixed 
-* 
+All steps are declared as XML node. 
+So, by using native Magento XML config & merger we can declare or extend scenario in way we want.
+In the example above payment failure handling step was added by SalesPayment module, which knows about `placeOrder` scenario.
+And extends it with a new logic.
+```xml
+        <step xsi:type="Task" name="PlacePaymentForOrder" next="PersistOrder">
+            <catch exceptoin="Magento\Payment\Gateway\Command\CommandException" next="PaymentFailureHandler" />
+        </step>
+        <step xsi:type="Task"
+            name="PaymentFailureHandler"
+            inputPath="params/order"
+            exit="true"
+        />
+```
+
+### Replaceability
+With assumption that a service is replacable, everything that exists inside of a service implementation boundary is mutable.
+We should not expect that code inside of services will trigger the same set of events in a future(because service can be replaced).
+The beauty of scenarios in a fact that you can replace a scenario step, if you need to replace the step only.
+Or you can redefine scenario if you need this. Both of cases are valid and depend on business requirements you have.
+* By changing only step a developer works only with this step(s) developer introduced.
+* Step does not have a strict interface of arguments that will be passed. This list vary depends on the step configuration.
+    * Changing step, route to a function with an interface that is different from core one:
+```xml
+<step xsi:type="Task" name="PlacePaymentForOrder" next="PersistOrder"
+      inputPath="params/order"
+      outputPath="params/order"
+      routine="Magento:Myales:OrderManagement:placeOrder"
+/>
+```
+
+*
+   * Extending the existing one scenario with more steps
+```xml
+<step xsi:type="Task" name="PlacePaymentForOrder" next="DoSomethingPersistOrder"/>
+<step xsi:type="Task" name="DoSomethingPersistOrder" next="PersistOrder"/>
+```
+* Anyway if your code has the same interface with existing routine you can substitute routine only.
+* If a developer replaced the whole scenario this is BiC change. But, quite visible and easy catchable even without analyzing PHP code.
+All you need you can find in configuration (I did not investigate this question but pretty sure that it is possible to build visualization for scenario steps).
+
+### Events and Observers
+
+Step execution can be treated as an event in the system.
+
 
 ## Solution evolution
 Introduction of workflows does not require a separate service to manage them.
