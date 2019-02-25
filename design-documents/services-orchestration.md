@@ -19,7 +19,7 @@ Also, debugging the application that may invoke remote services which also may i
 
 So, the decision that service should not invoke other services can simplify troubleshooting and helps us to get more predictable behaviour from extensibility standpoint.
 
-With this decision we get the following:Such workflows helps to connect 
+With this decision we get the following: 
 * Isolation, a service can be responsible only for operation declared in its domain.
 * Replaceability, confidence that service replacement will not break extensions that depend on this service implementation.
 * Better monitoring and troubleshooting. Due to the fact we have to keep our services more granular it is easier to find a cause of an issue in a small service (as well as performance drop). The fact that we do not need to debug our scenario through the multiple PHP session triggered by the nested calls is a huge plus from a development standpoint.
@@ -234,15 +234,19 @@ Observer can not return values into `outputPath` or start a new execution branch
 As a result, observer execution can be delayed or even processed async in background.
 Observer can be declared `before` of `after` the step.
 
+![Figure 2](services-orchestration/events.png)
+
 ## Sync and Async adapters
 Ideally, all scenarios should not be run synchronously.
 The major benefit will be gained as soon as we will be able to move execution in a queue. 
 But for BC purpose it make sense to introduce synchronously adapter, which will execute all steps in scope of a single process.
 
-## Scenarios and 
+## Workflow and WebAPI
+Scenario can be exposed as REST API.
+The main purpose of workflow is to resolve communication dependencies between different application domains.
+This is not a replacement of REST API. If service does not communicate to other domains uses of states is optional.
 
 ## Solution evolution
-
 Introduction of workflows does not require a separate service to manage them by default.
 So the workflow can be used as a part of the monolith.
 Basic routing plugin can transform network calls to direct PHP communication.
