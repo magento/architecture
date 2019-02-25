@@ -29,7 +29,6 @@ With this decision we get the following:Such workflows helps to connect
 The assumption that services should not orchestrate themselves leads us to the need to define a way how integration between services may happen. Introduction of a workflow mechanism can solve this. 
 Actually, this is not a new word in programming, exists several implementations: Step Functions made by Amazon to orchestrate lambdas, Azure Logic Apps by Microsoft (and lots more in the magic world of enterprise applications).
 * [Amazon Step Function](https://aws.amazon.com/step-functions/)
-* [Amazon State Language](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-amazon-states-language.html)
 * [Azure Logic Apps](https://docs.microsoft.com/en-us/azure/logic-apps/logic-apps-overview)
 
 Such workflows connect execution across multiple operations, specify enter and exit condition. 
@@ -44,7 +43,7 @@ As well as monitoring and troubleshooting, a clear understanding of the step tha
 ## State XML language
 Workflow can be described with some high level language. For instance with XML :).
 Lets consider the base syntax construction that we need to build reach application.
-As an example, we can take Step Functions syntax and land it on Magento reality.
+As an example, we can take [Amazon State Language](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-amazon-states-language.html) and land it on Magento reality.
 
 For states declaration we need the following:
 
@@ -147,14 +146,41 @@ Actually we have to support two base types of routines:
 Such a mechanism can be useful with the evolution of an existing application.
 Major scenarios can be described with such language.
 For monolithic app the scenario rewrote such way will be backward compatible because scenario will run the same operation in the monolith execution context.
+### Real life example
 
+Implementation of [\Magento\Sales\Api\OrderManagementInterface::place](https://github.com/magento/magento2ce/blob/2.3-develop/app/code/Magento/Sales/Model/Service/OrderService.php#L196) 
+can be represented as the following scenario:
+```xml
+    <scenario name="Magento:Sales:OrderManagement:placeOrder">
+        <step xsi:type="Task" name="PlacePaymentForOrder" next="PersistOrder"
+              inputPath="params/order"
+              outputPath="params/order"
+              routine="Magento:Sales:OrderManagement:placeOrder"
+        >
+            <catch exceptoin="Magento\Payment\Gateway\Command\CommandException" next="PaymentFailureHandler" />
+        </step>
+        <step xsi:type="Task"
+            name="PaymentFailureHandler"
+            inputPath="params/order"
+            exit="true"
+        />
+        <step xsi:type="Task"
+              name="SaveOrder"
+              next="OrderSuccessfullyPlaced"
+              inputPath="params/order"
+              outputPath="params/order"
+              routine="Magento:Sales:OrderManagement:saveOrder"
+        />
+        <step name="OrderSuccessfullyPlaced" xsi:type="Success" outputPath="params/order"/>
+    </scenario>
+```
 ## Extensibility
 Replaceability requirement limits us in options that we can guarantee.
 Literally, everything that is inside a service boundary is mutable.
 We can not expect that code inside of services will trigger the same set of events in a future version.
 (Ok the same code from the same vendor could, but as soon code will be replaced by foreign vendor we can guarantee nothing).
 So let's consider what we can guarantee by a state machine:
-* Replacing state routine:
+* Replacing state routine:fixed 
 * 
 
 ## Solution evolution
