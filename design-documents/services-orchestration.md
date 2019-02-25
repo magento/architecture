@@ -205,7 +205,7 @@ Or you can redefine scenario if you need this. Both of cases are valid and depen
 <step xsi:type="Task" name="PlacePaymentForOrder" next="PersistOrder"
       inputPath="params/order"
       outputPath="params/order"
-      routine="Magento:Myales:OrderManagement:placeOrder"
+      routine="Magento:MySales:OrderManagement:placeOrder"
 />
 ```
 
@@ -221,12 +221,29 @@ All you need you can find in configuration (I did not investigate this question 
 
 ### Events and Observers
 
-Step execution can be treated as an event in the system.
+Step execution can be treated as an event in the system. So we can declare an observer on it.
+```xml
+<step xsi:type="Observer" name="SendEmail" after="PersistOrder"
+    next="PersistOrder"
+    inputPath="params/order"
+    routine="Magento:MySales:OrderManagement:sendEmail"
+/>
 
+```
+Observer can not return values into `outputPath` or start a new execution branch.
+As a result, observer execution can be delayed or even processed async in background.
+Observer can be declared `before` of `after` the step.
+
+## Sync and Async adapters
+Ideally, all scenarios should not be run synchronously.
+The major benefit will be gained as soon as we will be able to move execution in a queue. 
+But for BC purpose it make sense to introduce synchronously adapter, which will execute all steps in scope of a single process.
+
+## Scenarios and 
 
 ## Solution evolution
-Introduction of workflows does not require a separate service to manage them.
-State machine component can be deployed at service instance.
+
+Introduction of workflows does not require a separate service to manage them by default.
 So the workflow can be used as a part of the monolith.
 Basic routing plugin can transform network calls to direct PHP communication.
 In another hand, the state machine component does not couple with an application and can be deployed separately and play a role of queue scheduler for asyn operations.
