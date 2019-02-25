@@ -38,24 +38,53 @@ The overall scenario becomes less fragile.
 Routine's interface is known only to the step which invokes it.
 The beauty of this way to build an application is that the target system should not evolve at moment, scenario step can relate to an existing implementation, new services, external system etc.
 Each step may specify data extraction logic to manage routine input arguments as well as output.
+Development because more transparent because workflow can be easily exposed as a state machine diagram.
+As well as monitoring and troubleshooting, a clear understanding of the step that causes an issue will reduce bugfix time. 
 
 Rich syntax of step definition can support the following cases:
-* Operation connected to routine
+* Operation connected to routine, during this step will be executed declared routine.
 `<step xsi:type="Task" name="ExecuteStep1" next="ExecuteStep2" routine="example:step:1" />`
-* Transferring arguments
-`<step xsi:type="Task" name="ExecuteStep2" next="ScenarioSuccessfullyCompleted" inputPath="params/bar" routine="example:step:2" />`
+* Transferring arguments `<step xsi:type="Task" name="ExecuteStep2" next="ScenarioSuccessfullyCompleted" inputPath="params/bar" routine="example:step:2" />`
+    * `inputPath` specifies a path to arguments that will be transferred into a routine as parameters.
+    * `outputPath` specifies a path where will be placed a result of routine execution.
 * Conditional operator
-[Amazon Step Function example](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-choice-state.html)    
-* Exception handling
-[Amazon Step Function example](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-errors.html)    
+```xml
+        <step xsi:type="Choice" name="ExecuteStep3">
+            <choice xsi:type="Decision" name="toStep5" next="Step5">
+                <connective type="and">
+                    <condition type="eq" value="param/foo">1</condition>
+                </connective>
+            </choice>
+            <choice xsi:type="Decision" name="toStep4" next="Step4">
+                <connective type="and">
+                    <condition type="eq" value="param/bar">2</condition>
+                    <connective type="or">
+                        <condition type="eq" value="code2">2</condition>
+                        <condition type="eq" value="code2">1</condition>
+                    </connective>
+                </connective>
+            </choice>
+        </step>
+```
+The conditional operation allows to branch execution logic by specifying a set of particular conditions per start of each new branch.
+The conditional step supports complex nested condition which can be use `AND`, `OR`, `NOR`.
+* With catch node, it is possible to declare a handler for an exceptional case. Each exception may have its own handler.
+  Also, it is possible to declare retry operation, the declaration is similar to exception handling declaration.
+  The trigger for retry is an exception.
+```xml
+        <step xsi:type="Task" name="ExecuteStep4" next="Exit" routine="example:step:2">
+            <catch exceptoin="InvalidArgumentException" next="Handler" />
+            <retry exceptoin="ServiceUnavailableException" attempts="3" timeout="100" />
+        </step>
+```
+
 * Operation terminators (Success/Failure)
 `<step name="ScenarioSuccessfullyCompleted" xsi:type="Success" outputPath="params"/>`
 
 ### Trivial Example
 [Configuration schema](https://github.com/akaplya/mage-state-machine/blob/master/lib/internal/Magento/Framework/StateMachine/etc/stateMachine.xsd)
 
-
-```
+```xml
     <scenario name="ExampleRun">
         <step xsi:type="Task" name="ExecuteStep1" next="ExecuteStep2"
               inputPath="params/foo"
@@ -72,6 +101,7 @@ Rich syntax of step definition can support the following cases:
     </scenario>
 ```
 
+Introduction of workflowds doe 
 ## Routines
 Routines configuration specifies a callable resource to be used in scenario steps.
 
@@ -94,6 +124,15 @@ Actually we have to support two base types of routines:
 ``` 
 
 [Configuration schema](https://github.com/akaplya/mage-state-machine/blob/master/lib/internal/Magento/Framework/StateMachine/etc/routines.xsd)
+
+## Extensibility
+Replaceability requirement limits us in options that we can guarantee.
+Literally, everything that is inside a service boundary is mutable.
+We can not expect that code inside of services will trigger the same set of events in a future version.
+(Ok the same code from the same vendor could, but as soon code will be replaced by foreign vendor we can guarantee nothing).
+So let's consider what we can guarantee by a state machine:
+* Replacing state routine:
+* 
 
 
 ## Backward compatibility
