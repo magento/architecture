@@ -125,6 +125,12 @@ Actually we have to support two base types of routines:
 
 [Configuration schema](https://github.com/akaplya/mage-state-machine/blob/master/lib/internal/Magento/Framework/StateMachine/etc/routines.xsd)
 
+## Backward compatibility
+
+Such a mechanism can be useful with the evolution of an existing application.
+Major scenarios can be described with such language.
+For monolithic app the scenario rewrote such way will be backward compatible.
+
 ## Extensibility
 Replaceability requirement limits us in options that we can guarantee.
 Literally, everything that is inside a service boundary is mutable.
@@ -134,16 +140,9 @@ So let's consider what we can guarantee by a state machine:
 * Replacing state routine:
 * 
 
-
-## Backward compatibility
-TBD
-
 ## Solution evolution
 Introduction of workflows does not require a separate service to manage them.
 State machine component can be deployed at service instance.
 So the workflow can be used as a part of the monolith.
 Basic routing plugin can transform network calls to direct PHP communication.
 In another hand, the state machine component does not couple with an application and can be deployed separately and play a role of queue scheduler for asyn operations.
-
-## Implementation details
-[GitHub Repo](https://github.com/akaplya/mage-state-machine)
