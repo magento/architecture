@@ -30,6 +30,7 @@ The assumption that services should not orchestrate themselves leads us to the n
 Actually, this is not a new word in programming, exists several implementations: Step Functions made by Amazon to orchestrate lambdas, Azure Logic Apps by Microsoft (and lots more in the magic world of enterprise applications).
 * [Amazon Step Function](https://aws.amazon.com/step-functions/)
 * [Azure Logic Apps](https://docs.microsoft.com/en-us/azure/logic-apps/logic-apps-overview)
+* [Business Process Model and Notation](https://en.wikipedia.org/wiki/Business_Process_Model_and_Notation)
 
 Such workflows connect execution across multiple operations, specify enter and exit condition. 
 Due to a fact that a routine that represents step is quite isolated, it can be easily changed or replaced.
