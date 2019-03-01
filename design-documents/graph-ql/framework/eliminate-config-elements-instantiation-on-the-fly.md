@@ -27,7 +27,7 @@ To achieve this we can introduce specific serializer for config data. `Magento\F
         </arguments>
     </virtualType>
 ```
-In a fact, Magento knows all config data object.
+In a fact, Magento knows all config data objects.
 Magento does not use external resources as a configuration source.
 So we can create a lightweight serializer which may utilize 
 [serialize](https://secure.php.net/manual/en/function.serialize.php)
