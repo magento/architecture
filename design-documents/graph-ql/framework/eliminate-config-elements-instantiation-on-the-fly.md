@@ -1,4 +1,4 @@
-#Eliminate config elements instantiation on the fly
+# Eliminate config elements instantiation on the fly
 
 ## Current state
 GraphQL framework component has introduced a family of config data objects which simplified work with the schema objects.
@@ -31,6 +31,6 @@ In a fact, Magento knows all config data object.
 Magento does not use external resources as a configuration source.
 So we can create a lightweight serializer which may utilize 
 [serialize](https://secure.php.net/manual/en/function.serialize.php)
-/
+/*
 [unserialize](https://secure.php.net/manual/en/function.unserialize.php) functions with all known GraphQL configuration data objects mentioned in *`allowed_classes` option.
 Mentioned above guarantees us that we are addressing security concerns connected to `unserialize` function usage for our case.
