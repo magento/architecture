@@ -28,9 +28,12 @@ So we need to provide a possibility to extend source of packages versions.
 
 The tool should support multiple input types like CLI, configuration files, URL to composer.json file.
 
+[Packagist](https://packagist.org) hosts all composer dependencies but, unfortunately, [Packagist API](https://packagist.org/apidoc) does not provide a possibility to retrieve the package latest version.
+But `https://packagist.org/packages/:vendor/:package-name.json` contains all released versions which could be parsed according to the specified rule.
+
 #### Github REST API
 
-Unfortunately, [Packagist API](https://packagist.org/apidoc) does not provide a possibility to retrieve the package latest version but, as the most of packages are hosted on Github, [Github REST API](https://developer.github.com/v3/repos/releases/) might be used for such purposes.
+As the most of packages (not only from `composer.json`) are hosted on Github, [Github REST API](https://developer.github.com/v3/repos/releases/) might be used to get components releases.
 
 Github provides different types of authentication:
  - unauthenticated requests (60 requests per hour associated by IP address)
