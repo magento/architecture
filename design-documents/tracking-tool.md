@@ -19,7 +19,7 @@ At least, we should have a tool which can find the latest version based on provi
  - Find the latest version according to the specific rule in multiple sources
  - A possibility to extend the packages source list (Packagist, Github, Gitlab)
  - Specific update rules like `^`, `~`, `-`, `*`, etc.
- - A notification mechanism for available updates
+ - A notification mechanism for available updates (via slack, email, webhooks)
  
 ### Packages source 
 
