@@ -4,7 +4,7 @@ PHPStan uses [nikic/PHP-Parser](https://github.com/nikic/PHP-Parser) under the h
 
 ### Prerequisites
 - PHP >= 7.1.
-- Installed Magento application with generated code.
+- Generated code (factories, proxies, and so on).
 
 ### What it checks for?
 - Class existence.
