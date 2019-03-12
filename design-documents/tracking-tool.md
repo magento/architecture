@@ -7,26 +7,86 @@ To avoid such problem, we need to have a mechanism to track latest versions of 3
 
 As most of dependencies specified in `composer.json`, such process can be automated.
 
-## Solution
-
-Dependencies, specified in `composer.json`, can be parsed and according to the dependencies list, we can find the latest version of the package.
-At least, we should have a tool which can find the latest version based on provided list and criteria.
-
-### Requirements
+## Requirements
 
  - An ability to provide the list of components for update
  - An ability to recognized dependencies in `composer.json`
  - Find the latest version according to the specific rule in multiple sources
  - A possibility to extend the packages source list (Packagist, Github, Gitlab)
  - Specific update rules like `^`, `~`, `-`, `*`, etc.
- - A notification mechanism for available updates (via slack, email, webhooks)
- 
+ - A notification mechanism for available updates (via slack, email, Webhooks)-
+
+### Existing solutions
+
+1. `composer outdated` - shows outdated dependencies specified in `composer.json`.
+    
+    Pros:
+        
+    - native solution
+    - supports SemVer-compatible updates
+    - free usage
+        
+    Cons:
+    
+    - works only with dependencies from `composer.json`
+    - does not have a notification mechanism
+    - only SemVer-compatible rule is available
+        
+2. [Renovate](https://renovatebot.com/) - web application for automated dependency updates.
+
+    Pros:
+    
+    - supports multiple sources like Github, Gitlab
+    - has automated Pull Requests
+    - open source, can be self-hosted
+    
+    Cons:
+    
+    - PHP, composer configuration support in alpha stage
+    - searches only dependencies from `composer.json`
+    - SemVer compatible only in Pro account
+    - Webhooks mechanism (in Pro account)
+    
+3. [Dependabot](https://dependabot.com/php/) - web application to keep dependencies up-to-date.
+
+    Pros:
+    
+    - supports automated PRs
+    - monitors security advisories
+    - automated merge options
+    - provides Dependabot API
+    
+    Cons:
+    
+    - does not have a notification mechanism
+    - parses only `composer.json`
+    - lack of documentation
+    - 100$ per month
+    
+4. [NewReleases](https://newreleases.io/) - web application to keep dependencies up-to-date.
+
+    Pros:
+    - multi-sources like Github, Packagist
+    - notifications via Slack, email, Webhooks
+    - custom regular expressions
+    
+    Cons:
+    - still in beta
+    - lack of documentation
+    - no price policy
+    - files with dependencies should be added manually
+
+## Solution
+
+Dependencies, specified in `composer.json`, can be parsed and, according to the dependencies list, we can find the latest version of the package.
+At least, we might have a tool which can find the latest version based on provided list and criteria.
+
 ### Packages source 
 
-The most of packages are specified in `composer.json` but some of them are not specified, like database, or can be added in the future not via composer.
-So we need to provide a possibility to extend source of packages versions.
+The most packages are specified in `composer.json` but some of them are not specified, like database, or can be added in the future not via composer.
+So we need to provide a possibility to extend a source of packages versions.
 
-The tool should support multiple input types like CLI, configuration files, URL to composer.json file.
+The tool should support multiple input types like CLI, configuration files, URL to `composer.json` file.
 
 [Packagist](https://packagist.org) hosts all composer dependencies but, unfortunately, [Packagist API](https://packagist.org/apidoc) does not provide a possibility to retrieve the package latest version.
 But `https://packagist.org/packages/:vendor/:package-name.json` contains all released versions which could be parsed according to the specified rule.
@@ -81,3 +141,4 @@ Based on the tool suggestions we can automatically update `composer.json` depend
  - [Composer Versions](https://getcomposer.org/doc/articles/versions.md)
  - [Github REST API](https://developer.github.com/v3/)
  - [Magento Tech Stack](https://devdocs.magento.com/guides/v2.3/architecture/tech-stack.html)
+ - [Github Security Alerts](https://help.github.com/en/articles/about-security-alerts-for-vulnerable-dependencies)
