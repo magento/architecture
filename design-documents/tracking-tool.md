@@ -61,7 +61,7 @@ As most of dependencies specified in `composer.json`, such process can be automa
     - does not have a notification mechanism
     - parses only `composer.json`
     - lack of documentation
-    - 100$ per month
+    - 100$ per month for Unlimited account ($0 Open Source / Personal account)
     
 4. [NewReleases](https://newreleases.io/) - web application to keep dependencies up-to-date.
 
@@ -135,6 +135,7 @@ Magento depends on different SemVer package versions like patch or minor and the
 ### Summary
 
 Based on the tool suggestions we can automatically update `composer.json` dependencies and run all CI to check if Magento code is compatible with the component version.
+And we are going to start investigation on `Dependabot` usage.
 
 ### Related Links
 
