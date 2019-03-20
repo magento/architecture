@@ -31,6 +31,25 @@ It is possible to get information about message queue configuration from the XML
 
 Suggested approach is to compare actual configuration of the RabbitMQ after Magento installation, which is similar to the approach for DB comparison test. [RabbitMQ management CLI](https://www.rabbitmq.com/management-cli.html) can be used to get necessary info directly from the RabbitMQ instance.
 
-# Miscellaneous improvements
+# Skipped DB compare checks
+
+There is a huge tech debt in a form of skipped tables and fields during DB compare check. The blacklists can be found here `tools/Magento/Tools/DatabaseCompare/etc/ce/config.php`
+
+
+# Other backward incompatible changes
+
+There is a [document](https://devdocs.magento.com/guides/v2.3/extension-dev-guide/versioning/codebase-changes.html) listing possible Minor/Major changes. 
+Most of PHP class and DB schema changes are covered with SVC and DB compare tools, the coverage may be incomplete and needs to be verified.
+
+The rest of the BiC changes listed in the [document](https://devdocs.magento.com/guides/v2.3/extension-dev-guide/versioning/codebase-changes.html) must be prioritized and groomed separately. Custom tools will be required for 
+- XML configs
+- JS
+- CLI interface
+- Less
+- Events
+
+# False positive failures
 
 1. SVC must ignore removal of private constants like in [this PR](https://github.com/magento/magento2ce/pull/3875)
+1. Override of the method defined in parent must be treated by SVC as Patch change
+1. In some cases module installation order changes values some fields for specific entities (like `position`). There are two possible solutions: ignore all `position` fields in the specific table OR ignore the specific entity. Having such blacklists may prevent identification of the future BiC changes. Proposed solution is to introduce field-level blacklist for specific records.
