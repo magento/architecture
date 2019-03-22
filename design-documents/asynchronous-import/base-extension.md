@@ -130,13 +130,34 @@ Input request will looks like:
       "pieces_count": "5"
       "piece_number": "1",
       "import_type": "base64_encoded_data",
-      "uuid": "UUID"
+      "uuid": "UUID",
+      "format": {
+         "csv_separator": "string",
+         "csv_enclosure": "string",
+         "csv_delimiter": "string",
+         "multiple_value_separator": "string",
+         "mapping": [
+            {
+                "source_attribute": "string",
+                "destination_attribute": "string",
+                "processing_rules": "string",
+                "taxonomy": "string",
+                "values_mapping": [
+                    {
+                        "old_value": "string",
+                        "new_value": "string"
+                    }
+                ]
+            }
+         ]
+    }
   }
 }
 ```
 where *import_data* is a 1/N part of the whole content, and *data_hash* contains sha256 hash of full import_data body.
 
 `pieces_count` - its an amount of pieces that will be transferred for 1 file. We need it to be sure that import is completed and then we could detect if it was successfully finished or failed
+
 `piece_number` - its a number that detects which part of file currently transferred. This is required to have to support Asynchronous File import when we dont need to send parts in correct sequence
 
 Those parts could be send asynchronously. They will be merged together after all data are transferred.
