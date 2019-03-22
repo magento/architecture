@@ -165,7 +165,7 @@ Example:
 
 Its possible also to Update Format 
 
-PUT  `/V1/import/source/:uuid`
+PUT  `/V1/import/source/csv/:uuid`
 
 ```
 {
