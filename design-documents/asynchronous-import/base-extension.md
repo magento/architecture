@@ -115,7 +115,7 @@ Path is relative from Magento Root folder
 }
 ```
 
-Import of big file also can divided in several parts.
+Import of big file also can be divided in several parts.
 For this case we have separate endpoint
 
 POST  `/V1/import/source/csv/partial/`
