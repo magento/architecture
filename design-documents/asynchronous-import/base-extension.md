@@ -6,9 +6,11 @@ With phase 1 we are planning to develop next functionality:
 - Endpoint to receive status
 
 ## File Upload Endpoint
-### Main endpoint
+### Source Upload endpoint
 
-POST  `/V1/import/source/`
+So import will start from uploading import Source file. Currently we will support "csv" files format
+
+POST  `/V1/import/source/csv`
  
 This request can accept files from different sources:
 - Local file path
@@ -24,8 +26,27 @@ Path is relative from Magento Root folder
   "source": {
       "import_data": "var/catalog_product.csv",
       "import_type": "local_path",
-      "source_type": "csv",
-      "uuid": "UUID" // Any UUID transferred by request creator. Not Required field
+      "uuid": "UUID",
+      "format": {
+          "csv_separator": "string",
+          "csv_enclosure": "string",
+          "csv_delimiter": "string",
+          "multiple_value_separator": "string",
+          "mapping": [
+              {
+                  "source_attribute": "string",
+                  "destination_attribute": "string",
+                  "processing_rules": "string",
+                  "taxonomy": "string",
+                  "values_mapping": [
+                      {
+                          "old_value": "string",
+                          "new_value": "string"
+                      }
+                  ]
+              }
+          ]
+      }
   }
 }
 ```
@@ -37,8 +58,27 @@ Path is relative from Magento Root folder
   "source": {
       "import_data": "http://some.domain/file.csv",
       "import_type": "external",
-      "source_type": "csv",
-      "uuid": "UUID" // Any UUID transferred by request creator. Not Required field
+      "uuid": "UUID",
+      "format": {
+          "csv_separator": "string",
+          "csv_enclosure": "string",
+          "csv_delimiter": "string",
+          "multiple_value_separator": "string",
+          "mapping": [
+              {
+                  "source_attribute": "string",
+                  "destination_attribute": "string",
+                  "processing_rules": "string",
+                  "taxonomy": "string",
+                  "values_mapping": [
+                      {
+                          "old_value": "string",
+                          "new_value": "string"
+                      }
+                  ]
+              }
+          ]
+      }
   }
 }
 ```
@@ -50,15 +90,37 @@ Path is relative from Magento Root folder
   "source": {
       "import_data": "c2t1LHN0b3JlX3ZpZXdfY29kZSxhdHRyaWJ1dGVfc2V0X2NvZGUscHJvZHVjdF90eXBlLGNhdGVnb3JpZXMscHJvZHVjdF93ZWJzaXRlcyxuYW1lLGRlc2NyaXB0aW9uLHNob3J0X2Rlc2NyaXB0aW9uLHdlaWdodCxwcm9kdWN0X29ubGluZSx0YXhfY2xhc3NfbmFtZSx2aXNpYmlsaXR5LHBya......",
       "import_type": "base64_encoded_data",
-      "source_type": "csv",
-      "uuid": "UUID" // Any UUID transferred by request creator. Not Required field
+      "uuid": "UUID",
+      "format": {
+          "csv_separator": "string",
+          "csv_enclosure": "string",
+          "csv_delimiter": "string",
+          "multiple_value_separator": "string",
+          "mapping": [
+              {
+                  "source_attribute": "string",
+                  "destination_attribute": "string",
+                  "processing_rules": "string",
+                  "taxonomy": "string",
+                  "values_mapping": [
+                      {
+                          "old_value": "string",
+                          "new_value": "string"
+                      }
+                  ]
+              }
+          ]
+      }
   }
 }
 ```
 
-Import of big file also can divided in several parts
-In this case input request will looks like:
+Import of big file also can divided in several parts.
+For this case we have separate endpoint
 
+POST  `/V1/import/source/csv/partial/`
+
+Input request will looks like:
 
 ```
 {
@@ -68,30 +130,16 @@ In this case input request will looks like:
       "pieces_count": "5"
       "piece_number": "1",
       "import_type": "base64_encoded_data",
-      "source_type": "csv",
-      "uuid": "UUID" // Any UUID transferred by request creator. Not Required field
+      "uuid": "UUID"
   }
 }
 ```
 where *import_data* is a 1/N part of the whole content, and *data_hash* contains sha256 hash of full import_data body.
 
 `pieces_count` - its an amount of pieces that will be transferred for 1 file. We need it to be sure that import is completed and then we could detect if it was successfully finished or failed
-
 `piece_number` - its a number that detects which part of file currently transferred. This is required to have to support Asynchronous File import when we dont need to send parts in correct sequence
 
-
-
-Then all following parts of imported file will look like:
-
-```
-{
-  "source": {
-      "import_data": "c2t1LHN0b3JlX3ZpZXdfY29kZSxhdHRyaWJ1dGVfc2V0X2NvZGUscHJvZHVjdF90eXBlLGNhdGVnb3JpZXMscHJvZHVjdF93ZWJzaXRlcyxuYW1lLGRlc2NyaXB0aW9uLHNob3J0X2Rlc2NyaXB0aW9uLHdlaWdodCxwcm9kdWN0X29ubGluZSx0YXhfY2xhc3NfbmFtZSx2aXNpYmlsaXR5LHBya...",
-      "uuid": "UUID" // Any UUID transferred by request creator. Not Required field,
-      "data_hash" : "sha256 encoded data of the full 'import_data' value"
-  }
-}
-```
+Those parts could be send asynchronously. They will be merged together after all data are transferred.
 
 ### Return values
 
@@ -113,6 +161,44 @@ Example:
 }
 ```
 
+### Update Imported Source Format
+
+Its possible also to Update Format 
+
+PUT  `/V1/import/source/:uuid`
+
+```
+{
+  "source": {
+      "uuid": "uuid",
+      "format": {
+          "csv_separator": "string",
+          "csv_enclosure": "string",
+          "csv_delimiter": "string",
+          "multiple_value_separator": "string",
+          "mapping": [
+              {
+                  "source_attribute": "string",
+                  "destination_attribute": "string",
+                  "processing_rules": "string",
+                  "taxonomy": "string",
+                  "values_mapping": [
+                      {
+                          "old_value": "string",
+                          "new_value": "string"
+                      }
+                  ]
+              }
+          ]
+      }
+  }
+}
+```
+
+### Delete Imported Source Format
+
+DELETE  `/V1/import/source/:uuid`
+
 ## Start File Import Endpoint
 ### Main endpoint
 
@@ -126,38 +212,25 @@ Start File Import
 
 ```
 {
-  "importEntry": {
-      "profile": {
-        "uuid": "profile uuid, if there is one",
+    "importConfig": {
+        "uuid": "123123213",
         "behaviour": "add_update, delete, update, add, replace",
-        "import_image_archive": "string",
-        "import_images_file_dir": "string",
-        "allowed_error_count": 0,
         "validation_strategy": "string",
-        "empty_attribute_value_constant": "string",
-        "csv_separator": "string",
-        "csv_enclosure": "string",
-        "csv_delimiter": "string",
-        "multiple_value_separator": "string"
-      }
-  }
+        "allowed_error_count": 0,
+        "import_image_archive": "string",
+        "import_images_file_dir": "string"
+    }
 }
 ```
 
 | Key | Value |
 | --- | --- |
 | uuid | UUID that was returned by source upload call |
-| profile | Wrapper for profile object |
-| profile_code | Its a Profile code, which will be used for process import. In First version this parameter will not be intensively used, cause profiling is only in scope of Phase 3. |
 | behaviour | Import behaviour (add_update, delete, update, add, replace) |
 | import_image_archive | Relative path to product images archive file |
 | import_images_file_dir | Relative path to product images files |
 | validation_strategy | Moved from main standard Import, not sure if we will use if |
-| empty_attribute_value_constant | Default valued to empty data in import |
-| csv_separator | Csv separator |
-| csv_enclosure | Csv enclosure |
-| csv_delimiter | Csv delimiter |
-| multiple_value_separator | Multiple value separator  |
+| allowed_error_count | How many errors allowed to be during the import |
 
 
 #### Return
@@ -165,7 +238,7 @@ Start File Import
 ```
 {
 	"uuid": string
-	"success":bool,
+	"status": "proccessing",
 	"error": "string"
 }
 ```
