@@ -40,7 +40,7 @@ Contributions are expected from Magento core engineers mostly, although the comm
 
 ### Design Documents Review Requirements
 
-* Required reviewers are architects assigned to the [affected components](https://github.com/magento/magento2/wiki/Magento-Components-Assignment)
+* Required reviewers are architects assigned to the [affected components](https://github.com/magento/architecture/wiki/Component-Assignments)
 * Anybody else may join the review and provide feedback, but they're not obligated to review the entire document or to meet deadlines
 * For existing (running or about to run) projects, a minimum time frame given for one round of review is 2 business days from the notification notice. The author may specify due date. For documents that do not block any existing projects (proposals or design documents that describe features for unforeseeable future), no due date is guaranteed.
 
