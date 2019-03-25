@@ -43,5 +43,5 @@ This situations will cause unexpected behavior for the controller meant for cust
 To avoid backward incompatible issues we cannot just make FrontController to check whether matched
 action instance extends backend abstract action when _frontend_ area is accessed.
  
-What we can do is to create a PHPMD rule that will check all ActionInterface implementations and
+What we can do is to create a PHPStan rule that will check all ActionInterface implementations and
 allow extending backend's AbstractAction only if an action has _Controller\Adminhtml_ in it's namespace.
