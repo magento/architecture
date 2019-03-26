@@ -2,7 +2,9 @@
 
 The goal of this proposal is to find ways of improving Semantic Version Checker (SVC) build to catch more backward incompatible changes and reduce number of false positive failures.
 
-Some of the following checks should be integrated into SVC build, while should be implemented as standalone tools.
+Some of the following checks should be implemented as standalone tools and integrated into SVC build.
+
+It makes sense to update 3rd party libraries before starting work on any improvements. For example [SVC library](https://github.com/tomzx/php-semver-checker) is more than a year-old and should be updated.
 
 
 # GraphQL Schema validation
@@ -11,7 +13,7 @@ GraphQL is designed to support continuous API schema evolution. There must be ch
 
 To perform backward compatibility check a base version of the schema is required for each release line. 
  - Base schema can be generated manually and then stored along with the tests. There is no endpoint for retrieving SDL, the schema can be generated using some hacks after schema stitching process is complete.
- - It can also be taken from demo instance running on the latest version of the target release line. There are no demo instances maintained by the engineering team and it may be challenging to support them for GraphQL only. There are demo instances used by sales, but their state and readiness cannot be guaranteed (e.g. new EAV attributes can be created and affect the schema).
+ - It can also be taken from demo instance running on the latest version of the target release line. There are no demo instances maintained by the engineering team and it may be challenging to support them for GraphQL only. There are demo instances used by sales, but their state and readiness cannot be guaranteed (e.g. new EAV attributes can be created and affect the schema). It should also be possible to install two instances during the build and compare the resulting schemas, both of them must be accessible via HTTP.
 
 Suggested tools:
 
@@ -50,6 +52,10 @@ The rest of the BiC changes listed in the [document](https://devdocs.magento.com
 
 # False positive failures
 
+### SVC tool
 1. SVC must ignore removal of private constants like in [this PR](https://github.com/magento/magento2ce/pull/3875)
 1. Override of the method defined in parent must be treated by SVC as Patch change
+1. Adding optional parameter to the constructor must be detected as Patch change for all classes except for the explicitly defined list of classes used for extension. Examples of such classes include legacy layer supertypes like `AbstractExtensibleModel`
+
+### DB comparison tool
 1. In some cases module installation order changes values some fields for specific entities (like `position`). There are two possible solutions: ignore all `position` fields in the specific table OR ignore the specific entity. Having such blacklists may prevent identification of the future BiC changes. Proposed solution is to introduce field-level blacklist for specific records.
