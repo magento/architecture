@@ -239,6 +239,7 @@ General principles to follow for service isolation:
 * All service operations MUST BE stateless
 * There MUST BE NO data dependencies between services.
 * Command & query responsibility segregation – storefront APIs for data immutable in storefront (catalog) should be optimized for data retrieval
+* Services MUST NOT manage session, this is responsibility of BFF. APIs of the services have to explicitly declare all required arguments.
 
 A detailed design must be prepared for every service.
 
@@ -247,3 +248,9 @@ A detailed design must be prepared for every service.
 An iterative approach must be used for service isolation: one service at a time is extracted from a monolithic application.
 
 Checkout is proposed to be the first service to extract.
+
+## Other design documents
+
+* [Service decomposition guidelines](services-decomposition-guidelines.md)
+* [Checkout service](checkout-service.md)
+* [Caching](service-isolation/caching-layer.md)
