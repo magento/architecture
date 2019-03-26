@@ -135,7 +135,7 @@ Magento depends on different SemVer package versions like patch or minor and the
 ### Summary
 
 Based on the tool suggestions we can automatically update `composer.json` dependencies and run all CI to check if Magento code is compatible with the component version.
-And we are going to start investigation on `Dependabot` usage.
+And we are going to start [investigation](dependabot-slack.md) on `Dependabot` usage.
 
 ### Related Links
 
