@@ -230,3 +230,7 @@ There are to ways we can go about using promises for asynchronous execution of s
       }
   }
   ```
+
+### Using promises for existing code
+We have a standard HTTP client - Magento\Framework\HTTP\ClientInterface, it can benefit from allowing async requests
+functionality for developers to use by employing promises.
