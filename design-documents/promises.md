@@ -136,3 +136,97 @@ class ServiceA
 }
 ```
 That is a simple situation but it illustrates how having multiple ways of receiving promised results may lead to duplicating code
+
+### Using promises for service contracts
+#### Why use promises for service contracts?
+Another way that was proposed to execute service contracts in an asynchronous manner was to use async web API, but there
+are number of problems with that approach:
+* Async web API allows execution of the same operation with different sets of arguments, but not different operations
+* Async web API was meant for execution big number of operations at the same time (thouthands) which is not the case
+  for most functionality and mostly fits only import
+* Since only 1 type of operation can be executed at the same time it will be impossible to execute service contracts
+  from different domains at the same time
+* Async web API uses status requests to check whether operations are completed which is alright for large numbers
+  of operations but for a small number (like 2, 3) it will just generate more requests than just sending 1 request
+  for each operation
+
+So to allow execution of multiple service contracts from different domains it's best to send 1 request per operation
+and to let client code to chain, pass and properly receive promises of results of operations.
+ 
+#### How will it look?
+There are to ways we can go about using promises for asynchronous execution of service contracts:
+* Service interfaces themselves returning promises for client code to use
+
+  _service contract_:
+  ```php
+  interface SomeRepositoryInterface
+  {
+      public function save(DTOInterface $data): PromiseInterface;
+  }
+  ```
+  
+  _client code_:
+  ```php
+  class AnotherService implements AnotherServiceInterface
+  {
+      /**
+       * @var SomeRepositoryInterface
+       */
+      private $someRepo;
+    
+      public function doSmth(): void
+      {
+          ....
+        
+          //Both operations running asynchronously
+          $promise = $this->someRepo->save($dto);
+          $anotherPromise = $this->someService->doStuff();
+          //Waiting for both results
+          $promise->wait();
+          $anotherPromise->wait();
+      }
+  }
+  ```
+* Using a runner that will accept interface name, method name and arguments that will return a promise
+
+  _async runner_:
+  ```php
+  interface AsynchronousRunnerInterface
+  {
+      public function run(string $serviceName, string $serviceMethod, array $arguments): PromiseInterface;
+  }
+  ```
+  _regular service_:
+  ```php
+  interface SomeRepositoryInterface
+  {
+    public function save(DTOInterface $dto): void;
+  }
+  ```
+  _client code_:
+  ```php
+  class AnotherService implements AnotherServiceInterface
+  {
+      /**
+       * @var SomeRepositoryInterface
+       */
+      private $someRepo;
+      
+      /**
+       * @var AsynchronousRunnerInterface
+       */
+      private $runner;
+    
+      public function doSmth(): void
+      {
+          ....
+        
+          //Both operations running asynchronously
+          $promise = $this->runner->run(SomeRepositoryInterface::class, 'save', [$dto]);
+          $anotherPromise = $this->runner->run(SomeServiceInterface::class, 'doStuff', []);
+          //Waiting for both results
+          $promise->wait();
+          $anotherPromise->wait();
+      }
+  }
+  ```
