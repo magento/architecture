@@ -12,27 +12,25 @@ Benefits
 
 ## Design
 
-### Use cases
+### Definitions
 
 Distributed application - Magento monolith separated into applications by area (admin, storefront, cron, webapi) or separate services (catalog, checkout, inventory, etc).
 
-#### Core developers
+### Use cases/examples
 
-As a Magento developer I should be able to create projects that would allow deploy Magento as monolith or distributed application.
+Deploy Magento as distributed application.
 
-### Extension developers & system integrators
+Create separate projects that would allow deploy Magento distributed application (for each application or service).
 
-As an extension developer/system integrator I want to be be able deploy Magento as monolith or distributed application.
+Publish extension on market place that consists of modules separated by area (*AdminUi, *Ui, *Cron, *Webapi).
 
-As an extension developer I want to be able to publish extension on market place that is separated by area (admin, storefront, cron, webapi).
+Install extension from market place referencing single package name and have tooling install parts of the extension on appropriate instances of distributed application. Example: package A consists of package B and C and package B need to be installed on order service only, package C need to be installed on order and checkout services.    
 
-As a system integrator I want to be able install extension from market place as referencing single package name and have tooling install parts of the extension on appropriate instances of distributed application. Example: package A consists of package B and C and package B need to be installed on order service only, package C need to be installed on order and checkout services.
+Upgrade distributedly deployed application. Magento need to be updated and packages installed on different services that are part of one module, need to be updated as well. Example: if package B and C, part of package A (it's one customization) but they need to be installed on different services, we need to update these packages and their versions should satisfy requirements of package A that is metapackage and will not be installed anywhere.
 
-As a system integrator I want to be able upgrade distributedly deployed application. Magento need to be updated and packages installed on different services that are part of one module, need to be updated as well.
+Upgrade module that have parts installed on different instances of distributedly deployed application. See example below for version constraint.
 
-As an extension developer I want to be able upgrade module that have parts installed on different instances of distributedly deployed application.
-
-As an extension developer I want to be able uninstall an extension from distributedly deployed application using single package name, tooling need to figured from which parts of application which modules need to be removed. If package A is part of package B and package C, I as a extension developer want to uninstall module B, package A should not be removed as it's also used by package C.
+Uninstall an extension from distributedly deployed application using single package name, tooling need to figured from which parts of application which modules need to be removed. If package A is part of package B and package C, I as a extension developer want to uninstall module B, package A should not be removed as it's also used by package C.
 
 ### Developer workflow
 
