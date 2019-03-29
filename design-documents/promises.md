@@ -154,7 +154,7 @@ So to allow execution of multiple service contracts from different domains it's 
 and to let client code to chain, pass and properly receive promises of results of operations.
  
 #### How will it look?
-There are to ways we can go about using promises for asynchronous execution of service contracts:
+There are two ways we can go about using promises for asynchronous execution of service contracts:
 * Service interfaces themselves returning promises for client code to use
 
   _service contract_:
