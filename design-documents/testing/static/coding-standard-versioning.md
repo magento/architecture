@@ -17,7 +17,7 @@ Given a version number `{major}`.`{minor}`.`{patch}`, following rules MUST be ap
 
 **PHP CodeSniffer OOB rule** - rule that goes out-of-box with PHP CodeSniffer, the part of its package, the part of specific Coding Standard (PSR2, Squiz, etc).
 
-**Magento rule** - Magento specific rule, tah part of Magento Coding Standard, located under [Magento2/Sniffs/](https://github.com/magento/magento-coding-standard/tree/develop/Magento2/Sniffs) directory.
+**Magento rule** - Magento specific rule, the part of Magento Coding Standard, located under [Magento2/Sniffs/](https://github.com/magento/magento-coding-standard/tree/develop/Magento2/Sniffs) directory.
 
 ### Versioning use cases
 
@@ -25,15 +25,17 @@ Following use cases are representing code change examples relatively to the vers
 
 ### `{patch}` Release
 - Bug fix to existing rule that prevents false-positive findings.
-- Removing PHP CodeSniffer OOB rule from Magento Coding Standard `ruleset.xml` file.
-- Removing Magento rule from MagentoCoding Standard (sniff code + `ruleset.xml`).
-- Adding unit tests to existing rules.
+- Implementing unit tests for existing rules.
+- Adding new `exclude-pattern` or `include-pattern` to the rule.
 
 ### `{minor}` Release
+- Removing PHP CodeSniffer OOB rule from Magento Coding Standard `ruleset.xml` file.
+
+### `{major}` Release
+- Removing Magento rule from Magento Coding Standard (sniff code + `ruleset.xml`).
 - Adding new OOB rule to Magento Coding Standard `ruleset.xml` file.
 - Implementing new Magento rule and adding it to `ruleset.xml` file.
 - Changing the behaviour of existing Magento rule (extending functionality).
-
-### `{major}` Release
+- Changing the `severity` and the `type` of the rule.
 - Changing platform requirements.
-- Namespace changes.
+- Changing namespace.
