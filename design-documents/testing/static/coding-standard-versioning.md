@@ -39,3 +39,23 @@ Following use cases are representing code change examples relatively to the vers
 - Changing the `severity` and the `type` of the rule.
 - Changing platform requirements.
 - Changing namespace.
+
+## Release Line
+Only one release line will be supported based on incremental approach depending on introduced changes.
+General overview scheme:
+
+```
+1.0.0
+  |
+1.0.1
+  |
+1.0.2
+  |
+  |__1.1.0
+       |
+       |__2.0.0
+            |
+            |__2.0.1
+```
+
+No `{patch}` and `{minor}` releases will be made to the previous `{major}` (1.0.0) version if the new `{major}` (2.0.0) version already exists.
