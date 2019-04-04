@@ -99,3 +99,5 @@ Cons:
 
 The third approach looks like more convenient for now as allow combining two previous strategies: old modules will have old namespaces, new modules - new namespaces. Also, this approach allow splitting extensions according to new modules decomposition iteratively.
 The new modules won't be introduced in metapackage and extension developers should require them in `composer.json` manually.
+
+Once a metapackage released it might be marked as deprecated to provide only the one recommended approach how the dependencies should be required.
