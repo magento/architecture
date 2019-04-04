@@ -184,7 +184,11 @@ Different options for area specific instances deployment
     3. When updating packages, check that new versions of the packages satisfy version requirements of metapackage
     4. When updating extension find new versions of extensions that consist from packages that have their dependency/versions met (dependencies on Magento packages). When calculating versions, we probably will have to take into account Magento package versions on other instances
     
-    Because of this complexity it might be more reliable to have tool perform operations on the monoliths, and when composer.json updated use that information as a master to update instance composer.json files.
+    #### Tool architecture
+    There are two options for tool implementation
+    
+    1. Tool will be responsible for version calculation and constraint checks.
+    2. To perform operation, tool will be performing this operation on monoliths first and then updating instances using packages on monoliths as a master. Because of the complexity described above this approach might be more reliable.
 
 3. Convention based
 
