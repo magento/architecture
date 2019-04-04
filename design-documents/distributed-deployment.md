@@ -177,6 +177,14 @@ Different options for area specific instances deployment
     instance-manager uninstall --package="vendor-name/catalog-customization" --instances "./admin-ui ./ui ./cron ./webapi"
     instance-manager update --instances "./admin-ui ./ui ./cron ./webapi"
     ```
+    
+    Some of corner cases tool need to support
+    1. When upgrading extension that shares common package with another extension, make sure that version of the common package satisfies metapackage of another package
+    2. When removing package from one of the instances that is part of the extension user want to remove, check that package is not part of any other installed extension
+    3. When updating packages, check that new versions of the packages satisfy version requirements of metapackage
+    4. When updating extension find new versions of extensions that consist from packages that have their dependency/versions met (dependencies on Magento packages). When calculating versions, we probably will have to take into account Magento package versions on other instances
+    
+    Because of this complexity it might be more reliable to have tool perform operations on the monoliths, and when composer.json updated use that information as a master to update instance composer.json files.
 
 3. Convention based
 
