@@ -63,7 +63,7 @@ Cons:
 
 This strategy proposes to expose all new modules via one (currently existing) `composer.json` and came from [this proposal](https://github.com/magento/architecture/issues/88).
 The main idea that extensions will use the same dependency in `composer.json` which will be distributed as metapackage. Magento core modules will depend on new modules like `catalog-ui` but not to `catalog` metapackage, such metapackage will be distributed separately.
-Such strategy assumes that existing modules will use the old namespaces but new modules will have the new namespaces.
+Such strategy assumes that existing modules will use the old namespaces but new modules (with new code) will have the new namespaces.
 
  ```json
 "require": {
@@ -92,12 +92,11 @@ Cons:
  - Introduce a metapackage with all needed dependencies
  - `composer.json` anyway should be changed to specify needed version of module
  - All extensions still have coupling to all dependant code even if they do not use it
- - Such approach won't get benefits of modules decoupling as an extension still depends on the whole component
- - To get benefits of distributed deployment extensions should be split as well
+ - Such approach won't get benefits of modules decoupling as an extension, if it has not been split, still depends on the whole component
  
 ## Summary
 
 The third approach looks like more convenient for now as allow combining two previous strategies: old modules will have old namespaces, new modules - new namespaces. Also, this approach allow splitting extensions according to new modules decomposition iteratively.
-The new modules won't be introduced in metapackage and extension developers should require them in `composer.json` manually.
+The new modules (with new code) won't be introduced in metapackage and extension developers should require them in `composer.json` manually.
 
 Once a metapackage released it might be marked as deprecated to provide only the one recommended approach how the dependencies should be required.
