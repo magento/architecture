@@ -22,6 +22,8 @@ Example extensions that later will be used in the examples.
 
 ### Use cases/examples
 
+Note: this limitation doesn't exist for application that consists from services where each of the them work with the same database, but for applications that are separated by area, we need to upgrade all instances at the same time because all of them use the same database.
+
 #### Both
 1. Deploy Magento as distributed application.
 
@@ -177,17 +179,11 @@ Different options for area specific instances deployment
     instance-manager uninstall --package="vendor-name/catalog-customization" --instances "./admin-ui ./ui ./cron ./webapi"
     instance-manager update --instances "./admin-ui ./ui ./cron ./webapi"
     ```
-    
-    Some of corner cases tool need to support
-    1. When upgrading extension that shares common package with another extension, make sure that version of the common package satisfies metapackage of another package
-    2. When removing package from one of the instances that is part of the extension user want to remove, check that package is not part of any other installed extension
-    3. When updating packages, check that new versions of the packages satisfy version requirements of metapackage
-    4. When updating extension find new versions of extensions that consist from packages that have their dependency/versions met (dependencies on Magento packages). When calculating versions, we probably will have to take into account Magento package versions on other instances
-    
+        
     #### Tool architecture
     There are two options for tool implementation
     
-    1. Tool will be responsible for version calculation and constraint checks.
+    1. Tool will be responsible for version calculation and constraint checks (try to reuse composer API potentially).
     2. To perform operation, tool will be performing this operation on monoliths first and then updating instances using packages on monoliths as a master. Because of the complexity described above this approach might be more reliable.
 
 3. Convention based
