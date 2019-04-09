@@ -13,7 +13,8 @@ GraphQL is designed to support continuous API schema evolution. There must be ch
 
 To perform backward compatibility check a base version of the schema is required for each release line. 
  - Base schema can be generated manually and then stored along with the tests. There is no endpoint for retrieving SDL, the schema can be generated using some hacks after schema stitching process is complete.
- - It can also be taken from demo instance running on the latest version of the target release line. There are no demo instances maintained by the engineering team and it may be challenging to support them for GraphQL only. There are demo instances used by sales, but their state and readiness cannot be guaranteed (e.g. new EAV attributes can be created and affect the schema). It should also be possible to install two instances during the build and compare the resulting schemas, both of them must be accessible via HTTP.
+ - It can also be taken from demo instance running on the latest version of the target release line. There are no demo instances maintained by the engineering team and it may be challenging to support them for GraphQL only. There are demo instances used by sales, but their state and readiness cannot be guaranteed (e.g. new EAV attributes can be created and affect the schema). 
+ - It should be possible to install two instances during the build and compare the resulting schemas, both of them must be accessible via HTTP.
 
 Suggested tools:
 
