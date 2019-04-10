@@ -36,8 +36,9 @@ Suggested approach is to compare actual configuration of the RabbitMQ after Mage
 
 # Skipped DB compare checks
 
-There is a huge tech debt in a form of skipped tables and fields during DB compare check. The blacklists can be found here `tools/Magento/Tools/DatabaseCompare/etc/ce/config.php`
-
+1. There is a huge tech debt in a form of skipped tables and fields during DB compare check. The blacklists can be found here `tools/Magento/Tools/DatabaseCompare/etc/ce/config.php`.
+1. The tool should ignore the order of the fields during comparison since the order can change when module installation order changes.
+1. PHP errors are ignored, but must cause build failure.
 
 # Other backward incompatible changes
 
