@@ -72,7 +72,7 @@ So to allow execution of multiple service contracts from different domains it's 
 and to let client code to work with asynchronously received values almost as they would've with synchronous ones.
  
 #### How will it look?
-There are to ways we can go about using Deferred for asynchronous execution of service contracts:
+There are two ways we can go about using Deferred for asynchronous execution of service contracts:
 * Service interfaces themselves returning deferred values for client code to use
  
   _contract's deferred_:
