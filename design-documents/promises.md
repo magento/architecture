@@ -1,144 +1,62 @@
 ### Why?
 Service contracts in the future will often be executed in an asynchronous manner
-and it's time to introduce a standard Promise to Magento for asynchronous operations to employ
+and it's time to introduce a standard Promise to Magento for asynchronous operations to employ.
+Also operations like sending HTTP requests can be easily performed asynchronously since cUrl multi can be utilized
+to send requests asynchronously.
 ### Requirements
-* Promises CANNOT be forwarded with _then_ and _otherwise_ ([see explanation](#forwarding))
-* _then_ accepts a function that will be executed when the promise is resolved, the callback will
-receive a single argument - result of the execution
-* _otherwise_ accepts a function that will be executed if an error occurs during the asynchronous
-operation, it will receive a single argument - a _Throwable_
-* Promises can be used in a synchronous way to prevent methods that use methods returning promises
-having to return a promise as well ([see explanation](#callback-hell)); This will be done by promises having _wait_ method
-* _wait_ method does not throw an exception if the promise is rejected
-nor does it return the result of the resolved promise ([see explanation](#wait-not-unwrapping-promises))
-* If an exception occurs during an asynchronous operation and no _otherwise_ callback is
-provided then it will just be rethrown
+* Avoid callbacks that cause noodle code and generally alien to PHP
+* Introduce a way to work with asynchronous operations in a familiar way
+* Employ solution within core code to serve as an example for our and 3rd party developers
 ### API
-##### Promise to be used by client code
-When client code receives a promise from calling another object's method
-it shouldn't have access to _resolve_ and _reject_ methods, it should only be able to
-provide callbacks to process promised results and to wait for promised operation's execution.
+##### Deferred
+A future that describes a values that will be available later.
+If a library returns a promise or it's own implementation of a future it can be easily wrapped to support our interface.
  
 This interface will be used as the return type of methods returning promises.
 ```php
-interface PromiseInterface
+interface DeferredInterface
 {
     /**
-     * @throws PromiseProcessedException When callback was alredy provided.
+     * Wait for and return the value.
+     *
+     * @return mixed Value.
+     * @throws \Throwable When it was impossible to get the value.
      */
-    public function then(callable $callback): void;
-    
+    public function get();
+
     /**
-     * @throws PromiseProcessedException When callback was alredy provided.
+     * Is the process of getting the value is done?
+     *
+     * @return bool
      */
-    public function otherwise(callable $callback): void;
-    
-    public function wait(): void;
-}
-```
-##### Promise to be created
-This promise will be created by asynchronous code
-```php
-interface ResultPromiseInterface extends PromiseInterface
-{
-    public function resolve($value): void;
-    
-    public function reject(\Throwable $exception): void;
+    public function isDone(): bool;
 }
 ```
 
 ### Implementation
-A wrapper around [Guzzle Promises](https://github.com/guzzle/promises) will be created to implement the APIs above. Guzzle Promises fit
-most important criteria - they allow synchronous execution as well as asynchronous. It's a mature
-and well-known library and, while we would have to add guzzle/promises to our composer.json,
-the library is already required in Magento indirectly - we won't be actually adding a new dependency.
- 
-There are other libraries like [Reactphp Promises](https://github.com/reactphp/promise) but they either do not provide synchronous way
-to interact with promises or are not as refined.
+This interface will be used as a wrapper for libraries that return promises and deferred values.
  
 ### Explanations
-##### Forwarding
-Consider this code
-```php
-$promise = $this->anotherObject->doStuff();
-$promise->then($doStuffCallback)
-    ->otherwise($processErrorCallback)
-    ->otherwise($processAnotherError)
-    ->then($doOtherStuff)
-    ->otherwise($processErrorCallback);
-```
-Does 1st _then_ return a forwarded promise? Or is it the same object?
-Then what promise is the second _otherwise_ callback for?
-Code looking like this is confusing and it will be much cleaner if we don't use forwarding.
-```php
-$doStuffOperation = $this->someObject->doStuff();
-$result = null;
-$doStuffOperation->then(function ($response) use (&$result) { $result = $response; });
-$simultaneousOperation = $this->otherObject->processStuff();
-$doStuffOperation->wait();
-$updated = null;
-$saveOperation = $this->repo->save($result);
-$saveOperation->then(function ($result) use (&$updated) { $updated = $result; });
-
-//Waiting for all
-$saveOperation->wait();
-$simultaneousOperation->wait();
-return $updated;
-```
-Here we clearly state that for _save operation_ we need to _do stuff operation_ to finish
-and _simultaneous operation_ may run up until then end of our algorithm execution.
+##### Why not promises?
+Promises mean callbacks. One callback is fair enough but multiple callbacks within the same method, callbacks for forwarded
+promises create noodle-like hard to support code. Closures are a part of PHP but still are a foreign concept complicating
+developer experience. Also it is an extra effort to ensure strict typing of return values and arguments with anonymous
+functions.
  
- 
-##### Callback hell
-Consider this code responsible for placing orders
-```php
-class ServiceA
-{
-....
+Other thing is that promises are meant to be forwarded which complicates things. It can be hard to understand what are
+you writing a callback for - promised result? Another callback for promised result introduced earlier? OnFulfilled callback
+for resolved value in a OnRejected callback to the initial promise?
 
-    public function process(DTOInterface $dto): ProcessedInterface
-    {
-        ....
-        
-        $this->serviceB->processSmth($val)->then(function ($val) use ($processed) {
-            $processed->setBValue($val);
-        });
-        
-        return $processed;
-    }
+##### Typing
+Methods returning Deferred can still provide types for their actual returned values - they can extend the original interface
+and add return type hint to the _get()_ method.
 
-....
-}
-```
-We cannot be sure _serviceB_ has finished doing it's stuff when we return _$processed_.
-So, if we cannot wait for the promise _serviceB_ returned, the only thing we can do
-is to return a promise ourselves instead of _ProcessedInterface_. But then methods using
-_ServiceA::process()_ would have to do the same - and PHP code is not supposed to be this way.
+##### Advantage
+Since deferred does not require any confusing callbacks and forwarding it's pretty easy to just treat it as a values
+and only calling _get()_ when you actually need it. Client code will look mostly like it's just a regular synchronous code.
 
-##### Wait not unwrapping promises
-For _wait_ method to also unwrap promises can result in confusion. It's better to have a single way of retreiving promised results and a single way of retreiving errors.
- 
-Consider next situation:
-```php
-class ServiceA
-{
-    public function doSmth(): void
-    {
-       $promise = $this->otherService->doSmthElse();
-       $promise->otherwise(function ($exception) { $this->logger->critical($exception); });
-       try {
-           //wait would throw the exception processed in the otherwise callback once again
-           $promise->wait();
-       } catch (\Throwable $exception) {
-           //we've already processed this
-       }
-    }
-}
-```
-That is a simple situation but it illustrates how having multiple ways of receiving promised results may lead to duplicating code
-
-### Using promises for service contracts
-#### Why use promises for service contracts?
+### Using Deferred for service contracts
+#### Why use futures for service contracts?
 Another way that was proposed to execute service contracts in an asynchronous manner was to use async web API, but there
 are number of problems with that approach:
 * Async web API allows execution of the same operation with different sets of arguments, but not different operations
@@ -151,17 +69,29 @@ are number of problems with that approach:
   for each operation
 
 So to allow execution of multiple service contracts from different domains it's best to send 1 request per operation
-and to let client code to chain, pass and properly receive promises of results of operations.
+and to let client code to work with asynchronously received values almost as they would've with synchronous ones.
  
 #### How will it look?
-There are to ways we can go about using promises for asynchronous execution of service contracts:
-* Service interfaces themselves returning promises for client code to use
-
+There are to ways we can go about using Deferred for asynchronous execution of service contracts:
+* Service interfaces themselves returning deferred values for client code to use
+ 
+  _contract's deferred_:
+  ```php
+  interface DTODeferredInterface extends DeferredInterface
+  {
+      /**
+       * @inheritDoc
+       * @return DTOInterface
+       */
+      public function get(): DTOInterface;
+  }
+  ```
+ 
   _service contract_:
   ```php
   interface SomeRepositoryInterface
   {
-      public function save(DTOInterface $data): PromiseInterface;
+      public function save(DTOInterface $data): DTODeferredInterface;
   }
   ```
   
@@ -179,28 +109,28 @@ There are to ways we can go about using promises for asynchronous execution of s
           ....
         
           //Both operations running asynchronously
-          $promise = $this->someRepo->save($dto);
-          $anotherPromise = $this->someService->doStuff();
-          //Waiting for both results
-          $promise->wait();
-          $anotherPromise->wait();
+          $deferredDTO = $this->someRepo->save($dto);
+          $deferredStuff = $this->someService->doStuff();
+          //Started both processes at the same time, waiting for both to finish
+          $dto = $deferredDTO->get();
+          $stuff = $deferredStuff->get();
       }
   }
   ```
-* Using a runner that will accept interface name, method name and arguments that will return a promise
+* Using a runner that will accept interface name, method name and arguments that will return a deferred
 
   _async runner_:
   ```php
   interface AsynchronousRunnerInterface
   {
-      public function run(string $serviceName, string $serviceMethod, array $arguments): PromiseInterface;
+      public function run(string $serviceName, string $serviceMethod, array $arguments): DeferredInterface;
   }
   ```
   _regular service_:
   ```php
   interface SomeRepositoryInterface
   {
-    public function save(DTOInterface $dto): void;
+    public function save(DTOInterface $dto): DTOInterface;
   }
   ```
   _client code_:
@@ -222,18 +152,19 @@ There are to ways we can go about using promises for asynchronous execution of s
           ....
         
           //Both operations running asynchronously
-          $promise = $this->runner->run(SomeRepositoryInterface::class, 'save', [$dto]);
-          $anotherPromise = $this->runner->run(SomeServiceInterface::class, 'doStuff', []);
-          //Waiting for both results
-          $promise->wait();
-          $anotherPromise->wait();
+          $deferredDTO = $this->runner->run(SomeRepositoryInterface::class, 'save', [$dto]);
+          $deferredStuff = $this->runner->run(SomeServiceInterface::class, 'doStuff', []);
+          //Started both processes at the same time, waiting for both to finish
+          $dto = $deferredDTO->get();
+          $stuff = $deferredStuff->get()
       }
   }
   ```
 
-### Using promises for existing code
+### Using deferred for existing code
 We have a standard HTTP client - Magento\Framework\HTTP\ClientInterface, it can benefit from allowing async requests
-functionality for developers to use by employing promises.
+functionality for developers to use by employing promises. Since it's an API, and a messy one at that, we should create
+a new asynchronous client.
  
 This client is being used in Magento\Shipping\Model\Carrier\AbstractCarrierOnline to create package shipments/
 shipment returns in 3rd party systems, the process can be optimized by sending requests asynchronously to create
