@@ -386,6 +386,43 @@ Will be returned list of objects that we tried to import
 | entity_type | Import type: eg. customers, products, etc ... |
 | items | List of items that were imported. As an array |
 
+### Get single import operation status
+
+Receive information about imported file
+GET  `/V1/import/operation/:uuid`
+
+#### Return
+
+Will be returned specific object that we tried to import
+
+```
+{
+  "status": "string", 
+  "error": "string",
+  "uuid": 0,
+  "entity_type": "catalog_product, customers ....",
+  "user_id": "User ID who created this request",
+  "user_type": "User Type who created this request",
+  "items": [
+  {
+    "uuid": 0,
+    "status": "",
+    "serialized_data": "",
+    "result_serialized_data": "",
+    "error_code":"",
+    "result_message":""
+  }]
+}
+```
+
+| Key | Value |
+| --- | --- |
+| uuid | Imported File ID |
+| status | Status of this file. Possible values: completed, not_completed, error |
+| error | Error message if exists |
+| entity_type | Import type: eg. customers, products, etc ... |
+| items | Item that were requested. For do not change interfaces it will be still as an array, but always one item |
+
 ##### And Item object will contain
 
 This values are based on magento "magento_operation" table
@@ -399,3 +436,21 @@ This values are based on magento "magento_operation" table
 | error_code | Error code |
 | result_message | Result message of operation execution |
 
+
+## Repeatable call endpoint
+
+Main idea, is in case some operation import failure, that user could align input data and repeat import for this particular item
+
+PUT  `/V1/import/operation-id/{uuid}`
+ 
+```
+{
+  "serialized_data":""
+}
+```
+
+### Return
+
+```
+true
+```
