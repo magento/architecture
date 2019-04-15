@@ -37,6 +37,7 @@ This document clarifies the following two questions of the original [service iso
     Common code (business logic used by multiple areas, models, resource modelss)
     * CatalogCommon
     * CatalogShared
+    * CatalogDomain
     
     Common static resources
     * CatalogCommonUi
