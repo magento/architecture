@@ -78,5 +78,6 @@ This document clarifies the following two questions of the original [service iso
         Cons
         * We going to have incorrect namespaces
         * Will need to fix existing tests (not a big con really)
+        * Will have to decide what to do with new classes we introduce in the modules that have classes with old namespaces. Introduce with old namespace for consistency or with new namespace that matches module name to have correct namespace. Either way this might be a little confusing, and different from the case when we create brand new module with correct namespace
         
     Recommended option is to keep old namespaces.
