@@ -26,17 +26,23 @@ Following use cases are representing code change examples relatively to the vers
 ### `{patch}` Release
 - Bug fix to existing rule that prevents false-positive findings.
 - Implementing unit tests for existing rules.
-- Adding new `exclude-pattern` or `include-pattern` to the rule.
 
 ### `{minor}` Release
 - Removing PHP CodeSniffer OOB rule from Magento Coding Standard `ruleset.xml` file.
+- Removing Magento rule from Magento Coding Standard (sniff code + `ruleset.xml`).
+- Adding new `exclude-pattern` to the rule.
+- Decreasing the `severity`.
+- Changing `type` from `error` to `warning`.
+
+In context of Coding Standard backward incompatible change occurs when rules became stricter and produce more findings.
 
 ### `{major}` Release
-- Removing Magento rule from Magento Coding Standard (sniff code + `ruleset.xml`).
 - Adding new OOB rule to Magento Coding Standard `ruleset.xml` file.
 - Implementing new Magento rule and adding it to `ruleset.xml` file.
 - Changing the behaviour of existing Magento rule (extending functionality).
-- Changing the `severity` and the `type` of the rule.
+- Adding new `include-pattern` to the rule.
+- Increasing the `severity`.
+- Changing `type` from `warning` to `error`.
 - Changing platform requirements.
 - Changing namespace.
 
