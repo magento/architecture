@@ -50,7 +50,7 @@ This document clarifies the following two questions of the original [service iso
     
     For dealing with namespaces, there are the following options.
     
-    1. Introduce new namespaces and preserve old ones for backwards compatibility. Fix namespaces in the modules. Old module Catalog will contain classes under old namespace, marked with @deprecated annotation, that extend classes with new namespaces and di configuration for backwards compatibility. Then in the future minor release these classes will and di configuration will be removed.
+    1. Change, introduce new namespaces and preserve old ones for backwards compatibility. Fix namespaces in the modules. Old module Catalog will contain classes under old namespace, marked with @deprecated annotation, that extend classes with new namespaces and di configuration for backwards compatibility. Then in the future minor release these classes will and di configuration will be removed.
         Pros
         * We going to have correct namespaces after module split, for instance \Magento\CatalogAdminUi\Block\…
         * Allows transition period
@@ -63,7 +63,7 @@ This document clarifies the following two questions of the original [service iso
         * May need to add new tests to make sure everything is consistent (edited) 
         * One minor release probably is not enough time for developers to fix their extensions
     
-    2. Introduce new namespaces and don't preserve backwards compatibility
+    2. Change, introduce new namespaces and don't preserve backwards compatibility
         Pros
         * We going to have correct namespaces after module split
         * No overhead from preserving keeping backwards compatibility
@@ -71,7 +71,7 @@ This document clarifies the following two questions of the original [service iso
         Cons
         * Backwards incompatible, all of the extensions will be affected
     
-    3. Keep old namespaces. Classes in CatalogAdminUi, CatalogStorefrontUi, CatalogCron, etc will have Catalog namespace
+    3. Preserve old namespaces. Classes in CatalogAdminUi, CatalogStorefrontUi, CatalogCron, etc will have Catalog namespace
         Pros
         * No overhead from preserving keeping backwards compatibility
         
