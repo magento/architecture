@@ -22,7 +22,7 @@ Example extensions that later will be used in the examples.
 
 ### Uses cases for managing extensions
 
-Use cases assume that extensions and instances use configuration proposed [here](https://github.com/magento/architecture/pull/145).
+Use cases assume that extensions and instances use configuration proposed [here](https://github.com/magento/architecture/pull/143).
 
 Note 1: not a problem for services deployment, but when we do deployment per area we need to update all instances at once because they share the same database and make sure
 
