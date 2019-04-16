@@ -41,12 +41,12 @@ mutation {
 #### Response
 ```json
 {
-  "data": {
-    "operation": {
-      "identifier": "21e0e65f29bcaf513d2685815916ab7e5ac9d473",
-      "__typename__": "OperationAccepted"
-    }
-  }
+   "data":{
+      "operation":{
+         "identifier":"21e0e65f29bcaf513d2685815916ab7e5ac9d473",
+         "__typename__":"OperationAccepted"
+      }
+   }
 }
 ```
 
@@ -57,12 +57,8 @@ Query `queue` receives list of operation identifiers and retrieves statuses for 
 Command that has been invoked and did not complete yet will be marked as *in progress*.
 
 ```graphql schema
-type Queue {
-    statuses: [OperationStateInterface!]
-}
-
 type Query {
-    queue(operationIdentifiers: [String!]!) : Queue
+    queue(operationIdentifiers: [String!]!) : [OperationStateInterface]
 }
 
 type OperationCompleted implements OperationStateInterface {
@@ -78,30 +74,28 @@ type OperationInProgress implements OperationStateInterface {
 ```graphql
 query {
     queue($operataionIdentifier: [String!]!) {
-        statuses {
-            identifier
-            __typename__
-        }
+        identifier
+        __typename__
     }
 }
 ```
 #### Response
 ```json
-{
-  "queue": {
-    "statuses": [
-        {
-          "identifier": "21e0e65f29bcaf513d2685815916ab7e5ac9d473",
-          "__typename__": "OperationAccepted"
-        }, {
-          "identifier": "95f7cf4623b9a53171e77caffd05b0e54cdc11b3",
-          "__typename__": "OperationInProgress"
-        }, {
-          "identifier": "e211fb19a5ce81969aa5ec3ab216d2401c8766ed",
-          "__typename__": "OperationCompleted"
-        }
-    ]
-  }
+{  
+   "queue":[  
+      {  
+         "identifier":"21e0e65f29bcaf513d2685815916ab7e5ac9d473",
+         "__typename__":"OperationAccepted"
+      },
+      {  
+         "identifier":"95f7cf4623b9a53171e77caffd05b0e54cdc11b3",
+         "__typename__":"OperationInProgress"
+      },
+      {  
+         "identifier":"e211fb19a5ce81969aa5ec3ab216d2401c8766ed",
+         "__typename__":"OperationCompleted"
+      }
+   ]
 }
 ```
 
@@ -128,14 +122,12 @@ type OperationFailed implements OperationStateInterface {
 ```graphql 
 query {
     queue($operataionIdentifier: [String!]) {
-        statuses {
-            identifier
-            __typename__
-            ... on OperationFailed {
-                failures {
-                    message
-                    __typename__
-                }
+        identifier
+        __typename__
+        ... on OperationFailed {
+            failures {
+                message
+                __typename__
             }
         }
     }
@@ -144,20 +136,18 @@ query {
 #### Response
 ```json
 {
-  "queue": {
-    "statuses": [
-        {
-          "identifier": "25d7d02fa2b73238b098b0254d9ec98a5cd23696",
-          "__typename__": "OperationFailed",
-          "failures" : [
+   "queue":[
+      {
+         "identifier":"25d7d02fa2b73238b098b0254d9ec98a5cd23696",
+         "__typename__":"OperationFailed",
+         "failures":[
             {
-                "__typename__": "LogicalErrorReport",
-                "message": "No such entity with email example@example.com"
+               "__typename__":"LogicalErrorReport",
+               "message":"No such entity with email example@example.com"
             }
-          ]
-        }
-    ]
-  }
+         ]
+      }
+   ]
 }
 ```
 
@@ -194,14 +184,12 @@ type PersistOperationCompleted implements PersistOperationInterface, OperationSt
 ```graphql 
 query {
     queue($operataionIdentifier: [String!]) {
-        statuses {
-            identifier
-            __typename__
-            ... on PersistOperationCompleted {
-                changedEntities {
-                    type
-                    identifier
-                }
+        identifier
+        __typename__
+        ... on PersistOperationCompleted {
+            changedEntities {
+                type
+                identifier
             }
         }
     }
@@ -210,19 +198,19 @@ query {
 #### Response
 ```json
 {
-  "queue": {
-    "statuses": [
-        {
-          "identifier": "3d8d487165a5653733e3a3e8bd46783e46b9a58d",
-          "__typename__": "PersistOperationCompleted",
-          "changedEntities" : [
+   "queue":[
+      {
+         "identifier":"3d8d487165a5653733e3a3e8bd46783e46b9a58d",
+         "__typename__":"PersistOperationCompleted",
+         "changedEntities":[
             {
-              "Cart" : ["29f77a662a7f4d019d5160a9dbe4b83067a75f68"]
+               "Cart":[
+                  "29f77a662a7f4d019d5160a9dbe4b83067a75f68"
+               ]
             }
-          ]
-        }
-    ]
-  }
+         ]
+      }
+   ]
 }
 ```
 #### Custom
@@ -242,16 +230,14 @@ Such an approach may help to achieve better performance but definitely will cost
 ```graphql 
 query {
     queue($operataionIdentifier: [String!]) {
-        statuses {
-            identifier
-            __typename__
-            ... on CartSaveOperationCompleted {
-                cart {
-                    increment_id
-                    items {
-                        sku
-                        qty
-                    }
+        identifier
+        __typename__
+        ... on CartSaveOperationCompleted {
+            cart {
+                increment_id
+                items {
+                    sku
+                    qty
                 }
             }
         }
@@ -261,25 +247,35 @@ query {
 #### Response
 ```json
 {
-  "queue": {
-    "statuses": [
-        {
-          "identifier": "3d8d487165a5653733e3a3e8bd46783e46b9a58d",
-          "__typename__": "PersistOperationCompleted",
-          "cart" : {
-            "increment_id": "AA000000001",
-            "items": [
-                {
-                  "sku": "simple-product-1",
-                  "qty": 1
-                }, {
-                  "sku": "simple-product-2",
-                  "qty": 2
-                }
+   "queue":[
+      {
+         "identifier":"3d8d487165a5653733e3a3e8bd46783e46b9a58d",
+         "__typename__":"PersistOperationCompleted",
+         "cart":{
+            "increment_id":"AA000000001",
+            "items":[
+               {
+                  "sku":"simple-product-1",
+                  "qty":1
+               },
+               {
+                  "sku":"simple-product-2",
+                  "qty":2
+               }
             ]
-          }
-        }
-    ]
-  }
+         }
+      }
+   ]
 }
 ```
+
+### Mimicking async mutation
+
+Actually, with this proposal, we will have to change application workflows to support asynchronous communication. With the great benefit for the future system will face some challenges during the transition period.
+Async operations cause the domino effect. There are not enough to change the single mutation, all operation should be rewritten at some moment.
+Taking to account backward compatibility policies the migration logic should be defined in advance.
+So, the system should be proactive and provides a possibility to write a client application which will be resilient to mutations mode switch.
+
+To achieve this goal we can wrap the existing synchronous operations with `OperationCompleted` state.
+As a result, server side mutations will be protected from interface change.
+A client application can be written with taking into account of the possibility that operation will not be executed immediately.
