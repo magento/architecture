@@ -20,42 +20,27 @@ Example extensions that later will be used in the examples.
 
 ![Extensions](distributed-deployment/extensions.png)
 
-### Use cases/examples
+### Uses cases for managing extensions
 
-Note: this limitation doesn't exist for application that consists from services where each of the them work with the same database, but for applications that are separated by area, we need to upgrade all instances at the same time because all of them use the same database.
+Use cases assume that extensions and instances use configuration proposed [here](https://github.com/magento/architecture/pull/145).
 
-#### Both
-1. Deploy Magento as distributed application.
+Note 1: not a problem for services deployment, but when we do deployment per area we need to update all instances at once because they share the same database and make sure
 
-#### Magento
-1. Create separate projects (for each application or service) to enable deployment of Magento as distributed application.
+Note 2: `bin/magento setup:upgrade` will need to be run once on each type of the instance.
 
-#### Extension developers and system integrators
-1. Publish extension on market place that consists of modules separated by area (*AdminUi, *Ui, *Cron, *Webapi).
+Note 3: we want to aggreagate extensions in metapackages, so they can be easily installed on monolith. Metapackages will not be installed on distributed application.
 
-2. Install an extension from market place referencing single package name and have tooling add dependencies on parts of the extension on corresponsing instances of distributed application.
+1. To install `vendor/catalog-extension` extension, developer will need to look at dependencies of the metapackage (download metapackage and it's dependencies and inspect composer.json files of the dependencies or look at Marketplace) on what instances they need to be installed and add dependencies on these packages and their versions to composer.json files on appropriate instances. After adding dependencies on each package, need to specify what metapackages installed on the system in composer.json on each instance (metapackages are the actual extensions, we need to record correspondence).
 
-    ![Install extensions](distributed-deployment/install-extensions.png)
+2. To remove extension developer will have to look at what packages that version of extension consists of (matapackage of the extension), then inspect composer.json files of these packages and remove them from the instances where they should be installed if there are no other dependencies on these packages if there are no other dependencies on them. To understand if there are no other dependencies on the package, developer will have to check if these dependency is not part of any other installed metapackage (installed metapackages specified on each instance).
 
-    On the diagram we have an example of installing two extensions, `vendor/common` is a shared library used by multiple extensions of the vendor.
+3. To upgrade `vendor/catalog-extension` extension, developer will have to do #2 and then #1.
 
-3. Uninstall an extension from distributedly deployed application using single package name, tooling need to know which parts of the extension need to removed and from which instances.
+4. It is possible that use cases #1 and #2 fail if they both depend of the same package, but of different versions. In this case developer will have to chose one or not to have any of the extensions (the same would happen with monolith), the only different is that developer will have to remove extensions following #2.
 
-    ![Remove extension](distributed-deployment/remove-extension.png)
+5. It is possible that during #1 or #3, requirements of the extension on Magento components will not be met. In this case, developer will have to do #2.
 
-    Shared library is not being removed because it's used by the other extension.
-
-4. Upgrade an extension that have parts installed on different instances of distributedly deployed application.
-
-    ![Update extension](distributed-deployment/update-extension.png)
-
-    Extension parts on different instances need to satisfy metapackage version requirements.
-
-5. New version of extension no longer need some of the parts of the extension, so they need to be removed.
-
-    ![Update extension - remove a package](distributed-deployment/update-extension-2.png)
-
-6. Upgrade distributedly deployed application.
+6. It is possible (although it's very rare use case) that metapackage that developer wants to install or it's dependencies are listed in the conflict section of another package that is installed already. If conflict section specifies conflict with package that actually being installed, composer would not allow installation of this package. But package that may have conflict with metapackage specified. As metapackages not being installed anywhere, developer need manually check that any existing packages don't have conflict with metapackage.
 
 ### Developer workflow
 
@@ -108,106 +93,6 @@ Currently Magento 2 project depends on `magento/base` component, that contain pr
 
 Installing all components will result in monolith, project for monolith will depend on all of the components. Installing `magento/base` and `magento/web-application` and Admin UI modules will result in admin instance.
 
-In addition to base package decomposition, we need to add marker components that would identify area specific instance:
-`magento/cron` - marker component, contains cron modules
-`magento/admin-ui` - marker component, contains admin ui modules
-`magento/ui` - marker component, contains store front modules
+## Web setup wizard
 
-Different options for area specific instances deployment
-
-1. Distribute different projects and use composer to manage dependencies
-    
-    UI modules will have to depend on marker component area, so it would be possible to identify on which area specific instance they need to be installed. Modules that are reusable across instances will not have dependency on area specific instances. UI modules will depend on them and they will be included where they needed.
-    
-    There are can be a case when extension is not necessarily depends on UI module but needs to be installed on particular instance or instances (for instance, extension that sends an email when the order is placed), in this place it will depend on base module (module that contains business logic) and will be installed on all instances.
-    
-    Pros
-    * Simplifies developer workflow (see below)
-    
-    Cons
-    * Will require us to publish more projects
-    * Potentially some modules that don't depend on UI and depend on base modules may be installed on all instances (need to investigate)
-    * May not work for distributed deployment of services (or one to many relationship, when module need to be installed on multiple instances), see diagram below
-    * How to manage obsolete dependencies (you remove module on once instance, need to remove relevant parts on another)?
-    
-    ![Module dependencies on services](distributed-deployment/module-dependencies-on-services.png)
-
-2. Distribute different projects and introduce new type of configuration for declaring dependencies of packages on instances/services
-
-    Modules would define on which instances they need to be installed and tool would modify composer.json files of these instances to add dependencies to require section.
-    
-    CatalogExtensionAdminUi/composer.json
-    ```
-    {
-        "name": "vendor/catalog-extension-admin-ui",
-        ...
-        "instances": [
-            "admin-ui"
-        ]
-    }
-    ```
-    
-    As when we install extension we use metapackage name (metapackage includes all parts of the extension: AdminUi, Ui, Cron, WebApi) and metapackage is not being installed or saved anywhere, we need to add this information to the composer.json on the instance.
-    
-    admin-ui-instance/composer.json
-    ```
-    {
-        "name": "magento/admin-ui-project",
-        "type": "project",
-        "require": {
-            "vendor/catalog-extension-admin-ui": "*"
-        },
-        "installed-packages": [
-            "vendor/catalog-extension"
-        ]
-    }
-    ```
-    
-    This would allow to understand which packages that are installed on the instance are part of extension we want to remove and remove these packages from all instances.
-    
-    Pros
-     * The same mechanism can be used for distributed deployment of services
-    
-    Cons
-    * Will require us to publish more projects
-    * Need to add new type of configuration
-    
-    Examples of using command
-    
-    ```
-    instance-manager install --package="vendor-name/catalog-customization" --instances "./admin-ui ./ui ./cron ./webapi"
-    instance-manager uninstall --package="vendor-name/catalog-customization" --instances "./admin-ui ./ui ./cron ./webapi"
-    instance-manager update --instances "./admin-ui ./ui ./cron ./webapi"
-    ```
-        
-    #### Tool architecture
-    There are two options for tool implementation
-    
-    1. Tool will be responsible for version calculation and constraint checks (try to reuse composer API potentially).
-    2. To perform operation, tool will be performing this operation on monoliths first and then updating instances using packages on monoliths as a master. Because of the complexity described above this approach might be more reliable.
-
-3. Convention based
-
-    We can have convention similar to this
-    * Modules that end with *admin-ui go to admin instance
-    * Modules that end with *ui and not *admin-ui go to store front instance
-    
-    Cons
-    * Convention can't be reliable option (developers may not follow it, someone may call storefront module login-as-admin)
-    * Will not work for distributed deployment of services
-
-
-4. Introduce new type of configuration, but don't distribute separate projects
-
-    There would be a tool that splits monolith before deployment.
-
-    Pros
-    * Easy upgrade
-    * Easy management of obsolete dependencies
-    
-    Cons
-    * Need to add new type of configuration 
-    * More complicated deployment process
-
-## Open questions
-1. What to do with web setup wizard
+Web setup wizard will not be supported for distributed deployment.
