@@ -73,7 +73,7 @@ type OperationInProgress implements OperationStateInterface {
 #### Request
 ```graphql
 query {
-    queue($operataionIdentifier: [String!]!) {
+    queue($operationIdentifier: [String!]!) {
         identifier
         __typename__
     }
