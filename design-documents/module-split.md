@@ -12,37 +12,39 @@ This document clarifies the following two questions of the original [service iso
 
     The following is proposed naming for modules:
     API (service contracts)
-    * CatalogApi
+    * CatalogApi _recommended_
     
     The following is proposed naming for modules:
     Admin Ui and admin related business logic (blocks, controllers, static resources, models and resources potentially)
     * CatalogAdmin
-    * CatalogAdminUi
+    * CatalogAdminUi _recommended_
     * CatalogBackoffice
     
     Storefront Ui and storefront related business logic (blocks, controllers, static resources, models and resources potentially)
-    * CatalogStorefrontUi
+    * CatalogStorefrontUi _recommended_
     * CatalogStorefront
     * CatalogStore
     
     Cron (models and resources potentially)
-    * CatalogCron
+    * CatalogCron _recommended_
     
     CLI (models and resources potentially)
-    * CatalogCli
+    * CatalogCli _recommended_
     
     WebApi (models and resources potentially)
-    * CatalogWebApi
+    * CatalogWebApi _recommended_
     
     Common code (business logic used by multiple areas, models, resource modelss)
     * CatalogCommon
     * CatalogShared
     * CatalogDomain
+    * CatalogBusinessLogic
+    * CatalogBl
+    * CatalogImpl _recommended_
     
     Common static resources
-    * CatalogCommonUi
-
-    Recommended naming is the following: CatalogApi, CatalogAdminUi, CatalogStorefrontUi, CatalogCron, CatalogCli, CatalogCommon, CatalogCommonUi.
+    * CatalogCommonUi _recommended_
+    * CatalogUi
 
 2. Keep old or change namespaces
 
@@ -71,7 +73,7 @@ This document clarifies the following two questions of the original [service iso
         Cons
         * Backwards incompatible, all of the extensions will be affected
     
-    3. Preserve old namespaces. Classes in CatalogAdminUi, CatalogStorefrontUi, CatalogCron, etc will have Catalog namespace
+    3. Preserve old namespaces. Classes in CatalogAdminUi, CatalogStorefrontUi, CatalogCron, etc will have Catalog namespace _recommended_
         Pros
         * No overhead from preserving keeping backwards compatibility
         
@@ -79,5 +81,3 @@ This document clarifies the following two questions of the original [service iso
         * We going to have incorrect namespaces
         * Will need to fix existing tests (not a big con really)
         * Will have to decide what to do with new classes we introduce in the modules that have classes with old namespaces. Introduce with old namespace for consistency or with new namespace that matches module name to have correct namespace. Either way this might be a little confusing, and different from the case when we create brand new module with correct namespace
-        
-    Recommended option is to keep old namespaces.
