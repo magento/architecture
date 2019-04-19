@@ -1,6 +1,6 @@
 ### Why?
 Service contracts in the future will often be executed in an asynchronous manner
-and it's time to introduce a standard Promise to Magento for asynchronous operations to employ.
+and it's time to introduce a standard Future to Magento for asynchronous operations to employ.
 Also operations like sending HTTP requests can be easily performed asynchronously since cUrl multi can be utilized
 to send requests asynchronously.
 ### Requirements
@@ -10,9 +10,10 @@ to send requests asynchronously.
 ### API
 ##### Deferred
 A future that describes a values that will be available later.
+Only contains basic methods so that any asynchronous operations can be wrapping using this interface.
 If a library returns a promise or it's own implementation of a future it can be easily wrapped to support our interface.
  
-This interface will be used as the return type of methods returning promises.
+This interface will be used as the return type of methods returning futures.
 ```php
 interface DeferredInterface
 {
@@ -33,8 +34,32 @@ interface DeferredInterface
 }
 ```
 
+Advanced interface that allows canceling asynchronous operations that have been started.
+```php
+interface CancelableDeferredInterface extends DeferredInterface
+{
+    /**
+     * Cancels the opration.
+     * 
+     * Will not cancel the operation when it has already started and given $force is not true.
+     * 
+     * @param bool $force Cancel operation even if it's already started.
+     * @return void
+     * @throws CancelingDeferredException When failed to cancel.
+     */
+    public function cancel(bool $force = false): void;
+    
+    /**
+     * Whether the operation has been cancelled already.
+     * 
+     * @return bool
+     */
+    public function isCancelled(): bool;
+}
+```
+
 ### Implementation
-This interface will be used as a wrapper for libraries that return promises and deferred values.
+This interface will be used as a wrapper for libraries that return promises and futures.
  
 ### Explanations
 ##### Why not promises?
@@ -163,9 +188,22 @@ There are two ways we can go about using Deferred for asynchronous execution of 
 
 ### Using deferred for existing code
 We have a standard HTTP client - Magento\Framework\HTTP\ClientInterface, it can benefit from allowing async requests
-functionality for developers to use by employing promises. Since it's an API, and a messy one at that, we should create
+functionality for developers to use by employing futures. Since it's an API, and a messy one at that, we should create
 a new asynchronous client.
  
 This client is being used in Magento\Shipping\Model\Carrier\AbstractCarrierOnline to create package shipments/
 shipment returns in 3rd party systems, the process can be optimized by sending requests asynchronously to create
 multiple shipments at once.
+
+### Prototype
+To demonstrate using DeferredInterface for asynchronous operations I've created prototype where requests sent to a
+shipment provider were updated to be sent asynchronously using new asynchronous HTTP client.
+ 
+To start check out an integration test that shows the difference between sending requests one by one or at the same time
+available [here](https://github.com/AlexMaxHorkun/magento2/blob/futures-prototype/dev/tests/integration/testsuite/Magento/Ups/Model/ShipmentCreatorTest.php).
+To make it work you would have to set up couple of environment variable before running it, list of those variables and
+what they are meant for can be found inside the fixture used in the test.
+
+### Sources
+* DeferredInterface is based on Java's [Future interface](https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Future.html)
+* For real asynchronous operations [Guzzle HTTP client](https://github.com/guzzle/guzzle) was used
