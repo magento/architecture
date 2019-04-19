@@ -8,15 +8,8 @@ This document clarifies the following two questions of the original [service iso
 
 ## Design
 
-### CLI
-It makes sense to move CLI in separate modules, because some commands are meant to me run only in admin area. Some commands are meant to run in both admin and storefront and will be shared.
-
-CLI is not meant to be deployed on separate instance. Because some commands need presence of all modules (static content deployment).
-
 ### Web API
 It makes sense to deploy admin and storefront API to different instances.
-
-Developer may want to deploy separately SOAP, REST and GraphQL. It should be possible, but we not necessarily need to distribute projects for SOAP, REST and GraphQL.
 
 ### Module naming
 
@@ -40,9 +33,6 @@ Developer may want to deploy separately SOAP, REST and GraphQL. It should be pos
     Cron (models and resources potentially)
     * CatalogCron _recommended_
     
-    CLI (models and resources potentially)
-    * CatalogCli _recommended_
-    
     WebApi
     * CatalogWebApi _recommended_
     
@@ -58,8 +48,8 @@ Developer may want to deploy separately SOAP, REST and GraphQL. It should be pos
     * CatalogImpl
     
     Common static resources
-    * CatalogCommonUi _recommended_
-    * CatalogUi
+    * CatalogCommonUi
+    * CatalogUi _recommended_
 
 2. Keep old or change namespaces
 
