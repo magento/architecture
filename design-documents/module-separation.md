@@ -58,6 +58,7 @@ It makes sense to deploy admin and storefront API to different instances.
     For dealing with namespaces, there are the following options.
     
     1. Change, introduce new namespaces and preserve old ones for backwards compatibility. Fix namespaces in the modules. Old module Catalog will contain classes under old namespace, marked with @deprecated annotation, that extend classes with new namespaces and di configuration for backwards compatibility. Then in the future minor release these classes will and di configuration will be removed.
+        
         Pros
         * We going to have correct namespaces after module split, for instance \Magento\CatalogAdminUi\Block\…
         * Allows transition period
@@ -71,6 +72,7 @@ It makes sense to deploy admin and storefront API to different instances.
         * One minor release probably is not enough time for developers to fix their extensions
     
     2. Change, introduce new namespaces and don't preserve backwards compatibility
+        
         Pros
         * We going to have correct namespaces after module split
         * No overhead from preserving keeping backwards compatibility
@@ -79,6 +81,7 @@ It makes sense to deploy admin and storefront API to different instances.
         * Backwards incompatible, all of the extensions will be affected
     
     3. Preserve old namespaces. Classes in CatalogAdminUi, CatalogStorefrontUi, CatalogCron, etc will have Catalog namespace :white_check_mark:
+        
         Pros
         * No overhead from preserving keeping backwards compatibility
         
