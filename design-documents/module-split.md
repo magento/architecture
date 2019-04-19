@@ -8,6 +8,18 @@ This document clarifies the following two questions of the original [service iso
 
 ## Design
 
+### CLI
+It makes sense to move CLI in separate modules, because some commands are meant to me run only in admin area. Some commands are meant to run in both admin and storefront and will be shared.
+
+CLI is not meant to be deployed on separate instance. Because some commands need presence of all modules (static content deployment).
+
+### Web API
+It makes sense to deploy admin and storefront API to different instances.
+
+Developer may want to deploy separately SOAP, REST and GraphQL. It should be possible, but we not necessarily need to distribute projects for SOAP, REST and GraphQL.
+
+### Module naming
+
 1. Module naming
 
     The following is proposed naming for modules:
@@ -31,16 +43,19 @@ This document clarifies the following two questions of the original [service iso
     CLI (models and resources potentially)
     * CatalogCli _recommended_
     
-    WebApi (models and resources potentially)
+    WebApi
     * CatalogWebApi _recommended_
+    
+    WebApi GraphQL
+    * CatalogGraphQl _recommended_
     
     Common code (business logic used by multiple areas, models, resource modelss)
     * CatalogCommon
     * CatalogShared
-    * CatalogDomain
+    * CatalogDomain _recommended_
     * CatalogBusinessLogic
     * CatalogBl
-    * CatalogImpl _recommended_
+    * CatalogImpl
     
     Common static resources
     * CatalogCommonUi _recommended_
@@ -81,3 +96,6 @@ This document clarifies the following two questions of the original [service iso
         * We going to have incorrect namespaces
         * Will need to fix existing tests (not a big con really)
         * Will have to decide what to do with new classes we introduce in the modules that have classes with old namespaces. Introduce with old namespace for consistency or with new namespace that matches module name to have correct namespace. Either way this might be a little confusing, and different from the case when we create brand new module with correct namespace
+
+## Open question
+Is it ok that we going to have database upgrade command on storefront?
