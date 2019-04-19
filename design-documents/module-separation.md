@@ -1,4 +1,4 @@
-# Module split
+# Module separation
 
 ## About
 
@@ -17,39 +17,39 @@ It makes sense to deploy admin and storefront API to different instances.
 
     The following is proposed naming for modules:
     API (service contracts)
-    * CatalogApi _recommended_
+    * CatalogApi :white_check_mark:
     
     The following is proposed naming for modules:
     Admin Ui and admin related business logic (blocks, controllers, static resources, models and resources potentially)
     * CatalogAdmin
-    * CatalogAdminUi _recommended_
+    * CatalogAdminUi :white_check_mark:
     * CatalogBackoffice
     
     Storefront Ui and storefront related business logic (blocks, controllers, static resources, models and resources potentially)
-    * CatalogStorefrontUi _recommended_
+    * CatalogStorefrontUi :white_check_mark:
     * CatalogStorefront
     * CatalogStore
     
     Cron (models and resources potentially)
-    * CatalogCron _recommended_
+    * CatalogCron :white_check_mark:
     
     WebApi
-    * CatalogWebApi _recommended_
+    * CatalogWebApi :white_check_mark:
     
     WebApi GraphQL
-    * CatalogGraphQl _recommended_
+    * CatalogGraphQl :white_check_mark:
     
     Common code (business logic used by multiple areas, models, resource modelss)
     * CatalogCommon
     * CatalogShared
-    * CatalogDomain _recommended_
+    * CatalogDomain :white_check_mark:
     * CatalogBusinessLogic
     * CatalogBl
     * CatalogImpl
     
     Common static resources
     * CatalogCommonUi
-    * CatalogUi _recommended_
+    * CatalogUi :white_check_mark:
 
 2. Keep old or change namespaces
 
@@ -78,7 +78,7 @@ It makes sense to deploy admin and storefront API to different instances.
         Cons
         * Backwards incompatible, all of the extensions will be affected
     
-    3. Preserve old namespaces. Classes in CatalogAdminUi, CatalogStorefrontUi, CatalogCron, etc will have Catalog namespace _recommended_
+    3. Preserve old namespaces. Classes in CatalogAdminUi, CatalogStorefrontUi, CatalogCron, etc will have Catalog namespace :white_check_mark:
         Pros
         * No overhead from preserving keeping backwards compatibility
         
