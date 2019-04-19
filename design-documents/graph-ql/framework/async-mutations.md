@@ -31,7 +31,7 @@ type OperationAccepted implements OperationStateInterface {
 #### Request
 ```graphql
 mutation {
-    reserveCart($cartMask: String!) {
+    createEmptyCart($cartMask: String!) {
         identifier
         __typename__
     }
