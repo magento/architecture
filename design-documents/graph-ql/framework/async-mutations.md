@@ -18,7 +18,7 @@ Instead of the result, such mutation will return a code which will identify a co
 
 ```graphql schema
 type Mutation {
-    createEmptyCart(cartMask: String!): OperationStateInterface!
+    createEmptyCart(cartUuid: String!): OperationStateInterface!
 }
 interface OperationStateInterface {
     identifier: String!
