@@ -195,6 +195,120 @@ This client is being used in Magento\Shipping\Model\Carrier\AbstractCarrierOnlin
 shipment returns in 3rd party systems, the process can be optimized by sending requests asynchronously to create
 multiple shipments at once.
 
+#### Asynchronous HTTP client API
+Client:
+```php
+interface AsyncClientInterface
+{
+    /**
+     * Perform an HTTP request.
+     *
+     * @param Request $request
+     * @return HttpResponseDeferredInterface
+     */
+    public function request(Request $request): HttpResponseDeferredInterface;
+}
+```
+ 
+Request:
+```php
+class Request
+{
+    const METHOD_GET = 'GET';
+
+    const METHOD_POST = 'POST';
+
+    const METHOD_HEAD = 'HEAD';
+
+    const METHOD_PUT = 'PUT';
+
+    const METHOD_DELETE = 'DELETE';
+
+    const METHOD_CONNECT = 'CONNECT';
+
+    const METHOD_PATCH = 'PATCH';
+
+    const METHOD_OPTIONS = 'OPTIONS';
+
+    const METHOD_PROPFIND = 'PROPFIND';
+
+    const METHOD_TRACE = 'TRACE';
+
+    /**
+     * URL to send request to.
+     *
+     * @return string
+     */
+    public function getUrl(): string;
+
+    /**
+     * HTTP method to use.
+     *
+     * @return string
+     */
+    public function getMethod(): string;
+
+    /**
+     * Headers to send.
+     *
+     * Keys - header names, values - array of header values.
+     *
+     * @return string[][]
+     */
+    public function getHeaders(): array;
+
+    /**
+     * Body to send
+     *
+     * @return string|null
+     */
+    public function getBody(): ?string;
+}
+```
+ 
+Response:
+```php
+class Response
+{
+    /**
+     * Status code returned.
+     *
+     * @return int
+     */
+    public function getStatusCode(): int;
+
+    /**
+     * With header names as keys (case preserved) and values as header values.
+     *
+     * If a header's value had multiple values they will be shown like "val1, val2, val3".
+     *
+     * @return string[]
+     */
+    public function getHeaders(): array;
+
+    /**
+     * Response body.
+     *
+     * @return string
+     */
+    public function getBody(): string;
+}
+```
+ 
+Future containing response:
+```php
+interface HttpResponseDeferredInterface extends DeferredInterface
+{
+    /**
+     * @inheritdoc
+     * @return Response HTTP response.
+     * @throws HttpException When failed to send the request,
+     * if response has 400+ status code it will not be treated as an exception.
+     */
+    public function get(): Response;
+}
+```
+
 ### Prototype
 To demonstrate using DeferredInterface for asynchronous operations I've created prototype where requests sent to a
 shipment provider were updated to be sent asynchronously using new asynchronous HTTP client.
