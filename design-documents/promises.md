@@ -58,6 +58,10 @@ interface CancelableDeferredInterface extends DeferredInterface
 }
 ```
 
+This interface can be used for operations that take to long and can be cancelled
+(like stopping waiting for a server's response) or for delayed operations that could be
+canceled even before they start (like cancelling an aggregated SQL query to DB after all the required criteria has been collected).
+
 ### Implementation
 This interface will be used as a wrapper for libraries that return promises and futures.
  
