@@ -1,4 +1,4 @@
-## Add support for the WebP image format.
+## Use the WebP image format for catalog images.
 
 ### Terms
 
@@ -14,7 +14,7 @@ WebP offers 25 – 35% smaller file sizes in compare with JPEG with the same qua
 
 ### Design
 
-On image resizing for each size, Magento can create one more image in WebP format.
+On catalog image resizing for each size, Magento can create one more image in WebP format.
 For prevention unexpected resource consumption it can be managed by configuration and by default be disabled.
 A web server will be responsible for the decision which file send.
 This decision will be made by availability the requested image with WebP extension and supporting WebP by the browser using the Accept header.
@@ -25,8 +25,22 @@ This functionality requires an asynchronous image resizing to avoid degradation 
 
 ### Prototype or Proof of Concept
 
-Example of a configuration for Nginx.
+Catalog images from Magento with sample data resized into WebP format are for 40% lightweight compared with the same images resized into JPEG format.
 
+Example of adding the resize into WebP for Magento's GD adapter.
+
+At \Magento\Framework\Image\Adapter\Gd2 class add the next line into private static $_callbacks and add the second code snippet to the end of the save method.
+```php
+IMAGETYPE_WEBP => ['output' => 'imagewebp', 'create' => 'imagecreatefromwebp'],
+```
+```php
+call_user_func_array(
+    $this->_getCallback('output', IMAGETYPE_WEBP),
+    [$this->_imageHandler, $fileName . '.webp', $this->quality()]
+);
+```
+
+Example of a configuration for Nginx.
 ```nginx
 map $http_accept $webp_suffix {
     default   "";
