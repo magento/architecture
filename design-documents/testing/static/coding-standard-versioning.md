@@ -12,12 +12,12 @@ General overview scheme:
 
 Single number sequence-based version identifier will be incremented every release.
 
-Once new release happens it automatically means that all users <sup>core developers, community contributors, system integrators and extension developers</sup> need to follow the latest version.
+Once new release happens it automatically means that all users core developers, community contributors, system integrators and extension developers need to follow the latest version.
 
 **Only the latest version** will be supported.
 
 ## Dependency
-Since we want all users <sup>core developers, community contributors, system integrators and extension developers</sup> to follow the latest version of Coding Standard, the dependency should be `"*"`.
+Since we want all users core developers, community contributors, system integrators and extension developers to follow the latest version of Coding Standard, the dependency should be `"*"`.
 ```
     "require-dev": {
         ...
