@@ -45,10 +45,10 @@ We must execute "search" and "filter" as a single operation from performance rea
 * Additional filtration in MySql took: 120-2000 ms
 
 For achieving the better performance we **must accept limitations**:
-1. Use current Search API for simultaneously make search and filter by attributes
-1.1. Support only "and" condition
-1.2. Support limited conditions per each attribute type (e.g. only "eq"/"in" for drop-down attribute, "match" for "text" attribute)
-2. New implementation will not be functionally compatible with previous
+1. Use current Search API for simultaneously make search and filter by attributes 
+   1. Support only "and" condition 
+   1. Support limited conditions per each attribute type (e.g. only "eq"/"in" for drop-down attribute, "match" for "text" attribute) 
+1. New implementation will not be functionally compatible with previous 
 
 
 ## Design
