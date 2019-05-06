@@ -45,8 +45,10 @@ We must execute "search" and "filter" as a single operation from performance rea
 * Additional filtration in MySql took: 120-2000 ms
 
 For achieving the better performance we **must accept limitations**:
-1. The filter must allow filtration only by "filterable" attributes.
-2. We should build a direct query to Elasticsearch due to current Search API designed for a limited amount of use-cases
+1. Use current Search API for simultaneously make search and filter by attributes
+1.1. Support only "and" condition
+1.2. Support limited conditions per each attribute type (e.g. only "eq"/"in" for drop-down attribute, "match" for "text" attribute)
+2. New implementation will not be functionally compatible with previous
 
 
 ## Design
@@ -56,9 +58,8 @@ Use indexers for retrieve data (prices, search, ...)
 
 ## Drawbacks
 
-1. Functional breaking changes
-2. Maintaining: separate set of modules, that must replace current GraphQL* modules
-3. Potentially issue with sql query complexity caused by aggregation
+1. Maintaining: separate set of modules, that must replace current GraphQL* modules
+2. Potentially issue with sql query complexity caused by aggregation
 
 
 ## POC
