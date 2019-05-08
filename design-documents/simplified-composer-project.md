@@ -24,20 +24,21 @@ Performed as described on [DevDocs](https://devdocs.magento.com/guides/v2.3/inst
 composer create-project --repository=https://repo.magento.com/ magento/project-community-edition <install-directory-name>
 ```
 
-### Upgrade with the proposed project structure
+### Upgrade with the new project structure
 
 ```
 composer require magento/product-community-edition <new-product-version>
 ```
 
-### Upgrade with the old project structure and preserve it 
+### Upgrade with the old project structure and preserve it
 
-Use Magento's composer plugin.
+Discouraged.
+Update all the dependencies manually.
 
 ### Upgrade from the old project structure to the new one
 
-Modify `composer.json` to eliminate non-production dependencies, as described in the proposal.
-After that use approach described in "Upgrade with the proposed project structure"
+Modify `composer.json` to eliminate non-production dependencies, as described in the proposal or use plugin that will do it automatically.
+After that use approach described in "Upgrade with the proposed project structure".
 
 ## Low-level changes
 
@@ -46,9 +47,22 @@ Based on current `composer.json` the following changes are proposed:
 1. Move `"conflict": { "gene/bluefoot": "*" }` to `magento/page-builder` module
 1. Remove `"Magento\\Framework\\": "lib/internal/Magento/Framework/"`, `"Magento\\": "app/code/Magento/"` and `"app/code/"` from `autoload` section
 1. Move `"psr-4": { "Magento\\Setup\\": "setup/src/Magento/Setup/", "Zend\\Mvc\\Controller\\": "setup/src/Zend/Mvc/Controller/" }` to `magento/base` package
+1. Move `"autoload": { "exclude-from-classmap": [ "**/dev/**", "**/update/**", "**/Test/**" ] }` to `magento/base` package
 1. Move `"psr-0": { "": [ "generated/code/" ] }` to `magento/framework`
 1. Remove `"files": [ "app/etc/NonComposerComponentRegistration.php" ]`
 1. Remove `autoload-dev`
+
+### Location on project's `composer.json` file
+
+
+
+There are two options:
+1. **Separate repository** for Magento project template. The repository includes any necessary files, such as `composer.json`, `.gitignore`. Should be limited to absolute minimum. Publication tool sets data specific to the edition and version. 
+1. **Additional file** in current Magento repository. Name of the file can be `composer-project.json`.
+
+Recommended option with a **Separate repository** because project files and Magento files in Git have different reasons to change and so there is no reason to keep them in the same repository for synchronization.   
+
+### Changes to `composer.json` file
 
 Current `composer.json`:
 ```json
@@ -129,8 +143,8 @@ Current `composer.json`:
 Proposed `composer.json`:
 ```json
 {
-  "name": "magento/project-community-edition",
-  "description": "eCommerce Platform for Growth (Community Edition)",
+  "name": "magento/project-<edition>-edition",
+  "description": "eCommerce Platform for Growth (<Edition> Edition)",
   "type": "project",
   "license": [
     "OSL-3.0",
@@ -141,16 +155,9 @@ Proposed `composer.json`:
     "sort-packages": true
   },
   "require": {
-    "magento/product-community-edition": "2.3.1"
+    "magento/product-community-edition": "<version>"
   },
-  "autoload": {
-    "exclude-from-classmap": [
-      "**/dev/**",
-      "**/update/**",
-      "**/Test/**"
-    ]
-  },
-  "version": "2.3.1",
+  "version": "<version>",
   "minimum-stability": "stable",
   "repositories": [
     {
