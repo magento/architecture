@@ -1,4 +1,4 @@
-# Storefront query API Technical Vision
+# Storefront API Technical Vision
 
 ## Definition
 
