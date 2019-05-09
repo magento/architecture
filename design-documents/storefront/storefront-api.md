@@ -7,6 +7,8 @@ will be available at the application storefront for buyers.
 
 ### Desired state
 
+![Storefront APIs](storefront-api/storefront-api-01.png)
+
 
 #### Storefront APIs are separated from admin APIs.
 
@@ -24,6 +26,8 @@ Actually, Magento already has this principle partially implemented.
 Admin commands manipulate with raw data sources,
 when queries work mostly with indexes which were pre-populated
 to return data in the most efficient way.
+
+![Storefront application and admin application](storefront-api/storefront-api-02.png)
 
 #### Storefront queries are eventually consistent 
 
@@ -46,11 +50,41 @@ Deferring data retrieving operation can resolve it.
 Technically, we do not want to have 
 a few similar repeating queries during the single page load.
 
+[Promises/A+](https://promisesaplus.com/)
+
 #### Storefront modules granularly sliced by modules
 
 Storefront do not aggregate data into huge roots.
 Actually, as usual this is responsibility of presentation.
 This allows us to create small granular modules for storefront APIs.
+
+![CategoryPage](storefront-api/storefront-api-03.png)
+```graphql
+query {
+	category {
+    products {
+      sku
+      name
+      price {
+        amount
+        tax {
+          amount
+        }
+      }
+    }
+  }	
+}
+
+```
+##### Involved APIs and modules 
+```
+    getProducts                     ----------> CatalogStorefront
+    |
+    `- getProductPrices             ----------> CatalogPriceStorefront
+       |
+       ` getProductPriceTaxes       ----------> CatalogTaxStorefront
+
+```
 
 #### Storefront modules does not depends on each other
 
