@@ -90,8 +90,8 @@ query {
 
 Module purpose strictly restricted by the scenario it introduces.
 
-#### Storefront queries are replaceable
+#### Storefront APIs are replaceable
 
 Because we are going to manage storefront APIs as a set of 
-small granular modules which do not re.ly on each other 
+small granular modules which do not rely on each other 
 we can assume that it should be pretty straightforward to replace each of them.
