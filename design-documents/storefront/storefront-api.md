@@ -5,6 +5,7 @@
 *Storefront APIs* - public operations and queries that 
 will be available at the application storefront for buyers.
 
+
 ### Desired state
 
 ![Storefront APIs](storefront-api/storefront-api-01.png)
@@ -89,6 +90,8 @@ query {
 #### Storefront modules does not depends on each other
 
 Module purpose strictly restricted by the scenario it introduces.
+The are no particular reason to do this because
+all aggregation will be performed by the presentation layer.
 
 #### Storefront APIs are replaceable
 
