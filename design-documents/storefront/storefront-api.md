@@ -51,6 +51,10 @@ Deferring data retrieving operation can resolve it.
 Technically, we do not want to have 
 a few similar repeating queries during the single page load.
 
+For the module perspective, this means that storefront APIs, even queries will be **asynchronous**.
+It does not mean that GraphQL or Blocks should be async either.
+They both as clients can execute APIs with synchronous adapter.  Technically we already have this implemented with GraphQL resolvers.
+
 [Promises/A+](https://promisesaplus.com/)
 
 #### Storefront modules granularly sliced by modules
