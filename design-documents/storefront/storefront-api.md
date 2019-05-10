@@ -14,8 +14,7 @@ will be available at the application storefront for buyers.
 #### Storefront APIs are separated from admin APIs.
 
 We are using different object representation for storefront and admin scenarios.
-We are applying different rules and restrictions for such objects 
-depends on where these objects represented.
+We are applying different rules and restrictions for such objects depending on where these objects appear.
 Currently, we do not have ACL resources specified for the storefront.
 So there are no particular reasons to keep admin and storefront APIs together.
 Make sense to separate our APIs per purposes
