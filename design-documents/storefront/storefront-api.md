@@ -54,8 +54,6 @@ For the module perspective, this means that storefront APIs, even queries will b
 It does not mean that GraphQL or Blocks should be async either.
 They both as clients can execute APIs with synchronous adapter.  Technically we already have this implemented with GraphQL resolvers.
 
-[Promises/A+](https://promisesaplus.com/)
-
 #### Storefront modules granularly sliced by modules
 
 Storefront do not aggregate data into huge roots.
