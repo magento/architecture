@@ -55,12 +55,12 @@ Current Product Filter will be eliminated and replaced with new one, which will 
 (actually this is behaviour of Advanced Search)
 
 1. Product Attribute will be available for filtering if:
-1.1. Attribute be "searchable" and have option "Visible in Advanced Search" is set to "Yes"
-1.1. Product Attribute of type "Select" must have options
+   1. Attribute be "searchable" and have option "Visible in Advanced Search" is set to "Yes"
+   1. Product Attribute of type "Select" must have options
 1. Only the following filter conditions are available
-1.1. **From..To** filter: Price and all attributes with type "Date" 
-1.1. **Like** filter: All text attributes like name, sku, desciption ...
-1.1. **Equal/In** filter: All attributes with type "Select" like category, color, size ...
+   1. **From..To** filter: Price and all attributes with type "Date" 
+   1. **Like** filter: All text attributes like name, sku, desciption ...
+   1. **Equal/In** filter: All attributes with type "Select" like category, color, size ...
 1. "Or" filter is not supported
 
 #### Schema changes
