@@ -22,6 +22,17 @@ Every `registration.php` is included by Magento on every request. While with opc
 * Eliminate `module.xml` - composer.json contains 'real' module name. Move 'legacy' module names in `composer.json`
 * Use `composer.json` for module declaration. 
 
+## Open Questions
+
+As described by Vinai Kopp, performance of composer dependency resolution impacts developer experience. 
+
+`registration.php` file allows to quickly install a module without composer. Moving to composer will remove this optimisation. 
+
+The solution to this problem should be provided before `registration.php` can be removed. Possible options:
+
+* make `registration.php` optional instead of getting rid of it
+* add command to composer that will allow to re-read composer.json files of magento modules without full dependency resolution
+
 ## POC
 
 POC is implemented in https://github.com/magento-architects/magento2/tree/split-framework (see \Magento\Framework\Component\ComponentInstaller::install) for `di.xml`, `webapi.xml`, `extension_attributes.xml`, and Service Contract metadata.
