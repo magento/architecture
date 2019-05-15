@@ -45,10 +45,31 @@ We must execute "search" and "filter" as a single operation from performance rea
 * Additional filtration in MySql took: 120-2000 ms
 
 For achieving the better performance we **must accept limitations**:
-1. Use current Search API for simultaneously make search and filter by attributes 
-   1. Support only "and" condition 
-   1. Support limited conditions per each attribute type (e.g. only "eq"/"in" for drop-down attribute, "match" for "text" attribute) 
+1. Use current Search API for simultaneously make search and filter by attributes (actually this is a mix of **Advansed Search + Quick Search functionality**) 
 1. New implementation will not be functionally compatible with previous 
+
+Here are the list of changes that will be made for new GraphQl Resolver
+
+#### Product Filtering
+Current Product Filter will be eliminated and replaced with new one, which will follow the following rules:
+(actually this is behaviour of Advanced Search)
+
+1. Product Attribute will be available for filtering if:
+1.1. Attribute be "searchable" and have option "Visible in Advanced Search" is set to "Yes"
+1.1. Product Attribute of type "Select" must have options
+1. Only the following filter conditions are available
+1.1. **From..To** filter: Price and all attributes with type "Date" 
+1.1. **Like** filter: All text attributes like name, sku, desciption ...
+1.1. **Equal/In** filter: All attributes with type "Select" like category, color, size ...
+1. "Or" filter is not supported
+
+#### Schema changes
+On global level schemal will be the same, but some changes will be introduced:
+1. **input ProductFilterInput** will be deprecated and replaced with new FilterInput
+1. Some "inner" resolvers, that not needed anymore will be removed, e.g.\Magento\CatalogGraphQl\Model\Resolver\Product\EntityIdToId for ProductInterface
+
+#### Functional incompatible
+Due to we stop using existing "APIs" and start use new Data Providers any extensions, that used events fired with those APIs will stop working 
 
 
 ## Design
@@ -56,17 +77,27 @@ Use plain arrays for transfer data between resolvers. Inner resolvers can depend
 Use indexers for retrieve data (prices, search, ...)
 
 
-## Drawbacks
+## Backward Compatibility Policy
 
-1. Maintaining: separate set of modules, that must replace current GraphQL* modules
-2. Potentially issue with sql query complexity caused by aggregation
+New resolvers will be delivered as a separate set of modules for do not introduce incompatible changes in the patch release. 
+In a further minor (major?) release, those modules will replace the existing ones.
+
+
+## New behaviour
+
+Here is a table of visibility mapping between different search areas. 
+
+
+Area/Visibility  | not visible | catalog | search| catalog+search 
+---------------- |-------------|---------|-------|---------------
+ category                |           |    1    |       |    1           
+ search                  |           |         |    1  |    1            
+ advanced search         |           |    1    |    1  |    1            
+ grahpql search          |           |         |    1  |    1            
+ grahpql filter          |           |    1    |       |    1            
+ grahpql search + filter |           |    ?    |    ?  |    ?            
 
 
 ## POC
 
 https://github.com/magento/graphql-ce/tree/567-category-query
-
-## Additional changes
-1. Visibility must be set explicitly. Currently product visibility depends on request: if we use "search" or "filter" + "filter", then "visible in search" condition is applied. If we use "filter" only then "visible in catalog" condition is applied.
-
-
