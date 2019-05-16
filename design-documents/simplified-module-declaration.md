@@ -27,8 +27,8 @@ This implementation has the following issues:
    * find all installed packages with `"type": "magento2-\*"`  in `composer.json`
    * find all packages by pattern `app/code/*/*`, `app/design/*/*/*`, and `app/i18n/*/*`  with `"type": "magento2-\*"` in their `composer.json` files
    * sort all packages using topological sorting of dependencies
-   * generate `magento_components.php` that will register a sorted list of components in `ComponentRegistrar`
-   * remove magento built-in module sorting mechanism. Rely on list of components being sorted in composer hook
+   * generate `magento_components.php` that will register the sorted list of components in `ComponentRegistrar`
+   * remove magento built-in module sorting mechanism. Rely on component list being sorted in composer hook
 
 > NOTE: This change DOES NOT eliminate `app/code`. The changes described above should preserve the ability to load modules from `app/code`
 
