@@ -47,12 +47,12 @@ An approach of defining what each release should include was taken from [Semanti
 3. Introduce publication functionality for publishing `magento2-test-module` package type.
 4. Create metapackage with test packages only for each Magento edition.
 
-## Entity's id attributes
+## Entity's attributes
 Changing any of this attribute will cause Backward Incompatible change.
 
 **Test entity:**
   
-  |xPath|idAttribute|
+  |xPath|attribute|
   |---|---|
   |`/tests/test`|name|
   |`/tests/test/<ACTION> ⃰`|stepKey|
@@ -61,15 +61,16 @@ Changing any of this attribute will cause Backward Incompatible change.
 
 **Action Group entity:**
 
-  |xPath|idAttribute|
+  |xPath|attribute|
   |---|---|
   |`/actionGroups/actionGroup`|name|
   |`/actionGroups/actionGroup/arguments/argument`|name|
+  |`/actionGroups/actionGroup/arguments/argument`|type|
   |`/actionGroups/actionGroup/<ACTION> ⃰`|stepKey|
 
 **Data entity:**
   
-  |xPath|idAttribute|
+  |xPath|attribute|
   |---|---|
   |`/entities/entitie`|name|
   |`/entities/entitie/data`|key|
@@ -79,7 +80,7 @@ Changing any of this attribute will cause Backward Incompatible change.
 
 **Metadata entity:**
   
-  |xPath|idAttribute|
+  |xPath|attribute|
   |---|---|
   |`/operations/operation`|name|
   |`/operations/operation/field`|key|
@@ -91,14 +92,14 @@ Changing any of this attribute will cause Backward Incompatible change.
   
 **Page entity:**
 
-  |xPath|idAttribute|
+  |xPath|attribute|
   |---|---|
   |`/pages/page`|name|
   |`/pages/page/section`|name|
   
 **Section entity:**
 
-  |xPath|idAttribute|
+  |xPath|attribute|
   |---|---|
   |`/sections/section`|name|
   |`/sections/section/element`|name|
