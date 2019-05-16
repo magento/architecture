@@ -8,7 +8,7 @@ To create a Magento module you need to create 3 files:
 * `module.xml` - to declare Magento module name (`'Magento_Catalog'`) and configuration loading dependencies
 * `registration.php` - to let Magento know where the module resides, so Magento can load its configuration files
 
-This implementation has a following issues:
+This implementation has the following issues:
 
 * more things to learn and remember (`module.xml`, `registration.php`, and how are they different from `registration.php`)
 * more boilerplate code
