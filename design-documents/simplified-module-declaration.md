@@ -2,28 +2,45 @@
 
 ## Problem
 
-Declaring a Magento module requires following files:
+To create a Magento module you need to create 3 files:
 
-* add `composer.json` - to declare package name, description, version, dependencies, etc
-* add `module.xml` - to declare module name and version dependencies
-* add `registration.php` - to let Magento know where the module resides, for Magento to be able to read configuration files
+* `composer.json` - to declare composer package name (`'magento/module-catalog'`), description, version, dependencies, etc
+* `module.xml` - to declare Magento module name (`'Magento_Catalog'`) and configuration loading dependencies
+* `registration.php` - to let Magento know where the module resides, so Magento can load its configuration files
 
-The presense of 3 files causes duplication and complicated module management and sorting mechanisms. Current module sorting mechanism is inefficient.
+This implementation has a following issues:
 
-Every `registration.php` is included by Magento on every request. While with opcache this does not cause signfiicant performance impact, it can be avoided.
+* more things to learn and remember (`module.xml`, `registration.php`, and how are they different from `registration.php`)
+* more boilerplate code
+* module sorting mechanism is slow
+* need to maintain infrastructure to read/parse/process `module.xml`
+* need to know about ComponentRegistrar is and different types of components (ComponentRegistrar::MODULE, ComponentRegistrar::THEME, ...), even though you already defined the type of your module in `composer.json`
+* `registration.php` of _every_ module/theme/translation is included by composer autoloader on every request.
 
 ## Solution
 
-* Rely on **composer** for module management, eliminate part of Magento module management behavior.
-* Register composer installation hook that will perform magento-specific module management.
-* Eliminate `registration.php` files.
-  * Composer installation hook will generate a 'magento_components.php' file that will contain all magento components and their installation paths. Only this file will be included on every request.
-  * Move module sorting behavior to composer installation hook. Use third-party topological sorting library. Write sorted modules to `magento_components.php`. This will allow to move module sorting from deploy stage to build stage of publication.
-* Eliminate `module.xml` - composer.json contains 'real' module name. Move 'legacy' module names in `composer.json`
-* Use `composer.json` for module declaration. 
+* Eliminate `module.xml`.
+  * move "Magento name" (`Magento_Catalog`) to "extra" section of `composer.json`. Make it optional with default composer_name => magento_name mapping mechanism.
+  * move "sequence" section to "extra" section of `composer.json`
+* Eliminate `registration.php`
+  * create and register a composer hook that after `composer install` & `composer update` will:
+   * find all installed packages with `"type": "magento2-\*"`  in `composer.json`
+   * find all packages by pattern `app/code/*/*`, `app/design/*/*/*`, and `app/i18n/*/*`  with `"type": "magento2-\*"` in their `composer.json` files
+   * sort all packages using topological sorting of dependencies
+   * generate `magento_components.php` that will register a sorted list of components in `ComponentRegistrar`
+   * remove magento built-in module sorting mechanism. Rely on list of components being sorted in composer hook
+
+## Open Questions
+
+As described by Vinai Kopp, performance of composer dependency resolution impacts developer experience. 
+
+`registration.php` file allows to quickly install a module without composer. Moving to Composer will remove this optimization. 
+
+The solution to this problem should be provided before `registration.php` can be removed. Possible options:
+
+* make `registration.php` optional instead of getting rid of it
+* add a command to Composer that will to re-read `composer.json` files of Magento modules without full dependency resolution
 
 ## POC
 
-POC is implemented in https://github.com/magento-architects/magento2/tree/split-framework (see \Magento\Framework\Component\ComponentInstaller::install) for `di.xml`, `webapi.xml`, `extension_attributes.xml`, and Service Contract metadata.
-
-Use https://github.com/magento-architects/magento-project for easy installation of a "hello world" applciation.
+POC that partially implements the proposal is available in https://github.com/magento-architects/magento2/tree/split-framework (see \Magento\Framework\Component\ComponentInstaller::install)
