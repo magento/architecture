@@ -88,12 +88,12 @@ In a further minor (major?) release, those modules will replace the existing one
 
 Area/Visibility  | not visible | catalog | search| catalog+search 
 ---------------- |-------------|---------|-------|---------------
- category                |           |    1    |       |    1           
- search                  |           |         |    1  |    1            
- advanced search         |           |    1    |    1  |    1            
- grahpql search          |           |         |    1  |    1            
- grahpql filter          |           |    1    |       |    1            
- grahpql search + filter |           |    1    |    1  |    1            
+ category                |           |    ✔️    |       |    ✔️           
+ search                  |           |         |    ✔️  |    ✔️            
+ advanced search         |           |    ✔️    |    ✔️  |    ✔️            
+ grahpql search          |           |         |    ✔️  |    ✔️            
+ grahpql filter          |           |    ✔️    |       |    ✔️            
+ grahpql search + filter |           |    ✔️    |    ✔️  |    ✔️            
 
 
 ## POC
