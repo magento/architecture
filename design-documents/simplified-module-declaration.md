@@ -30,6 +30,8 @@ This implementation has a following issues:
    * generate `magento_components.php` that will register a sorted list of components in `ComponentRegistrar`
    * remove magento built-in module sorting mechanism. Rely on list of components being sorted in composer hook
 
+> NOTE: This change DOES NOT eliminate `app/code`. The changes described above should preserve the ability to load modules from `app/code`
+
 ## Open Questions
 
 As described by Vinai Kopp, performance of composer dependency resolution impacts developer experience. 
