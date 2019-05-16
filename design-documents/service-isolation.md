@@ -254,3 +254,6 @@ Checkout is proposed to be the first service to extract.
 * [Service decomposition guidelines](services-decomposition-guidelines.md)
 * [Checkout service](checkout-service.md)
 * [Caching](service-isolation/caching-layer.md)
+* [Distributed deployment configuration](distributed-deployment-configuration.md)
+* [Module separation naming](module-separation-naming.md)
+* [Distributed deployment tools](distributed-deployment-tools.md)

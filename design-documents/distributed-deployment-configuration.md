@@ -1,4 +1,4 @@
-# Distributed deployment
+# Distributed deployment configuration
 
 ## Problem
 

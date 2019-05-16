@@ -1,4 +1,4 @@
-# Distributed deployment tooling
+# Distributed deployment tools
 
 ## Problem
 

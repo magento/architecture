@@ -1,4 +1,4 @@
-# Module separation
+# Module separation naming
 
 ## About
 
