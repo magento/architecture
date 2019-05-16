@@ -69,7 +69,7 @@ On global level schemal will be the same, but some changes will be introduced:
 1. Some "inner" resolvers, that not needed anymore will be removed, e.g.\Magento\CatalogGraphQl\Model\Resolver\Product\EntityIdToId for ProductInterface
 
 ### 3. Functional incompatible
-Due to we stop using existing "APIs" and start use new Data Providers any extensions, that used events fired with those APIs will stop working 
+The existing implementation of GraphQl resolvers will be replaced with a new one. Hence all extensions points will be removed. Therefore, you can not longer use previous extensions points
 
 
 ## Design
