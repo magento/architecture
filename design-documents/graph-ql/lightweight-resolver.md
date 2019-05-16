@@ -35,7 +35,7 @@ As a result it will perform 1 + N actions, where N amount of products
 In the new approach product ids will be aggregated and later used for retrieve categories.
 As a result it will perform 1 + 1 actions
 
-## Known limitations
+# Known limitations (Products query)
 Current implementation of Product Resolver for GraphQL support "search" and "filter" operations. "filter" support all possible operations (eq, like, finset, ...) for hard-coded list of product attributes. Some of the attributes are not "filterable", that not allow using index for filter by those attributes.
 
 This leads us to necessarily to execute "search" without filters with huge size limit by (by default 10000) and then additionally execute "filter" operation in MySql.
@@ -48,9 +48,9 @@ For achieving the better performance we **must accept limitations**:
 1. Use current Search API for simultaneously make search and filter by attributes (actually this is a mix of **Advansed Search + Quick Search functionality**) 
 1. New implementation will not be functionally compatible with previous 
 
-Here are the list of changes that will be made for new GraphQl Resolver
+**Here are the list of changes that will be made for new GraphQl Resolver**
 
-#### Product Filtering
+### 1. Product Filtering
 Current Product Filter will be eliminated and replaced with new one, which will follow the following rules:
 (actually this is behaviour of Advanced Search)
 
@@ -63,18 +63,18 @@ Current Product Filter will be eliminated and replaced with new one, which will 
    1. **Equal/In** filter: All attributes with type "Select" like category, color, size ...
 1. "Or" filter is not supported
 
-#### Schema changes
+### 2. Schema changes
 On global level schemal will be the same, but some changes will be introduced:
 1. **input ProductFilterInput** will be deprecated and replaced with new FilterInput
 1. Some "inner" resolvers, that not needed anymore will be removed, e.g.\Magento\CatalogGraphQl\Model\Resolver\Product\EntityIdToId for ProductInterface
 
-#### Functional incompatible
+### 3. Functional incompatible
 Due to we stop using existing "APIs" and start use new Data Providers any extensions, that used events fired with those APIs will stop working 
 
 
 ## Design
-Use plain arrays for transfer data between resolvers. Inner resolvers can depends only in fields that present in schema. 
-Use indexers for retrieve data (prices, search, ...)
+Use plain arrays for transfer data between resolvers. Inner resolvers can depends only on fields that present in schema. 
+Use indexes for retrieving data (prices, search, ...)
 
 
 ## Backward Compatibility Policy
@@ -83,9 +83,7 @@ New resolvers will be delivered as a separate set of modules for do not introduc
 In a further minor (major?) release, those modules will replace the existing ones.
 
 
-## New behaviour
-
-Here is a table of visibility mapping between different search areas. 
+## Visiblity filter for GraphQl Products query
 
 
 Area/Visibility  | not visible | catalog | search| catalog+search 
@@ -95,7 +93,7 @@ Area/Visibility  | not visible | catalog | search| catalog+search
  advanced search         |           |    1    |    1  |    1            
  grahpql search          |           |         |    1  |    1            
  grahpql filter          |           |    1    |       |    1            
- grahpql search + filter |           |    ?    |    ?  |    ?            
+ grahpql search + filter |           |    1    |    1  |    1            
 
 
 ## POC
