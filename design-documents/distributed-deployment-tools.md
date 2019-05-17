@@ -2,7 +2,9 @@
 
 ## Problem
 
-We want support distributed deployment Magento: 1) area specific instances, that will be responsible only for specific function: admin UI, cron, store front UI, web API, and CLI, 2) separate services.
+We want support distributed deployment Magento:
+1. Area specific instances, that will be responsible only for specific function: admin UI, cron, store front UI, web API, and CLI
+2. Separate services
 
 Benefits
 * Splitting modules decreases number of dependencies
@@ -14,9 +16,9 @@ Benefits
 
 ### Definitions
 
-Distributed application - Magento monolith separated into applications by area (admin, storefront, cron, webapi) or separate services (catalog, checkout, inventory, etc).
+Distributed application - Magento monolith separated into applications by area (admin, storefront, cron, webapi) or by domain on separate services (catalog, checkout, inventory, etc).
 
-Example extensions that later will be used in the examples.
+Example extensions that later will be referenced in this document.
 
 ![Extensions](distributed-deployment/extensions.png)
 
