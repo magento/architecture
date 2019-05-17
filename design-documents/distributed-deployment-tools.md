@@ -63,11 +63,13 @@ To simplify managing extensions on multiple instances need to create a tool that
 There are 2 options for tool implementation
 1. Separate tool
     
-    Developer creates monolith project and installs all extension on it. `composer.json` file of the project can be committed to repo. Managing extensions will be done on monolith project using composer. Toll would allow to analyze which extensions installed on monolith and update `compose.json` files of UI instances.
+    Developer creates monolith project and installs all extensions on it. `composer.json` file of the project can be committed to the repo. Managing extensions will be done on monolith project using composer. Tool would analyze which extensions installed on monolith and update `compose.json` files of UI instances.
     
 2. Composer plugin
     
-    Developer installs composer plugin and specifies paths to UI instance `composer.json` files. Plugin creates monolith by merging configuration from all of the instances. Plugin manages extension on monolith. Developer can commit `composer.json` file to the repo, but it's optional. After extensions monolith updated (extensions installed, removed, updated) plugin will update `composer.json` files of UI instances.
+    Developer installs composer plugin and specifies paths to UI instances `composer.json` files. Plugin creates monolith by merging configuration from all of the instances. Plugin manages extensions on monolith. Developer can commit `composer.json` file to the repo, but it's optional. After extensions monolith updated (extensions installed, removed, updated) plugin will update `composer.json` files of UI instances.
+    
+In both cases workflow assumes that UI projects located on one filesystem. After `composer.json` and `composer.lock` of UI instances updated they should be committed to the repo and deployed to environments.
 
 Recommended approach is composer plugin. Prototype available [here](https://github.com/magento/composer-distributed-update-plugin).
 
