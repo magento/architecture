@@ -45,14 +45,14 @@ We must execute "search" and "filter" as a single operation from performance rea
 * Additional filtration in MySql took: 120-2000 ms
 
 For achieving the better performance we **must accept limitations**:
-1. Use current Search API for simultaneously make search and filter by attributes (actually this is a mix of **Advansed Search + Quick Search functionality**) 
+1. Use current Search API for simultaneously make search and filter by attributes (actually this is a mix of **Advanced Search + Quick Search functionality**) 
 1. New implementation will not be functionally compatible with previous 
 
 **Here are the list of changes that will be made for new GraphQl Resolver**
 
 ### 1. Product Filtering
 Current Product Filter will be eliminated and replaced with new one, which will follow the following rules:
-(actually this is behaviour of Advanced Search)
+(actually this is behavior of Advanced Search)
 
 1. Product Attribute will be available for filtering if:
    1. Attribute be "searchable" and have option "Visible in Advanced Search" is set to "Yes"
