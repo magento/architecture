@@ -5,7 +5,7 @@
 The main reason for such change is performance.
 The system triggers multiple queries during an operation (page load, service call). 
 Instead of making several requests for data retrieval,
-it would be more efficient to assemble all requests and send them as the single call to query service.
+it would be more efficient to assemble all requests to the same service and send them as the single call to query service.
 Even without internal code optimization such approach saves time that required for the service components bootstrap.
 * Such an approach saves time that required for the service components bootstrap.
 * The service implementation can be changed to guarantee better performance for batch operations.
