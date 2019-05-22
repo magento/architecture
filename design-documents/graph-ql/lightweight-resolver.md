@@ -63,12 +63,20 @@ Current Product Filter will be eliminated and replaced with new one, which will 
    1. **Equal/In** filter: All attributes with type "Select" like category, color, size ...
 1. "Or" filter is not supported
 
-### 2. Schema changes
+### 2. Product Sort 
+Current Product Sort will be eliminated and replaced with a new one, which will follow the following rules:
+
+1. Product Attribute is "searchable"
+1. Product attribute option "Used for Sorting in Product Listing" is set to "Yes"
+
+By default only 2 attributes satisfy theses criterias: name and price 
+
+### 3. Schema changes
 On global level schemal will be the same, but some changes will be introduced:
 1. **input ProductFilterInput** will be deprecated and replaced with new FilterInput
 1. Some "inner" resolvers, that not needed anymore will be removed, e.g.\Magento\CatalogGraphQl\Model\Resolver\Product\EntityIdToId for ProductInterface
 
-### 3. Functional incompatible
+### 4. Functional incompatible
 The existing implementation of GraphQl resolvers will be replaced with a new one. Hence all extensions points will be removed. Therefore, you can not longer use previous extensions points
 
 
