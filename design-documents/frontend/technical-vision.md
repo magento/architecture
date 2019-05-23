@@ -12,6 +12,19 @@ The following document is a guide for all _future_ Magento front-end application
 - Productivity (Efficiency)
 - Quality (Reliability)
 
+## Table of Contents
+
+- [React](#react)
+- [TypeScript](#typescript)
+- [Portability](#portability)
+- [Browser Support](#browser-support)
+- [React UI Component Library](#react-ui-component-library)
+- [Styles](#styles)
+- [Accessibility](#accessibility)
+- [Code Quality](#code-quality)
+- [Testing](#testing)
+- [Scaffolding](#scaffolding)
+
 ## [React][]
 
 _Portability, Performance, Productivity, Quality, Internationalization._
@@ -181,9 +194,14 @@ _Disclaimer: the above list is not exhaustive and is in no particular order._
 
 Ideally, for each front-end project, there will be a separate project that covers both performance and critical-path testing. This project is separate so that it doesn't cripple the short feedback loops of feature development. Additionally, we would do well to have additional performance testing around the most commonly used components (e.g., used in 3+ places).
 
+## Scaffolding
+
+[Yeoman][] is a tool for scaffolding modern web applications. In an effort to make the above guide as painless as possible and to encourage best practices, a [TSX Yeoman Generator](https://www.npmjs.com/package/generator-tsx) has been created for you. Refer to its documentation for more information.
+
 [CRA]: https://facebook.github.io/create-react-app/
 [Jest]: https://jestjs.io/
 [Prettier]: https://prettier.io/
 [React]: https://reactjs.org/
 [TSLint]: https://palantir.github.io/tslint/
 [Typescript]: http://www.typescriptlang.org/
+[Yeoman]: https://yeoman.io/
