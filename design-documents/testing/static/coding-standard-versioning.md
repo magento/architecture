@@ -25,12 +25,21 @@ Since we want all users (core developers, community contributors, system integra
         ...
     }
 ```
+## Release cadence
+New versions will be released monthly (if there are changes since the last release), as well as with each Magento patch/minor release. They will include all the latest changes to the checks. There will be three distinct cases that will differentiate what changes they introduce:
+- Monthly releases will add bugfixes or new checks, with no changes to fail conditions or scoring. These releases will typically happen in the beginning of every month.
+- Releases that coincide with Magento patch releases will introduce changes to non-breaking scoring/severities.
+- Releases that coincide with Magento minor releases will introduce new failing tests
+
+Therefore, developers will have an opportunity to be tested against all checks once they are merged and released or on demand by obtaining the latest version of the project from GitHub; however, after patch or minor releases of Magento2 some checks may change in priority or start failing extension submissions.
 
 ## Side Effects
 - No `patch` or `minor` dependency will be possible, so any change may lead to build (code check) failure.
 - If released Magento package will contain `"*"` dependency any update may lead to build (code check) failure.
+- Developers will need to track changes in the project either by paying attention to notifications or by following the project in GitHub, in order to make their "in development" code adherent to the upcoming coding-standard release. This will be especially important for patch releases, and critical for minor releases.
 
 ## Marketplace Notifications
+- A week in advance before each release, a notification containing the upcoming changes will be sent. Additional bugfixes may be included into the release after this date, but all possible effort will be applied to not introducing new checks after the notification had been sent. The notification will inform of the entire scope of release changes: bug fixes, severity/scoring changes, and new checks.
 - Developers on Marketplace will be notified prior EQP will update the version for PHPCodeSniffer check.
 - Developers on Marketplace will see in the report what version was used during the check.
-- Extension will be rejected in case it does not follow the latest Coding Standard version.
+- Extension may be rejected in case it does not follow the latest Coding Standard version. Conditions for failure may include failing top priority (severity 10) checks and accumulating an unacceptable amount of warnings (coming soon).
