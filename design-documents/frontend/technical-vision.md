@@ -196,7 +196,7 @@ Ideally, for each front-end project, there will be a separate project that cover
 
 ## Scaffolding
 
-[Yeoman][] is the de facto standard for scaffolding modern web applications. In an effort to make the above guide as painless as possible and to encourage best practices, a [TSX Yeoman Generator](https://www.npmjs.com/package/generator-tsx) has been created for you. Refer to its documentation for more information.
+[Yeoman][] is a tool for scaffolding modern web applications. In an effort to make the above guide as painless as possible and to encourage best practices, a [TSX Yeoman Generator](https://www.npmjs.com/package/generator-tsx) has been created for you. Refer to its documentation for more information.
 
 [CRA]: https://facebook.github.io/create-react-app/
 [Jest]: https://jestjs.io/
