@@ -1,23 +1,26 @@
-# Magento MFTF Tests Versioning and Backward compatibility Policy
+# Magento MFTF test versioning and backward compatibility policy
  
-## Goals and Requirements
-1. Release MFTF Tests as separate magento package on repo.magento.com
-2. Define versioning strategy for MFTF test packages
-3. Outline all what is considered Backward Incompatible change in MFTF Tests
-4. List of what should be implemented
+## Goals and requirements
 
-## Backwards Compatibility Definition for MFTF Tests
-Backwards compatibility is when tests undergoes changes, but allows to achieve same testing results as before and be compatible with potential test customizations.
+1. Release MFTF tests as a separate magento package on repo.magento.com.
+2. Define the versioning strategy for MFTF test packages.
+3. Outline what is considered a backward incompatible change to MFTF tests.
+4. List of what should be implemented.
 
-Let's classify changes from different perspectives:
+## Backwards compatibility definition for MFTF tests
 
-- **Test Flow change (Test/ActionGroup)** - Compatible modification of a test flow would not diminish the original set of actions in test. Some changes may change action's sequence (behavior), but as long as they allow any extension to achieve same test results without changing test extension (merge file as we call).
-- **Test Entity change (Data/Section/Page/Metadata)** - Compatible modification of entities is usually an adding new ones or updating `value` of existing one in a way when any of the test will **NOT** require updates.
-- **Test Annotation change** - Can be changed without limitation and will be Backward Compatible change, but removing or changing `<group />` annotation will be considered as Backward Incompatible change.
-- Changes which are deleting and/or renaming (Test/Action Group/Data/Metadata/Page/Section/Action)'s id attribute will be considered as Backward Incompatible change. Changing reference to Data entity will also be considered as as Backward Incompatible change.
+When a test undergoes changes, but achieves the same testing results as before and remains compatible with potential test customizations, this is defined as a 'backwards compatible' change.
 
-## Versioning Policy
-An approach of defining what each release should include was taken from [Semantic Versioning](https://semver.org/).
+Types of changes:
+
+- **Test Flow change (Test/ActionGroup)** - A backwards compatible modification of a test flow would not diminish the original set of actions in the test. Some changes may change action's sequence (behavior), but they allow any extension to achieve the same test results without changing the test extension (e.g a 'merge file').
+- **Test Entity change (Data/Section/Page/Metadata)** - Compatible modifications of entities are 1) adding new entities or 2) updating a `value` of an existing entity in a way where the test will **NOT** require updates.
+- **Test Annotation change** - Annotations can be changed without limitation and will always be considered a backward compatible change, but removing or changing a `<group />` annotation will be considered a backward incompatible change.
+- Changes which delete and/or rename a (Test/Action Group/Data/Metadata/Page/Section/Action)'s `id` attribute will be considered a backward incompatible change. Changing a reference to a data entity will also be considered a backward incompatible change.
+
+## Versioning policy
+
+The approach of defining what each release should include was taken from [Semantic Versioning](https://semver.org/).
 
 3-component version numbers
 ---------------------------
@@ -28,70 +31,74 @@ An approach of defining what each release should include was taken from [Semanti
     | +---- Backward Compatible changes (new features)
     +------ Backward Incompatible changes
 
-### Z Release
-  Patch version **Z** MUST be incremented if only backward compatible changes to tests are introduced.
-  A fix which aims to resolve test flakiness. It can be done by updating unreliable selector, adding wait for element, updating data entity value.
-  
-### Y Release
-  Minor version **Y** MUST be incremented if new, backwards compatible Test or Test Entity is introduced.
-  It MUST be incremented if any Test or Test entity is marked as deprecated.
-  It MAY include patch level changes. Patch version MUST be reset to 0 when minor version is incremented.
+### Z release
 
-### X Release
-  Major version **X** MUST be incremented if any backwards incompatible changes are introduced to the Test or Test Entity.
-  It MAY include minor and patch level changes. Patch and minor version MUST be reset to 0 when major version is incremented.
+Patch version **Z** MUST be incremented if only backward compatible changes to tests are introduced.
+For instance: a fix which aims to resolve test flakiness. This can be done by updating an unreliable selector, adding a `wait` to an element, or updating a data entity value.
+  
+### Y release
+
+Minor version **Y** MUST be incremented if a new, backwards compatible test or test entity is introduced.
+It MUST be incremented if any test or test entity is marked as `deprecated`.
+It MAY include patch level changes. Patch version MUST be reset to 0 when the minor version is incremented.
+
+### X release
+
+Major version **X** MUST be incremented if any backwards incompatible changes are introduced to a test or test entity.
+It MAY include minor and patch level changes. Patch and minor version MUST be reset to 0 when the major version is incremented.
 
 ## Implementation tasks
-1. Add Semantic Version analyzer to be able automatically define release type of MFTF tests package.
+
+1. Add Semantic Version analyzer to be able automatically define the release type of the MFTF tests package.
 2. Update publication infrastructure to exclude tests from `magento2-module` package type.
 3. Introduce publication functionality for publishing `magento2-test-module` package type.
-4. Create metapackage with test packages only for each Magento edition.
+4. Create a metapackage with test packages specifically for each Magento edition.
 
-## Version Increase Matrix
+## Version increase matrix
   
-  |Entity Type|Change|Version Increase|
-  |---|---|---|
-  |ActionGroup|`<actionGroup>` added|MINOR
-  | |`<actionGroup>` removed|MAJOR
-  | |`<actionGroup>` `<action>` added|MINOR
-  | |`<actionGroup>` `<action>` removed|MAJOR
-  | |`<actionGroup>` `<action>` type changed|PATCH
-  | |`<actionGroup>` `<action>` attribute changed|PATCH
-  | |`<actionGroup>` `<argument>` added|MAJOR
-  | |`<actionGroup>` `<argument>` removed|MAJOR
-  | |`<actionGroup>` `<argument>` changed|MAJOR
-  |Data|`<entity>` added|MINOR
-  | |`<entity>` removed|MAJOR
-  | |`<entity>` `<array>` added|MINOR
-  | |`<entity>` `<array>` removed|MAJOR
-  | |`<entity>` `<array>` `<item>` removed|PATCH
-  | |`<entity>` `<field>` added|MINOR
-  | |`<entity>` `<field>` removed|MAJOR
-  | |`<entity>` `<required-entity>` added|MAJOR
-  | |`<entity>` `<required-entity>` removed|MAJOR
-  | |`<entity>` `<var>` added|MAJOR
-  | |`<entity>` `<var>` removed|MAJOR
-  |Metadata|`<operation>` added|MINOR
-  | |`<operation>` removed|MAJOR
-  | |`<operation>` changed|PATCH
-  |Page|`<page>` added|MINOR
-  | |`<page>` removed|MAJOR
-  | |`<page>` `<section>` added|MINOR
-  | |`<page>` `<section>` removed|MAJOR
-  |Section|`<section>` added|MINOR
-  | |`<section>` removed|MAJOR
-  | |`<section>` `<element>` added|MINOR
-  | |`<section>` `<element>` removed|MAJOR
-  | |`<section>` `<element>` changed|PATCH
-  |Test|`<test>` added|MINOR
-  | |`<test>` removed|MAJOR
-  | |`<test>` (before/after) `<action>` added|MINOR
-  | |`<test>` (before/after) `<action>` removed|MAJOR
-  | |`<test>` (before/after) `<action>` changed|PATCH
-  | |`<test>` (before/after) `<action>` type changed|PATCH
-  | |`<test>` `<annotations>` `<annotation>` added|PATCH
-  | |`<test>` `<annotations>` `<annotation>` changed|PATCH
-  | |`<test>` `<annotations>` `<annotation>` GROUP removed|MAJOR
+|Entity Type|Change|Version Increase|
+|---|---|---|
+|ActionGroup|`<actionGroup>` added|MINOR
+| |`<actionGroup>` removed|MAJOR
+| |`<actionGroup>` `<action>` added|MINOR
+| |`<actionGroup>` `<action>` removed|MAJOR
+| |`<actionGroup>` `<action>` type changed|PATCH
+| |`<actionGroup>` `<action>` attribute changed|PATCH
+| |`<actionGroup>` `<argument>` added|MAJOR
+| |`<actionGroup>` `<argument>` removed|MAJOR
+| |`<actionGroup>` `<argument>` changed|MAJOR
+|Data|`<entity>` added|MINOR
+| |`<entity>` removed|MAJOR
+| |`<entity>` `<array>` added|MINOR
+| |`<entity>` `<array>` removed|MAJOR
+| |`<entity>` `<array>` `<item>` removed|PATCH
+| |`<entity>` `<field>` added|MINOR
+| |`<entity>` `<field>` removed|MAJOR
+| |`<entity>` `<required-entity>` added|MAJOR
+| |`<entity>` `<required-entity>` removed|MAJOR
+| |`<entity>` `<var>` added|MAJOR
+| |`<entity>` `<var>` removed|MAJOR
+|Metadata|`<operation>` added|MINOR
+| |`<operation>` removed|MAJOR
+| |`<operation>` changed|PATCH
+|Page|`<page>` added|MINOR
+| |`<page>` removed|MAJOR
+| |`<page>` `<section>` added|MINOR
+| |`<page>` `<section>` removed|MAJOR
+|Section|`<section>` added|MINOR
+| |`<section>` removed|MAJOR
+| |`<section>` `<element>` added|MINOR
+| |`<section>` `<element>` removed|MAJOR
+| |`<section>` `<element>` changed|PATCH
+|Test|`<test>` added|MINOR
+| |`<test>` removed|MAJOR
+| |`<test>` (before/after) `<action>` added|MINOR
+| |`<test>` (before/after) `<action>` removed|MAJOR
+| |`<test>` (before/after) `<action>` changed|PATCH
+| |`<test>` (before/after) `<action>` type changed|PATCH
+| |`<test>` `<annotations>` `<annotation>` added|PATCH
+| |`<test>` `<annotations>` `<annotation>` changed|PATCH
+| |`<test>` `<annotations>` `<annotation>` GROUP removed|MAJOR
 
 ---------------------------
 
