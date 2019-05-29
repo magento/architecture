@@ -16,9 +16,9 @@ Here is detailed design desciption that satisfy these criterias: [Batch query se
 ## Structure
 
 * API module (**Magento\CatalogProductAPI**)
-** Contains API's for specific domain layer
+  * Contains API's for specific domain layer
 * Implementations (**Magento\CatalogProduct**)
-** Basic implementation for specififc API
+  * Basic implementation for specififc API
 
 ### Technical notes
 
@@ -61,29 +61,29 @@ $prices = ProductPrice::getPrices([
 
 /**
 * return prices in the same order as requested
-    [
-        [
-            1 => [
-                'productId' => 1,
-                'minimalPrice' => '10.22',
-                'maximalPrice' => '15',
-            ],
-            2 => [
-                'productId' => 2,
-                'minimalPrice' => '24',
-                'maximalPrice' => '42',
-            ]
-        ],
-        [
-            3 => [
-                'productId' => 1,
-                'minimalPrice' => '8.56'
-            ]
-        ]
-    ];
-
+* [
+*     [
+*         1 => [
+*             'productId' => 1,
+*             'minimalPrice' => '10.22',
+*             'maximalPrice' => '15',
+*         ],
+*         2 => [
+*             'productId' => 2,
+*             'minimalPrice' => '24',
+*             'maximalPrice' => '42',
+*         ]
+*     ],
+*     [
+*         3 => [
+*             'productId' => 1,
+*             'minimalPrice' => '8.56'
+*         ]
+*     ]
+* ];
+*/
 $prices->getResult();
 
-
+ 
 ```
 
