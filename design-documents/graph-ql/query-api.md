@@ -1,5 +1,5 @@
 
-# Store front API
+# Storefront API
 
 ## Purpose
 Working on [lightweight GrpahQL resolvers](https://github.com/magento-performance/architecture/blob/graphql/design-documents/graph-ql/lightweight-resolver.md) we want to introduce new API
@@ -23,7 +23,7 @@ Here is a detailed design description that satisfies these criteria: [Batch quer
 
 ### Technical notes
 
-The main goal is performance. Here are some requirements that each API should follow:
+The main goal is performance. Here are some requirements that each new service should follow:
 1. Be lazy: return only requested data
 1. Be greedy: aggregate requests and execute query only once
 1. Be lightweight:  return simple structures
@@ -57,7 +57,7 @@ class ResultContainer implements ContainerInterface
 
 $prices = ProductPrice::getPrices([
     new ProductPriceSearchCriteria([1,2], 4, 1, ['minimalPrice', 'maximalPrice']),
-    new ProductPriceSearchCriteria([3,4], 4, 1, ['maximalPrice']),
+    new ProductPriceSearchCriteria([3], 4, 1, ['maximalPrice']),
 ]);
 
 /**
