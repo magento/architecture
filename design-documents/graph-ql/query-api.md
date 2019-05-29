@@ -2,7 +2,7 @@
 # Storefront API
 
 ## Purpose
-Working on [lightweight GrpahQL resolvers](https://github.com/magento-performance/architecture/blob/graphql/design-documents/graph-ql/lightweight-resolver.md) we want to introduce new API
+Working on [lightweight GraphQL resolvers](https://github.com/magento-performance/architecture/blob/graphql/design-documents/graph-ql/lightweight-resolver.md) we want to introduce new API
 that is responsible for retrieving Storefront specific data
 
 ## Design 
