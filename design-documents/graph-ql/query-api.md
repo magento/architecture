@@ -8,6 +8,7 @@ that will be responsible for retriving Storefront specific data
 ## Design 
 New API shuold satisfy the following criteria:
 1. Support batch requests
+1. All services must be stateless
 1. Be performance friendly
 1. Keep in mind about service isolation
 
