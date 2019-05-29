@@ -1,32 +1,32 @@
 
 # Store front API
 
-## Purpouse
-Working on [lightweight GrpahQL resolvers](https://github.com/magento-performance/architecture/blob/graphql/design-documents/graph-ql/lightweight-resolver.md) we want introduce new API
-that will be responsible for retriving Storefront specific data
+## Purpose
+Working on [lightweight GrpahQL resolvers](https://github.com/magento-performance/architecture/blob/graphql/design-documents/graph-ql/lightweight-resolver.md) we want to introduce new API
+that is responsible for retrieving Storefront specific data
 
 ## Design 
-New API shuold satisfy the following criteria:
+New API should satisfy the following criteria:
 1. Support batch requests
 1. All services must be stateless
 1. Be performance friendly
 1. Keep in mind about service isolation
 
-Here is detailed design desciption that satisfy these criterias: [Batch query services](https://github.com/magento/architecture/pull/163/files?short_path=6bf9437#diff-6bf9437e365a3d978a3743fe86d815f5)
+Here is a detailed design description that satisfies these criteria: [Batch query services](https://github.com/magento/architecture/pull/163/files?short_path=6bf9437#diff-6bf9437e365a3d978a3743fe86d815f5)
 
 ## Structure
 
 * API module (**Magento\CatalogProductAPI**)
   * Contains API's for specific domain layer
 * Implementations (**Magento\CatalogProduct**)
-  * Basic implementation for specififc API
+  * Basic implementation for specific API
 
 ### Technical notes
 
-The main keystone is performance. Here are some requirements that each API should follow:
+The main goal is performance. Here are some requirements that each API should follow:
 1. Be lazy: return only requested data
-1. Be greedy: aggegate requests and execute query only once
-1. Be lightweigh:  return simple structures
+1. Be greedy: aggregate requests and execute query only once
+1. Be lightweight:  return simple structures
 
 ## Example
 ```php
