@@ -56,8 +56,10 @@ class ResultContainer implements ContainerInterface
 }
 
 $prices = ProductPrice::getPrices([
-    new ProductPriceSearchCriteria([1,2], 4, 1, ['minimalPrice', 'maximalPrice']),
-    new ProductPriceSearchCriteria([2], 4, 1, ['maximalPrice']),
+    // "productId" is not returned, but order is maintained
+    new ProductPriceSearchCriteria([1, 666, 2], 4, 1, ['minimalPrice', 'maximalPrice']),
+    // additionally return "productId"
+    new ProductPriceSearchCriteria([2], 4, 1, ['productId', 'maximalPrice']),
 ]);
 
 /**
@@ -67,6 +69,9 @@ $prices = ProductPrice::getPrices([
 *         [
 *             'minimalPrice' => '10.22',
 *             'maximalPrice' => '15',
+*         ],
+*         [
+*              //TODO: what return in case of missing product?
 *         ],
 *         [
 *             'minimalPrice' => '24',
