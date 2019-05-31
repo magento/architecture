@@ -49,7 +49,7 @@ Modules within one service may use direct communication and extendability.
 
 ### Entry Point Services
 
-Functionality responsible for collaboration with application clients is separated from business logic and located in special endpoint services - BFFs.
+Client specific logic (PWA, point of sale, mobile app, etc) is separated from business logic and located in special endpoint services - BFFs.
 A dedicated BFF should created for each application client.
 
 The following BFFs may be created:
