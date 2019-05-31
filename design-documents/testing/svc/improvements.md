@@ -40,6 +40,29 @@ Suggested approach is to compare actual configuration of the RabbitMQ after Mage
 1. The tool should ignore the order of the fields during comparison since the order can change when module installation order changes.
 1. PHP errors are ignored, but must cause build failure.
 
+# Incomplete analysis for BIC-relevant PHP code changes
+
+### Type declarations
+
+The current SVC code handles changes in type declarations (adding/removing/changing) for API method parameters and return types only if the type declarations are done in-line; `@param` and `@returns` annotations are widely used across the codebase in place of in-line type declarations and must checked for BIC.
+- [MC-16327](https://jira.corp.magento.com/browse/MC-16327) has been created to address this.
+
+### Traits
+
+Traits are used occasionally in our API (example: [Magento\Payment\Helper\Formatter](https://github.com/magento/magento2/blob/2.3-develop/app/code/Magento/Payment/Helper/Formatter.php)) and must be analyzed by the SVC tool the same as abstract classes.
+
+### Visibility changes
+
+Changes in visibility are currently ignored; a public method moving to protected or even private does not register in the tool.  Visibility changes across all class members must be considered for BIC.
+- Suggestion: Visibility changes to be more restrictive should have the same change level as removals, changes to be more visible should have the same change level as additions.
+
+### Class inheritance
+
+1. Overriding a parent method must be treated as a changed method (PATCH), currently it is treated as an added method (MINOR) even though the method already existed on the class.  Note: moving a method to a parent class is already handled as move a move operation instead of a removal and does not need to be changed.
+1. Changing the parents of a class (such as making an API class extend a different abstract class, implementing a different interface) must be considered for BIC, as the class can have different methods or other members or it could become incompatible with method parameters that expect an object of the previous parent's type.  Class parentage is currently ignored.
+1. API classes must be checked for changes to parent classes or traits they extend even if those parents aren't also marked as API, as a parent's methods and other members affect BIC for all classes that extend them. Class parentage is currently ignored.
+1. Adding a parent (implemented interface or extended class or trait) to a previously parent-less API class must be considered for BIC, as it adds methods and other members to the class and creates type compatibility constraints that must be considered for future changes.
+
 # Other backward incompatible changes
 
 There is a [document](https://devdocs.magento.com/guides/v2.3/extension-dev-guide/versioning/codebase-changes.html) listing possible Minor/Major changes. 
