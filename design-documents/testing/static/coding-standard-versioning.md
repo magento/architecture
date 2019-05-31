@@ -58,7 +58,10 @@ Therefore, developers will have an opportunity to be tested against all checks o
 - Developers will need to track changes in the project either by paying attention to notifications or by following the project in GitHub, in order to make their "in development" code adherent to the upcoming coding-standard release. This will be especially important for patch releases, and critical for minor releases.
 
 ## Marketplace Notifications
-- A week in advance before each release, a notification containing the upcoming changes will be sent. Additional bugfixes may be included into the release after this date, but all possible effort will be applied to not introducing new checks after the notification had been sent. The notification will inform of the entire scope of release changes: bug fixes, severity/scoring changes, and new checks.
-- Developers on Marketplace will be notified prior EQP will update the version for PHPCodeSniffer check.
+- A notification containing the upcoming changes will be sent to developers:
+  - A week in advance before each monthly release.
+  - A month in advance before each quarterly release.
+- Additional bugfixes may be included into the release after those dates, but all possible effort will be applied to not introducing new checks after the notification had been sent. The notification will inform of the entire scope of release changes: bug fixes, severity/scoring changes, and new checks.
+- Developers on Marketplace will be notified before the new version of  PHPCodeSniffer check is updated in the EQP platform.
 - Developers on Marketplace will see in the report what version was used during the check.
 - Extension may be rejected in case it does not follow the latest Coding Standard version. Conditions for failure may include failing top priority (severity 10) checks and accumulating an unacceptable amount of warnings (coming soon).
