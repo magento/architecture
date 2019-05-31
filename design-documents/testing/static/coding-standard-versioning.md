@@ -26,10 +26,29 @@ Since we want all users (core developers, community contributors, system integra
     }
 ```
 ## Release cadence
-New versions will be released monthly (if there are changes since the last release), as well as with each Magento patch/minor release. They will include all the latest changes to the checks. There will be three distinct cases that will differentiate what changes they introduce:
-- Monthly releases will add bugfixes or new checks, with no changes to fail conditions or scoring. These releases will typically happen in the beginning of every month.
-- Releases that coincide with Magento patch releases will introduce changes to non-breaking scoring/severities.
-- Releases that coincide with Magento minor releases will introduce new failing tests
+1.	Critical fixes (error during execution) deployed as ready in isolation.
+2.	Monthly releases that include:
+    - Bug fix to existing rule that prevents false-positive findings.
+    - Implementing unit tests for existing rules.
+    - Removing PHP CodeSniffer OOB rule from Magento Coding Standard `ruleset.xml` file.
+    - Removing Magento rule from Magento Coding Standard (sniff code + `ruleset.xml`).
+    - Adding new `exclude-pattern` to the rule.
+    - Decreasing the `severity`.
+    - Changing `type` from `error` to `warning`.
+    - Adding new OOB rule to Magento Coding Standard `ruleset.xml` file (< severity 10).
+    - Implementing new Magento rule and adding it to `ruleset.xml` file (< severity 10).
+    - Changing the behaviour of existing Magento rule (extending functionality) (< severity 10).
+    - Adding new `include-pattern` to the rule (< severity 10).
+    - Increasing the `severity` (< severity 10).
+3.	Quarterly Magento patch release bundled that include:
+    - Adding new OOB rule to Magento Coding Standard `ruleset.xml` file (>= severity 10).
+    - Implementing new Magento rule and adding it to `ruleset.xml` file (>= severity 10).
+    - Changing the behaviour of existing Magento rule (extending functionality) (>= severity 10).
+    - Adding new `include-pattern` to the rule (>= severity 10).
+    - Changing `type` from `warning` to `error`.
+    - Increasing the `severity` to 10.
+    - Changing platform requirements.
+    - Changing namespace.
 
 Therefore, developers will have an opportunity to be tested against all checks once they are merged and released or on demand by obtaining the latest version of the project from GitHub; however, after patch or minor releases of Magento2 some checks may change in priority or start failing extension submissions.
 
