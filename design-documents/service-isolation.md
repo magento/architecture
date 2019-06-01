@@ -95,6 +95,9 @@ The following application services are currently identified to be isolated (gree
 
 ![Isolated Magento services](service-isolation/magento-services.png) 
 
+Final desired structure of isolated services (with separation to storefront & admin services):
+
+![Deiserd state of isolated services](service-isolation/full-service-structure.png)
 
 ## Design principles
 
