@@ -16,7 +16,6 @@ When SIs or Extension developers installs Magento via Composer they are able to 
 ### Problem
 This approach leads to situation where production environment always contains code (in our case xml configurations) which will never be used.
 
-Also here is reasons described by Piotr Kaminski why it is not good to have tests on prod env.
 >There are couple reasons to separate tests from core distribution:
 >
 >Security:
