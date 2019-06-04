@@ -116,6 +116,7 @@ For the first iteration it can be hard-coded as a part of API documentation, e.g
  *  "maximalPrice": float,
  *  "price": float, 
  * ]
+**/ 
 interface ProductPrice
 {
   /**
