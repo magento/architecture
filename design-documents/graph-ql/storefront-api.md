@@ -1,5 +1,5 @@
 
-# Storefront API
+# Storefront API (implementation details)
 
 ## Purpose
 Working on [lightweight GraphQL resolvers](https://github.com/magento-performance/architecture/blob/graphql/design-documents/graph-ql/lightweight-resolver.md) we want to introduce new API
