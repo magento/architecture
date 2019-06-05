@@ -12,4 +12,6 @@ Topic description and link to PR, if any (duration in min)
 
 Time: 10:30am CST/CDT
 
+BlueJeans Meeting - https://bluejeans.com/374721893
+
 Recording: TBD
