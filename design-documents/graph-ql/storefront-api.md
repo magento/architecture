@@ -95,13 +95,13 @@ $prices = ProductPrice::getPrices([
  
 ```
 
-**Return data as associative array** will solve problem with missed data for requested product (42 in example)
+**Return data as associative array** will solve the problem with missed data for the requested product (42 in example)
 
 ## Dimensions
-Each dimension consist of name and value, e.g. name: "store", value: "5"
+Each dimension consist of name and value, e.g. name: "store", value: "5".
 API implementation utilize needed dimensions. 
 Open questions:
-1. How to pass dimension to API in consumer? Pass all possible scopes (store, website, customer group)?
+1. How to pass dimension to API from consumer? Pass all possible scopes (store, website, customer group)?
 1. Behaviour if part of required for implementation dimensions is not passed
 
 ## Requested fields
