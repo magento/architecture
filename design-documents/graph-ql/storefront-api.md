@@ -14,6 +14,8 @@ New API should satisfy the following criteria:
 
 Here is a detailed design description that satisfies these criteria: [Batch query services](https://github.com/magento/architecture/pull/163/files?short_path=6bf9437#diff-6bf9437e365a3d978a3743fe86d815f5)
 
+Technical vision of [StoreFront API](https://github.com/magento/architecture/blob/1c3bad3908bb90f45d020fd182881520057678a1/design-documents/storefront/storefront-api.md)
+
 ## Structure
 
 * API module (**Magento\CatalogProductAPI**)
