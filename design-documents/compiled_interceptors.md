@@ -5,7 +5,7 @@ Proposal based on Community Pull Request https://github.com/magento/magento2/pul
 ### Overview
 
 The idea is to use a mechanism which generates Interceptors code using app config instead of reading config at runtime.
-Main benefit of having this approach incorporated to Magento is improving Dev Experience while debuggind and profiling Magento codebase.
+The main benefit of having this approach incorporated to Magento is improving Dev Experience while debugging and profiling Magento codebase.
 
 #### Current Code generated Interceptors
 
