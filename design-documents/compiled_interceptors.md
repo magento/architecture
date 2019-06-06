@@ -67,7 +67,7 @@ currently, so there is no need to change anything in existing plugins.
 - [YouTube recording of Architectural Discussion](https://www.youtube.com/watch?v=no2jVn_mixk&list=PLDvMskiz68Q3ZVyRsc59IjEqX85LaO8mr&index=16)
 - https://github.com/creatuity/magento2-interceptors
 
-#### Open Questions
+### Open Questions
 
 1. Whether it’s okay that we will affect Dev Experience for Developer mode. 
     a. is slower generation time on first request is really a big issue? 
