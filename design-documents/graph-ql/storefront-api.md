@@ -71,54 +71,77 @@ $prices = ProductPrice::getPrices([
    ]);
 
 
-// return prices in the same order as requested. Returning data in associative array
+// return prices in the same order as requested.
  [
      [
-         1 => [
+         [
              'minimalPrice' => '10.22',
              'maximalPrice' => '15',
          ],
          
-         // 42 product  is missed and not returned
-         2 => [
+         // 42 product  is missed and not returned. Client must handle this if needed (e.g. request productId field)
+         [
              'minimalPrice' => '24',
              'maximalPrice' => '44',
          ]
      ],
      [
-         4 => [
+         [
              'productId' => 4,
              'maximalPrice' => '12'
          ]
      ]
  ];
- 
+  
 ```
 
-**Return data as associative array** will solve the problem with missed data for the requested product (42 in example)
 
 ## Dimensions
-Each dimension consist of name and value, e.g. name: "store", value: "5".
-API implementation utilize needed dimensions. 
-Open questions:
-1. How to pass dimension to API from consumer? Pass all possible scopes (store, website, customer group)?
-1. Behaviour if part of required for implementation dimensions is not passed
+1. Each dimension consist of name and value, e.g. name: "store", value: "5".
+1. API consumer pass all known dimensions to API (store, customer_group)
+1. API implementation utilize needed dimensions.
+1. *Exception is thrown in case of dimension is missed* (need to be discussed)
 
 ## Requested fields
 
-Each API should expose the list of fields that could be requested. List of fields should be declarative and extendable. 
-For the first iteration it can be hard-coded as a part of API documentation, e.g.:
+1. Each API should expose the list of fields that could be requested.
+1. List of fields should be declarative and extendable.
+1. Nested fields declared with dot notation (facet.items.label)
+
+For the first iteration it can be hard-coded as a part of API documentation, e.g. (mixed example):
 
 ```php
 /** 
  * @api
  * @fields: [
+ *  "sku": string,
  *  "productId": int,
  *  "minimalPrice": float,
- *  "maximalPrice": float,
- *  "price": float, 
+ *  "facet.name": string,
+ *  "facet.items.label": string,
+ *  "facet.items.count": int,
  * ]
 **/ 
+
+// Response
+[
+  'sku' => 'sku-777',
+  'productId' => 3,
+  'minimalPrice' => 4.5,
+  'facet' => [
+   [
+     'name' => 'category', 
+     'items' => [
+        [
+           'label' => 'Cat 1',
+           'count' => 5,
+         ],
+        ...
+     ],
+   ...
+   ],
+]  
+
 interface ProductPrice
 {
   /**
