@@ -69,8 +69,7 @@ currently, so there is no need to change anything in existing plugins.
 
 ### Open Questions
 
-1. Whether it’s okay that we will affect Dev Experience for Developer mode. 
-    a. is slower generation time on first request is really a big issue? 
-    b. make developer to remove the whole generation folder if he/she modified somehow any plugin in the system. The “b” is the most problematic here, because we have specific behavior for particular code-generated entity which differs from others.
-2. Should we introduce DI configuration which will provide an ability to choose between an existing and proposed way? 
-3. Should we observe changes of files and re-generate Interceptors automatically in case plugins or DI.xml configuration have been modified (similar to Node Watch https://www.npmjs.com/package/node-watch)
+1. Whether it’s okay that we will affect Dev Experience for Developer mode getting slower generation time on first request? Is this really a big issue for developers. 
+2. How bad is that we will affect Dev Experience making developer to remove the whole generation folder if he/she modifies somehow any plugin in the system. This item is the most problematic here, because we have specific behavior for particular code-generated entity which differs from others.
+3. Should we suppoer both approaches and introduce DI configuration which will provide an ability to choose between an existing and proposed implementations of Interceptors generation? 
+4. Should we observe changes of files and re-generate Interceptors automatically in case plugins or DI.xml configuration have been modified (similar to Node Watch https://www.npmjs.com/package/node-watch)
