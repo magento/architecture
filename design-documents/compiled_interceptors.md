@@ -57,16 +57,20 @@ currently, so there is no need to change anything in existing plugins.
 
 #### CONS 
 
-1. Each time after making change in etc plugins config, generated/code/* needs to be purged
-2. Longer code generation step
-3. Longer time for first request and corresponding generation in Dev Mode
+1. Each time after making change in etc plugins config, generated/code/* needs to be purged. 
+2. Longer and more memory consuming the whole code generation step - https://github.com/magento-engcom/msi/issues/2269#issuecomment-499551378
+3. Longer time for first warmup request and corresponding generation in Dev Mode - https://github.com/magento/magento2/pull/22826#issuecomment-491949914
 
-#### Extension Points and Scenarios
-
-<!-- In this section describe customization points that can be used by third party developers to customize behavior described in design -->
 
 ### Discusssions and Public Involvements
 
 - [YouTube recording of Architectural Discussion](https://www.youtube.com/watch?v=no2jVn_mixk&list=PLDvMskiz68Q3ZVyRsc59IjEqX85LaO8mr&index=16)
 - https://github.com/creatuity/magento2-interceptors
 
+#### Open Questions
+
+1. Whether it’s okay that we will affect Dev Experience for Developer mode. 
+    a. is slower generation time on first request is really a big issue? 
+    b. make developer to remove the whole generation folder if he/she modified somehow any plugin in the system. The “b” is the most problematic here, because we have specific behavior for particular code-generated entity which differs from others.
+2. Should we introduce DI configuration which will provide an ability to choose between an existing and proposed way? 
+3. Should we observe changes of files and re-generate Interceptors automatically in case plugins or DI.xml configuration have been modified (similar to Node Watch https://www.npmjs.com/package/node-watch)
