@@ -58,7 +58,7 @@ currently, so there is no need to change anything in existing plugins.
 #### CONS 
 
 1. Each time after making change in plugins declaration (di.xml) or adding/modyfing the source code of pluings, generated/code/* needs to be purged. 
-2. Longer and more memory consuming the whole code generation step - https://github.com/magento-engcom/msi/issues/2269#issuecomment-499551378
+2. Longer execution and higher memory consumption while the whole code generation phase - https://github.com/magento-engcom/msi/issues/2269#issuecomment-499551378
 3. Longer time for first warmup request and corresponding generation in Dev Mode - https://github.com/magento/magento2/pull/22826#issuecomment-491949914
 
 
