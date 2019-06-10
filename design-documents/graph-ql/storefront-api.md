@@ -56,11 +56,11 @@ interface Products
 */
 interface ProductRequestCriteria
 {
-    public function getQuery() : ?string; // query string used for full text search within products. Can be null
+    public function getSearchTerm() : ?string; // ???TBD... query string used for full text search within products. Can be null
     public function getFilters() : string[][]; // list of filters in format: ["field", "value", "condition_type"]. Reffer to \Magento\Framework\Api\Filter. Can be empty
     public function getSort() : string[][]; // list of sort in format: ["field", "direction"]. Reffer to \Magento\Framework\Api\SortOrder. Can be empty
     public function getPage() : string[]; // pagination info in format ["pageSize", "currentPage"]
-    public function getDimensions() : string[]; // list of dimensions in format: ["name" => "value"]
+    public function getScopes() : string[]; // list of scopes in format: ["name" => "value"]
     public function getFields() : string[]; // list of requested fields.
 }
 
@@ -110,7 +110,7 @@ interface ProductPrice
 class ProductPriceRequest
 {
     public function getFilters() : ?string[][]; // list of filters in format: ["field", "value", "condition_type"]. Reffer to \Magento\Framework\Api\Filter. Can be empty
-    public function getDimensions() : string[]; // list of dimenstions in format: ["name" => "value"]
+    public function getScopes() : string[]; // list of scopes in format: ["name" => "value"]
     public function getFields() : string[]; // list of requested fields. Must be declared with API
 }
 
@@ -156,11 +156,11 @@ $prices = ProductPrice::getPrices([
 ```
 
 
-## Dimensions
-1. Each dimension consist of name and value, e.g. name: "store", value: "5".
-1. API consumer pass all known dimensions to API (store, customer_group)
-1. API implementation utilize needed dimensions.
-1. *Exception is thrown in case of dimension is missed* (need to be discussed)
+## Scopes
+1. Each scope consist of name and value, e.g. name: "store", value: "5".
+1. API consumer pass all known scopes to API (store, customer_group)
+1. API implementation utilize needed scpoes.
+1. Exception is thrown in case of scope is missed
 
 ## Requested fields
 
