@@ -30,7 +30,60 @@ The main goal is performance. Here are some requirements that each new service s
 1. Be greedy: aggregate requests and execute query only once
 1. Be lightweight:  return simple structures
 
-## Example of API
+## Product Search API
+
+```php
+ /**
+ * @api
+ * @fields: [
+ *  "sku": string,
+ *  "productId": int,
+ *  "facet.name": string,
+ *  "facet.items.label": string,
+ * ]
+ */
+interface Products
+{
+  /**
+   * @param ProductRequestCriteria[] $requests List of requests
+   * @return array
+   */
+  public function search(array $requests) : array
+}
+
+/**
+* Request DTO
+*/
+interface ProductRequestCriteria
+{
+    public function getQuery() : ?string; // query string used for full text search within products. Can be empty
+    public function getFilters() : ?string[][]; // list of filters if format: ["field", "value", "condition_type"]. Reffer to \Magento\Framework\Api\Filter. Can be empty
+    public function getDimensions() : string[]; // list of dimensions if format: ["name" => "value"]
+    public function getFields() : string[]; // list of requested fields.
+}
+
+$prices = Products::search([
+    new ProductPriceSearchCriteria(
+       null, // no full text search
+       [
+           ["field" => "name", "value" => "Tesla X*", "condition_type" => "like"],
+           ["field" => "price", "value" => "55000", "condition_type" => "from"],
+       ]
+       ['store' => 1, 'customer_group_id' => 2],
+       ['sku', 'name', 'productId']
+    ),
+    new ProductPriceSearchCriteria(
+       "tesla car",
+       null, // no filtering
+       ['store' => 1, 'customer_group_id' => 2],
+       ['sku', 'name', 'productId']
+    ),
+   ]);
+
+```
+
+
+## Product Price API
 
 Lets builds Store front API for Product Price, that will satisfyour criteria
 
@@ -51,14 +104,16 @@ interface ProductPrice
 */
 class ProductPriceRequest
 {
-    public function getProductIds() : int[]; // product ids
+    public function getFilters() : ?string[][]; // list of filters if format: ["field", "value", "condition_type"]. Reffer to \Magento\Framework\Api\Filter. Can be empty
     public function getDimensions() : string[]; // list of dimenstions if format: ["name" => "value"]
     public function getFields() : string[]; // list of requested fields. Must be declared with API
 }
 
 $prices = ProductPrice::getPrices([
     new ProductPriceSearchCriteria(
-       [1, 42, 2],
+       [
+           ["field" => "productId", "value" => [1,2,4], "condition_type" => "in"],
+       ],
        ['store' => 1, 'customer_group_id' => 2],
        ['minimalPrice', 'maximalPrice']
     ),
