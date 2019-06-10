@@ -56,25 +56,33 @@ interface Products
 */
 interface ProductRequestCriteria
 {
-    public function getQuery() : ?string; // query string used for full text search within products. Can be empty
-    public function getFilters() : ?string[][]; // list of filters if format: ["field", "value", "condition_type"]. Reffer to \Magento\Framework\Api\Filter. Can be empty
-    public function getDimensions() : string[]; // list of dimensions if format: ["name" => "value"]
+    public function getQuery() : ?string; // query string used for full text search within products. Can be null
+    public function getFilters() : string[][]; // list of filters in format: ["field", "value", "condition_type"]. Reffer to \Magento\Framework\Api\Filter. Can be empty
+    public function getSort() : string[][]; // list of sort in format: ["field", "direction"]. Reffer to \Magento\Framework\Api\SortOrder. Can be empty
+    public function getPage() : string[]; // pagination info in format ["pageSize", "currentPage"]
+    public function getDimensions() : string[]; // list of dimensions in format: ["name" => "value"]
     public function getFields() : string[]; // list of requested fields.
 }
 
-$prices = Products::search([
-    new ProductPriceSearchCriteria(
+$products = Products::search([
+    new ProductRequestCriteria(
        null, // no full text search
        [
            ["field" => "name", "value" => "Tesla X*", "condition_type" => "like"],
            ["field" => "price", "value" => "55000", "condition_type" => "from"],
-       ]
+       ],
+       [
+           ["field" => "price", "direction" => "DESC"],
+       ],
+       ["pageSize" => 10, "currentPage" => 2],
        ['store' => 1, 'customer_group_id' => 2],
        ['sku', 'name', 'productId']
     ),
-    new ProductPriceSearchCriteria(
+    new ProductRequestCriteria(
        "tesla car",
-       null, // no filtering
+       [], // no filtering
+       [], // no sorting
+       [], // no paging
        ['store' => 1, 'customer_group_id' => 2],
        ['sku', 'name', 'productId']
     ),
@@ -82,10 +90,7 @@ $prices = Products::search([
 
 ```
 
-
 ## Product Price API
-
-Lets builds Store front API for Product Price, that will satisfyour criteria
 
 ```php
 // @api
@@ -104,8 +109,8 @@ interface ProductPrice
 */
 class ProductPriceRequest
 {
-    public function getFilters() : ?string[][]; // list of filters if format: ["field", "value", "condition_type"]. Reffer to \Magento\Framework\Api\Filter. Can be empty
-    public function getDimensions() : string[]; // list of dimenstions if format: ["name" => "value"]
+    public function getFilters() : ?string[][]; // list of filters in format: ["field", "value", "condition_type"]. Reffer to \Magento\Framework\Api\Filter. Can be empty
+    public function getDimensions() : string[]; // list of dimenstions in format: ["name" => "value"]
     public function getFields() : string[]; // list of requested fields. Must be declared with API
 }
 
