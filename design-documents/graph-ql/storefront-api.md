@@ -147,9 +147,9 @@ We agreed with the following:
 interface ProductSearchInterface {
     /**
      * @param ProductSearchRequestCriteria[] $request
-     * @return SearchResponse
+     * @return ProductResponse
      */
-    public function search(array $request): SearchResponse;
+    public function search(array $request): ProductResponse;
 }
 
 interface ProductSearchRequestCriteria
@@ -187,40 +187,23 @@ interface ProductSearchRequestCriteria
 }
 
 
-interface ProductResponse
+interface ProductResponse extends \Magento\Framework\Api\ExtensionAttributesInterface
 {
     /**
      * @return string[] Product item data
      */
     public function getItems(): array;
-}
-
-interface SearchResponse extends ProductResponse
-{
+    
     /**
-     * @return SearchMetadata
+     * @return string[][] see example below
      */
-    public function getMetaData(): SearchMetadata;
-}
-
-interface SearchMetadata extends \Magento\Framework\Api\ExtensionAttributesInterface
-{
-    /**
-     * @return array [
-     *      'attribute_name_1' => [
-     *              ['name', 'count'],
-     *              ...
-     *      ],
-     *    ]
-     */
-    public function getAggregations(): array;
+     public function getAggregations(): array;
 
     /**
      * @return array
      */
     public function getPageInfo(): array;
 }
-
 ```
 
 #### Request with response example
@@ -260,75 +243,31 @@ interface SearchMetadata extends \Magento\Framework\Api\ExtensionAttributesInter
          ],
          ...
      ],
-     'metadata' => [
-         'aggregations' => [
-             'category' => [
-                 [
-                     'name' => 'Tesla',
-                     'count' => 21,
-                 ],
-                 ...
+     'aggregations' => [
+         'category' => [
+             [
+                 'name' => 'Tesla',
+                 'count' => 21,
              ],
-             'price' => [
-                 [
-                     'name' => '12..24',
-                     'count' => 44,
-                 ],
-                 ...
-             ]
+             ...
          ],
-         'pageInfo' => [
-             'totalCount' => 100,
-             'pages' => 10,
-             'pageSize' => 10,
-             'currentPage' => 3
+         'price' => [
+             [
+                 'name' => '12..24',
+                 'count' => 44,
+             ],
+             ...
          ]
+     ],
+     'pageInfo' => [
+         'totalCount' => 100,
+         'pages' => 10,
+         'pageSize' => 10,
+         'currentPage' => 3
      ]
+     
   ]
 ]
-```
-
-Product Filter
-```php
-
-interface ProductFilterInterface
-{
-    /**
-     * @param array $request
-     * @return ProductResponse
-     */
-    public function filter(array $request): ProductResponse;
-}
-
-
-interface ProductFilterRequestCriteria
-{
-    /**
-     * @return \Magento\Framework\Api\Filter[] Sort in format ["field", "value", "condition_type"]
-     */
-    public function getFilters(): array;
-
-    /**
-     * @return \Magento\Framework\Api\SortOrder[] Sort in format ["field", "direction"]
-     */
-    public function getSort(): array;
-
-    /**
-     * @return string[] ["pageSize", "currentPage"] || ["endCursor", "hasNextPage"]
-     */
-    public function getPage(): array;
-
-    /**
-     * @return string[] List of scopes in format: ["name" => "value"]
-     */
-    public function getScopes(): array;
-
-    /**
-     * @return string[] List of requested fields. See format below
-     */
-    public function getFields(): array;
-}
-
 ```
 
 
