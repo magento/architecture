@@ -32,63 +32,206 @@ The main goal is performance. Here are some requirements that each new service s
 
 ## Product Search API
 
+Let's discuss the necessity of segregation on 2 API
+
+| ProductSearchRequestCriteria         | ProductFilterRequestCriteria |
+| ------------- | ----------------------- |
+|  getFilters(): array;<br/>    getPage(): array;<br/>    getScopes(): array;<br/>    getFields(): array;<br/>    getSearchTerm(): string;<br/>    getAggregations(): array;| getFilters(): array;<br/>    getPage(): array;<br/>    getScopes(): array;<br/>    getFields(): array;<br/>    getSort(): array; |
+
+
 ```php
- /**
- * @api
- * @fields: [
- *  "sku": string,
- *  "productId": int,
- *  "facet.name": string,
- *  "facet.items.label": string,
- * ]
- */
-interface Products
-{
-  /**
-   * @param ProductRequestCriteria[] $requests List of requests
-   * @return array
-   */
-  public function search(array $requests) : array
-}
 
 /**
-* Request DTO
-*/
-interface ProductRequestCriteria
-{
-    public function getSearchTerm() : ?string; // ???TBD... query string used for full text search within products. Can be null
-    public function getFilters() : string[][]; // list of filters in format: ["field", "value", "condition_type"]. Reffer to \Magento\Framework\Api\Filter. Can be empty
-    public function getSort() : string[][]; // list of sort in format: ["field", "direction"]. Reffer to \Magento\Framework\Api\SortOrder. Can be empty
-    public function getPage() : string[]; // pagination info in format ["pageSize", "currentPage"]
-    public function getScopes() : string[]; // list of scopes in format: ["name" => "value"]
-    public function getFields() : string[]; // list of requested fields.
+ * @api
+ * Sort by relevance is automatically added
+ */ 
+interface ProductSearchInterface {
+    /**
+     * @param ProductSearchRequestCriteria[] $request
+     * @return SearchResponse
+     */
+    public function search(array $request): SearchResponse;
 }
 
-$products = Products::search([
-    new ProductRequestCriteria(
-       null, // no full text search
-       [
-           ["field" => "name", "value" => "Tesla X*", "condition_type" => "like"],
-           ["field" => "price", "value" => "55000", "condition_type" => "from"],
-       ],
-       [
-           ["field" => "price", "direction" => "DESC"],
-       ],
-       ["pageSize" => 10, "currentPage" => 2],
-       ['store' => 1, 'customer_group_id' => 2],
-       ['sku', 'name', 'productId']
-    ),
-    new ProductRequestCriteria(
-       "tesla car",
-       [], // no filtering
-       [], // no sorting
-       [], // no paging
-       ['store' => 1, 'customer_group_id' => 2],
-       ['sku', 'name', 'productId']
-    ),
-   ]);
+interface ProductSearchRequestCriteria
+{
+    /**
+     * @return string
+     */
+    public function getSearchTerm(): string;
+
+    /**
+     * @return \Magento\Framework\Api\Filter[] ["field", "value", "condition_type"]
+     */
+    public function getFilters(): array;
+
+    /**
+     * @return string[] ["pageSize", "currentPage"] || ["endCursor", "hasNextPage"]
+     */
+    public function getPage(): array;
+
+    /**
+     * @return string[] List of scopes in format: ["name" => "value"]
+     */
+    public function getScopes(): array;
+
+    /**
+     * @return string[] List of requested fields. See format below
+     */
+    public function getFields(): array;
+
+    /**
+     * @return string[] ["attribute_name_1", "attribute_name_2", ...]
+     * OR add more options? ["attribute_name_1" => [...options...], ...] @see: https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-terms-aggregation.html
+     */
+    public function getAggregations(): array;
+}
+
+
+interface ProductResponse
+{
+    /**
+     * @return string[] Product item data
+     */
+    public function getItems(): array;
+}
+
+interface SearchResponse extends ProductResponse
+{
+    /**
+     * @return SearchMetadata
+     */
+    public function getMetaData(): SearchMetadata;
+}
+
+interface SearchMetadata extends \Magento\Framework\Api\ExtensionAttributesInterface
+{
+    /**
+     * @return array [
+     *      'attribute_name_1' => [
+     *              ['name', 'count'],
+     *              ...
+     *      ],
+     *    ]
+     */
+    public function getAggregations(): array;
+
+    /**
+     * @return array
+     */
+    public function getPageInfo(): array;
+}
 
 ```
+
+#### Request with response example
+```php
+// Request
+[
+  'searchTerm' => 'modern car',
+  'filters' => [
+     ['field' => 'price', 'value' => '12', 'condition_type' => 'from'],
+     ['field' => 'color', 'value' => ['10', '11'], 'condition_type' => 'in'],
+  ],
+  'page' => [
+     'pageSize' => 10,
+     'currentPage' => 3
+  ],
+  'scopes' => [
+     'store' => 'US',
+     'customerGroupId' => 1
+  ],
+  'fields' => [
+     'name',
+     'price',
+  ],
+  'aggregations' => [
+     'category',
+     'price',
+  ],
+]
+
+// Response
+[
+  [
+     'items' => [
+         [
+           'name' => 'Car 1',
+           'price' => '22',
+         ],
+         ...
+     ],
+     'metadata' => [
+         'aggregations' => [
+             'category' => [
+                 [
+                     'name' => 'Tesla',
+                     'count' => 21,
+                 ],
+                 ...
+             ],
+             'price' => [
+                 [
+                     'name' => '12..24',
+                     'count' => 44,
+                 ],
+                 ...
+             ]
+         ],
+         'pageInfo' => [
+             'totalCount' => 100,
+             'pages' => 10,
+             'pageSize' => 10,
+             'currentPage' => 3
+         ]
+     ]
+  ]
+]
+```
+
+Product Filter
+```php
+
+interface ProductFilterInterface
+{
+    /**
+     * @param array $request
+     * @return ProductResponse
+     */
+    public function filter(array $request): ProductResponse;
+}
+
+
+interface ProductFilterRequestCriteria
+{
+    /**
+     * @return \Magento\Framework\Api\Filter[] Sort in format ["field", "value", "condition_type"]
+     */
+    public function getFilters(): array;
+
+    /**
+     * @return \Magento\Framework\Api\SortOrder[] Sort in format ["field", "direction"]
+     */
+    public function getSort(): array;
+
+    /**
+     * @return string[] ["pageSize", "currentPage"] || ["endCursor", "hasNextPage"]
+     */
+    public function getPage(): array;
+
+    /**
+     * @return string[] List of scopes in format: ["name" => "value"]
+     */
+    public function getScopes(): array;
+
+    /**
+     * @return string[] List of requested fields. See format below
+     */
+    public function getFields(): array;
+}
+
+```
+
 
 ## Product Price API
 
