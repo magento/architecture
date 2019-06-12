@@ -12,7 +12,7 @@ Developers may use this binding instead of text binding for all values leaving X
 vulnerabilities.
 
 #### Proposing
-Create static test to require developers to use variables/functions with _'html'_ suffix
-to bind HTML (like _variableHtml_ or _widget.generateButtonHtml()_). It's not a 100% guaranty that properly sanitized values will be used for dynamic HTML
+Create static test to require developers to use variables/functions with _'UnsanitizedHtml'_ suffix
+to bind HTML (like _variableUnsanitizedHtml_ or _widget.generateButtonUnsanitizedHtml()_). It's not a 100% guaranty that properly sanitized values will be used for dynamic HTML
 but it will notify developers to think whether they really need HTML binding for a value or
-maybe text binding will be enough. This rule would be consistent with the rule we have for _.phtml_ templates.
+maybe text binding will be enough. This rule would be more-or-less consistent with the rule we have for _.phtml_ templates.
