@@ -32,12 +32,99 @@ The main goal is performance. Here are some requirements that each new service s
 
 ## Product Search API
 
+#### Sorting
+
+API support only one field for sorting:
+1. Sort by relevance in case of full text search
+1. Sort by allowed field (e.g. price, name...) in case of filtration
+
+#### API Segregation
+
 Let's discuss the necessity of segregation on 2 API
 
 | ProductSearchRequestCriteria         | ProductFilterRequestCriteria |
 | ------------- | ----------------------- |
-|  getFilters(): array;<br/>    getPage(): array;<br/>    getScopes(): array;<br/>    getFields(): array;<br/>    getSearchTerm(): string;<br/>    getAggregations(): array;| getFilters(): array;<br/>    getPage(): array;<br/>    getScopes(): array;<br/>    getFields(): array;<br/>    getSort(): array; |
+|  getFilters(): array;<br/>    getPage(): array;<br/>    getScopes(): array;<br/>    getFields(): array;<br/>    getSearchTerm(): string;<br/>    getAggregations(): array;| getFilters(): array;<br/>    getPage(): array;<br/>    getScopes(): array;<br/>    getFields(): array;<br/>    getSort(): array;<br/> getAggregations(): array; |
 
+
+The difference between Search and Filter only in search term and sort:
+1. Search API has "search term" and do sort only by relevance
+1. Filter API has "sort" and do sort only by one field
+
+As an alternative option we can combine both APIs which allows search, filter or both for products
+
+Option 1. Add "search term" as an optional field
+
+```php
+interface ProductSearchInterface
+{
+    public function getSearchTerm(): ?string;
+    public function getFilters(): array;
+    public function getPage(): array;
+    public function getScopes(): array;
+    public function getFields(): array;
+    public function getSort(): array;
+    public function getAggregations(): array;
+}
+```
+
+As a drawback we will ignore field "sort" in case of fulltext search.
+
+Option 2. Set "search term" via filters OR sort field.
+
+```php
+interface ProductSearchInterface
+{
+    public function getFilters(): array;
+    public function getPage(): array;
+    public function getScopes(): array;
+    public function getFields(): array;
+    public function getSort(): array;
+    public function getAggregations(): array;
+}
+```
+
+There are different options for set search term:
+
+1. Option 2.1 Set search term via sort field 
+```php
+[
+    'sort' => [
+        'field' => "super car", 'type' => 'relevance',  // always sort by relevance, DESC
+    ,
+    ]
+]
+```
+
+As a drawback we provide search term in not intuitive way
+
+2. Option 2.2 Set serach term via filters field.
+```php
+[
+    'filters' => [
+        ['field' => '*', 'value' => 'super car', 'condition_type' => 'match'] // Full text search by all fields. Sort by relevance added automatically
+    ],
+]
+
+```
+As a drawback we will ignore field "sort" in case of fulltext search.
+
+3. Option 2.3 Set serach term via filters field and provide *additional* sort direction by relevance for another term
+```php
+[
+    'filters' => [
+        ['field' => '*', 'value' => 'super car', 'condition_type' => 'match'],  // Sort by relevance added automatically
+    ],
+    'sort' => [
+        'field' => "relevance('modern vehicle')", 'type' => 'ASC',
+     ]
+]
+
+```
+As a drawback we can receive not expected data. Currently this feature is not supported in Magento.
+
+
+#### API details
 
 ```php
 
