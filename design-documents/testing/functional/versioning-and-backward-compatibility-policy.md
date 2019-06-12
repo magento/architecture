@@ -55,7 +55,7 @@ It MAY include minor and patch level changes. Patch and minor version MUST be re
 4. Create a metapackage with test packages specifically for each Magento edition.
 
 ## Version increase matrix
-  
+
 |Entity Type|Change|Version Increase|
 |---|---|---|
 |ActionGroup|`<actionGroup>` added|MINOR
@@ -64,7 +64,8 @@ It MAY include minor and patch level changes. Patch and minor version MUST be re
 | |`<actionGroup>` `<action>` removed|MAJOR
 | |`<actionGroup>` `<action>` type changed|PATCH
 | |`<actionGroup>` `<action>` attribute changed|PATCH
-| |`<actionGroup>` `<argument>` added|MAJOR
+| |`<actionGroup>` `<argument>` with `defaultValue`added|MINOR
+| |`<actionGroup>` `<argument>` without `defaultValue` added|MAJOR
 | |`<actionGroup>` `<argument>` removed|MAJOR
 | |`<actionGroup>` `<argument>` changed|MAJOR
 |Data|`<entity>` added|MINOR
@@ -72,15 +73,15 @@ It MAY include minor and patch level changes. Patch and minor version MUST be re
 | |`<entity>` `<array>` added|MINOR
 | |`<entity>` `<array>` removed|MAJOR
 | |`<entity>` `<array>` `<item>` removed|PATCH
-| |`<entity>` `<field>` added|MINOR
-| |`<entity>` `<field>` removed|MAJOR
+| |`<entity>` `<data>` added|MINOR
+| |`<entity>` `<data>` removed|MAJOR
 | |`<entity>` `<required-entity>` added|MAJOR
 | |`<entity>` `<required-entity>` removed|MAJOR
 | |`<entity>` `<var>` added|MAJOR
 | |`<entity>` `<var>` removed|MAJOR
 |Metadata|`<operation>` added|MINOR
 | |`<operation>` removed|MAJOR
-| |`<operation>` changed|PATCH
+| |`<operation>` changed|MINOR
 |Page|`<page>` added|MINOR
 | |`<page>` removed|MAJOR
 | |`<page>` `<section>` added|MINOR
@@ -89,17 +90,21 @@ It MAY include minor and patch level changes. Patch and minor version MUST be re
 | |`<section>` removed|MAJOR
 | |`<section>` `<element>` added|MINOR
 | |`<section>` `<element>` removed|MAJOR
-| |`<section>` `<element>` changed|PATCH
+| |`<section>` `<element>` `selector` changed|PATCH
+| |`<section>` `<element>` `type` changed|PATCH
+| |`<section>` `<element>` `parameterized` changed|MAJOR
 |Test|`<test>` added|MINOR
 | |`<test>` removed|MAJOR
 | |`<test>` (before/after) `<action>` added|MINOR
 | |`<test>` (before/after) `<action>` removed|MAJOR
 | |`<test>` (before/after) `<action>` changed|PATCH
-| |`<test>` (before/after) `<action>` type changed|PATCH
+| |`<test>` (before/after) `<action>` `ref` changed|MINOR
+| |`<test>` (before/after) `<action>` type (`click`, `fillField`, etc) changed|PATCH
+| |`<test>` (before/after) `<action>` sequence changed|MAJOR
 | |`<test>` `<annotations>` `<annotation>` added|PATCH
 | |`<test>` `<annotations>` `<annotation>` changed|PATCH
 | |`<test>` `<annotations>` `<annotation>` GROUP removed|MAJOR
 
 ---------------------------
 
- ⃰ - `<action>` === (actionGroup, acceptPopup, actionGroup, amOnPage, amOnUrl, amOnSubdomain, appendField, assertArrayIsSorted, assertArraySubset, assertElementContainsAttribute, attachFile, cancelPopup, checkOption, clearField, click, clickWithLeftButton, clickWithRightButton, closeAdminNotification, closeTab, comment, conditionalClick, createData, deleteData, updateData, getData, dontSee, dontSeeJsError, dontSeeCheckboxIsChecked, dontSeeCookie, dontSeeCurrentUrlEquals, dontSeeCurrentUrlMatches, dontSeeElement, dontSeeElementInDOM, dontSeeInCurrentUrl, dontSeeInField, dontSeeInFormFields, dontSeeInPageSource, dontSeeInSource, dontSeeInTitle, dontSeeLink, dontSeeOptionIsSelected, doubleClick, dragAndDrop, entity, executeJS, executeInSelenium, fillField, formatMoney, generateDate, grabAttributeFrom, grabCookie, grabFromCurrentUrl, grabMultiple, grabPageSource, grabTextFrom, grabValueFrom, loadSessionSnapshot, loginAsAdmin, magentoCLI, makeScreenshot, maximizeWindow, moveBack, moveForward, moveMouseOver, mSetLocale, mResetLocale, openNewTab, pauseExecution, parseFloat, performOn, pressKey, reloadPage, resetCookie, submitForm, resizeWindow, saveSessionSnapshot, scrollTo, scrollToTopOfPage, searchAndMultiSelectOption, see, seeCheckboxIsChecked, seeCookie, seeCurrentUrlEquals, seeCurrentUrlMatches, seeElement, seeElementInDOM, seeInCurrentUrl, seeInField, seeInFormFields, seeInPageSource, seeInPopup, seeInSource, seeInTitle, seeLink, seeNumberOfElements, seeOptionIsSelected, selectOption, setCookie, submitForm, switchToIFrame, switchToNextTab, switchToPreviousTab, switchToWindow, typeInPopup, uncheckOption, unselectOption, wait, waitForAjaxLoad, waitForElement, waitForElementChange, waitForElementNotVisible, waitForElementVisible, waitForJS, waitForLoadingMaskToDisappear, waitForPageLoad, waitForText, assertArrayHasKey, assertArrayNotHasKey, assertArraySubset, assertContains, assertCount, assertEmpty, assertEquals, assertFalse, assertFileExists, assertFileNotExists, assertGreaterOrEquals, assertGreaterThan, assertGreaterThanOrEqual, assertInstanceOf, assertInternalType, assertIsEmpty, assertLessOrEquals, assertLessThan, assertLessThanOrEqual, assertNotContains, assertNotEmpty, assertNotEquals, assertNotInstanceOf, assertNotNull, assertNotRegExp, assertNotSame, assertNull, assertRegExp, assertSame, assertStringStartsNotWith, assertStringStartsWith, assertTrue, expectException, fail, dontSeeFullUrlEquals, dontSee, dontSeeFullUrlMatches, dontSeeInFullUrl, seeFullUrlEquals, seeFullUrlMatches, seeInFullUrl, grabFromFullUrl)
+ ⃰ - `<action>` refers to any of the available [MFTF Actions](https://github.com/magento/magento2-functional-testing-framework/blob/develop/docs/test/actions.md).
