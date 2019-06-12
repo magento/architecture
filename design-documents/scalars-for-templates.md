@@ -152,3 +152,32 @@ to limit template variables to scalars.
 This would not be a backward compatible change - we use objects in our own
 E-mail templates in core Magento and developers are using objects in their own templates
 as well.
+ 
+But there are couple of steps we can take in order to make it easier for merchants to adopt this change:
+###### Allow partial access to DataObject instances
+_Template::setVariables()_ method to accept instances of _DataObject_ but in a template all property access instructions
+and getters calls will be converted to _getData(\<name\>)_ calls
+ 
+e.g.
+```
+{{var customer.name }} => $customer.getData('name')
+{{var customer.getName() }} => $customer.getData('name')
+```
+Every other method call will result in an exception.
+ 
+If the result of _getData()_ call on a _DataObject_ is and object - throw an exception.
+e.g.
+```
+{{var cart.getItem() }} => Exception
+{{var cart.getItem().getSku() }} => $cart.getData('item').getData('sku')
+```
+ 
+This way if a developer has used models just to access their data then the templates would keep rendering just fine.
+ 
+###### Keep access to $this
+_Magento\Email\Model\Template_ methods that are not meant for templates are already blacklisted, we can keep allowing
+use the _Template_ class and all of it's methods in the templates and remove it in a later version.
+ 
+###### Core templates
+Both of these features are meant to make it easy on merchants to adopt these new changes and we should not use them in
+our core E-mail templates to make it clear that we only want data passed to E-mail templates.
