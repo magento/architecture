@@ -44,8 +44,12 @@ Let's discuss the necessity of segregation on 2 API
 
 | ProductSearchRequestCriteria         | ProductFilterRequestCriteria |
 | ------------- | ----------------------- |
-|  getFilters(): array;<br/>    getPage(): array;<br/>    getScopes(): array;<br/>    getFields(): array;<br/>    getSearchTerm(): string;<br/>    getAggregations(): array;| getFilters(): array;<br/>    getPage(): array;<br/>    getScopes(): array;<br/>    getFields(): array;<br/>    getSort(): array;<br/> getAggregations(): array; |
-
+| getFilters(): array; | getFilters(): array; |
+| getPage(): array; | getPage(): array; |
+| getScopes(): array; | getScopes(): array; |
+| getFields(): array; | getFields(): array; |
+| getAggregations(): ?array; | getAggregations(): ?array; |
+| *getSearchTerm(): string;* | *getSort(): string;* |
 
 The difference between Search and Filter only in search term and sort:
 1. Search API has "search term" and do sort only by relevance
@@ -96,9 +100,9 @@ There are different options for set search term:
 ]
 ```
 
-As a drawback we provide search term in not intuitive way
+As a drawback we provide search term in not intuitive way and sorting field is responsible for filtering.
 
-2. Option 2.2 Set serach term via filters field.
+2. Option 2.2 Set search term via filters field.
 ```php
 [
     'filters' => [
@@ -109,7 +113,7 @@ As a drawback we provide search term in not intuitive way
 ```
 As a drawback we will ignore field "sort" in case of fulltext search.
 
-3. Option 2.3 Set serach term via filters field and provide *additional* sort direction by relevance for another term
+3. Option 2.3 Set search term via filter field and provide *additional* sort direction by relevance for another term
 ```php
 [
     'filters' => [
@@ -122,6 +126,14 @@ As a drawback we will ignore field "sort" in case of fulltext search.
 
 ```
 As a drawback we can receive not expected data. Currently this feature is not supported in Magento.
+
+
+#### Aggregation
+
+We agreed with the following:
+1. Aggregations must be passed from outside in order to be retrieved
+1. In case of empty list is provided no aggregations is returned
+1. To simplify interface we are going to return all possible aggragation if **null** is provided
 
 
 #### API details
