@@ -2,7 +2,7 @@
 
 ## Why?
 
-For provide significantly better performance.
+To improve performance for querying data via GraphQL 
  
 ## How?
 **Aggregate** request data during iterating over resolvers (solving "N+1 select" problem) and execute **direct queries**(SQL/Elasticsearch) instead of using existing API.
