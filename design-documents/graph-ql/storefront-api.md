@@ -92,11 +92,11 @@ interface ProductSearchInterface
 ```
 
 Pros:
-- single extension point
+1. single extension point
 
 Cons:
-- we ignore field "sort" in case of fulltext search
-- "search term" is optional, because it's no needed for filtering requests
+1. we ignore field "sort" in case of fulltext search
+1. "search term" is optional, because it's no needed for filtering requests
 
 Option 2. Set "search term" via filters OR sort field.
 
