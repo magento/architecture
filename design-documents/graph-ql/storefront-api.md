@@ -32,14 +32,14 @@ The main goal is performance. Here are some requirements that each new service s
 
 ## Product Search API
 
-#### Filtration
+### Filtration
 
 1. Only AND filters supported
 1. OR filters are not supported
 
 If there is a necessity to execute a request with OR filter, it should be re-writen as 2 requests instead.  
 
-#### Sorting
+### Sorting
 
 APIs support only **one** field for sorting:
 1. Sort by relevance in case of full text search
@@ -48,7 +48,7 @@ APIs support only **one** field for sorting:
 * Currently there are no valid scenarios on Magento Storefront where we need to apply sorting by more than one attribute
 * The scenario of Quick Search (sorting by relevance) and then applying additional ordering by price not going to be supported 
 
-#### API Segregation
+### API Segregation
 
 Let's consider the necessity of introducing 2 dedicated APIs for Search (full text search) and Filtration of entities data.
 Taking into account that Full Text Search is both filtration and sorting (by relevance) operation, and the limitation on sorting we introduced above, there is no sense to have *getSort()* method for Full Text Search requests (as ordering by relevance is always pre-defined).
