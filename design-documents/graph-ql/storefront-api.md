@@ -68,7 +68,7 @@ The difference between Search and Filter in "search term" and "sort" methods:
 1. Filter API has "sort" but no need to have "search term"
 
 Pros:
-1. More semantically correct interfaces
+1. More semantically correct interfaces (OOP friendly)
 1. Both interfaces could evolve independently
 
 Cons:
