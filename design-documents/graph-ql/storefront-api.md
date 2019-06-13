@@ -9,7 +9,7 @@ that is responsible for retrieving Storefront specific data
 New API should satisfy the following criteria:
 1. Support batch requests
 1. All services must be stateless
-1. Be performance friendly
+1. Be performance efficient
 1. Keep service isolation in mind 
 
 Here is a detailed design description which satisfies above criteria: [Batch query services](https://github.com/magento/architecture/pull/163/files?short_path=6bf9437#diff-6bf9437e365a3d978a3743fe86d815f5)
