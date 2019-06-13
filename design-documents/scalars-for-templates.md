@@ -177,6 +177,13 @@ This way if a developer has used models just to access their data then the templ
 ###### Keep access to $this
 _Magento\Email\Model\Template_ methods that are not meant for templates are already blacklisted, we can keep allowing
 use the _Template_ class and all of it's methods in the templates and remove it in a later version.
+
+###### Allow 3rd-party developers to whitelist more object/method pairs
+By default we will have such pairs:
+* DataObject,getData
+* Magento\Email\Model\Template,getUrl
+ 
+3rd-party developers will be able to extend this list via di.xml
  
 ###### Core templates
 Both of these features are meant to make it easy on merchants to adopt these new changes and we should not use them in
