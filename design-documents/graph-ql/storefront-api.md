@@ -37,7 +37,10 @@ The main goal is performance. Here are some requirements that each new service s
 1. Only AND filters supported
 1. OR filters are not supported
 
-If there is a necessity to execute a request with OR filter, it should be re-writen as 2 requests instead.  
+If there is a necessity to execute a request with OR filter, it should be re-writen as 2 requests instead.
+For layered navigation (faceted search) where multi-select checbox filtering supported, the request will look like 
+Size IN (10, 10.5) instead of Size 10 OR 10.5 
+Because in this case attribute values are always finite set, and their cardinality (number of unique values) is quite limited
 
 ### Sorting
 
