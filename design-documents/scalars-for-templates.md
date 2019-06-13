@@ -108,7 +108,7 @@ Consider the example:
  
 When processing given template the _Template_ will try to find _DirectiveProcessorInterface_ whose
 _getName()_ returns __currentStoreName__ to process the first directive, it will
-call it's _process()_ method will _(null, null, [])_ since there is no value or parameters
+call it's _process()_ method with _(null, null, [])_ since there is no value or parameters
 provided, after it will call it's _getDefaultFilters()_ and it will return _'escape'_
 because there are no filters provided in the template. _'escape'_ filter will be applied.
  
