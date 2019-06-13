@@ -10,9 +10,9 @@ New API should satisfy the following criteria:
 1. Support batch requests
 1. All services must be stateless
 1. Be performance friendly
-1. Keep in mind about service isolation
+1. Keep service isolation in mind 
 
-Here is a detailed design description that satisfies these criteria: [Batch query services](https://github.com/magento/architecture/pull/163/files?short_path=6bf9437#diff-6bf9437e365a3d978a3743fe86d815f5)
+Here is a detailed design description which satisfies above criteria: [Batch query services](https://github.com/magento/architecture/pull/163/files?short_path=6bf9437#diff-6bf9437e365a3d978a3743fe86d815f5)
 
 Technical vision of [StoreFront API](https://github.com/magento/architecture/blob/1c3bad3908bb90f45d020fd182881520057678a1/design-documents/storefront/storefront-api.md)
 
@@ -26,21 +26,33 @@ Technical vision of [StoreFront API](https://github.com/magento/architecture/blo
 ### Technical notes
 
 The main goal is performance. Here are some requirements that each new service should follow:
-1. Be lazy: return only requested data
-1. Be greedy: aggregate requests and execute query only once
-1. Be lightweight:  return simple structures
+1. Be lazy: to return only requested data
+1. Be greedy: to aggregate requests and execute query only once
+1. Be lightweight: to return simple structures
 
 ## Product Search API
 
+#### Filtration
+
+1. Only AND filters supported
+1. OR filters are not supported
+
+If there is a necessity to execute a request with OR filter, it should be re-writen as 2 requests instead.  
+
 #### Sorting
 
-API support only one field for sorting:
+APIs support only **one** field for sorting:
 1. Sort by relevance in case of full text search
-1. Sort by allowed field (e.g. price, name...) in case of filtration
+1. Sort by specified field (e.g. price, name...) in other case
+
+* Currently there are no valid scenarios on Magento Storefront where we need to apply sorting by more than one attribute
+* The scenario of Quick Search (sorting by relevance) and then applying additional ordering by price not going to be supported 
 
 #### API Segregation
 
-Let's discuss the necessity of segregation on 2 API
+Let's consider the necessity of introducing 2 dedicated APIs for Search (full text search) and Filtration of entities data.
+Taking into account that Full Text Search is both filtration and sorting (by relevance) operation, and the limitation on sorting we introduced above, there is no sense to have *getSort()* method for Full Text Search requests (as ordering by relevance is always pre-defined).
+
 
 | ProductSearchRequestCriteria         | ProductFilterRequestCriteria |
 | ------------- | ----------------------- |
@@ -51,11 +63,11 @@ Let's discuss the necessity of segregation on 2 API
 | getAggregations(): ?array; | getAggregations(): ?array; |
 | *getSearchTerm(): string;* | *getSort(): string;* |
 
-The difference between Search and Filter only in search term and sort:
-1. Search API has "search term" and do sort only by relevance
-1. Filter API has "sort" and do sort only by one field
+The difference between Search and Filter in search term and sort:
+1. Search API has "search term" and do sort by anything but relevance
+1. Filter API has "sort"
 
-As an alternative option we can combine both APIs which allows search, filter or both for products
+As an alternative option we can combine both APIs which allow search, filtering or both for entities (i.e. product).
 
 Option 1. Add "search term" as an optional field
 
@@ -72,7 +84,9 @@ interface ProductSearchInterface
 }
 ```
 
-As a drawback we will ignore field "sort" in case of fulltext search.
+As drawbacks:
+- we ignore field "sort" in case of fulltext search
+- "search term" is optional, because it's no needed for filtering requests
 
 Option 2. Set "search term" via filters OR sort field.
 
