@@ -51,7 +51,7 @@ APIs support only **one** field for sorting:
 ### API Segregation
 
 Let's consider the necessity of introducing 2 dedicated APIs for Search (full text search) and Filtration of entities data.
-Taking into account that Full Text Search is both filtration and sorting (by relevance) operation, and the limitation on sorting we introduced above, there is no sense to have *getSort()* method for Full Text Search requests (as ordering by relevance is always pre-defined).
+Taking into account that Full Text Search is both filtration (non zero relevance) and sorting (by relevance desc) operation, and the limitation to have only one field we sort by, there is no sense to provide a method which set sorting for Search API as ordering by relevance is always pre-defined.
 
 
 | ProductSearchRequestCriteria         | ProductFilterRequestCriteria |
@@ -63,9 +63,9 @@ Taking into account that Full Text Search is both filtration and sorting (by rel
 | getAggregations(): ?array; | getAggregations(): ?array; |
 | *getSearchTerm(): string;* | *getSort(): string;* |
 
-The difference between Search and Filter in search term and sort:
-1. Search API has "search term" and do sort by anything but relevance
-1. Filter API has "sort"
+The difference between Search and Filter in "search term" and "sort" methods:
+1. Search API provides "search term" method, but has a lack of "sort"
+1. Filter API has "sort" but no need to have "search term"
 
 As an alternative option we can combine both APIs which allow search, filtering or both for entities (i.e. product).
 
@@ -84,7 +84,7 @@ interface ProductSearchInterface
 }
 ```
 
-As drawbacks:
+CONS:
 - we ignore field "sort" in case of fulltext search
 - "search term" is optional, because it's no needed for filtering requests
 
@@ -145,7 +145,7 @@ As a drawback we can receive not expected data. Currently this feature is not su
 #### Aggregation
 
 We agreed with the following:
-1. Aggregations must be passed from outside in order to be retrieved
+1. Aggregations should be passed from outside in order to be retrieved
 1. In case of empty list is provided no aggregations is returned
 1. To simplify interface we are going to return all possible aggragation if **null** is provided
 
