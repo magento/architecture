@@ -67,6 +67,13 @@ The difference between Search and Filter in "search term" and "sort" methods:
 1. Search API provides "search term" method, but has a lack of "sort"
 1. Filter API has "sort" but no need to have "search term"
 
+Pros:
+1. More semantically correct interfaces
+1. Both interfaces could evolve independently
+
+Cons:
+1. Necessity to extend and customize both interfaces
+
 As an alternative option we can combine both APIs which allow search, filtering or both for entities (i.e. product).
 
 Option 1. Add "search term" as an optional field
@@ -84,7 +91,10 @@ interface ProductSearchInterface
 }
 ```
 
-CONS:
+Pros:
+- single extension point
+
+Cons:
 - we ignore field "sort" in case of fulltext search
 - "search term" is optional, because it's no needed for filtering requests
 
