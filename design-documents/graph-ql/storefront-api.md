@@ -283,9 +283,18 @@ For the first iteration list of requested fields can be hard-coded as a part of 
 
 // Response
 {
-    "sku": "sku-777",
-    "productId": 3,
-    "minimalPrice": 4.5,
+    "items": [
+     {
+        "sku": "sku-777",
+        "productId": 3,
+        "minimalPrice": 45
+     },
+     {
+        "sku": "sku-42",
+        "productId": 1,
+        "minimalPrice": 445
+     }
+    ],
     "pageInfo": {
         "totalCount": 42
     },
@@ -300,7 +309,7 @@ For the first iteration list of requested fields can be hard-coded as a part of 
             ]
         }
     ]
-} 
+}
 ```
 
 List of requested fields can be dynamically generated (e.g. for retrieve list of product attributes, aggregations,...)
