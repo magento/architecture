@@ -331,6 +331,42 @@ List of requested fields can be dynamically generated (e.g. for retrieve list of
 
 1. Need to follow aggrements
 
+After accepted it agreement, ProductSearchRequestCriteria will be changed to (**no getAggregations field**)
+
+```
+interface ProductSearchRequestCriteria
+{
+    /**
+     * @return string
+     */
+    public function getSearchTerm(): string;
+
+    /**
+     * @return \Magento\Framework\Api\Filter[] e.g. [["field", "value", "condition_type"], ...]
+     */
+    public function getFilters(): array;
+
+    /**
+     * @return \Magento\Framework\Api\SortOrder[] e.g. [["field", "direction"], ...]
+     */
+    public function getSort(): array;
+
+    /**
+     * @return string[] e.g. ["pageSize", "currentPage"]
+     */
+    public function getPage(): array;
+
+    /**
+     * @return string[] List of scopes in format: ["name" => "value"], e.g ['storeId' => 3]
+     */
+    public function getScopes(): array;
+
+    /**
+     * @return string[] List of requested fields. e.g. ['id', 'sku', 'name', 'url_key']
+     */
+    public function getFields(): array;
+}
+```
 
 <details>
 <summary>
