@@ -33,6 +33,26 @@ The main goal is performance. Here are some requirements that each new service s
 
 ## Product Search API
 
+
+```php
+
+// Product Search Request Criteria
+interface ProductSearchRequestInterface
+{
+// set filtrations 
+    public function getSearchTerm(): ?string;
+    public function getFilters(): array;
+    public function getPage(): array;
+    public function getScopes(): array;
+    public function getSort(): ?array;
+
+// request data
+    public function getAttributes(): ?array;
+    public function getAggregations(): ?array;
+    public function getMetaInfo(): ?array;
+}
+```
+
 ### Filtration
 
 1. Only AND filters supported
@@ -50,27 +70,77 @@ Despite our API supports several fields for sorting here are some agreements tha
 1. For mix sort by specified field and relevance you should explicitly set sort by relevance
 
 
-### Aggregation
-
-We agreed with the following:
-1. Aggregations should be passed from outside in order to be retrieved
-1. In case of empty list is provided no aggregations is returned
-1. To simplify interface we are going to return all possible aggragation if **"\*"** is provided as aggregation name
-
-Example:
-```php
- ["category", "price"] // provide aggregations by category and price
- [] // do not provide aggregations
- ["*"] // provide all possible aggregations
- 
-```
-
-
 ### Scopes
 1. Each scope consist of name and value, e.g. name: "store", value: "5".
 1. API consumer pass all known scopes to API (store, customer_group)
 1. API implementation utilize needed scpoes.
 1. Exception is thrown in case of scope is missed
+
+### Requested data
+
+From the performance perspective, we must return only requested data.
+
+Requested data are splitted into 3 groups:
+1. attributes
+1. aggregations
+1. meta info
+
+Dot.notations is used for retrieve multi-level fields:
+```php
+// Request
+{
+  "arguments": [
+      "multi.level.option",
+      "name"
+  ],
+}
+
+// Response
+ {
+    "items": [
+        {
+            "multi": [
+               {
+                 "level": [
+                     {
+						                 "option": "data"
+					                }
+                  ]
+               }
+            ],
+            "name": "product name"
+        }
+    ]
+}
+
+
+```
+#### Attributes
+
+Allows to specify entity attributes, that need to be requested
+
+#### Aggregation
+
+Allows to specify attributes, which will be used for build aggregated data based on a search query.
+Only requested attributes will be returned.
+
+We agreed with the following:
+1. In case of empty list is provided no aggregations is returned
+1. To simplify interface we are going to return all possible aggragation if **NULL** is provided
+
+#### Meta Info
+
+Allows to specify additional fields that need to be returned:
+- totalCount
+- totalPages
+
+Example:
+```php
+ ["category", "price"] // provide aggregations by category and price
+ [] // do not provide aggregations
+ NULL // provide all possible aggregations
+ 
+```
 
 
 ### API Details
@@ -97,22 +167,22 @@ interface ProductSearchInterface {
 interface ProductSearchRequestCriteria
 {
     /**
-     * @return string
+     * @return string|null Provide search term for full text search
      */
-    public function getSearchTerm(): string;
+    public function getSearchTerm(): ?string;
 
     /**
-     * @return \Magento\Framework\Api\Filter[] e.g. [["field", "value", "condition_type"], ...]
+     * @return \Magento\Framework\Api\Filter[] Provide filtration, e.g. [["field", "value", "condition_type"], ...]
      */
     public function getFilters(): array;
 
     /**
-     * @return \Magento\Framework\Api\SortOrder[] e.g. [["field", "direction"], ...]
+     * @return \Magento\Framework\Api\SortOrder[] Provide sorting, e.g. [["field", "direction"], ...]
      */
     public function getSort(): array;
 
     /**
-     * @return string[] e.g. ["pageSize", "currentPage"]
+     * @return string[] Provide pagination, e.g. ["pageSize", "currentPage"]
      */
     public function getPage(): array;
 
@@ -122,14 +192,19 @@ interface ProductSearchRequestCriteria
     public function getScopes(): array;
 
     /**
-     * @return string[] List of requested fields. e.g. ['id', 'sku', 'name', 'url_key']
+     * @return string[] List of requested attributes. e.g. ['id', 'sku', 'name', 'url_key']
      */
-    public function getFields(): array;
+    public function getAttributes(): array;
 
     /**
-     * @return string[] Requested aggregations, e.g. ["attribute_name_1", "attribute_name_2", ...]
+     * @return string[]|null Requested aggregations, e.g. ["attribute_name_1", "attribute_name_2", ...]
      */
-    public function getAggregations(): array;
+    public function getAggregations(): ?array;
+
+    /**
+     * @return string[] Requested meta info, e.g. ["totalCount"]
+     */
+    public function getMetaInfo(): array;
 }
 
 
@@ -148,7 +223,7 @@ interface ProductResponseContainer extends \Magento\Framework\Api\ExtensionAttri
     /**
      * @return array
      */
-    public function getPageInfo(): array;
+    public function getMetaInfo(): array;
     
     /**
      * @return boolean Response status
@@ -185,10 +260,10 @@ interface ProductResponseContainer extends \Magento\Framework\Api\ExtensionAttri
     "sort": [
         {
             "field": "price",
-            "direction": "ASC"
+            "direction": "DESC"
         },
         {
-            "field": "_relevance",
+            "field": "name",
             "direction": "DESC"
         }
     ],
@@ -200,13 +275,16 @@ interface ProductResponseContainer extends \Magento\Framework\Api\ExtensionAttri
         "storeId": "US",
         "customerGroupId": 1
     },
-    "fields": [
+    "attributes": [
         "name",
         "price"
     ],
     "aggregations": [
         "category",
         "price"
+    ],
+    "metaInfo": [
+        "totalCount"
     ]
 }
 
@@ -233,11 +311,8 @@ interface ProductResponseContainer extends \Magento\Framework\Api\ExtensionAttri
             }
         ]
     },
-    "pageInfo": {
+    "metaInfo": {
         "totalCount": 100,
-        "pages": 10,
-        "pageSize": 10,
-        "currentPage": 3
     },
     "status": true,
     "error": null
@@ -245,10 +320,217 @@ interface ProductResponseContainer extends \Magento\Framework\Api\ExtensionAttri
 
 ```
 
+<details>
+<summary>
 
-### Open questions
+### To be discused...
+</summary>
+
+
+## Media Gallery API (TBD)
+
+```php
+interface MediaGalleryRequestInterface
+{
+// set filtrations 
+    public function getFilters(): array; // [productId]
+    public function getScopes(): array;
+
+// request data...
+    public function getAttributes(): ?array;
+    public function getMetaInfo(): ?array;
+}
+```
+
+<details>
+<summary>
+
+## Product Price API (TBD)
+</summary>
+
+
+```php
+// @api
+// List of fields that could be requested: [productId, minimalPrice, maximalPrice, price]
+interface ProductPrice
+{
+  /**
+   * @param ProductPriceRequest[] $requests List of requests
+   * @return array
+   */
+  public function getPrices(array $requests) : array
+}
+
+/**
+* Request DTO
+*/
+class ProductPriceRequest
+{
+    public function getFilters() : ?string[][]; // list of filters in format: ["field", "value", "condition_type"]. Reffer to \Magento\Framework\Api\Filter. Can be empty
+    public function getScopes() : string[]; // list of scopes in format: ["name" => "value"]
+    public function getAttributes() : string[]; // list of requested fields. Must be declared with API
+}
+
+$prices = ProductPrice::getPrices([
+    new ProductPriceSearchCriteria(
+       [
+           ["field" => "productId", "value" => [1,2,4], "condition_type" => "in"],
+       ],
+       ['store' => 1, 'customer_group_id' => 2],
+       ['minimalPrice', 'maximalPrice']
+    ),
+    // additionally return "productId"
+    new ProductPriceSearchCriteria(
+       [4],
+       ['store' => 1, 'customer_group_id' => 2],
+       ['productId', 'maximalPrice']
+    ),
+   ]);
+
+
+// return prices in the same order as requested.
+ [
+     [
+         [
+             'minimalPrice' => '10.22',
+             'maximalPrice' => '15',
+         ],
+         
+         // 42 product  is missed and not returned. Client must handle this if needed (e.g. request productId field)
+         [
+             'minimalPrice' => '24',
+             'maximalPrice' => '44',
+         ]
+     ],
+     [
+         [
+             'productId' => 4,
+             'maximalPrice' => '12'
+         ]
+     ]
+ ];
+  
+```
+</details>
+ 
+ 
+<details>
+<summary>
+
+### API Segregation
+</summary>
+Here you can find some thoughts that led us to the accepted solution 
+  
+
+Let's consider the necessity of introducing 2 dedicated APIs for Search (full text search) and Filtration of entities data.
+Taking into account that Full Text Search is both filtration (non zero relevance) and sorting (by relevance desc) operation, and the limitation to have only one field we sort by, there is no sense to provide a method which set sorting for Search API as ordering by relevance is always pre-defined.
+
+
+| ProductSearchRequestCriteria         | ProductFilterRequestCriteria |
+| ------------- | ----------------------- |
+| getFilters(): array; | getFilters(): array; |
+| getPage(): array; | getPage(): array; |
+| getScopes(): array; | getScopes(): array; |
+| getAttributes(): array; | getAttributes(): array; |
+| getAggregations(): ?array; | getAggregations(): ?array; |
+| *getSearchTerm(): string;* | *getSort(): string;* |
+
+The difference between Search and Filter in "search term" and "sort" methods:
+1. Search API provides "search term" method, but has a lack of "sort"
+1. Filter API has "sort" but no need to have "search term"
+
+Pros:
+1. More semantically correct interfaces (OOP friendly)
+1. Both interfaces could evolve independently
+
+Cons:
+1. Necessity to extend and customize both interfaces
+
+As an alternative option we can combine both APIs which allow search, filtering or both for entities (i.e. product).
+
+Option 1. Add "search term" as an optional field
+
+```php
+interface ProductSearchInterface
+{
+    public function getSearchTerm(): ?string;
+    public function getFilters(): array;
+    public function getPage(): array;
+    public function getScopes(): array;
+    public function getAttributes(): array;
+    public function getSort(): array;
+    public function getAggregations(): array;
+}
+```
+
+Pros:
+1. single extension point
+
+Cons:
+1. we ignore field "sort" in case of fulltext search
+1. "search term" is optional, because it's no needed for filtering requests
+
+Option 2. Set "search term" via filters OR sort field.
+
+```php
+interface ProductSearchInterface
+{
+    public function getFilters(): array;
+    public function getPage(): array;
+    public function getScopes(): array;
+    public function getAttributes(): array;
+    public function getSort(): array;
+    public function getAggregations(): array;
+}
+```
+
+There are different options for set search term:
+
+1. Option 2.1 Set search term via sort field 
+```php
+[
+    'sort' => [
+        'field' => "super car", 'type' => 'relevance',  // always sort by relevance, DESC
+    ,
+    ]
+]
+```
+
+As a drawback we provide search term in not intuitive way and sorting field is responsible for filtering.
+
+2. Option 2.2 Set search term via filters field.
+```php
+[
+    'filters' => [
+        ['field' => '*', 'value' => 'super car', 'condition_type' => 'match'] // Full text search by all fields. Sort by relevance added automatically
+    ],
+]
+
+```
+As a drawback we will ignore field "sort" in case of fulltext search.
+
+3. Option 2.3 Set search term via filter field and provide *additional* sort direction by relevance for another term
+```php
+[
+    'filters' => [
+        ['field' => '*', 'value' => 'super car', 'condition_type' => 'match'],  // Sort by relevance added automatically
+    ],
+    'sort' => [
+        'field' => "relevance('modern vehicle')", 'type' => 'ASC',
+     ]
+]
+
+```
+As a drawback we can receive not expected data. Currently this feature is not supported in Magento.
+
+</details>
+
+<details>
+<summary>
 
 #### Requested fields
+</summary>
+
 
 From the performance perspective, we must return only requested data.
 There are two options how it can be achieved:
@@ -343,13 +625,14 @@ Requested fields are splitted into 3 groups:
 - aggregations
 - meta info
 
+
 Due to we do not want to return data, that was not requested we add the following rules
 1. All "data specific" arguments are optional (NULL)
 1. If argument was not passed NULL is returned in Response object for this argument
 
 
 ```php
-interface ProductSearchInterface
+interface ProductSearchRequestInterface
 {
 // set filtrations 
     public function getSearchTerm(): ?string;
@@ -359,7 +642,7 @@ interface ProductSearchInterface
     public function getSort(): ?array;
 
 // request data...
-    public function getFields(): ?array;
+    public function getAttributes(): ?array;
     public function getAggregations(): ?array;
     public function getMetaInfo(): ?array;
 }
@@ -411,188 +694,7 @@ interface ProductSearchInterface
 }
 ```
 
-
-<details>
-<summary>
-
-## Product Price API (TBD)
-</summary>
-
-
-```php
-// @api
-// List of fields that could be requested: [productId, minimalPrice, maximalPrice, price]
-interface ProductPrice
-{
-  /**
-   * @param ProductPriceRequest[] $requests List of requests
-   * @return array
-   */
-  public function getPrices(array $requests) : array
-}
-
-/**
-* Request DTO
-*/
-class ProductPriceRequest
-{
-    public function getFilters() : ?string[][]; // list of filters in format: ["field", "value", "condition_type"]. Reffer to \Magento\Framework\Api\Filter. Can be empty
-    public function getScopes() : string[]; // list of scopes in format: ["name" => "value"]
-    public function getFields() : string[]; // list of requested fields. Must be declared with API
-}
-
-$prices = ProductPrice::getPrices([
-    new ProductPriceSearchCriteria(
-       [
-           ["field" => "productId", "value" => [1,2,4], "condition_type" => "in"],
-       ],
-       ['store' => 1, 'customer_group_id' => 2],
-       ['minimalPrice', 'maximalPrice']
-    ),
-    // additionally return "productId"
-    new ProductPriceSearchCriteria(
-       [4],
-       ['store' => 1, 'customer_group_id' => 2],
-       ['productId', 'maximalPrice']
-    ),
-   ]);
-
-
-// return prices in the same order as requested.
- [
-     [
-         [
-             'minimalPrice' => '10.22',
-             'maximalPrice' => '15',
-         ],
-         
-         // 42 product  is missed and not returned. Client must handle this if needed (e.g. request productId field)
-         [
-             'minimalPrice' => '24',
-             'maximalPrice' => '44',
-         ]
-     ],
-     [
-         [
-             'productId' => 4,
-             'maximalPrice' => '12'
-         ]
-     ]
- ];
-  
-```
 </details>
- 
- 
-<details>
-<summary>
-
-### API Segregation
-</summary>
-Here you can find some thoughts that led us to the accepted solution 
-  
-
-Let's consider the necessity of introducing 2 dedicated APIs for Search (full text search) and Filtration of entities data.
-Taking into account that Full Text Search is both filtration (non zero relevance) and sorting (by relevance desc) operation, and the limitation to have only one field we sort by, there is no sense to provide a method which set sorting for Search API as ordering by relevance is always pre-defined.
-
-
-| ProductSearchRequestCriteria         | ProductFilterRequestCriteria |
-| ------------- | ----------------------- |
-| getFilters(): array; | getFilters(): array; |
-| getPage(): array; | getPage(): array; |
-| getScopes(): array; | getScopes(): array; |
-| getFields(): array; | getFields(): array; |
-| getAggregations(): ?array; | getAggregations(): ?array; |
-| *getSearchTerm(): string;* | *getSort(): string;* |
-
-The difference between Search and Filter in "search term" and "sort" methods:
-1. Search API provides "search term" method, but has a lack of "sort"
-1. Filter API has "sort" but no need to have "search term"
-
-Pros:
-1. More semantically correct interfaces (OOP friendly)
-1. Both interfaces could evolve independently
-
-Cons:
-1. Necessity to extend and customize both interfaces
-
-As an alternative option we can combine both APIs which allow search, filtering or both for entities (i.e. product).
-
-Option 1. Add "search term" as an optional field
-
-```php
-interface ProductSearchInterface
-{
-    public function getSearchTerm(): ?string;
-    public function getFilters(): array;
-    public function getPage(): array;
-    public function getScopes(): array;
-    public function getFields(): array;
-    public function getSort(): array;
-    public function getAggregations(): array;
-}
-```
-
-Pros:
-1. single extension point
-
-Cons:
-1. we ignore field "sort" in case of fulltext search
-1. "search term" is optional, because it's no needed for filtering requests
-
-Option 2. Set "search term" via filters OR sort field.
-
-```php
-interface ProductSearchInterface
-{
-    public function getFilters(): array;
-    public function getPage(): array;
-    public function getScopes(): array;
-    public function getFields(): array;
-    public function getSort(): array;
-    public function getAggregations(): array;
-}
-```
-
-There are different options for set search term:
-
-1. Option 2.1 Set search term via sort field 
-```php
-[
-    'sort' => [
-        'field' => "super car", 'type' => 'relevance',  // always sort by relevance, DESC
-    ,
-    ]
-]
-```
-
-As a drawback we provide search term in not intuitive way and sorting field is responsible for filtering.
-
-2. Option 2.2 Set search term via filters field.
-```php
-[
-    'filters' => [
-        ['field' => '*', 'value' => 'super car', 'condition_type' => 'match'] // Full text search by all fields. Sort by relevance added automatically
-    ],
-]
-
-```
-As a drawback we will ignore field "sort" in case of fulltext search.
-
-3. Option 2.3 Set search term via filter field and provide *additional* sort direction by relevance for another term
-```php
-[
-    'filters' => [
-        ['field' => '*', 'value' => 'super car', 'condition_type' => 'match'],  // Sort by relevance added automatically
-    ],
-    'sort' => [
-        'field' => "relevance('modern vehicle')", 'type' => 'ASC',
-     ]
-]
-
-```
-As a drawback we can receive not expected data. Currently this feature is not supported in Magento.
-
 </details>
 
 
