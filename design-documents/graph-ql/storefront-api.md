@@ -156,9 +156,9 @@ interface ProductResponseContainer extends \Magento\Framework\Api\ExtensionAttri
     public function getStatus(): bool;
 
     /**
-     * @return string|null Error message in case of failure
+     * @return string[]|null Error messages in case of failure
      */
-    public function getError(): ?string;
+    public function getError(): ?array;
 }
 ```
 
@@ -261,7 +261,6 @@ We just need to follow simple rule: *"all requested fields are returned in corre
 1. List of fields should be declarative and extendable.
 1. Nested fields declared with dot notation.
 1. Data for nested fields returned in corresponding containers, e.g. "pageInfo.totalCount" will returned as '{"pageInfo": {"totalCount": 10}}'
-1. For simplifying first-level fields will returend inside "items" container, e.g. "name" will be returned as '{"items": [{"name": "Car 1"}]}'
 
 For the first iteration list of requested fields can be hard-coded as a part of API documentation, e.g. 
 
@@ -272,7 +271,7 @@ For the first iteration list of requested fields can be hard-coded as a part of 
  *  "sku": string,
  *  "productId": int,
  *  "minimalPrice": float,
- *  "pageInfo.totalCount",
+ *  ""pageInfo.totalCount"",
  *  "pageInfo.totalPages",
  *  "aggregation.*": string,
  *  "aggregation.category": string,
@@ -280,19 +279,26 @@ For the first iteration list of requested fields can be hard-coded as a part of 
  * ]
 **/ 
 
+// Request
+
+  "fields": [
+      "items.name",
+      "items.price",
+      "aggregations.catagory",
+      "pageInfo.totalCount"
+  ],
+
 
 // Response
 {
     "items": [
      {
         "sku": "sku-777",
-        "productId": 3,
-        "minimalPrice": 45
+        "price": 45
      },
      {
         "sku": "sku-42",
-        "productId": 1,
-        "minimalPrice": 445
+        "price": 5
      }
     ],
     "pageInfo": {
