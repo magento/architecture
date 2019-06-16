@@ -34,7 +34,7 @@ Magento Functional Testing Framework (MFTF) aims to generate valuable output for
 
 ## PoC
 
-https://github.com/magento/magento2-functional-testing-framework/issues/364 
+https://github.com/magento/magento2-functional-testing-framework/issues/364
 
 ## Usage
 
@@ -117,3 +117,25 @@ Adding extra attribute to XML nodes that allows to define user-friendly label fo
 #### Benefits
 
 * Automatic label generation enforces MFTF user to provide descriptive `name`s / `stepKey`s in Test Scenarios
+
+# Implementation
+
+1. **MFTF Naming Rules**
+
+  There's no standard regarding naming in MFTF Tests. One should be formed and published in Magento DevDocs, as well as in the MFTF repository. Tests migrated / created after forming such rules should follow the standards.
+
+2. **Naming interpretation strategy**
+
+  Having consistent Naming for Tests, we are able to get benefits of it. We need to prepare strategy that describes how we convert names to human-readable labels, for example:
+
+  *  `StorefrontFillCustomerAccountCreationFormActionGroup` -> `Storefront Fill Customer Account Creation Form`
+  * `fillPasswordField` -> `Fill Password Field`
+
+  Having strategies established, Issues should be created to cover implementation in `magento/magento2-functional-testing-framework` repository.
+
+3. **Codeception CLI and Allure reports**
+
+  Having all previous done, the final step is to implement adapters both for CLI output and Allure Reports. As a result, we should receive the output with desired verbosity:
+  * Debug
+  * Non-verbose
+  * Behavioral
