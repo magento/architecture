@@ -17,10 +17,17 @@ Thus templates will only receive data without the possibility to execute any cod
 ###### Allow access to arrays' values
 We need to be able to use hashmaps in templates just as we use objects right now e.g.
 ```
-{{ var customer.name }}
+{{var customer.name }}
 ```
 _Magento\Framework\Filter\Template_ does not allow that right now so
 it's _getVariable()_ method must be updated to allow just that.
+ 
+To make these changes easier to adopt
+```
+{{var customer.getName() }}
+```
+ 
+Will be equal to accessing the 'customer' array by 'name' key.
 
 ###### Remove access to $this
 Since $this use in E-mail templates refers to _Magento\Email\Model\Template_
@@ -38,6 +45,9 @@ _Magento\Framework\Filter\Template::setVariables()_ needs to filter out all obje
 leaves only scalars and arrays of scalars.
  
 Also it's _getVariable()_ methods needs to updated to provide access only to scalar variables.
+ 
+To preserve backward compatibility instances of _DataObject_ will be accepted as well, then recursively their
+_getData()_ methods will be called to get a graph of scalars to use in templates. 
 
 ###### Update core E-mail templates
 All E-mail templates present in core Magento must be updated to use values instead
@@ -143,48 +153,20 @@ interface FilterProcessorInterface
 ```
  
 _Template_ class would receive a list of such filters and use them accordingly.
-
-####### Alternatively:
-Use twig, it's an established and well known template engine and will solve this problems, we would just have
-to limit template variables to scalars.
+ 
+###### Deprecate old methods
+Old public methods following _\<Directive Name\>Directive()_ pattern must be deprecated in favor of new directive
+processors.
 
 #### Backward compatibility
 This would not be a backward compatible change - we use objects in our own
 E-mail templates in core Magento and developers are using objects in their own templates
 as well.
- 
-But there are couple of steps we can take in order to make it easier for merchants to adopt this change:
-###### Allow partial access to DataObject instances
-_Template::setVariables()_ method to accept instances of _DataObject_ but in a template all property access instructions
-and getters calls will be converted to _getData(\<name\>)_ calls
- 
-e.g.
-```
-{{var customer.name }} => $customer.getData('name')
-{{var customer.getName() }} => $customer.getData('name')
-```
-Every other method call will result in an exception.
- 
-If the result of _getData()_ call on a _DataObject_ is and object - throw an exception.
-e.g.
-```
-{{var cart.getItem() }} => Exception
-{{var cart.getItem().getSku() }} => $cart.getData('item').getData('sku')
-```
- 
-This way if a developer has used models just to access their data then the templates would keep rendering just fine.
- 
-###### Keep access to $this
-_Magento\Email\Model\Template_ methods that are not meant for templates are already blacklisted, we can keep allowing
-use the _Template_ class and all of it's methods in the templates and remove it in a later version.
 
-###### Allow 3rd-party developers to whitelist more object/method pairs
-By default we will have such pairs:
-* DataObject,getData
-* Magento\Email\Model\Template,getUrl
+In order to preserve backward compatibility E-mail templates read from _.html_ files will keep workings
+just as before allowing developers time to adopt these new changes.
  
-3rd-party developers will be able to extend this list via di.xml
+Existing user-defined E-mail templates will keep rendering as they were as well. Newly user-created templates must be
+rendered with limitations described above though.
  
-###### Core templates
-Both of these features are meant to make it easy on merchants to adopt these new changes and we should not use them in
-our core E-mail templates to make it clear that we only want data passed to E-mail templates.
+This behaviour is to be removed in a later minor version.
