@@ -29,16 +29,16 @@ to return data in the most efficient way.
 
 ![Storefront application and admin application](storefront-api/storefront-api-02.png)
 
-#### Storefront queries are eventually consistent 
+#### Storefront queries API operate with eventually consistent data
 
 This is a direct consequence of the previous statement.
 At the moment Magento follows this principle.
-Storefront queries use pre baked data. 
+Storefront queries use pre-baked data. 
 So exists some delay between the moment
 when data was submitted to the system
 and the moment when data become available for a storefront.
 
-#### Storefront queries support deferred execution
+#### Storefront API clients should utilize deferred execution to minimize number of requests
 
 At the moment all storefront implementation are trees.
 Blocks generates by instruction from assembled layout.
@@ -49,16 +49,19 @@ This leads us to N+1 problem.
 Deferring data retrieving operation can resolve it.
 Technically, we do not want to have 
 a few similar repeating queries during the single page load.
-
-For the module perspective, this means that storefront APIs, even queries will be **asynchronous**.
-It does not mean that GraphQL or Blocks should be async either.
-They both as clients can execute APIs with synchronous adapter.  Technically we already have this implemented with GraphQL resolvers.
+From the API design standpoint, this means that storefront APIs should be capable to aggregate multiple requests into one.
+In the same time client should be capable to delay execution until it collects all possible request that it has to perform against the specific API. 
+[More information about batch query API](https://github.com/magento/architecture/pull/163)
 
 #### Storefront modules granularly sliced by modules
 
 Storefront do not aggregate data into huge roots.
 Actually, as usual this is responsibility of presentation.
 This allows us to create small granular modules for storefront APIs.
+
+As usual, the client performs aggregation.
+For instance, [graphql](https://graphql.org) initially was designed to unify access across multiple resources.
+Because we do not need to care about aggregation we can focus on forcing API to be more scalable and evolvable.
 
 ![CategoryPage](storefront-api/storefront-api-03.png)
 ```graphql
