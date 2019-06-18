@@ -163,8 +163,13 @@ This would not be a backward compatible change - we use objects in our own
 E-mail templates in core Magento and developers are using objects in their own templates
 as well.
 
-In order to preserve backward compatibility E-mail templates read from _.html_ files will keep workings
-just as before allowing developers time to adopt these new changes.
+In order to preserve backward compatibility E-mail templates read from _.html_ files will keep working
+just as before allowing developers time to adopt these new changes. New static tests will be added to notify developers
+when they use method calls and _$this_ in E-mail templates, documentation will be update to walk developers through these
+changes.
+ 
+In order to keep existing templates working variables that are being passed now will remain, new core E-mail templates
+rewritten to use only data will be using newly added scalar variables.
  
 Existing user-defined E-mail templates will keep rendering as they were as well. Newly user-created templates must be
 rendered with limitations described above though.
