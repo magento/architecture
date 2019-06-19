@@ -22,9 +22,9 @@ The purpose of this document is to discuss possible alternatives to current Mage
      * !Line Items
      * Dimensions (weight & size) (based on LineItems)
      * Shipping (requited for physical products)
-       * Addresses
-       * Selected Shipping Methods
-     * Billing address (required for virtual products). How to deal with multi-payment?
+       * Address
+       * Selected Shipping Method
+     * Billing address (required for virtual products). Need use cases
      * Coupons
      * Gift cards
      * Store credit
