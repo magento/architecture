@@ -48,3 +48,7 @@ The purpose of this document is to discuss possible alternatives to current Mage
   6. Place Order: Order
      * Quote
      * PaymentMethods with Billing Addresses
+
+### Quote creation flow
+
+![Quote Calculation](../img/alternative-quote-calculation.png)
