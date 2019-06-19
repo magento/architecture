@@ -1,29 +1,30 @@
-# Decision-making
+# Voting on Proposals
+Architecture team leads proposal handling and is responsible for procedure compliance.
 
 ### Proposal submission
-Proposal is submitted by opening pull request to this repository.
-Initiator must present the idea on the architecture meeting.
-The announcement should include problem description the proposal is trying to resolve as well as solution(s).
+- Proposal is submitted by opening pull request to this repository.
+- Initiator must present the idea on the architecture meeting.
+- The announcement should include a problem the proposal is trying to resolve as well as solution(s).
 
-### Discussion
-There must be minimum 2 weeks of discussion in the pull request thread.
-After that initiator may decide when to start the vote.
+### Discussion and Voting
+- If there are controversial opinions in relation to the proposed idea architecture team may consider starting the voting.
+- The voting is considered open when `voting` label is added to the pull request.
+- The voting can be represented as a single/multiple answer survey.
+- A valid voting period must be announced when the voting is started, must be greater that 1 week and must not be changed during the voting.
+- The Discussion may continue in the pull request thread.
+- Voters cannot change their vote during the voting period.
+- Intermediate results should be hidden until the voting period ends.
 
-### Voting
-All eligible voters must get notification about the voting start.
-A valid voting period must be announced when voting is started, must be greater that 2 weeks and must not be changed during the vote.
-
-### Approval
-The number of `approve` votes must be greater than or equal to the number of `reject` votes multiplied by two in order to merge pull request.
-In case of multi-choice voting (implementation details) the decision may be taken by simple plurality. This means that the voting option with the most votes wins. If there are multiple options with the most number of votes, the initiator can choose one of them.
-Once pull request is merged the proposal is accepted.
+### Results
+- Voting results should be added to the corresponding pull request.
+- Participants should be mentioned by name.
+- When a majority vote exists for a proposal, it does not guarantee that the proposal will be adopted or implemented.
 
 # Eligible voters
-The group of eligible voters should be established. The group should represent the Magento community and include internal developers and architects (40%), Magento maintainers (30%), extension developers and partner contributors (30%).
+All active GitHub users are treated as eligible voters.
 
 ## To Do
-- GitHub application for survey.
-- GitHub user group with eligible voters.
+- Use [Community Portal](https://opensource.magento.com/) for surveys and vote tracking.
 
 _Inspired by:_
 - [Request for Comments: Voting on PHP features](https://wiki.php.net/rfc/voting)
