@@ -4,6 +4,14 @@ In scope of work on GraphQL and storefront APIs we have an opportunity to improv
 
 The purpose of this document is to discuss possible alternatives to current Magento checkout flow. 
 
+In the proposed flow the cart is created as soon as user adds product to cart. The data from cart entity should be enough to render minicart and cart pages. Taxes and other adjustments are not calculated at these steps.
+
+The quote, on the other hand, contains a full break down of all adjustments calculated. It provides the user with the total he has to pay for the items in the cart.
+
+It is possible to split cart items into separate quotes. This can be done based on shipping addresses or shipping sources.
+
+Each quote is used to create a separate order. Multiple payment methods (with independent billing address each) can be selected during each order creation.
+
   1. When Quote is created?
      * For physical products on Review & Payments step
      * For virtual products billing address has to be entered first
@@ -39,7 +47,6 @@ The purpose of this document is to discuss possible alternatives to current Mage
        * Adjustments
            * Taxes
            * Cart rule discounts
-     * Billing addresses
      * Shipping addresses
      * Coupons
      * Gift cards
