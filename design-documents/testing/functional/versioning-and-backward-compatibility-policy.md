@@ -95,12 +95,18 @@ It MAY include minor and patch level changes. Patch and minor version MUST be re
 | |`<section>` `<element>` `parameterized` changed|MAJOR
 |Test|`<test>` added|MINOR
 | |`<test>` removed|MAJOR
+| |`<test>` `<action>` added|MINOR
+| |`<test>` `<action>` removed|MAJOR
+| |`<test>` `<action>` changed|PATCH
+| |`<test>` `<action>` `ref` changed|MINOR
+| |`<test>` `<action>` sequence changed|MAJOR
+| |`<test>` `<action>` type (`click`, `fillField`, etc) changed|PATCH
 | |`<test>` (before/after) `<action>` added|MINOR
 | |`<test>` (before/after) `<action>` removed|MAJOR
 | |`<test>` (before/after) `<action>` changed|PATCH
 | |`<test>` (before/after) `<action>` `ref` changed|MINOR
-| |`<test>` (before/after) `<action>` type (`click`, `fillField`, etc) changed|PATCH
 | |`<test>` (before/after) `<action>` sequence changed|MAJOR
+| |`<test>` (before/after) `<action>` type (`click`, `fillField`, etc) changed|PATCH
 | |`<test>` `<annotations>` `<annotation>` added|PATCH
 | |`<test>` `<annotations>` `<annotation>` changed|PATCH
 | |`<test>` `<annotations>` `<annotation>` GROUP removed|MAJOR
