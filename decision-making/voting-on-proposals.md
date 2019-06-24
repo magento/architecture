@@ -1,26 +1,26 @@
 # Voting on Proposals
-Architecture team leads proposal handling and is responsible for procedure compliance.
+The Architecture team handles the proposal workflow and is responsible for procedural compliance.
 
-### Proposal submission
-- Proposal is submitted by opening pull request to this repository.
-- Initiator must present the idea on the architecture meeting.
-- The announcement should include a problem the proposal is trying to resolve as well as solution(s).
+## Proposal submission
+- A proposal is submitted by opening a pull request to this repository.
+- The initiator must present the idea in an architecture meeting.
+- The announcement should include the problem the proposal is trying to resolve as well as any proposed solution(s).
 
-### Discussion and Voting
-- If there are controversial opinions in relation to the proposed idea architecture team may consider starting the voting.
-- The voting is considered open when `voting` label is added to the pull request.
+## Discussion and Voting
+- If there are controversial opinions in relation to the proposed idea, the architecture team may consider starting the voting.
+- The voting is considered open when the `voting` label is added to the pull request.
 - The voting can be represented as a single/multiple answer survey.
-- A valid voting period must be announced when the voting is started, must be greater that 1 week and must not be changed during the voting.
+- A valid voting period: 1) must be announced when the voting is started, 2) must be greater that 1 week and 3) must not be changed during the voting.
 - The Discussion may continue in the pull request thread.
 - Voters cannot change their vote during the voting period.
-- Intermediate results should be hidden until the voting period ends.
+- Results should be hidden until the voting period ends.
 
-### Results
+## Results
 - Voting results should be added to the corresponding pull request.
 - Participants should be mentioned by name.
 - When a majority vote exists for a proposal, it does not guarantee that the proposal will be adopted or implemented.
 
-# Eligible voters
+## Eligible voters
 All active GitHub users are treated as eligible voters.
 
 ## To Do
