@@ -12,7 +12,7 @@ The Architecture team handles the proposal workflow and is responsible for proce
 - The voting can be represented as a single/multiple answer survey.
 - A valid voting period: 1) must be announced when the voting is started, 2) must be greater that 1 week and 3) must not be changed during the voting.
 - The Discussion may continue in the pull request thread.
-- Voters cannot change their vote during the voting period.
+- Voters can change their vote during the voting period.
 - Results should be hidden until the voting period ends.
 
 ## Results
