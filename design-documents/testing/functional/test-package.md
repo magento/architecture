@@ -85,9 +85,14 @@ For example:
 In Magento `magento/project-community-edition` we will be able to specify 2 metapackage under different blocks.
 Magento application will go to `require` section as it is right now and we will be able to put `magento/functional-test-project-community-edition` under `require-dev` section.
 In case someone want to have tests and Magento in 1 project they will be able to do it in a very simple and sophisticated way.
-But if someone needs only tests they are able to install only `magento/functional-test-project-community-edition` by running `composer require magento/functional-test-project-community-edition 2.3.1`
+But if someone needs only tests they are able to install only `magento/functional-test-product-community-edition` by running `composer require magento/functional-test-product-community-edition 2.3.1`
 
 This approach also fits Service Isolation proposal because any isolated service will have own set of test packages and they can be collected in Service metapackage.
+
+#### NOTE:
+Module type `magento2-functional-test-module` will not be installed via Web Setup Wizard since they must not be installed on production environment.
+This packages will be used only on CICD systems and Development environments where they should be installed via `composer` command.
+
 
 ### Benefits:
 1. Current solution gives us possibility to separate tests from Production code.
