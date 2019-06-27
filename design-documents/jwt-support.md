@@ -59,122 +59,172 @@ The following diagram represents needed interfaces to unify the workflow for JWT
 
 ![Class diagram](img/jwt-class-diagram.png)
 
-The `\Magento\Framework\Jwt\KeyGeneratorInterface` will provide a possibility to use different types of key generators like: Magento deployment secret key, X.509 certificates or RSA keys.
+The `\Magento\Framework\Jwt\KeyGeneratorInterface` provides a possibility to use different types of key generators like: Magento deployment secret key, X.509 certificates or RSA keys.
 ```php
 interface KeyGeneratorInterface
 {
-    public function create(): JWK;
+    public function create(): Jwk;
 }
 
-class CryptKeyGenerator implements KeyGeneratorInterface
+class CryptKey implements KeyGeneratorInterface
 {
-    public function __construct(AlgorithmFactory $algorithmFactory, DeploymentConfig $deploymentConfig)
+    public function __construct(SecretKeyFactory $keyFactory, DeploymentConfig $deploymentConfig)
     {
-        $this->algorithmFactory = $algorithmFactory;
         $this->deploymentConfig = $deploymentConfig;
+        $this->keyFactory = $keyFactory;
     }
 
-    public function create(): JWK
+    public function create(): Jwk
     {
         $secret = (string) $this->deploymentConfig->get('crypt/key');
-        return JWKFactory::createFromSecret(
-            $secret,
-            ['alg' => $this->algorithmFactory->getAlgorithmName(), 'use' => 'sig']
-        );
+        return $this->keyFactory->create($secret);
     }
 }
 ```
 
-The `\Magento\Framework\Jwt\GeneratorInterface` might be used to generate JWT based on claims:
+The `\Magento\Framework\Jwt\ManagementInterface` is a base abstraction for JWT encoding/decoding/verification:
 ```php
-interface GeneratorInterface
+interface ManagementInterface
 {
-    public function generate(array $claims = []): string;
-}
+    /**
+     * Generates JWT in header.payload.signature format.
+     *
+     * @param array $claims
+     * @return string
+     * @throws \Exception
+     */
+    public function encode(array $claims): string;
 
-class JwsGenerator implements GeneratorInterface
-{
-    public function __construct(
-        AlgorithmFactory $algorithmFactory,
-        CryptKeyGenerator $keyGenerator,
-        SerializerInterface $serializer
-    ) {
-        $this->algorithmFactory = $algorithmFactory;
-        $this->keyGenerator = $keyGenerator;
-        $this->serializer = $serializer;
-    }
+    /**
+     * Parses JWT and returns payload.
+     *
+     * @param string $token
+     * @return array
+     */
+    public function decode(string $token): array;
 
-    public function generate(array $claims = []): string
-    {
-        $timestamp = time();
-        $baseClaims = [
-            'iat' => $timestamp,
-            'nbf' => $timestamp,
-            'exp' => $timestamp + 36000,
-            'use' => 'sig'
-        ];
-
-        $payload = json_encode(array_merge($claims, $baseClaims));
-
-        $jwsBuilder = new JWSBuilder(null, $this->algorithmFactory->getAlgorithmManager());
-        $jws = $jwsBuilder->create()
-            ->withPayload($payload)
-            ->addSignature($this->keyGenerator->create(), ['alg' => $this->algorithmFactory->getAlgorithmName()])
-            ->build();
-
-        return $this->serializer->serialize($jws);
-    }
+    /**
+     * Verifies JWT signature and claims.
+     * Throws \InvalidArgumentException if claims verification fails.
+     *
+     * @param string $token
+     * @return bool
+     * @throws \InvalidArgumentException
+     */
+    public function verify(string $token): bool;
 }
 ```
-It will have implementations for JWS and JWE (the default preference will be for JWS implementation).
 
-The `\Magento\Framework\Jwt\VerifierInterface` provides a possibility to validate received JWT. The implementation might use claims validation for more advanced payload verification.
+It has implementations for JWS and JWE. The default preference is JWS implementation and looks like this:
 ```php
-interface VerifierInterface
-{
-    public function validate(string $token): bool;
-}
-
-class JwsVerifier implements VerifierInterface
+class Management implements ManagementInterface
 {
     public function __construct(
-        AlgorithmFactory $algorithmFactory,
         KeyGeneratorInterface $keyGenerator,
         SerializerInterface $serializer,
-        ClaimCheckerManagerFactory $checkerManagerFactory
+        AlgorithmFactory $algorithmFactory,
+        Json $json,
+        ClaimCheckerManager $claimCheckerManager
     ) {
-        $this->algorithmFactory = $algorithmFactory;
         $this->keyGenerator = $keyGenerator;
         $this->serializer = $serializer;
-        $this->checkerManagerFactory = $checkerManagerFactory;
+        $this->algorithmFactory = $algorithmFactory;
+        $this->json = $json;
+        $this->claimCheckerManager = $claimCheckerManager;
     }
 
-    public function validate(string $token): bool
+    public function encode(array $claims): string
+    {
+        // as payload represented by url encode64 on json string,
+        // the same claims structure with different key's order will get different payload hash
+        ksort($claims);
+        $payload = $this->json->serialize($claims);
+
+        $jwsBuilder = new JWSBuilder($this->algorithmFactory->getAlgorithmManager());
+        $jws = $jwsBuilder->create()
+            ->withPayload($payload)
+            ->addSignature(
+                $this->keyGenerator->create()->getKey(),
+                [
+                    'alg' => $this->algorithmFactory->getAlgorithmName(),
+                    'typ' => 'JWT'
+                ]
+            )
+            ->build();
+
+        return $this->serializer->serialize(new Jwt($jws));
+    }
+
+    public function decode(string $token): array
+    {
+        $decoded = $this->serializer->unserialize($token);
+        return $this->json->unserialize($decoded->getToken()->getPayload());
+    }
+
+    public function verify(string $token, array $mandatoryClaims = []): bool
     {
         $verifier = $this->getVerifier();
-        $jws = $this->serializer->unserialize($token);
+        $jws = $this->serializer->unserialize($token)
+            ->getToken();
 
-        if (!$verifier->verifyWithKey($jws, $this->keyGenerator->create(), 0)) {
+        if (!$verifier->verifyWithKey($jws, $this->keyGenerator->create()->getKey(), 0)) {
             return false;
         };
 
-        $checkers = ['iat', 'nbf', 'exp'];
-        $claimChecker = $this->checkerManagerFactory->add('iat', new IssuedAtChecker())
-            ->add('nbf', new NotBeforeChecker())
-            ->add('exp', new ExpirationTimeChecker())
-            ->create($checkers);
-
-        $payload = json_decode($jws->getPayload(), true);
-
-        try {
-            $claimChecker->check($payload, $checkers);
-        } catch (InvalidClaimException | MissingMandatoryClaimException $e) {
-            throw new \InvalidArgumentException($e->getMessage());
-        }
+        $payload = $this->json->unserialize($jws->getPayload());
+        $this->claimCheckerManager->check($payload);
 
         return true;
     }
 }
 ```
 
-The [POC](https://github.com/joni-jones/magento2/tree/jwt-auth) replaces the usage of standard WEB API access tokens by JWT and shows how the wrappers and their usage might look like.
+### Claims validation
+
+The `\Magento\Framework\Jwt\ClaimCheckerManager` provides a possibility to validate different set of claims like issuer, token, expiration time, audience. The list of claim checkers can be provided via `di.xml` and each checker should implement `\Magento\Framework\Jwt\ClaimCheckerInterface`.
+The following test shows how different types of claim checkers can be used for the validation:
+```php
+public function testCheck(): void
+{
+    $claims = [
+        'iss' => 'dev',
+        'iat' => 1561564372,
+        'exp' => 1593100372,
+        'aud' => 'dev',
+        'sub' => 'test',
+        'key' => 'value'
+    ];
+
+    /** @var ClaimCheckerManager $claimCheckerManager */
+    $claimCheckerManager = $objectManager->create(
+        ClaimCheckerManager::class,
+        [
+            'checkers' => [
+                IssuerChecker::class,
+                ExpirationTimeChecker::class,
+                IssuedAtChecker::class
+            ]
+        ]
+    );
+
+    $checked = $claimCheckerManager->check($claims, ['iss', 'iat', 'exp']);
+    self::assertEquals(
+        [
+            'iss' => 'dev',
+            'iat' => 1561564372,
+            'exp' => 1593100372,
+        ],
+        $checked
+    );
+}
+```
+
+### Custom key generators
+
+The `\Magento\Framework\Jwt\KeyGeneratorInterface` provides a possibility to create custom key generators like based on random string, API keys, etc. The default implementation provides key generators based on env `crypt/key` (`\Magento\Framework\Jwt\KeyGenerator\CryptKey`) and simple string (`\Magento\Framework\Jwt\KeyGenerator\StringKey`).
+
+## Summary
+
+The proposed functionality can be added in a patch release. The introduced interfaces can be marked as @api in the next minor release.
+
+The [POC](https://github.com/joni-jones/magento2/tree/jwt-auth) provides a possibility to use JWT wrappers instead of own implementation for Cardinal Commerce integration.
