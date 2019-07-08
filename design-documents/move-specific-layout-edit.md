@@ -14,31 +14,33 @@ Meaning that there is no way to use version control while editing these layout u
 
 ### Solution
 Read custom layout updates from physical files on the server. Convert existing textarea _custom_layout_update_ field
-in category/product/cms page form into a _select_ field where existing custom layout update files could be selected.
-A developer would create a layout file following this template:
-_app/design/custom\_layout/\<category/product/page\>/layout\_update\_\<entity ID\>\_\<readable layout update name\>.xml_.
-These files will have the same schema as any other layout files and validated accordingly. This area is not
-accessible via HTTP and it will be usable by developers/merchants only.
+in category/product/cms page forms into a _select_ field where existing custom layout update files could be selected.
  
-Example: a file with the name _app/design/custom\_layout/page/layout\_update\_2\_store1update.xml_ is created then
-the select on home page's edit form (home page has ID = 2) will look like this:
+To provide layout updates for admin users to select developers will create layout files following existing naming conventions for per-entity layouts
+\([page layout handles](https://devdocs.magento.com/guides/v2.3/frontend-dev-guide/layouts/layout-overview.html)\)
+like _\<Magento_Theme_module_dir\>/view/frontend/layout/\(catalog\_product\_view\|catalog\_category\_view\|cms\_index\_index\)\_id\_\<entity ID\>\_selectable\_\<Layout update name\>.xml_.
+Special _selectable_ handle will be added for category/product/cms pages to pick up these files based on the selected by an admin
+update.
+ 
+Example: a file with the name _app/code/MyCompany/MyExtension/view/frontend/layout/cms_index_index_id_2_selectable_store1update.xml_ is created,
+then the select on the home page's edit form (home page has ID = 2) will look like this:
  
 ![alt text](img/custom_layout_select.png "Layout updates form")
  
 This way merchants will still be able to manage different layouts for different stores or staging updates. In case
-of the example above the developer could also create _layout\_update\_2\_store2update.xml_ and
-_layout\_update\_2\_june2019update.xml_ to use for another store or for staging.
+of the example above the developer could also create _cms_index_index_id_2_selectable_anotherstoreupdate.xml_ and
+_cms_index_index_id_2_selectable_myjune2019update.xml_ to use for another store or for staging.
   
 This way only developers will be able to change layouts for specific entity pages and be able to use
 VCS while creating the layouts.
  
-##### Entity specific layouts
-Magento already supports providing entity-specific layouts from filesystem by using special layout handles
-(special file-names) like catalog_product_view_id_128.xml where "128" is the product's ID. But with this approach there
-is no way for content managers to cycles through different layouts for an entity on demand, apply different layouts for
-different store views or apply a layout update for staging. The proposed selector allows just that.
-
-##### Backward compatibility
+### Availability to merchants without dedicated teams
+The described way to create these selectable updates requires creating a module/theme for a Magento installation which
+may make things a bit more difficult for merchants without dedicated teams comparing to being able to just copy-paste
+layout XML into the forms. However we could provide a detailed instruction with the link to it thoughtfully provided
+near the new selector to guide merchants on how to create these layout files step by step.
+ 
+### Backward compatibility
 In order to preserve backward compatibility existing layout updates will work but users will not be able to create new ones.
 When an entity already had a layout update provided via the text area the select will show _'\*Existing layout update\*'_.
  
