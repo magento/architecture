@@ -5,16 +5,19 @@ Service contracts, their arguments and return types are supposed to be used dire
 as web API endpoints. The problem is service contracts are also used as API
 and are supposed to be a part of business layer. By using them for presentation developers may encounter various
 problems like having to put additional logic related to specifically processing web API requests (fields validation
-for instance), DTOs used as arguments and return types may have sensitive data that is fine to use programmatically but
+for instance) inside models, DTOs used as arguments and return types may have sensitive data that is fine to use programmatically but
 should not be exposed to web APIs or simply having properties needed for implicit business logic that would confuse web
 API consumers.
 #### Presentation layer processors.
-The solution to the issues described above would be to introduce web APIs processors that would be a part of the
-presentation layer, DTOs used for presentation and additional presentation-specific configuration.
+The solution to the issues described above would be to introduce:
+* web APIs processors that would be a part of the
+presentation layer
+* DTOs used for presentation
+* additional presentation-specific configuration.
 ##### Controllers
 Right now any interfaces can be used as web API processors and DTOs, this is a convenient way of representing operations
 and data used for web API - it should not be changed. But we have to leave the _Api_ namespace for module APIs. Web API
-processors should have their own space - _WebAPI\Controller_ for processors and _WebAPI\Data_ for DTOs used for view.
+processors should have their own space - _\<Module name\>\WebAPI\Controller_ for processors and _\<Module name\>\WebAPI\Data_ for DTOs used for view.
  
 ###### Example
 For instance let's take a look at creating a customer account:
@@ -27,9 +30,9 @@ For instance let's take a look at creating a customer account:
     );
 ```
  
-The service contract responsible for it has this method signature, right of the bat we can see an argument that should
-not be accessible to web API - _redirectUrl_ which is used to set redirect URL inside E-mail confirmation E-mail.
-And what about password? From web API client's perspective it should be the $customer's property but it's a separate
+The service contract responsible for it has this method signature, right off the bat we can see an argument that should
+not be accessible to web API - _redirectUrl_ which is used to set redirect URL inside confirmation E-mail.
+And what about password? From a web API client's perspective it should be the $customer's property but it's a separate
 account because _CustomerInterface_ is meant to represent business layer entity which doesn't store original password
 and only has the password's hash. Also _CustomerInterface_ has _defaultShipping/Billing_ properties, but then
 _AddressInterface_ also has _isDefaultShipping/Billing_ properties - which one should a web API client use to set a
@@ -104,7 +107,7 @@ even have validation rules provided to them. Right now entities in Magento are b
 are being displayed one at the time. Having validation rules provided with the endpoints configuration would solve these
 issues.
  
-We could reuse existing validation mechanism that is partially being used for validating customer provided in
+We could reuse existing validation mechanism that is partially being used for validating customers provided in
 Magento framework in _Magento\Framework\Validator_ namespace
 _(see app/code/Magento/Customer/etc/validation.xml)_.
  
@@ -132,12 +135,12 @@ _webapi.xml_ schema could be updated to allow following configuration:
  
 REST/SOAP framework then would create validator for entity _"customer"_ and group _"web_api_create"_, perform validation
 and generate standard validation error related response to web API clients. To allow displaying messages related only to
-certain properties of object arguments of a web API processor the web API framework will also try to create validators
+certain properties of Web API arguments the web API framework will also try to create validators
 for them by generating an entity name and reusing the same group. For instance the framework will attempt to create
 validators for entity with the name _"customer.email"_ and group = _"web_api_create"_ for the
 _CustomerUpdateInterface::getEmail()_ property. Validation entity identifiers and groups can be specified explicitly
 in the configuration. Customer creation API also allows creating sub-entities - addresses, we would want to validate
-each one and the collection as a whole (like not allowing having more than 10 addresses). That's why _parameter_ elements
+each one and the collection as a whole (for instance if we don't allow having more than 10 addresses). That's why _parameter_ elements
 can have _property_ elements (which can have child _properties_ as well) to specify entity IDs and groups for those
 properties. The ability to specify these entity IDs/groups for properties explicitly instead of relying on auto-generated
 ones (like having _customer.addresses_ for addresses) is needed to reuse rules for different endpoints.
