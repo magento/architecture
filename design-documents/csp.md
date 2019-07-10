@@ -110,8 +110,9 @@ Themes may introduce new static files on Magento pages loaded from various resou
 way to add those resources to the CSP whitelist. This can be done by introducing new _.xml_ file called
 _csp_whitelist.xml_ which will allow to __add__ new sources to the whitelist but not to modify existing ones.
 This sources will be required to have a URL or a URI with/without a wildcard but not containing
-reserved words like 'self' or just a wildcard. Policies that can be configured through this file
-will be limited to _*-src_ policies.
+reserved words like 'self' or just a wildcard. _nonce-\*\*\*_ sources will also be allowed to be whitelisted here for
+static inline javascripts. Policies that can be configured through this file
+will be limited to _*-src/form-action_ policies.
  
 An example of _csp\_whitelist.xml_:
 ```xml
