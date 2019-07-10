@@ -77,19 +77,13 @@ DirectiveProcessorInterface
     /**
      * Process values given to the directory and return rendered result.
      *
-     * @param string|null Main parameter.
-     * @param string[] Additional parameters.
-     * @param string|null $html
+     * @param mixed $value Template var, scalar or null if nothing has been passed to the directive.
+     * @param string[] $parameters Additional parameters.
+     * @param string|null $html HTML inside the directive.
+     * @param \Magento\Framework\Filter\Template $template Template object calling the directive
      * @return string
      */
-    public function process(?string $value, ?string $html, array $parameters): string;
-    
-    /**
-     * Subdirectories that can be used within this directory's HTML.
-     * 
-     * @return DirectiveProcessorInterface[]|null
-     */
-    public function getSubDirectives(): ?array;
+    public function process($value, ?string $html, array $parameters, Template $template): string;
     
     /**
      * Default filters to apply if none provided in a template.
@@ -102,35 +96,27 @@ DirectiveProcessorInterface
  
 _Magento\Framework\Filter\Template_ will receive the list of such directive processors
 via di.xml, parse all directives in given templates and give them to processors
-until there is no directives left. That means that directives' HTML may contain
-directives as well which will not be rendered by it's directive.
+until there is no directives left. That means that directives' HTML may contain other directives that will be processed
+recursively.
  
 Consider the example:
 ```html
 <h2>{{currentStoreName}}</h2>
 <p>{{trans 'Hello, %name! %text' name=customer.name text='txt'|raw }}</p>
-{{if show}}
-<div>Showing</div>
-{{else}}
-<div>No show</div>
-{{/if}}
 ```
  
 When processing given template the _Template_ will try to find _DirectiveProcessorInterface_ whose
 _getName()_ returns __currentStoreName__ to process the first directive, it will
-call it's _process()_ method with _(null, null, [])_ since there is no value or parameters
+call it's _process()_ method with _(null, null, [], $this)_ since there is no value or parameters
 provided, after it will call it's _getDefaultFilters()_ and it will return _'escape'_
 because there are no filters provided in the template. _'escape'_ filter will be applied.
  
 Next _Template_ will try to find _'trans'_ directive, it will pass _('Hello, %name! %text',
 null, ['name' => 'Karen Smith', 'text' => 'txt])_ to it's _process()_ method. The directive's
-_getDefaultFilters()_ will not be called since _'raw'_ filter is stated.
+_getDefaultFilters()_ will not be called since _'raw'_ filter is specified.
  
-Then _Template_ will find __if__ directive, it's _getSubDirectives()_ will be called
-since the directive contains HTML
-and it will return __else__ directive processor. It's _process()_ method will
-receive _(false, '<div>Showing</div>', [])_ and then the __else__ directive will
-receive _(null, '<div>No show</div>', [])_. Both __if's__ and __else's__ _getDefaultFilters()_ will return nulls.
+While this SPI does not allow introducing all kinds of directives like your own _switch-case_ directive or a _for_ loop
+directive it is definitely enough to cover 3rd-party developers needs.
  
 Another thing that 3rd party developers might want to extend/add are filters, I propose such SPI:
 ```php
@@ -139,6 +125,7 @@ interface FilterProcessorInterface
     /**
      * Process a value.
      *
+     * @param string $value HTML returned by a directive.
      * @return string
      */
     public function filterValue(string $value): string;
@@ -154,24 +141,32 @@ interface FilterProcessorInterface
  
 _Template_ class would receive a list of such filters and use them accordingly.
  
-###### Deprecate old methods
-Old public methods following _\<Directive Name\>Directive()_ pattern must be deprecated in favor of new directive
-processors.
+###### Old directive processors
+Currently directives are being processed by methods of _Template_ class following _\<Directive Name\>Directive()_ pattern.
+This forces developers to create child classes of _Template_ in order to introduce new directives or modify existing ones.
+This way of working with directives has to be deprecated but preserved in order to keep backward compatibility.
+ 
+We may create a dev-docs page explaining developers how to introduce directives and provide examples by creating new
+directives in order to replace _\$this.method()\_ usages inside E-mail templates (like using $this.getUrl() method).
 
 #### Backward compatibility
 This would not be a backward compatible change - we use objects in our own
 E-mail templates in core Magento and developers are using objects in their own templates
 as well.
 
-In order to preserve backward compatibility E-mail templates read from _.html_ files will keep working
-just as before allowing developers time to adopt these new changes. New static tests will be added to notify developers
-when they use method calls and _$this_ in E-mail templates, documentation will be update to walk developers through these
+In order to preserve backward compatibility E-mail templates read from _view/\<area\>/email/\*.html_ files will keep working
+just as before allowing developers time to adopt these new changes (e.g. still allow using objects as template variables).
+New static tests will be added to notify developers
+when they use method calls and _$this_ in E-mail templates, documentation will be updated to walk developers through these
 changes.
  
-In order to keep existing templates working variables that are being passed now will remain, new core E-mail templates
-rewritten to use only data will be using newly added scalar variables.
+When we update core E-mail templates to use scalars it is important to introduce new scalar variables replacing object
+variables with new names so that old templates using objects can remain functional. For instance the _account\_new.html_
+expects _\$customer_ variable to be a _Customer_ object so we would add _\$customer_data_ variables containing an _array_
+with a customer's data so if a merchant was using customized _account\_new_ template it will still render fine.
  
-Existing user-defined E-mail templates will keep rendering as they were as well. Newly user-created templates must be
-rendered with limitations described above though.
+We have to keep existing user-defined E-mail templates rendering as before to preserve backward compatibility. Newly-added
+templates will be marked appropriately in the DB and rendered with new limitation regarding template variables though.
  
-This behaviour is to be removed in a later minor version.
+These measures aimed to improve backcompat are to be removed in a later minor version disallowing using objects
+in E-mail templates for any case.
