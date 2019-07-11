@@ -1,6 +1,6 @@
-# Domain Whitelist for Frontend Redirects
+# Domain Whitelist for Configurable 3rd Party Redirects
 
-With the introduction of PWA as well as other server-client Magento solutions, the Magento host is acting as a headless server.
+With the introduction of PWA as well as other solutions, there are use cases where Magento is treated as a headless server, serving a frontend client.
 This headless Magento server can serve multiple frontend applications, potentially on different domains.
 Currently there is no defined way that Magento knows which client domains it serves and are safe to redirect the user.
 This presents a problem for some PayPal payment solutions when trying to implement them through GraphQl.
@@ -28,20 +28,24 @@ The domain whitelist configuration should live in `app/etc/env.php` for the foll
 - env.php is a secure location that is only editable via file edit or cli command
 - The configuration could be set by setup scripts using `setup:config:set` cli command
 
-We will add a new option (`--domain_whitelist`) to the `setup:config:set` that accepts a comma separated list of domains.
+We will add a new option (`--domain-whitelist`) to the `setup:config:set` that accepts a comma separated list of domains.
  
 ```
-bin/magento setup:config:set --domain-whitelist="pwa.store.com, othersite.store.com"
+bin/magento setup:config:set --domain-whitelist="foo.store.com, bar.store.com, otherstore.com"
 ```
 Would result in an `env.php` entry:
 ```
 ...
-'domain_whitelist' => [
-    'pwa.store.com',
-    'othersite.store.com'
+'domain-whitelist' => [
+    'foo.store.com',
+    'bar.store.com',
+    'otherstore.com'
 ]
 ...
 ```
+
+Each domain and subdomain must be explicitly specified in the whitelist (i.e. wildcards are not supported).
+Disallowing wildcards (e.g. `*.store.com`) will prevent unintentionally (or intentionally) creating too broad of a whitelist that could essentially void this security measure.
 
 #### Redirect Validation Implementation
 
@@ -51,6 +55,7 @@ It will perform similar validation as already done by `\Magento\Framework\Valida
 `\Magento\WebapiSecurity\Model\Validator\Redirect::isValid()` will validate:
 1. Valid URL format (checked by `\Magento\Framework\Validator\Url`)
 2. Scheme (checked by `\Magento\Framework\Validator\Url`)
-3. Host (domain checked against whitelist configuration)
+3. Host (domain checked against whitelist configuration and Magento configuration*)
+    - \* To maintain compatibility, all native Magento website URLs will be considered whitelisted. These are URLs configured in `core_config_data` table (e.g. `web/secure/base_url`).
 
-The URL route will not be validated/sanitized by this class. This can be handled by the specific business logic class as it will be use case dependent. 
+The URL route will **not** be validated/sanitized by this class. This can be handled by the specific business logic class as it will be use-case dependent.
