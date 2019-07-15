@@ -161,7 +161,7 @@ class Management implements ManagementInterface
         return $this->json->unserialize($decoded->getToken()->getPayload());
     }
 
-    public function verify(string $token, array $mandatoryClaims = []): bool
+    public function verify(string $token): bool
     {
         $verifier = $this->getVerifier();
         $jws = $this->serializer->unserialize($token)
@@ -182,6 +182,22 @@ class Management implements ManagementInterface
 ### Claims validation
 
 The `\Magento\Framework\Jwt\ClaimCheckerManager` provides a possibility to validate different set of claims like issuer, token, expiration time, audience. The list of claim checkers can be provided via `di.xml` and each checker should implement `\Magento\Framework\Jwt\ClaimCheckerInterface`.
+The list of claims can be configured via `di.xml`.
+```xml
+<virtualType name="Magento\ModuleName\Model\VirtualClaimCheckerManager" type="Magento\Framework\Jwt\ClaimCheckerManager">
+    <arguments>
+        <argument name="checkers" xsi:type="array">
+            <item name="exp" xsi:type="string">Magento\Framework\Jwt\ClaimChecker\ExpirationTime</item>
+        </argument>
+        <argument name="mandatoryClaims" xsi:type="array">
+            <item name="exp" xsi:type="string">exp</item>
+        </argument>
+    </arguments>
+</virtualType>
+```
+
+If `mandatoryClaims` argument is not specified and needed claim is not presented in the payload the check for this claim will be skipped.
+
 The following test shows how different types of claim checkers can be used for the validation:
 ```php
 public function testCheck(): void
