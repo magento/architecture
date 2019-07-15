@@ -1,4 +1,4 @@
-# Controllers for web APIs
+# Controllers for web APIs, user input processing on top of service contracts execution
 ## RESTful and SOAP API
 #### Current situation
 Service contracts, their arguments and return types are supposed to be used directly
@@ -8,18 +8,8 @@ problems like having to put additional logic related to specifically processing 
 for instance) inside models, DTOs used as arguments and return types may have sensitive data that is fine to use programmatically but
 should not be exposed to web APIs or simply having properties needed for implicit business logic that would confuse web
 API consumers.
-#### Presentation layer processors.
-The solution to the issues described above would be to introduce:
-* web APIs processors that would be a part of the
-presentation layer
-* DTOs used for presentation
-* additional presentation-specific configuration.
-##### Controllers
-Right now any interfaces can be used as web API processors and DTOs, this is a convenient way of representing operations
-and data used for web API - it should not be changed. But we have to leave the _Api_ namespace for module APIs. Web API
-processors should have their own space - _\<Module name\>\WebAPI\Controller_ for processors and _\<Module name\>\WebAPI\Data_ for DTOs used for view.
  
-###### Example
+###### Example of service contracts not being tailored to be used directly as web API endpoints
 For instance let's take a look at creating a customer account:
  
 ```php
@@ -40,16 +30,37 @@ customer's default billing/shipping address? Another problem - customer's addres
 doesn't make sense in context of a customer managing itself since a customer can manage only their own addresses.
 All of these problems stem from having business layer contracts/entities exposed as presentation layer operations/data.
  
-Now let's see how we could improve this situation by having separate web API presentation related processors and view data:
  
-###### View data
-First we would have DTO that describes a customer the way it's convenient for web API clients:
+## GraphQL
+#### Current situation
+GraphQL (sometimes) utilizes service contracts and relies on them to have execute complex validations if any needed.
+It also uses simple validation provided by graphql schema (like a property not allowed to be null). However if an
+endpoint requires complex validation/authorization that is not performed by a service contract (and it shouldn't since
+service contracts must not be aware of context) resolvers would duplicate to match functionality provided by regular
+controllers providing HTML presentation. Furthermore since it's easier to define simple validation rules via graphQL
+schema GraphQL gateway may provide more proper user input validation than HTML/REST/SOAP gateways.
+ 
+ 
+## HTML Presentation
+#### Current situation
+Controllers implementing _ActionInterface_ do complex validation/authorization themselves which is fine as they are
+supposed to be responsible for user input processing, still there's a problem with other areas not being able to reuse
+this logic.
+ 
+ 
+## What needs to be done to solve this?
+#### Using operation-specific DTOs
+In order to make it more clear what data will be actually used/allowed for a certain operation and to avoid transferring
+of extensive data sets we should move from having generic DTOs describing entities to operation-specific DTOs describing
+arguments and results of an operation.
+ 
+Example on how would we change DTOs for operations regarding customer creation/update:
+ 
+First we would have DTO that describes a customer in the way it's convenient for client code when updating a customer:
 ```php
-namespace Magento\Customer\WebAPI\Data;
-
 interface CustomerUpdateInterface
 {
-    //No getId() since web API clients must not be able to control their customer's ID
+    //No getId() since storefront clients must not be able to control their customer's ID
     ...
     
     //For setting new password
@@ -61,8 +72,6 @@ interface CustomerUpdateInterface
  
 Then we would have DTO for customer's addresses:
 ```php
-namespace Magento\Customer\WebAPI\Data;
-
 interface CustomerAddressUpdateInterface
 {
     public function getId(): ?string;
@@ -75,14 +84,11 @@ interface CustomerAddressUpdateInterface
 }
 ```
 
-Since we don't want original password in customer related web API responses we could have separate view DTO for reading
-a customer:
+Since we don't want original password in customer responses we would not return it as read operations result:
 ```php
-namespace Magento\Customer\WebAPI\Data;
-
 interface CustomerReadInterface
 {
-    //Now we have getId() since it's OK for web API clients to know their customer's ID.
+    //Now we have getId() since it's OK for storefront clients to know their customer's ID.
     public function getId(): string;
     
     ....
@@ -91,17 +97,10 @@ interface CustomerReadInterface
 }
 ```
  
-And now the processor for creating a storefront account:
-```php
-namespace Magento\Customer\WebAPI\Controller;
-
-interface CustomerControllerInterface
-{
-    public function create(CustomerUpdateInterface $customer): CustomerReadInterface;
-}
-```
-
-##### Validation
+By having these operation-specific DTOs we would only have the data we need as arguments and responses.
+ 
+ 
+#### Use declarative validation
 Web API clients displaying forms should be able to get a list of invalid properties sent to display to end users or
 even have validation rules provided to them. Right now entities in Magento are being validated manually and errors
 are being displayed one at the time. Having validation rules provided with the endpoints configuration would solve these
@@ -132,7 +131,7 @@ _webapi.xml_ schema could be updated to allow following configuration:
     </validation>
 </route>
 ```
- 
+  
 REST/SOAP framework then would create validator for entity _"customer"_ and group _"web_api_create"_, perform validation
 and generate standard validation error related response to web API clients. To allow displaying messages related only to
 certain properties of Web API arguments the web API framework will also try to create validators
@@ -144,11 +143,6 @@ each one and the collection as a whole (for instance if we don't allow having mo
 can have _property_ elements (which can have child _properties_ as well) to specify entity IDs and groups for those
 properties. The ability to specify these entity IDs/groups for properties explicitly instead of relying on auto-generated
 ones (like having _customer.addresses_ for addresses) is needed to reuse rules for different endpoints.
- 
-This validation configuration potentially can be reused for HTML controllers and graphQL resolvers as well.
- 
-This rules lists are extensible by 3rd party developers allowing them to easily add validation for new properties
-they introduce or change defaults.
  
 When validation fails web API framework will throw ValidationException. This exception has to be introduced since existing
 Magento\Framework\Validator\Exception cannot describe validation errors properly. The exception will be rendered as following:
@@ -194,3 +188,187 @@ Magento\Framework\Validator\Exception cannot describe validation errors properly
     }
 }
 ```
+ 
+Controllers and GraphQL resolvers would be able to call validators and pass them entity name/group name explicitly
+```php
+Magento\Framework\Validator\Factory::createValidator($entityName, $groupName, $builderConfig)
+```
+right before passing arguments to service contracts. This way validation rules could be reused and extended by 3rd-party
+developers via configs.
+ 
+This rules lists are extensible by 3rd party developers allowing them to easily add validation for new properties
+they introduce or change defaults via config files.
+ 
+ 
+#### Introduce reusable user input processors
+Sometimes before passing arguments to a service contracts we would have to perform user input processing that cannot
+be covered with declarative validation or existing ACL policies regarding of our current area (HTML/REST/SOAP/GraphQL).
+ 
+Example is checking whether is a customer is allowed to use a saved shipping address for an order by checking whether the
+address was created by the same customer - we'd have to do it programmatically since validation rules wouldn't work
+because of not having access to the full context and our ACL system is not fit to process those cases. HTML controllers
+and GraphQL resolvers would be able to include such logic but it would not be reusable by other areas. This validation
+could be performed by the service contract responsible for posting order but service contracts are not supposed to know
+about authenticated users.
+ 
+The solution to these problems would be to introduce reusable area-agnostic user input processors that would perform
+such actions. These would be arbitrary classes with no common interface but they would be reusable across different areas
+and reside inside a special namespace `Presentation` to inform developers that this classes belong to presentation
+layer and are not supposed to be used inside other layers. These classes could be used explicitly by HTML controllers
+and graphQL resolvers and declared for REST/SOAP inside webapi.xml.
+ 
+ 
+In addition to the example above let's see how we could perform the ownership validation for shipping address with
+a user input processor.
+ 
+Let's say we have a service contracts responsible for updating shipping address for an order:
+```php
+interface OrderManagerInterface
+{
+    ....
+    
+    public function updateShippingAddress(string $cartId, CustomerAddressInterface $shippingAddress): void
+}
+```
+ 
+and then we create user input processor to check the ownership:
+```php
+namespace Magento\Sales\Presentation;
+
+class OrderShippingAddressValidator
+{
+    /**
+     * @var UserContextInterface
+     */
+    private $userContext;
+    
+    .....
+
+    /**
+     * @throws SecurityViolationException
+     */
+    public function validateAddressForOrder(CustomerAddressInterface $shippingAddress): void
+    {
+        $customerId = $this->userContext->getUserId();
+        if ($shippingAddress->getId() && $shippingAddress->getCustomerId() !== $customerId) {
+            throw new SecurityViolationException('Wrong shipping address used');
+        }
+    }
+}
+```
+Notice how it's aware of context by using authenticated user's ID.
+ 
+Then we should use it across different endpoints designed for customers applying shipping addresses to orders:
+ 
+HTML controller:
+```php
+namespace Magento\Sales\Controller;
+
+class EditAddress implements ActionInterface
+{
+    /**
+     * @var OrderShippingAddressValidator
+     */
+    private $addressValidator;
+    
+    ....
+    
+    public function execute()
+    {
+        ....
+        
+        try {
+            $this->addressValidator->validateAddressForOrder($shippingAddress);
+            
+            $this->orderManager->updateShippingAddress($cartId, $shippingAddress);
+        } catch (SecurityViolationException $exception) {
+            $this->messageManager->addError($e);
+        }
+        
+        ....
+    }
+}
+```
+ 
+GraphQL resolver:
+```php
+namespace Magento\SalesGraphQL\Model\Resolver;
+
+class EditOrderAddress  implements ResolverInterface
+{
+    /**
+     * @var OrderShippingAddressValidator
+     */
+    private $addressValidator;
+    
+    ....
+    
+    public function resolve(
+            Field $field,
+            $context,
+            ResolveInfo $info,
+            array $value = null,
+            array $args = null
+    ) {
+        ....
+        
+        try {
+            $this->addressValidator->validateAddressForOrder($shippingAddress);
+            $this->orderManager->updateShippingAddress($cartId, $shippingAddress);
+        } catch (SecurityViolationException $exception) {
+            throw new GraphQlInputException($exception);
+        }
+        ....
+    }
+}
+```
+ 
+When it comes to REST/SOAP we don't have a dedicated presentation layer processors where to invoke the validator.
+To solve this we must introduce the ability to insert middleware to be used before arguments are passed to defined via
+webapi.xml service contracts. These middleware classes will have to have the same signature as the service contracts
+that are responsible for endpoints in order to process arguments and will return arrays with modified arguments
+in order to be able to change data before it reaches the service contracts (this is due to service contracts' arguments
+being immutable). Developers will be able to specify these middleware classes to be used for endpoints via webapi.xml.
+ 
+Example on how we would introduce the shipping address validation to the endpoint using
+_OrderManagerInterface::updateShippingAddress()_ service contract:
+ 
+webapi.xml
+```xml
+<route url="/V1/cart/mine/shippingAddress" method="POST">
+    <service class="Magento\Sales\Api\OrderManagerInterface" method="updateShippingAddress"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+    <processors>
+        <before class="Magento\Sales\Presentation\WebApi\CartProcessor" method="beforePostAddress" />
+    </processors>
+</route>
+```
+ 
+And then we would create the processor to call the validator:
+```php
+namespace Magento\Sales\Presentation\WebApi;
+
+class CartProcessor
+{
+
+    /**
+     * @var OrderShippingAddressValidator
+     */
+    private $addressValidator;
+    
+    ....
+    
+    public function beforePostAddress(string $cartId, CustomerAddressInterface $shippingAddress): array
+    {
+        ....
+        
+        $this->addressValidator->validateAddressForOrder($shippingAddress);
+        
+        return [$cartId, $shippingAddress];
+    }
+}
+```
+Notice how _beforePostAddress()_ arguments declaration fits _OrderManagerInterface::updateShippingAddress()_
+arguments declaration.
