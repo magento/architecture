@@ -25,10 +25,10 @@ We can use this as a whitelist to validate redirect urls, significantly reducing
 The domain whitelist configuration should live in `app/etc/env.php` for the following reasons:
 
 - This configuration file is already in use and well-known by implementors
-- env.php is a secure location that is only editable via file edit or cli command
+- env.php is a secure location
 - The configuration could be set by setup scripts using `setup:config:set` cli command
 
-We will add a new option (`--domain-whitelist`) to the `setup:config:set` that accepts a comma separated list of domains.
+We will add a new option (`--domain-whitelist`) to the `setup:config:set` command that accepts a comma separated list of domains.
  
 ```
 bin/magento setup:config:set --domain-whitelist="foo.store.com, bar.store.com, otherstore.com"
@@ -49,10 +49,10 @@ Disallowing wildcards (e.g. `*.store.com`) will prevent unintentionally (or inte
 
 #### Redirect Validation Implementation
 
-A new class will be introduced in the WebapiSecurity module to encapsulate the logic of validating redirect URLs against this whitelist (e.g. `\Magento\WebapiSecurity\Model\Validator\Redirect`).
+A new class will be introduced in the Backend module to encapsulate the logic of validating redirect URLs against this whitelist (e.g. `\Magento\Backend\Model\Url\RedirectValidator`).
 It will perform similar validation as already done by `\Magento\Framework\Validator\Url` as well as compare the URL's domain against the domain whitelist in `env.php`.
 
-`\Magento\WebapiSecurity\Model\Validator\Redirect::isValid()` will validate:
+`\Magento\Backend\Model\Url\RedirectValidator::isValid()` will validate:
 1. Valid URL format (checked by `\Magento\Framework\Validator\Url`)
 2. Scheme (checked by `\Magento\Framework\Validator\Url`)
 3. Host (domain checked against whitelist configuration and Magento configuration*)
