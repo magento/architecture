@@ -10,7 +10,7 @@ CMS Pages can currently be turned on/off for store views, but the content cannot
 
 **Current schema:**
 
-![](https://wiki.corp.magento.com/download/attachments/115264240/cms_page_schema_current.png?api=v2&version=4)
+![](add-scope-to-cms-pages/cms_page_current.png)
 
 The current page design ties a CMS page to one or more store views but this association does not differentiate content by store view, it only defines the availability of the page to a store view.
 
@@ -18,7 +18,7 @@ The current page design ties a CMS page to one or more store views but this asso
 #### Option 1: Introduce a separate content table [Preferred]
 This option would move all page attributes that can be customized to a store view to a separate table, which will include the associated `store_id.` There will be a single "master" page object that retains  `is_active` and store associations at the global level, with all other attributes customizable to the store view level:
 
-![](https://wiki.corp.magento.com/download/attachments/115264240/cms_page_proposed.png?api=v2&version=3)
+![](add-scope-to-cms-pages/cms_page_proposed_option1.png)
 
 ##### **Pros:**
 -   Implementation matches that of Dynamic Blocks (banner tables)
@@ -45,7 +45,7 @@ Page Builder components (and potentially other extensions) will need to be aware
 #### Option 2: Add store & parent ID to existing table
 This option would add  `store_id` &  `parent_id` to  `cms_page` to denote which entries are "master" pages and which are scope specific:
 
-![](https://wiki.corp.magento.com/download/attachments/115264240/cms_page_proposed_option2.png?api=v2&version=3)
+![](add-scope-to-cms-pages/cms_page_proposed_option2.png)
 
 ##### **Pros:**
 -   Fewer, simpler database changes
