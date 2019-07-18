@@ -32,6 +32,7 @@ This approach leads to situation where production environment always contains co
 ### Proposed solution
 In order to be able to package Functional Tests separately and match [Module separation naming](https://github.com/magento/architecture/blob/master/design-documents/module-separation-naming.md)
 proposal this proposal goes to direction where for each module which can be covered with functional tests we will have sibling module with suffix `{ModuleName}FunctionalTest`.
+To avoid mixing application and test modules they should be moved to `dev/tests/acceptance` directory in git repo.
 
 For example:
  - `CatalogAdminUi` module will have sibling module `CatalogAdminUiFunctionalTest`
@@ -104,6 +105,6 @@ This packages will be used only on CICD systems and Development environments whe
 1. Dependencies between test modules must be maintained manually by Automation engineer.
 
 ### Implementation tasks
-1. Move all existing tests from modules to sibling modules by pattern `{ModuleName}FunctionalTest`
+1. Move all existing tests from modules to modules by pattern `{ModuleName}FunctionalTest` and relocate them from `app/code` to `dev/tests/acceptance`
 2. Update MFTF framework configuration to read XML entities based on new module structure
 3. Update infrastructure to put `magento2-functional-test-module` package types into separate metapackage and put this metapackage under `require-dev` section
