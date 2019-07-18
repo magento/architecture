@@ -1,0 +1,5 @@
+For PWA we should maintain separate Repository.
+It should contain apis,models,resource models etc.
+it should not contain front end controllers,layouts,blocks ,routes etc.
+in this way our focus only about apis.
+if any one wants to implement PWA they will download/clone this Repository.
