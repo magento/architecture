@@ -3,6 +3,35 @@
 
 HLD for [MC-13907](https://jira.corp.magento.com/browse/MC-13907): Allow CMS Page to Be Edited and Viewed in Admin Based On StoreView
 
+**Current state**
+
+CMS content such as pages and blocks don't support MagentoScope like products and categories do. Merchants need to duplicate pages and blocks and assign them to different storeviews in order to get content localized.
+
+**Problems:**
+
+1. Websites with many languages (EMEA region mostly) need to manage huge number of pages to get the content localized. They maintain certain naming convention for pages to simplify the process of finding the localized duplicates, but making changes for that pages and launching them is still very time consuming and tidies work that slows down time to market for content significantly
+
+2. Websites with several locales usually have dedicated content manager per each locale. They speak the language of the region they manage. Their role in ACL is limited to the particular scope (responsible for certain region) can't edit CMS pages that are assigned to the scope they have access (MAGETWO-69693) 
+
+3. Product widget added into the page with PageBuilder or as a widget will render all products based on conditions regardless of website selected for Product. That causes products not sold on the web store to be displayed there.
+
+4. When block is added to the page with Pagebuilder, it will render an empty block on Stage if the CMS Block is saved to a unique store view (not All Store Views or Default Store View). Sometimes it renders scope specific content on all storeview scope. This causes lots of confusion. 
+
+5. Dynamic Block content types will render All Store Views content
+
+**Objectives**
+
+1. СMS Pages have MagentoScope. 
+2. Admin user with scope specific role is able to edit scope specific content
+3. CMS Page is assigned to AllStoreviews by default. 
+4. Changing the drop-down value will cause the page to load the content for that specific storeview
+5. CMS Page content attributes have storeview scope except: 
+   - enable page - global
+   - store view - global 
+6. Changing the drop-down value to any value other than All Store Views will by default have the "Use Default Value" checkbox checked for all storeview specific attributes
+7. ContentHeading is removed from the CMS Page Form(only new pages affected)
+8. PageTitle content attribute value is copied to MetaTitle by default
+
 ### Terms
 
 ### Overview
@@ -87,8 +116,6 @@ Page Builder components (and potentially other extensions) will need to be aware
 
 #### Extension Points and Scenarios
 Page Builder components (and potentially other extensions) will need to be aware of the selected store view to render store-sensitive data (such as Product List). The store switcher component adds the chosen store_id to the application context and will be available as Page Builder currently expects (via StoreManager) without additional changes.
-
-### Prototype or Proof of Concept
 
 ### Data size and Performance Requirements
 No new degradations
