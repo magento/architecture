@@ -65,7 +65,7 @@ to introduce new directives - what if we have 2 separate extensions that want to
  
 To solve this next SPI will be introduced:
 ```php
-DirectiveProcessorInterface
+SimpleDirectiveProcessorInterface
 {
     /**
      * Unique name of this directive.
@@ -118,6 +118,25 @@ _getDefaultFilters()_ will not be called since _'raw'_ filter is specified.
 While this SPI does not allow introducing all kinds of directives like your own _switch-case_ directive or a _for_ loop
 directive it is definitely enough to cover 3rd-party developers needs.
  
+SPI will be created for us to be able to represent more complex directives with their own syntax like `if` and
+`for` directives:
+```php
+interface DirectiveProcessorInterface
+{
+    public function process(array $construction, Template $template): string;
+    
+    public function getRegExp(): string;
+}
+```
+_Template_ will call these directives one by one, use regular expression they provide and call their `process` method.
+By having access to raw text used inside a template these directives will be able to employ their own syntax and provide
+more complex behavior.
+ 
+In fact there will be a directive implementing this interface which will use general syntax
+`{{directive value param1=val1|filter}}inner HTML{{/directive}}` parse it and give it to classes implementing
+_SimpleDirectiveProcessorInterface_. This way developers who only need to implement a basic directive will use the
+simplified interface and other will be able to employ more low-level SPI.
+ 
 Another thing that 3rd party developers might want to extend/add are filters, I propose such SPI:
 ```php
 interface FilterProcessorInterface
@@ -145,6 +164,9 @@ _Template_ class would receive a list of such filters and use them accordingly.
 Currently directives are being processed by methods of _Template_ class following _\<Directive Name\>Directive()_ pattern.
 This forces developers to create child classes of _Template_ in order to introduce new directives or modify existing ones.
 This way of working with directives has to be deprecated but preserved in order to keep backward compatibility.
+In the next minor version we will rewrite all existing directives using
+_DirectiveProcessorInterface_ and _SimpleDirectiveProcessorInterface_. In the meantime only new directives will be
+created using this SPI.
  
 We may create a dev-docs page explaining developers how to introduce directives and provide examples by creating new
 directives in order to replace _\$this.method()\_ usages inside E-mail templates (like using $this.getUrl() method).
