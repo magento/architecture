@@ -49,14 +49,13 @@ interface PolicyCollectorInterface
 }
 ```
  
-* Headers generator, will create headers based on a policy provided
+* Render given policy and apply to given response object.
 ```php
 namespace Magento\Security\Model\CSP;
 
-interface PolicyHeadersGeneratorInterface
+interface PolicyRendererInterface
 {
-    //With keys as header names and values as header values.
-    public function generateHeaders(PolicyInterface $policy): array
+    public function render(PolicyInterface $policy, \Magento\Framework\App\Response\HttpInterface $response): void
 }
 ```
  
@@ -100,6 +99,33 @@ CLI requiring highest level of access.
  
 CSP mode will be set with a config path not appearing in the admin configuration page so merchants
 would have to execute a CLI command in order to change it.
+
+## Nonce
+`script-src` and `style-src` directives allow to use _nonce_ to mark trusted _\<script\>_ and _\<style\>_ blocks which
+enables us to effectively disable `unsafe-inline` except for trusted blocks which may make migration to CSP friendly
+front-end easier for Magento core and merchants alike. Nonce can be used for script/style blocks containing JS/CSS but
+also for the ones having `src` attribute defined. Using this mechanism merchants can whitelist external scripts with
+nonce instead of having to add every external domain to the whitelist.
+ 
+There is no way to whitelist an event handler defined via an attribute though (like _onclick_) or styles defined
+with _style_ attribute that's why nonce will be
+disabled by default and all `unsafe-inline` scripts/styles will be allowed. Merchants who'll be successful in getting
+read of all event handlers/styles defined using HTML attributes will be able to enable _nonce_ via configuration
+and used it for whitelisting. With _nonce_ enable magento will also set `strict-dynamic` value for _script-src_ policy
+to allow scripts whitelisted with _nonce_ to load other scripts. This will be crucial to allow analytics/advertisement
+scripts to work since they often add a bunch of other scripts from a variety of domains when loaded.
+ 
+It is possible to combine nonce and domain-list based whitelisting for CSP.
+ 
+Magento will have to generate unique nonce (using _Magento\Framework\Math\Random_) for each response and developers will
+be able to use a presentation layer class to render nonce to their explicit inline scripts
+(similar to how form key is being added to templates). WIth _nonce_ enabled
+_Magento\Framework\View\Page\Config\Renderer_ will add nonce to all css/js assets being added to a page. With _nonce_
+disable the presentation class used inside templates will not add nonce when called and _Renderer_ will not do it as well.
+ 
+Additional effort will have to go to ensure proper nonce used/regenrated when page cache is enabled. Perhaps blocks
+containing nonce will not be cached. Performance will be validated with these blocks not cached. Only few parts
+of a Magento page usually contain _script/style_ blocks so it shouldn't be a big problem.
  
 #### Merchants
 Merchants without dedicated development teams should be able to manage CSP.
