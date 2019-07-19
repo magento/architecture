@@ -121,7 +121,10 @@ Magento will have to generate unique nonce (using _Magento\Framework\Math\Random
 be able to use a presentation layer class to render nonce to their explicit inline scripts
 (similar to how form key is being added to templates). WIth _nonce_ enabled
 _Magento\Framework\View\Page\Config\Renderer_ will add nonce to all css/js assets being added to a page. With _nonce_
-disable the presentation class used inside templates will not add nonce when called and _Renderer_ will not do it as well.
+disabled the presentation class used inside templates will not add nonce when called and _Renderer_ will not do it as well.
+ 
+To make it easier for developers and don't force them to include the nonce-helper to all of their blocks it will
+be available inside _.phtml_ templates via local `$nonce` variable.
  
 Additional effort will have to go to ensure proper nonce used/regenrated when page cache is enabled. Perhaps blocks
 containing nonce will not be cached. Performance will be validated with these blocks not cached. Only few parts
@@ -194,3 +197,12 @@ we set event listener via attributes and we use eval in template.js so we'd have
 'unsafe-inline' and 'unsafe-eval'. Magento has integrations with multiple 3rd party services like vimeo, youtube,
 google analytics and various payment systems which we must whitelist additionally.
 That will be the default whitelist Magento provides out of the box packaged alongside related modules via _csp\_whitelist.xml_.
+ 
+## Future steps
+To allow merchants to use whitelisting with _nonce_ we have to get reed of event handlers via HTML attributes and
+style attributes in our templates. There is no way to disable `unsafe-eval` since we use it for UI components and
+some of the front-end libraries we employ need it (like jQuery).
+ 
+The work on refactoring templates to remove event handlers and _style_ attributes will be done after CSP is introduced
+gradually. In the meanwhile Merchants will be able to employ domain-whitelisting for CSP. Extension developers will
+have time to update their extension to allow both domain-whitelisting and nonce whitelisting.
