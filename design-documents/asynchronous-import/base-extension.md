@@ -31,21 +31,7 @@ Path is relative from Magento Root folder
           "csv_separator": "string",
           "csv_enclosure": "string",
           "csv_delimiter": "string",
-          "multiple_value_separator": "string",
-          "mapping": [
-              {
-                  "source_attribute": "string",
-                  "destination_attribute": "string",
-                  "processing_rules": "string",
-                  "taxonomy": "string",
-                  "values_mapping": [
-                      {
-                          "old_value": "string",
-                          "new_value": "string"
-                      }
-                  ]
-              }
-          ]
+          "multiple_value_separator": "string"
       }
   }
 }
@@ -63,21 +49,7 @@ Path is relative from Magento Root folder
           "csv_separator": "string",
           "csv_enclosure": "string",
           "csv_delimiter": "string",
-          "multiple_value_separator": "string",
-          "mapping": [
-              {
-                  "source_attribute": "string",
-                  "destination_attribute": "string",
-                  "processing_rules": "string",
-                  "taxonomy": "string",
-                  "values_mapping": [
-                      {
-                          "old_value": "string",
-                          "new_value": "string"
-                      }
-                  ]
-              }
-          ]
+          "multiple_value_separator": "string"
       }
   }
 }
@@ -95,21 +67,7 @@ Path is relative from Magento Root folder
           "csv_separator": "string",
           "csv_enclosure": "string",
           "csv_delimiter": "string",
-          "multiple_value_separator": "string",
-          "mapping": [
-              {
-                  "source_attribute": "string",
-                  "destination_attribute": "string",
-                  "processing_rules": "string",
-                  "taxonomy": "string",
-                  "values_mapping": [
-                      {
-                          "old_value": "string",
-                          "new_value": "string"
-                      }
-                  ]
-              }
-          ]
+          "multiple_value_separator": "string"
       }
   }
 }
@@ -135,21 +93,7 @@ Input request will looks like:
          "csv_separator": "string",
          "csv_enclosure": "string",
          "csv_delimiter": "string",
-         "multiple_value_separator": "string",
-         "mapping": [
-            {
-                "source_attribute": "string",
-                "destination_attribute": "string",
-                "processing_rules": "string",
-                "taxonomy": "string",
-                "values_mapping": [
-                    {
-                        "old_value": "string",
-                        "new_value": "string"
-                    }
-                ]
-            }
-         ]
+         "multiple_value_separator": "string"
     }
   }
 }
@@ -199,21 +143,7 @@ PUT  `/V1/import/source/csv/:uuid`
           "csv_separator": "string",
           "csv_enclosure": "string",
           "csv_delimiter": "string",
-          "multiple_value_separator": "string",
-          "mapping": [
-              {
-                  "source_attribute": "string",
-                  "destination_attribute": "string",
-                  "processing_rules": "string",
-                  "taxonomy": "string",
-                  "values_mapping": [
-                      {
-                          "old_value": "string",
-                          "new_value": "string"
-                      }
-                  ]
-              }
-          ]
+          "multiple_value_separator": "string"
       }
   }
 }
@@ -238,21 +168,7 @@ Will return list of Source that was uploaded before.
           "csv_separator": "string",
           "csv_enclosure": "string",
           "csv_delimiter": "string",
-          "multiple_value_separator": "string",
-          "mapping": [
-              {
-                  "source_attribute": "string",
-                  "destination_attribute": "string",
-                  "processing_rules": "string",
-                  "taxonomy": "string",
-                  "values_mapping": [
-                      {
-                          "old_value": "string",
-                          "new_value": "string"
-                      }
-                  ]
-              }
-          ]
+          "multiple_value_separator": "string"
       }
   },
   {
@@ -261,21 +177,7 @@ Will return list of Source that was uploaded before.
             "csv_separator": "string",
             "csv_enclosure": "string",
             "csv_delimiter": "string",
-            "multiple_value_separator": "string",
-            "mapping": [
-                {
-                    "source_attribute": "string",
-                    "destination_attribute": "string",
-                    "processing_rules": "string",
-                    "taxonomy": "string",
-                    "values_mapping": [
-                        {
-                            "old_value": "string",
-                            "new_value": "string"
-                        }
-                    ]
-                }
-            ]
+            "multiple_value_separator": "string"
         }
     }
     .....
@@ -310,7 +212,7 @@ Will return list of Source that was uploaded before.
 
 Current Endpoint starts import process based on FileID. Where Module will read file, split it into message and send to Async API
 
-POST  `/V1/import/type/{type}/start/{uuid}`
+POST  `/V1/import/start/{uuid}`
 
 `type` - its an import type like: catalog_product, catalog_category, customer, order ... etc...
 
@@ -319,12 +221,27 @@ Start File Import
 ```
 {
     "importConfig": {
-        "uuid": "123123213",
-        "behaviour": "add_update, delete, update, add, replace",
+        "import_type": "catalog_product",
+        "import_strategy": "add_update, delete, replace",
         "validation_strategy": "string",
         "allowed_error_count": 0,
         "import_image_archive": "string",
-        "import_images_file_dir": "string"
+        "import_images_file_dir": "string",
+        "mapping": [
+              {
+                  "name": "string",
+                  "source_path": "string",
+                  "target_path": "string",
+                  "target_value": "mixed",
+                  "processing_rules": [
+                        {
+                              "sort": int,
+                              "function": "string",
+                              "args": "array"
+                        }
+                  ]
+              }
+        ]
     }
 }
 ```
@@ -337,6 +254,7 @@ Start File Import
 | import_images_file_dir | Relative path to product images files |
 | validation_strategy | Moved from main standard Import, not sure if we will use if |
 | allowed_error_count | How many errors allowed to be during the import |
+| mapping | Data format mapping |
 
 
 #### Return
@@ -452,5 +370,5 @@ PUT  `/V1/import/operation-id/{uuid}`
 ### Return
 
 ```
-true
+[]
 ```
