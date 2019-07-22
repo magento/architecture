@@ -1,4 +1,4 @@
-# Controllers for web APIs, user input processing on top of service contracts execution
+# Middleware for web APIs, user input processing on top of service contracts execution
 ## RESTful and SOAP API
 #### Current situation
 Service contracts, their arguments and return types are supposed to be used directly
@@ -99,112 +99,18 @@ interface CustomerReadInterface
  
 By having these operation-specific DTOs we would only have the data we need as arguments and responses.
  
- 
-#### Use declarative validation
-Web API clients displaying forms should be able to get a list of invalid properties sent to display to end users or
-even have validation rules provided to them. Right now entities in Magento are being validated manually and errors
-are being displayed one at the time. Having validation rules provided with the endpoints configuration would solve these
-issues.
- 
-We could reuse existing validation mechanism that is partially being used for validating customers provided in
-Magento framework in _Magento\Framework\Validator_ namespace
-_(see app/code/Magento/Customer/etc/validation.xml)_.
- 
-_webapi.xml_ schema could be updated to allow following configuration:
-```xml
-<route url="/V1/customers" method="POST">
-    <service class="Magento\Customer\WebAPI\Controller\CustomerControllerInterface" method="create"/>
-    <resources>
-        <resource ref="anonymous"/>
-    </resources>
-    <validation>
-        <parameters>
-            <parameter name="customer" entity="customer" group="web_api_create">
-                <properties>
-                    <!-- Individual address validators -->
-                    <property name="addresses" entity="customer_address" group="web_api_create_address" walk="true" />
-                    <!-- Validators for the whole collection -->
-                    <property name="addresses" entity="customer_addresses" group="web_api_create" walk="false" />
-                </properties>
-            </parameter>
-        </parameters>
-    </validation>
-</route>
-```
-  
-REST/SOAP framework then would create validator for entity _"customer"_ and group _"web_api_create"_, perform validation
-and generate standard validation error related response to web API clients. To allow displaying messages related only to
-certain properties of Web API arguments the web API framework will also try to create validators
-for them by generating an entity name and reusing the same group. For instance the framework will attempt to create
-validators for entity with the name _"customer.email"_ and group = _"web_api_create"_ for the
-_CustomerUpdateInterface::getEmail()_ property. Validation entity identifiers and groups can be specified explicitly
-in the configuration. Customer creation API also allows creating sub-entities - addresses, we would want to validate
-each one and the collection as a whole (for instance if we don't allow having more than 10 addresses). That's why _parameter_ elements
-can have _property_ elements (which can have child _properties_ as well) to specify entity IDs and groups for those
-properties. The ability to specify these entity IDs/groups for properties explicitly instead of relying on auto-generated
-ones (like having _customer.addresses_ for addresses) is needed to reuse rules for different endpoints.
- 
-When validation fails web API framework will throw ValidationException. This exception has to be introduced since existing
-Magento\Framework\Validator\Exception cannot describe validation errors properly. The exception will be rendered as following:
- 
-```json
-{
-    "errorMessage": "Validation failed",
-    "validation_errors": {
-        "arguments": {
-            "customer": {
-                "general": {
-                    "customer_pwd_as_login": {"message": "Cannot have password being equal to login"}
-                },
-                "properties": {
-                    "email": {
-                        "general": {
-                          "string_length_min": {"message": "Length must be greater then 10", "min": 10},
-                          "customer_unique_email": {"message": "E-mail is already in use"}
-                        },
-                        "properties": {}
-                    },
-                    "addresses": {
-                        "general": {
-                            "collection_max": {"message": "Cannot contain more then 10 items", "max": 10}
-                        },
-                        "properties": {
-                            "0": {
-                                "general": {},
-                                "properties": {
-                                    "postcode": {
-                                        "general": {
-                                            "string_length_min": {"message": "Length must be greater then 5", "min": 5}
-                                        },
-                                        "properties": {}
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-```
- 
-Controllers and GraphQL resolvers would be able to call validators and pass them entity name/group name explicitly
-```php
-Magento\Framework\Validator\Factory::createValidator($entityName, $groupName, $builderConfig)
-```
-right before passing arguments to service contracts. This way validation rules could be reused and extended by 3rd-party
-developers via configs.
- 
-This rules lists are extensible by 3rd party developers allowing them to easily add validation for new properties
-they introduce or change defaults via config files.
+###### How to introduce it to Magento?
+There are couple of ways we can introduce this concept to Magento:
+* use it for new storefront API
+* introduce new APIs to a module (for in stance _Customer_) in order to provide an example for 3rd-party developers
+* create a devdocs page/update technical guidelines to inform community
  
  
 #### Introduce reusable user input processors
 Sometimes before passing arguments to a service contracts we would have to perform user input processing that cannot
 be covered with declarative validation or existing ACL policies regarding of our current area (HTML/REST/SOAP/GraphQL).
  
-Example is checking whether is a customer is allowed to use a saved shipping address for an order by checking whether the
+Example is checking whether is a customer allowed to use a saved shipping address for an order by checking whether the
 address was created by the same customer - we'd have to do it programmatically since validation rules wouldn't work
 because of not having access to the full context and our ACL system is not fit to process those cases. HTML controllers
 and GraphQL resolvers would be able to include such logic but it would not be reusable by other areas. This validation
@@ -324,7 +230,7 @@ class EditOrderAddress  implements ResolverInterface
 ```
  
 When it comes to REST/SOAP we don't have a dedicated presentation layer processors where to invoke the validator.
-To solve this we must introduce the ability to insert middleware to be used before arguments are passed to defined via
+To solve this we must introduce the ability to insert __middleware__ to be used before arguments are passed to defined via
 webapi.xml service contracts. These middleware classes will have to have the same signature as the service contracts
 that are responsible for endpoints in order to process arguments and will return arrays with modified arguments
 in order to be able to change data before it reaches the service contracts (this is due to service contracts' arguments
@@ -372,3 +278,12 @@ class CartProcessor
 ```
 Notice how _beforePostAddress()_ arguments declaration fits _OrderManagerInterface::updateShippingAddress()_
 arguments declaration.
+ 
+###### How to introduce it to Magento?
+* Add devdocs article regarding these new user-input-processors
+* Update technical guidelines
+* Implement processors/webAPI middleware in existing modules
+  Suggested refactoring points:
+  * Price permissions
+  * Custom layout permissions
+  * Unify customer address ID to customer ID validation across HTML/REST/SOAP/GraphQL presentations
