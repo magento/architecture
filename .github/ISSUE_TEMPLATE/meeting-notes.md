@@ -10,4 +10,8 @@ assignees: ''
 _Please add your topic as a comment to the issue. Use following format:_
 Topic description and link to PR, if any (duration in min)
 
+Time: 10:00am CST/CDT
+
+BlueJeans Meeting - https://bluejeans.com/374721893
+
 Recording: TBD
