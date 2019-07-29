@@ -142,27 +142,24 @@ and then we create user input processor to check the ownership:
 namespace Magento\Sales\Presentation;
 
 class OrderShippingAddressValidator
-{
-    /**
-     * @var UserContextInterface
-     */
-    private $userContext;
-    
+{    
     .....
 
     /**
      * @throws SecurityViolationException
      */
-    public function validateAddressForOrder(CustomerAddressInterface $shippingAddress): void
+    public function validateAddressForOrder(UserContextInterface $context, CustomerAddressInterface $shippingAddress): void
     {
-        $customerId = $this->userContext->getUserId();
+        $customerId = $context->getUserId();
         if ($shippingAddress->getId() && $shippingAddress->getCustomerId() !== $customerId) {
             throw new SecurityViolationException('Wrong shipping address used');
         }
     }
 }
 ```
-Notice how it's aware of context by using authenticated user's ID.
+Notice how it's aware of context by using authenticated user's ID. These processors woould often use different context
+objects like _RequestInterface_, _UserContextInterface_ and _SessionManagerInterface_ thus indicating they are not part of
+service layer.
  
 Then we should use it across different endpoints designed for customers applying shipping addresses to orders:
  
@@ -184,7 +181,7 @@ class EditAddress implements ActionInterface
         ....
         
         try {
-            $this->addressValidator->validateAddressForOrder($shippingAddress);
+            $this->addressValidator->validateAddressForOrder($this->userContext, $shippingAddress);
             
             $this->orderManager->updateShippingAddress($cartId, $shippingAddress);
         } catch (SecurityViolationException $exception) {
@@ -219,7 +216,7 @@ class EditOrderAddress  implements ResolverInterface
         ....
         
         try {
-            $this->addressValidator->validateAddressForOrder($shippingAddress);
+            $this->addressValidator->validateAddressForOrder($userContext, $shippingAddress);
             $this->orderManager->updateShippingAddress($cartId, $shippingAddress);
         } catch (SecurityViolationException $exception) {
             throw new GraphQlInputException($exception);
@@ -270,7 +267,7 @@ class CartProcessor
     {
         ....
         
-        $this->addressValidator->validateAddressForOrder($shippingAddress);
+        $this->addressValidator->validateAddressForOrder($this->userContext, $shippingAddress);
         
         return [$cartId, $shippingAddress];
     }
@@ -287,3 +284,4 @@ arguments declaration.
   * Price permissions
   * Custom layout permissions
   * Unify customer address ID to customer ID validation across HTML/REST/SOAP/GraphQL presentations
+  * Gift card attempts validator
