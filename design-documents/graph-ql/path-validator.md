@@ -1,5 +1,5 @@
 # Magento Framework validators
-The purpose of this document is to a validator for relative paths not only full urls commonly referred as absolute paths.
+The purpose of this document is to a validator for relative url routes not only full urls commonly referred as absolute url routes.
 
 ## Terminology
 `UrlValidator` - The existing framework validator `\Magento\Framework\Url\Validator`
@@ -9,14 +9,14 @@ The purpose of this document is to a validator for relative paths not only full 
 ## Overview
 ### Current situation
 In the Magento 2 framework we can only validate URLs `http://www.somedomain.com/some/path`.
-We don't have the possibility to configure this validator to test relative urls, paths as Zend framework refers them.
+We don't have the possibility to configure this validator to test relative urls, paths as Zend framework refers to them.
 We should have such kind of validator available for cases where we would just need to validate a relative path and also
 eliminate the directory traversal when such an input comes from the user. 
 
 ### Problem
-Such situation of validating a path did occur with the proposal
+Such situation of validating a url route did occur with the proposal
 [Domain Whitelist for Configurable 3rd Party Redirects](https://github.com/magento/architecture/pull/204).
-We just don't have a service class to validate paths, for code re-usage, with that can be injected in all resolvers or
+We just don't have a service class to validate url routes, for code re-usage, with that can be injected in all resolvers or
 classes that need this validator such as PayPal Express and others.
 
 ### Proposed solution
@@ -32,7 +32,7 @@ The new class `RouteValidator` will look like the following and it's namespace w
    namespace Magento\Framework\Url;
    
    /**
-    * Validate paths
+    * Validate url routes
     */
    class RouteValidator extends \Zend_Validate_Abstract
    {
@@ -59,7 +59,7 @@ The new class `RouteValidator` will look like the following and it's namespace w
        protected $_messageTemplates = [Validator::INVALID_URL => "Invalid URL '%value%'."];
    
        /**
-        * Validate path
+        * Validate url route
         *
         * @param string $value
         * @return bool
@@ -97,4 +97,4 @@ through a factory
 
 ### Alternatives:
 1. As we can't use zend framework in modules directly, we could just use regex and leave this class in PaypalGraphQl
-module, that as for now, it's the only use case we have to test relative paths.
+module, that as for now, it's the only use case we have to test relative url routes.
