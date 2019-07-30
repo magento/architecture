@@ -1,5 +1,5 @@
 # Magento Framework validators
-The purpose of this document is to a validator for relative paths / routes not only urls.
+The purpose of this document is to a validator for relative paths not only full urls commonly referred as absolute paths.
 
 ## Terminology
 `UrlValidator` - The existing framework validator `\Magento\Framework\Url\Validator`
@@ -8,8 +8,8 @@ The purpose of this document is to a validator for relative paths / routes not o
 
 ## Overview
 ### Current situation
-In the Magento 2 framework we can only validate URLs `http://www.somedomain.com/some/path/route`.
-We don't have the possibility to configure this validator to test relative urls, aka: paths or routes.
+In the Magento 2 framework we can only validate URLs `http://www.somedomain.com/some/path`.
+We don't have the possibility to configure this validator to test relative urls, paths as Zend framework refers them.
 We should have such kind of validator available for cases where we would just need to validate a relative path and also
 eliminate the directory traversal when such an input comes from the user. 
 
@@ -32,7 +32,7 @@ The new class `RouteValidator` will look like the following and it's namespace w
    namespace Magento\Framework\Url;
    
    /**
-    * Validate route and paths
+    * Validate paths
     */
    class RouteValidator extends \Zend_Validate_Abstract
    {
@@ -59,7 +59,7 @@ The new class `RouteValidator` will look like the following and it's namespace w
        protected $_messageTemplates = [Validator::INVALID_URL => "Invalid URL '%value%'."];
    
        /**
-        * Validate route/path
+        * Validate path
         *
         * @param string $value
         * @return bool
