@@ -4,45 +4,58 @@
 
 Performance of `composer create-project` increased on 2.3.0. This document describes to how optimize composer performance.
 
-## Problem
+## Measurements
 
-Packages cached
+Measurements performed when packages cached
 
 2.2.0
+<pre>
 Installation 2.55 min
 Dependency resolution 1 sec
+</pre>
 
 2.3.0
+<pre>
 Installation 6.15 min
 Dependency resolution 53 sec
+</pre>
 
 With --no-dev option
 
 2.2.0
+<pre>
 Installation 2.32 min
 Dependency resolution 1 sec
+</pre>
 
 2.3.0
+<pre>
 4.2 min
 Dependency resolution 48 sec
+</pre>
 
-_Note_
+Note
+<pre>
 Remove `magento/magento2-functional-testing-framework` in 2.3.0
 Dependency resolution 13 sec
+</pre>
 
 Measure extract and module package installation time (with --no-dev option)
 2.3.0
+<pre>
 3.43 min
 Dependency resolution 50 sec
 Extract time 101.4 sec
 Package install time 113.5
-
+</pre>
 
 2.2.0
+<pre>
 2.31 min
 Dependency resolution 1 sec
 Extract time 78.6
 Package install time 85.75
+</pre>
 
 ## Solutions
 
