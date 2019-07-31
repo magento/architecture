@@ -6,7 +6,27 @@ Performance of `composer create-project` increased on 2.3.0. This document descr
 
 ## Measurements
 
-Measurements performed when packages cached
+Note: package install time includes extract time.
+
+Packages are not cached
+
+With `hirak/prestissimo`
+2.3.0
+<pre>
+5.1 min
+Extract time 106.6 sec
+Package install time 124.5 sec
+</pre>
+
+With out `hirak/prestissimo`
+2.3.0
+<pre>
+9.57 min
+Extract time 99.6 sec
+Package install time 381.8 sec
+</pre>
+
+Packages are cached
 
 2.2.0
 <pre>
@@ -46,15 +66,15 @@ Measure extract and module package installation time (with --no-dev option)
 3.43 min
 Dependency resolution 50 sec
 Extract time 101.4 sec
-Package install time 113.5
+Package install time 113.5 sec
 </pre>
 
 2.2.0
 <pre>
 2.31 min
 Dependency resolution 1 sec
-Extract time 78.6
-Package install time 85.75
+Extract time 78.6 sec
+Package install time 85.75 sec
 </pre>
 
 ## Solutions
