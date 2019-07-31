@@ -56,28 +56,25 @@ All of the page attributes that can be applied to store scope will be defined as
     
 -   An upgrade script will be provided that will convert all existing data into the new schema, associating all existing pages to the All Store Views scope.
 
-##### Scenario: New Page
+#### Scenario: New Page
 When a new page is created, it will default to the All Store Views scope and the user will not be able to select a different scope until the page is saved. This ensure there is always a default fallback defined and is how the Product & Categories scope selection works.
 
-##### Scenario: Creating different content for a specific store view
+#### Scenario: Creating different content for a specific store view
 When an existing page is loaded it will default to the "All Store Views" scope. When the user selects a new store scope the system will attempt to load the content matching the current `page_id` and selected `store_id`. If none exists, it will fallback to the "All Store Views" data. If changes are made and saved, new entries will be created in the EAV tables for the selected `store_id`.
 
-##### Scenario: Deleting a page
+#### Scenario: Deleting a page
 Delete a page deletes all content associated with it for all store views.
 
-##### Scenario: Duplicating a page
+#### Scenario: Duplicating a page
 When the user opens a CMS page and selects "Save and Duplicate", any changes made will be saved and the page will be duplicated, along with all of the store-specific content. The new page will be (globally) disabled by default, as it currently functions.
 
-##### Scenario: Page Builder needs selected store view scope
-Page Builder components (and potentially other extensions) will need to be aware of the selected store view to render store-sensitive data (such as Product List). The store switcher component adds the chosen store_id to the application context and will be available as Page Builder currently expects (via StoreManager) without additional changes.
-
-#### Breaking Changes
+### Breaking Changes
 This new schema will introduce breaking changes to any developers that retrieve or modify CMS pages, either by API calls or accessing the database tables. Any extensions that customize the CMS UI could also be impacted.
 
-#### Component Dependencies
+### Component Dependencies
 - Store
 
-#### Extension Points and Scenarios
+### Extension Points and Scenarios
 Page Builder components (and potentially other extensions) will need to be aware of the selected store view to render store-sensitive data (such as Product List). The store switcher component adds the chosen store_id to the application context and will be available as Page Builder currently expects (via StoreManager) without additional changes.
 
 ### Data size and Performance Requirements
