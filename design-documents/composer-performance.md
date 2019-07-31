@@ -86,7 +86,6 @@ Package install time 85.75 sec
 1. Resolving dependencies graph takes a lot of time ~40-50 seconds. It's due to dependencies we have in `require-dev` section. There are multiple ways to improve this
     1. Move these dependencies into separate package **recommended**
     1. Add composer.lock. We want latest versions of some packages (PHPUnit for instance), so it's not ideal and most products (Drupal, Symfony, Zend Framework) don't add `composer.lock` to the project
-    1. Extend composer API to fetch composer.lock from the server instead of resolving dependencies
     
 1. It takes a lot of time to unarchive packages
     1. We should not include update application and dev folder by default to minimize number of files to extract and copy **recommended**
