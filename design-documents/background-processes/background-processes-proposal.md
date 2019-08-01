@@ -118,7 +118,7 @@ c: No visibility of the processes aside from checking the database
 d: No reporting or alerting of the above condition
 
 # Staged Approach
-The overhaul of the background processing within Magento is an large project with high impact to to the
+The overhaul of the background processing within Magento is an large project with high impact to the
 current public API's and implementation of the current Magento Cron.
 
 ## Stage 1 - Framework
