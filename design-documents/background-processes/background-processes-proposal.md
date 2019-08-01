@@ -130,13 +130,15 @@ Create/expand the framework for AMQP and Worker management.
 4. Review worker interfaces
 5. Review worker management
 
-###Problems to solve:
+### Problems to solve:
 1. Worker management
 How to manage workers at from simple to expert levels of complexity. Currently the cron spawns workers
 with (from the looks of it) no visibility over the threads that are spawned. We also need to factor
 in completely multi-node infrastructure.
 The aim should be to provide a highly scalable implementation from a highly scaled environment to a
 single server infrastructure with simple platform implementation.
+
+- Potential use of Kubernetes: https://kubernetes.io/docs/tasks/job/automated-tasks-with-cron-jobs/
 
 ## Stage 1 - Dashboard
 1. Visibility of each queue and number of items in each queue
