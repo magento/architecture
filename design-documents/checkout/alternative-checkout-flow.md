@@ -24,7 +24,7 @@ The `Add to Cart` operation receives only basic list of product attributes like 
 
 The different quote's calculators, like Cart Price Rule calculator, can make requests to PIM/Catalog to retrieve additional product details. In general, the proposed schema does not change the checkout flow significantly but has ideas for API improvements.
 
-## One-directional checkout flow
+## Uni-directional checkout flow
 
 The flow assumes that each component like Cart, Quote, Shipping, etc. will receive all needed details to perform operations. This approach allows resolving and reducing a list of dependencies between modules. Cart will depend on Catalog. Quote will depend on Cart and must not depend on Catalog. Order will depend on Quote and must not depend on Cart or Catalog.
 
@@ -96,7 +96,7 @@ Let's consider the totals calculation might look like.
 
 ![Totals Calculation](img/totals-calculation-pipeline.png)
 
-Each calculator receives Quote DTO and Totals DTO, calculates totals and creates new Totals DTO with calculated amount. This approach allows not changing quote object, have defined interface for totals and change the order of calculation. Magento provides multiple configuration to change the order of calculation, for example, discount can be applied before shipping amount or after.
+Each calculator receives Quote DTO and Totals DTO, calculates totals and creates new Totals DTO with calculated amount. This approach allows not change quote object, have defined interface for totals and change the order of calculation. Magento provides multiple configuration to change the order of calculation, for example, discount can be applied before shipping amount or after.
 
 ![Totals Calculation 2](img/totals-calculation-pipeline-2.png)
 
