@@ -37,8 +37,6 @@ Simpler example:
 * Webhook listener calls customer query API with provided customer id. The response may contain new data that was not provided in original request(e.g. totalSpent, customer_group, total_orders, etc)
 * Webhook framework notifies all subscribers with customer data
 
-:warning: Webhooks are supposed to push data updates only. Initial data should be extracted from Magento using standard APIs like GrapQL and REST. :warning:
-
 #### Webhook declaration
 New webhook could be defined by the following XML declaration in module context:
 
@@ -137,7 +135,7 @@ All shared secrets should be at least 32 chars long - see https://auth0.com/blog
 
 Having shared secret per consumers allows to prevent `replay` attacks on different consumers.
 
-Additionally, webhook framework should allow subscribers to add custom headers and http authentication to HTTP calls in order to support legacy/temporary/local environments. 
+Additionally, webhook framework should allow subscribers to add custom headers and http authentication to HTTP calls in order to support legacy/temporary/local environments.
 
 #### Other considerations
 
