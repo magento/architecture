@@ -31,6 +31,28 @@ doesn't make sense in context of a customer managing itself since a customer can
 All of these problems stem from having business layer contracts/entities exposed as presentation layer operations/data.
  
  
+###### Examples of classes that contain presentation layer logic
+While service contracts implementations usually can contain all the logic needed to execute an operation various
+presentation areas would require additional logic to convey results to users or to extract operations' arguments from
+user input. Since service contracts are not supposed to know about context they are also not feet to contain additional
+authorization related logic.
+ 
+Examples of cases when we need additional context aware/presentation logic:
+* When we need to validate entity ownership before performing an operation using authenticated user entity
+* Limit frequency of operation execution (for anti-bruteforce measures)
+* Prepare service layer DTOs for presentation, use additional service contracts for reading data to add to an
+  operation's result (most used in HTML area)
+* Plugin that would execute an additional operation based on session data/user context
+* Request throttling for a specific operation
+* Save additional data to session after performing an operation for presentation purposes
+* Log operation result/execution including current context
+ 
+Logic for cases described above is usually contained in controllers for HTML area, resolvers for GraphQL area and
+_nowhere_ for REST/SOAP area. REST/SOAP area not having an ability to execute presentation level/context aware logic
+is not the only problem - another problem is that often such logic can be reused across different areas and classes
+containing it will be placed in _Model_ namespace which may confused developers into using them inside service contracts.
+ 
+ 
 ## GraphQL
 #### Current situation
 GraphQL (sometimes) utilizes service contracts and relies on them to have execute complex validations if any needed.
@@ -106,7 +128,7 @@ There are couple of ways we can introduce this concept to Magento:
 * create a devdocs page/update technical guidelines to inform community
  
  
-#### Introduce reusable user input processors
+#### Separate presentation layer/context aware classes 
 Sometimes before passing arguments to a service contracts we would have to perform user input processing that cannot
 be covered with declarative validation or existing ACL policies regarding of our current area (HTML/REST/SOAP/GraphQL).
  
@@ -117,17 +139,25 @@ and GraphQL resolvers would be able to include such logic but it would not be re
 could be performed by the service contract responsible for posting order but service contracts are not supposed to know
 about authenticated users.
  
-The solution to these problems would be to introduce reusable area-agnostic user input processors that would perform
+The solution to these problems would be to employ reusable area-agnostic context aware classes that would perform
 such actions. These would be arbitrary classes with no common interface but they would be reusable across different areas
-and reside inside a special namespace `Presentation` to inform developers that this classes belong to presentation
+and reside inside a special namespace `ContextAware` to inform developers that this classes belong to presentation
 layer and are not supposed to be used inside other layers. These classes could be used explicitly by HTML controllers
 and graphQL resolvers and declared for REST/SOAP inside webapi.xml.
  
+These classes would include classes for:
+* working with user sessions
+* complex authorization
+* context-aware validation
+* working directly with request/response objects
+* extracting data from requests into service layer DTOs
+* gathering data for view from service layer DTOs
  
-In addition to the example above let's see how we could perform the ownership validation for shipping address with
-a user input processor.
  
-Let's say we have a service contracts responsible for updating shipping address for an order:
+In addition to examples above let's see how we could perform the ownership validation for shipping address with
+a context aware class.
+ 
+Let's say we have a service contract responsible for updating shipping address for an order:
 ```php
 interface OrderManagerInterface
 {
@@ -137,7 +167,7 @@ interface OrderManagerInterface
 }
 ```
  
-and then we create user input processor to check the ownership:
+and then we create context aware class to check the ownership:
 ```php
 namespace Magento\Sales\Presentation;
 
@@ -157,7 +187,7 @@ class OrderShippingAddressValidator
     }
 }
 ```
-Notice how it's aware of context by using authenticated user's ID. These processors woould often use different context
+Notice how it uses authenticated user's ID. These classes would often use different context
 objects like _RequestInterface_, _UserContextInterface_ and _SessionManagerInterface_ thus indicating they are not part of
 service layer.
  
@@ -228,10 +258,12 @@ class EditOrderAddress  implements ResolverInterface
  
 When it comes to REST/SOAP we don't have a dedicated presentation layer processors where to invoke the validator.
 To solve this we must introduce the ability to insert __middleware__ to be used before arguments are passed to defined via
-webapi.xml service contracts. These middleware classes will have to have the same signature as the service contracts
+webapi.xml service contracts and after they are executed. _Before_ middleware classes will have to have the same signature as the service contracts
 that are responsible for endpoints in order to process arguments and will return arrays with modified arguments
 in order to be able to change data before it reaches the service contracts (this is due to service contracts' arguments
-being immutable). Developers will be able to specify these middleware classes to be used for endpoints via webapi.xml.
+being immutable). _After_ middleware classes will have to accept service contracts' return values and return same type of values.
+ 
+Developers will be able to specify these middleware classes to be used for endpoints via webapi.xml.
  
 Example on how we would introduce the shipping address validation to the endpoint using
 _OrderManagerInterface::updateShippingAddress()_ service contract:
@@ -285,3 +317,4 @@ arguments declaration.
   * Custom layout permissions
   * Unify customer address ID to customer ID validation across HTML/REST/SOAP/GraphQL presentations
   * Gift card attempts validator
+  * Move non-API presentation layer/context aware classes into the new namespace in couple of modules
