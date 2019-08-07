@@ -56,6 +56,17 @@ All of the page attributes that can be applied to store scope will be defined as
     
 -   An upgrade script will be provided that will convert all existing data into the new schema, associating all existing pages to the All Store Views scope.
 
+##### Pros:
+-   EAV aligns with existing Product & Category design
+-   This approach will allow users to manage products & CMS pages the same way
+-   EAV is familiar and recommended
+##### Cons:
+-   EAV may be overkill since we aren’t (for now) adding the ability for admin to create additional attributes
+-   These changes will be backwards incompatible and must be delivered in 2.4
+
+
+Note: These changes will not address the existing difficulty of using the same content for multiple websites/store views. A new story will be created to address this separately and will be owned by Eugene.
+
 #### Scenario: New Page
 When a new page is created, it will default to the All Store Views scope and the user will not be able to select a different scope until the page is saved. This ensure there is always a default fallback defined and is how the Product & Categories scope selection works.
 
@@ -63,7 +74,7 @@ When a new page is created, it will default to the All Store Views scope and the
 When an existing page is loaded it will default to the "All Store Views" scope. When the user selects a new store scope the system will attempt to load the content matching the current `page_id` and selected `store_id`. If none exists, it will fallback to the "All Store Views" data. If changes are made and saved, new entries will be created in the EAV tables for the selected `store_id`.
 
 #### Scenario: Deleting a page
-Delete a page deletes all content associated with it for all store views.
+Deleting a page deletes all content associated with it for all store views.
 
 #### Scenario: Duplicating a page
 When the user opens a CMS page and selects "Save and Duplicate", any changes made will be saved and the page will be duplicated, along with all of the store-specific content. The new page will be (globally) disabled by default, as it currently functions.
