@@ -14,15 +14,15 @@ Each quote is used to create a separate order, the quote will have time to live 
 
 This proposal describes multiple approaches for the checkout flow.
 
-## Bidirectional checkout flow
+## Current checkout flow with modifications
 
 This flow is based on the current checkout flow and assumes improving current API without data flow modification. The Cart and Quote modules will still use Catalog and PIM to retrieve product details.
 
-![Bidirectional checkout flow](img/alternative-checkout-flow.png)
+![Current checkout flow](img/alternative-checkout-flow.png)
 
 The `Add to Cart` operation receives an only basic list of product attributes like UUID (SKU for the current implementation), quantity, price, and options. All additional details like product dimensions for shipping rates calculations, each module (service) will request from PIM (Catalog for the current implementation).
 
-The different quote's calculators, like Cart Price Rule calculator, can make requests to PIM/Catalog to retrieve additional product details. In general, the proposed schema does not change the checkout flow significantly but has ideas for API improvements.
+The different quote's calculators, like Cart Price Rule calculator, can make requests to PIM/Catalog to retrieve additional product details. In general, the proposed schema does not change the checkout flow significantly but has API improvements.
 
 ## Uni-directional checkout flow
 
@@ -37,8 +37,7 @@ The Cart will depend on Catalog. Quote will have a knowledge about PIM, Shipping
 ## Data Flow
 
   1. When Quote is created?
-     * For physical products on Review & Payments step
-     * For virtual products billing address has to be entered first
+     * When customer click `Proceed to Checkout`
   2. Cart properties:
      * Line Items:
        * SKU
@@ -123,7 +122,7 @@ There are still open questions related to the proposed solutions:
  - How the reservation mechanism should be implemented (a customer wants to apply the coupon code/store credit/rewards balance for multiple quotes)?
  - Should quote TTL be fixed or dynamically calculated in runtime?
  - Do we want to have only one `Add to Cart` entry-point for multiple product types?
- - Should shipping address be a part of Cart?
+ - Should shipping address be a part of Cart? (No)
 
 ## Summary
 
