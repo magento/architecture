@@ -81,6 +81,8 @@ The Cart will depend on Catalog. Quote will have a knowledge about PIM, Shipping
 
 ## Quote creation flow
 
+A quote should be created from Cart after a customer clicks `Proceed to Checkout`, on the API level it will be a separate service contract like `QuoteEstimator::create`. After the quote is created, it became an immutable object and only totals can be recalculated (the totals will be represented as a separate object). If a list of items should be changed, when a new quote object should be created. Quote will live until TTL expires or an order is successfully placed.
+
 ![Quote Calculation](img/alternative-quote-calculation.png)
 
 ## Totals calculation improvements
@@ -122,7 +124,7 @@ There are still open questions related to the proposed solutions:
  - How the reservation mechanism should be implemented (a customer wants to apply the coupon code/store credit/rewards balance for multiple quotes)?
  - Should quote TTL be fixed or dynamically calculated in runtime?
  - Do we want to have only one `Add to Cart` entry-point for multiple product types?
- - Should shipping address be a part of Cart? (No)
+ - Should shipping address be a part of the Cart? (No)
 
 ## Summary
 
