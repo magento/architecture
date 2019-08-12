@@ -34,6 +34,8 @@ The Cart will depend on Catalog. Quote will have a knowledge about PIM, Shipping
 
 ![One-directional checkout flow](img/alternative-checkout-flow-2.png)
 
+The `Quotes Estimator` will the main entry point to create a quote based on the provided input and the `Totals Collector` will provided totals calculation based on the provided quote object and the configuration.
+
 ## Data Flow
 
   1. When Quote is created?
@@ -63,7 +65,7 @@ The Cart will depend on Catalog. Quote will have a knowledge about PIM, Shipping
   5. Quote
      * Line Items
         * Dimensions
-     * Shipping addresses
+     * Shipping address
      * Price Adjustments
         * Line Items Totals
             * Totals
@@ -95,11 +97,22 @@ Let's consider the calculation of the totals might look like.
 
 ![Totals Calculation](img/totals-calculation-pipeline.png)
 
-Each calculator receives Quote DTO and Totals DTO, calculates totals and creates new Totals DTO with the calculated amount. This approach allows not to change quote object, have defined an interface for totals and change the order of calculation. Magento provides multiple configurations to change the order of calculation, for example, discount can be applied before shipping amount or after.
+Each calculator receives Quote DTO and Totals DTO, calculates totals and creates new Totals DTO with the calculated amount. This approach allows to do not change a quote object, have a defined interface for totals and change the order of calculation. Magento provides multiple configurations to change the order of calculation, for example, discount can be applied before shipping amount or after.
 
 ![Totals Calculation 2](img/totals-calculation-pipeline-2.png)
 
 As the list of calculators and their order depend not only on configuration but also on such factors like a presence of shipping address (gift cards, virtual, downloadable products do not require shipping address) the calculations pipeline should be built-in runtime.
+
+### Data for calculation
+
+A quote has multiple parts of totals which should recalculated each time like:
+
+ - Discount - includes expiration time, availability, reservation0
+ - Store Credit - includes balance availability
+ - Shipping rate price - actual price for a product delivery
+ - Gift Card - includes expiration time, number of usages and balance availability
+ 
+There is still an open question if catalog prices should be re-calculated for an active quote.
 
 In the scope of Services Isolation project, the calculation of the totals can be implemented as a separate service.
 
@@ -125,6 +138,9 @@ There are still open questions related to the proposed solutions:
  - Should quote TTL be fixed or dynamically calculated in runtime?
  - Do we want to have only one `Add to Cart` entry-point for multiple product types?
  - Should shipping address be a part of the Cart? (No)
+ - Should we migrate to integer representation of amounts to avoid one-cent issues and support zero-decimal currencies out-of-box?
+ - Do we want to calculate all totals in both base and display currencies or just convert totals from base to display currency where it needed0?
+ - The current shopping cart contains actions which do not belong to it like shipping estimation, coupon and gift cards.
 
 ## Summary
 
