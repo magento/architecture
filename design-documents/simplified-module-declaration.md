@@ -2,39 +2,33 @@
 
 ## Problem
 
-Declaring a Magento module requires following files:
+Magento module metadata is declared in the following files today:
 
-* add `composer.json` - to declare package name, description, version, dependencies, etc
-* add `module.xml` - to declare module name and version dependencies
-* add `registration.php` - to let Magento know where the module resides, for Magento to be able to read configuration files
+* `module.xml` - declares module name and configuration load order dependencies
+* `registration.php` - tells Magento where the module resides for Magento to be able to read the module configuration files
+* (optional) `composer.json` - declares package name, description, version, dependencies, etc. It is optional and only becomes required if you want to distribute your module through Composer.
 
-The presense of 3 files causes duplication and complicated module management and sorting mechanisms. Current module sorting mechanism is inefficient.
+This implementation of Magento module declaration leads to some inconveniences:
+* the standard PHP way of declaring packages (`composer.json`) is optional if you want to write a module and becomes required if you're going to distribute it
+* Magento has its custom package declaration format that partly duplicates the `composer.json` format
+* every `registration.php` is included on every request. OPCache reduces the performance impact. But the whole problem can be avoided
 
-Every `registration.php` is included by Magento on every request. While with opcache this does not cause signfiicant performance impact, it can be avoided.
+## Proposal
 
-## Solution
-
-* Rely on **composer** for module management, eliminate part of Magento module management behavior.
-* Register composer installation hook that will perform magento-specific module management.
-* Eliminate `registration.php` files.
-  * Composer installation hook will generate a 'magento_components.php' file that will contain all magento components and their installation paths. Only this file will be included on every request.
-  * Move module sorting behavior to composer installation hook. Use third-party topological sorting library. Write sorted modules to `magento_components.php`. This will allow to move module sorting from deploy stage to build stage of publication.
-* Eliminate `module.xml` - composer.json contains 'real' module name. Move 'legacy' module names in `composer.json`
-* Use `composer.json` for module declaration. 
-
-## Open Questions
-
-As described by Vinai Kopp, performance of composer dependency resolution impacts developer experience. 
-
-`registration.php` file allows to quickly install a module without composer. Moving to composer will remove this optimisation. 
-
-The solution to this problem should be provided before `registration.php` can be removed. Possible options:
-
-* make `registration.php` optional instead of getting rid of it
-* add command to composer that will allow to re-read composer.json files of magento modules without full dependency resolution
+* Make `composer.json` the default way of declaring modules in Magento. `composer.json` is the standard package declaration format in PHP world. Switching to `composer.json` as the module declaration file will make Magento modules more familiar for non-Magento PHP developers and will reduce the need for duplication.
+  * Modules in `/app/code` will still be supported. They will not be installed using Composer, but they will declare their metadata in `composer.json`
+* Make `registration.php` optional
+  * Add Composer installation hook that will:
+    * Find all Composer packages installed in `/vendor` with `"type": "magento2-*"`
+    * Find all folders in `app/code` containing `composer.json` with `"type": "magento2-*"`
+    * Merge the lists and sort components based on their dependencies declared in `require` section of `composer.json` and `sequence` section of `module.xml`
+    * Write the sorted list to `/vendor/magento_components.php`
+  * This will reduce the number of files included by PHP process on every request
+* Make `module.xml` optional. `composer.json` contains 'real' module name
+* Using `composer.json` format does not mean that Composer will be the only way to install Magento modules. Modules installed in `app\code` folder will be supported
 
 ## POC
 
 POC is implemented in https://github.com/magento-architects/magento2/tree/split-framework (see \Magento\Framework\Component\ComponentInstaller::install) for `di.xml`, `webapi.xml`, `extension_attributes.xml`, and Service Contract metadata.
 
-Use https://github.com/magento-architects/magento-project for easy installation of a "hello world" applciation.
+Use https://github.com/magento-architects/magento-project for easy installation of a "hello world" application.
