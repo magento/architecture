@@ -95,52 +95,38 @@ interface ViolationsRepositoryInterface
 ```
  
 ## Nonce
-`script-src` and `style-src` directives allow to use _nonce_ to mark trusted _\<script\>_ and _\<style\>_ blocks which
-enables us to effectively disable `unsafe-inline` except for trusted blocks which may make migration to CSP friendly
-front-end easier for Magento core and merchants alike. Nonce can be used for script/style blocks containing JS/CSS but
-also for the ones having `src` attribute defined. Using this mechanism merchants can whitelist external scripts with
-nonce instead of having to add every external domain to the whitelist.
- 
-There is no way to whitelist an event handler defined via an attribute though (like _onclick_) or styles defined
-with _style_ attribute that's why nonce will be
-disabled by default and all `unsafe-inline` scripts/styles will be allowed. Merchants who'll be successful in getting
-reed of all event handlers/styles defined using HTML attributes will be able to enable _nonce_ via configuration
-and used it for whitelisting. With _nonce_ enable magento will also set `strict-dynamic` value for _script-src_ policy
-to allow scripts whitelisted with _nonce_ to load other scripts. This will be crucial to allow analytics/advertisement
-scripts to work since they often add a bunch of other scripts from a variety of domains when loaded.
- 
-It is possible to combine nonce and domain-list based whitelisting for CSP.
- 
-Magento will have to generate unique nonce (using _Magento\Framework\Math\Random_) for each response and developers will
-be able to use a presentation layer class to render nonce to their explicit inline scripts
-(similar to how form key is being added to templates). With _nonce_ enabled
-_Magento\Framework\View\Page\Config\Renderer_ will add nonce to all css/js assets being added to a page. With _nonce_
-disabled the presentation class used inside templates will not add nonce when called and _Renderer_ will not do it as well.
- 
-Additional effort will have to go to ensure proper nonce used/regenrated when page cache is enabled. It is possible to
-modify cached HTML with _Varnish_ using a VMODE.
+Inline scripts/styles and remote resources can be whitelisted by adding a unique per response nonce to
+_script, style, link_ elements but this approach is incompatible with Magento's page cache.
  
 ## Hash
-Hashes can be used to allow legitimate inline scripts/styles. A legitimate _script/style_ tag's content will be used to
+Hashes can be used to allow legitimate inline scripts/styles as well as remote ones.
+A legitimate _script/style_ tag's content will be used to
 generate hash and specify it in headers to allow it's execution. When both `unsafe-inline` and `algo-hash`
-script/style-src policies are specified only scripts/styles matching the hash will be allowed similar to nonce.
+script/style-src policies are specified only scripts/styles matching the hash will be allowed.
 Hashes do not work for _event handlers_ nor _style attributes_.
  
-Merchants will be able to enable _hash_ mode instead of _nonce_ mode to whitelist inline scripts/styles and use
-origin whitelisting for external resources. They may choose to do so due to complications with page-caching nonce
-introduces. As with _nonce_ merchants will have to get reed of event handlers/style attributes before enabling this mode.
-`strict-dynamic` value will be added to `script-src` and `style-src` policies once _hash_ mode is enabled.
+Magento will add `strict-dynamic` policy by default in order to extend whitelist to automatically include scripts
+loaded by scripts whitelisted by hashes dynamically.
+ 
+Merchants will be able to enable _hash_ mode alongside _origin whitelisting_ and use combination of both in order
+to whitelist both inline and external scripts/styles. To do this merchants will have to get rid of event handlers/style
+attributes first.
+ 
+CSP 3.0 will introduce remote resources whitelisting with _hashes_ which will allow merchants to employ only
+whitelisting by _hash_ without _origin whitelisting_.
+ 
+Magento will provide a utility for developers to use inside _.phtml_ templates for _hashes_ calculation.
  
 ## Dynamic whitelisting
-In order to utilize nonce/hash/origin whitelisting dynamically when including scripts/styles in _.phtml_ templates
-developers will be able to call helper available via local variable that will generate appropriate tag or add remote
-origin to whitelist.
+In order to utilize hash/origin whitelisting dynamically when including scripts/styles in _.phtml_ templates
+developers will be able to call the utility available via local variable that will generate appropriate tag or add remote
+origin to whitelist depending on the current mode.
  
 Consider template example:
 ```php
-<?php $csp->renderInline('script', ['type' => 'text/javascript', 'src' => 'http://other-domain.com/script.js']) ?>
+<?php $csp->renderTag('script', ['type' => 'text/javascript', 'src' => 'http://other-domain.com/script.js']) ?>
 
-<?php $csp->renderInline('style', [],
+<?php $csp->renderTag('style', [],
 <<<style
 body {
     color: green;
@@ -162,16 +148,8 @@ body {
 }
 </style>
 ```
-* nonce whitelisting
-```html
-<script type="text/javascript" src="http://other-domain.com/script.js" nonce="jdkhsadGHd=" />
-<style nonce="jdkhsadGHd=">
-body {
-    color: green;
-}
-</style>
-```
-* hash whitelisting
+ 
+* Hash whitelisting
 ```
 Content-Security-Policy: script-src http://other-domain.com
 Content-Security-Policy: style-src sha256-B2yPHKaXnvFWtRChIbabYmUBFZdVfKKXHbWtWidDVF8=
@@ -185,7 +163,8 @@ body {
 </style>
 ```
  
-It will be developers' responsibility to sanitize dynamic values inside whitelisted scripts (just as it is now).
+It will be developers' responsibility to sanitize dynamic values inside whitelisted inline scripts/styles
+(just as it is now).
 
  
 ## CSP configuration
@@ -201,10 +180,10 @@ and managed by a CLI command `security:csp:add <policy> <value> <value> --replac
 #### Theme developers
 Themes may introduce new static files on Magento pages loaded from various resource so they need a
 way to add those resources to the CSP whitelist. This can be done by introducing new _.xml_ file called
-_csp_whitelist.xml_ which will allow to __add__ new sources to the whitelist but not to modify existing ones.
+_csp_whitelist.xml_ which will allow to __add__ new sources to the _origin whitelist_ but not to modify existing ones.
 This sources will be required to have a URL or a URI with/without a wildcard but not containing
-reserved words like 'self' or just a wildcard. _nonce-\*\*\*_ sources will also be allowed to be whitelisted here for
-static inline javascripts. Policies that can be configured through this file
+reserved words like 'self' or just a wildcard._Hashes_ will also be allowed here in order to whitelist
+static inline javascripts/styles. Policies that can be configured through this file
 will be limited to _*-src/form-action_ policies.
  
 An example of _csp\_whitelist.xml_:
@@ -214,6 +193,11 @@ An example of _csp\_whitelist.xml_:
         <policy id="font-src">
             <values>
                 <value>fonts.mywebsite.com</value>
+            </values>
+        </policy>
+        <policy id="style-src">
+            <values>
+                <value>sha256-B2yPHKaXnvFWtRChIbabYmUBFZdVfKKXHbWtWidDVF8=</value>
             </values>
         </policy>
     </policies>
@@ -270,14 +254,14 @@ google analytics and various payment systems which we must whitelist additionall
 That will be the default whitelist Magento provides out of the box packaged alongside related modules via _csp\_whitelist.xml_.
  
 ## Future steps
-To allow merchants to use whitelisting with _nonce_ we have to get reed of event handlers via HTML attributes and
+To allow merchants to use whitelisting with _hash_ we have to get rid of event handlers provided via HTML attributes and
 style attributes in our templates. There is no way to disable `unsafe-eval` right now since we use it for UI components and
 some of the front-end libraries we employ need it (like jQuery). A strategy must be created to remove `eval()` usage
 from UI components.
  
 The work on refactoring templates to remove event handlers and _style_ attributes will be done after CSP is introduced
-gradually. In the meanwhile Merchants will be able to employ domain-whitelisting for CSP. Extension developers will
-have time to update their extension to allow both domain-whitelisting and nonce whitelisting.
+gradually. In the meanwhile Merchants will be able to employ origin-whitelisting for CSP. Extension developers will
+have time to update their extension to allow both _origin-whitelisting_ and _hash whitelisting_.
  
 ## Types of attacks that will be prevented by CSP implementation in Magento
 #### CSP with origin whitelisting only
@@ -307,7 +291,7 @@ have time to update their extension to allow both domain-whitelisting and nonce 
 </script>
 ```
  
-#### CSP with nonce/hash mode enabled
+#### CSP with hash mode enabled
 All of the above plus:
 * Inline small malicious scripts and styles
 ```html
