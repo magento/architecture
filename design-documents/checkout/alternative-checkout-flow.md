@@ -14,15 +14,16 @@ Each quote is used to create a separate order, the quote will have time to live 
 
 This proposal describes multiple approaches for the checkout flow.
 
-## Current checkout flow with modifications
+## Current checkout flow
 
-This flow is based on the current checkout flow and assumes improving current API without data flow modification. The Cart and Quote modules will still use Catalog and PIM to retrieve product details.
+This section describes current checkout flow. The Quote module will still use Catalog to retrieve product details.
 
 ![Current checkout flow](img/alternative-checkout-flow.png)
 
-The `Add to Cart` operation receives an only basic list of product attributes like UUID (SKU for the current implementation), quantity, price, and options. All additional details like product dimensions for shipping rates calculations, each module (service) will request from PIM (Catalog for the current implementation).
+The `Add to Cart` operation receives only product id and quantity. All additional details like product dimensions for shipping rates calculations, each module requests from the Catalog.
+Most of the actions like retrieving shipping rates, applying discounts, gift cards, etc. triggers whole cart/quote recalculation.
 
-The different quote's calculators, like Cart Price Rule calculator, can make requests to PIM/Catalog to retrieve additional product details. In general, the proposed schema does not change the checkout flow significantly but has API improvements.
+The different quote's calculators, like Cart Price Rule calculator, change quote object and totals and behavior might be unpredictable as different calculators can operate with the same data.
 
 ## Uni-directional checkout flow
 
@@ -34,12 +35,12 @@ The Cart will depend on Catalog. Quote will have a knowledge about PIM, Shipping
 
 ![One-directional checkout flow](img/alternative-checkout-flow-2.png)
 
-The `Quotes Estimator` will the main entry point to create a quote based on the provided input and the `Totals Collector` will provided totals calculation based on the provided quote object and the configuration.
+The `Quotes Estimator` will be the main entry point to create a quote based on the provided input and the `Totals Collector` will provide totals calculation based on the provided quote object and the configuration.
 
 ## Data Flow
 
   1. When Quote is created?
-     * When customer click `Proceed to Checkout`
+     * When a customer clicks `Proceed to Checkout`
   2. Cart properties:
      * Line Items:
        * SKU
@@ -79,7 +80,7 @@ The `Quotes Estimator` will the main entry point to create a quote based on the 
      * Customer
   6. Place Order: Order
      * Quote
-     * PaymentMethods with Billing Addresses
+     * PaymentMethod with Billing Addresses
 
 ## Quote creation flow
 
@@ -89,15 +90,15 @@ A quote should be created from Cart after a customer clicks `Proceed to Checkout
 
 ## Totals calculation improvements
 
-The current approach for quote calculation has multiple drawbacks like changes the quote object, quote totals collector is difficult to customize, a complicated logic to define the order of totals calculation (tax before/after discount, discount/tax rules for shipping, etc.), additional calls to 3rd party systems for shipping rate prices updating.
+The current approach for quote calculation has multiple drawbacks like changes in the quote object, a quote totals collector is difficult to customize, a complicated logic to define the order of totals calculation (tax before/after discount, discount/tax rules for shipping, etc.), additional calls to 3rd party systems for shipping rate prices updating.
 
-The proposed solution assumes that a quote will be an immutable object, each calculator will create new totals object based on previous and the order of calculation can be changed via configuration. As one of the benefits of the proposed approached - the list of calculators and their order can be visualized for better calculation understanding.
+The proposed solution assumes that a quote will be an immutable object and will operate with totals list, each calculator will create add new totals object based on totals list and the order of each calculation can be changed in runtime. As one of the benefits of the proposed approached - the list of calculators and their order can be visualized for better calculation understanding.
 
 Let's consider the calculation of the totals might look like.
 
 ![Totals Calculation](img/totals-calculation-pipeline.png)
 
-Each calculator receives Quote DTO and Totals DTO, calculates totals and creates new Totals DTO with the calculated amount. This approach allows to do not change a quote object, have a defined interface for totals and change the order of calculation. Magento provides multiple configurations to change the order of calculation, for example, discount can be applied before shipping amount or after.
+Each calculator receives Quote DTO and Totals List, calculates totals, creates new Totals DTO with the calculated amount and adds it to Totals List. This approach allows to do not change a quote object, have a defined interface for totals and change the order of calculation. Magento provides multiple configurations to change the order of calculation, for example, discount can be applied before shipping amount or after.
 
 ![Totals Calculation 2](img/totals-calculation-pipeline-2.png)
 
