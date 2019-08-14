@@ -117,15 +117,9 @@ There is still an open question if catalog prices should be re-calculated for an
 
 In the scope of Services Isolation project, the calculation of the totals can be implemented as a separate service.
 
-## Use-cases
+## Use cases
 
-The proposed solutions cover are following use-cases:
-
- - Based on multiple-shipping address, different stocks, etc. we can estimate multiple quotes at the same time
- - The Cart it's just a storage for items and might have only totals estimation
- - Quote and cart will have own TTL
- - The totals calculation is concentrated into a separate independent component
- - Cart might receive updates about Catalog price changes
+The proposed solution must be verified against use cases described in [this document](alternative-checkout-flow/use-cases.md).
 
 ## Open questions
 
