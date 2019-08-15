@@ -104,6 +104,14 @@ Each calculator receives Quote DTO and Totals List, calculates totals, creates n
 
 As the list of calculators and their order depend not only on configuration but also on such factors like a presence of shipping address (gift cards, virtual, downloadable products do not require shipping address) the calculations pipeline should be built-in runtime.
 
+![Totals Calc Sequence Diagram](img/totals-calc-sequence-diagram.png)
+
+And the following UML class diagram represents needed classes and interfaces.
+
+![UML class diagram](img/totals-calc-class-diagram.png)
+
+All client code will work with totals via `TotalsListInterface`, which will contain all calculated totals, also it provides a possibility to get all totals as list of objects.
+
 ### Data for calculation
 
 A quote has multiple parts of totals which should recalculated each time like:
@@ -136,6 +144,8 @@ There are still open questions related to the proposed solutions:
  - Should we migrate to integer representation of amounts to avoid one-cent issues and support zero-decimal currencies out-of-box?
  - Do we want to calculate all totals in both base and display currencies or just convert totals from base to display currency where it needed0?
  - The current shopping cart contains actions which do not belong to it like shipping estimation, coupon and gift cards.
+ - Do we want to use some kind of signature for quote and totals to do not re-calculate totals on every page loading?
+ - Persist totals in a separate table as JSON?
 
 ## Summary
 
