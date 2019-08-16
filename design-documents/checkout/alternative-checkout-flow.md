@@ -112,6 +112,16 @@ And the following UML class diagram represents needed classes and interfaces.
 
 All client code will work with totals via `TotalsListInterface`, which will contain all calculated totals, also it provides a possibility to get all totals as list of objects.
 
+All totals will be persisted as JSON structure into the database which allows having dynamic totals structure for different entities like quote, order, invoice, credit memo without increasing the list of database columns. For example, the current `quote` database table contains 28 fields related to different types of totals like price with/without tax, used customer balance, amounts with/without base currency, etc. The new structure would allow to store all totals in one field. The currency exchange rate will be stored instead of duplication of amounts for base and display currencies. As all calculations are happen only in base currency, the display currency is used for amount representation on storefront.
+
+The next schema represents relations between totals and other entities like quote, order, invoice, credit memo.
+
+![Totals Database ER diagram](img/totals-db-er.png)
+
+The usage of UUID would allow removing dependency to the entity type and make entity/totals storage more agnostic.
+
+![Totals Database ER + UUID diagram](img/totals-er-uuid.png)
+
 ### Totals Calculation Priority
 
 The current implementation of totals calculation allows to specify the priority of calculators execution:
@@ -164,10 +174,8 @@ There are still open questions related to the proposed solutions:
  - Do we want to have only one `Add to Cart` entry-point for multiple product types?
  - Should shipping address be a part of the Cart? (No)
  - Should we migrate to integer representation of amounts to avoid one-cent issues and support zero-decimal currencies out-of-box?
- - Do we want to calculate all totals in both base and display currencies or just convert totals from base to display currency where it needed0?
  - The current shopping cart contains actions which do not belong to it like shipping estimation, coupon and gift cards.
  - Do we want to use some kind of signature for quote and totals to do not re-calculate totals on every page loading?
- - Persist totals in a separate table as JSON?
 
 ## Summary
 
