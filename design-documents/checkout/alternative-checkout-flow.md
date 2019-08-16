@@ -112,6 +112,28 @@ And the following UML class diagram represents needed classes and interfaces.
 
 All client code will work with totals via `TotalsListInterface`, which will contain all calculated totals, also it provides a possibility to get all totals as list of objects.
 
+### Totals Calculation Priority
+
+The current implementation of totals calculation allows to specify the priority of calculators execution:
+- 100 Subtotal
+- 190 Gift Wrapping
+- 200 Subtotal Tax
+- 225 Weee (FPT)
+- 300 Discount
+- 350 Shipping
+- 375 Shipping Tax
+- 400 Shipping Discount
+- 425 Gift Wrapping Tax
+- 450 Tax
+- 460 Weee (FPT) Tax
+- 475 Gift Wrapping After Tax
+- 550 Grand Total
+- 700 Gift Card Account
+- 750 Customer Balance
+- 1000 Reward
+
+The last three calculators `Gift Card Account`, `Customer Balance`, `Reward` have incorrect priority because they adjust `Grand Total` which should be last in the list.
+
 ### Data for calculation
 
 A quote has multiple parts of totals which should recalculated each time like:
