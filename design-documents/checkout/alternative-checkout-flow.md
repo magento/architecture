@@ -16,12 +16,11 @@ This proposal describes multiple approaches for the checkout flow.
 
 ## Current checkout flow
 
-This section describes current checkout flow. The Quote module will still use Catalog to retrieve product details.
-
+This section describes current checkout flow.
 ![Current checkout flow](img/alternative-checkout-flow.png)
 
 The `Add to Cart` operation receives only product id and quantity. All additional details like product dimensions for shipping rates calculations, each module requests from the Catalog.
-Most of the actions like retrieving shipping rates, applying discounts, gift cards, etc. triggers whole cart/quote recalculation.
+Most of the actions like page reloading, retrieving shipping rates, applying discounts, gift cards, etc. triggers whole cart/quote recalculation.
 
 The different quote's calculators, like Cart Price Rule calculator, change quote object and totals and behavior might be unpredictable as different calculators can operate with the same data.
 
@@ -114,6 +113,41 @@ All client code will work with totals via `TotalsListInterface`, which will cont
 
 All totals will be persisted as JSON structure into the database which allows having dynamic totals structure for different entities like quote, order, invoice, credit memo without increasing the list of database columns. For example, the current `quote` database table contains 28 fields related to different types of totals like price with/without tax, used customer balance, amounts with/without base currency, etc. The new structure would allow to store all totals in one field. The currency exchange rate will be stored instead of duplication of amounts for base and display currencies. As all calculations are happen only in base currency, the display currency is used for amount representation on storefront.
 
+The example of totals presentation:
+
+```json
+{
+   "amount":1002,
+   "currency":"USD",
+   "display_currency":"EUR",
+   "currency_exchange_rate":0.92,
+   "is_applicable":true,
+   "code":"totals_list",
+   "totals":[
+      {
+         "code":"subtotal",
+         "amount":902,
+         "is_applicable":true
+      },
+      {
+         "code":"shipping",
+         "amount":100,
+         "is_applicable":true
+      },
+      {
+         "code":"discount",
+         "amount":0,
+         "is_applicable":false
+      },
+      {
+         "code":"grand_total",
+         "amount":1002,
+         "is_applicable":true
+      }
+   ]
+}
+```
+
 The next schema represents relations between totals and other entities like quote, order, invoice, credit memo.
 
 ![Totals Database ER diagram](img/totals-db-er.png)
@@ -184,7 +218,7 @@ The main benefits of the proposed changes are the following:
  - Clear boundaries between Cart and Quote components
  - Multi-address checkout out-of-box
  - Support of immutable multi-quote flow
- - Unified interface via `PriceAdjustments` for totals calculation
+ - Unified interface via `ToalsListInterface` for totals calculation
  - One-directional flow allows reducing communication between components
  - Possibility to separate quotes based on stock availability
  - Improving API customizability and extensibility
