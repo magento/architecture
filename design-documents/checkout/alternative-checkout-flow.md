@@ -34,7 +34,13 @@ The Cart will depend on Catalog. Quote will have a knowledge about PIM, Shipping
 
 ![One-directional checkout flow](img/alternative-checkout-flow-2.png)
 
-The `Quotes Estimator` will be the main entry point to create a quote based on the provided input and the `Totals Collector` will provide totals calculation based on the provided quote object and the configuration.
+The `Quotes Estimator` will be the main entry point to create a quote based on the provided input and the `Totals Collector` will provide totals calculation based on the provided quote object and the configuration. The `Shipping Rates Estimator` will be agnostic to the quote object and will provide shipping rates based on input data like shipping origin, shipping destination, items dimensions. The unified input data would allow using the same `Shipping Rates Estimator` for RMA, order estimated delivery, etc. without modifications. Also, the estimator will support rates retrieving only for a specified shipping method to reduce a number of calls to other shipping carriers (the current implementation get rates from all configured carriers).
+
+The following sequence diagram shows how the place order will look like according to the proposed solution:
+
+![Place Order Flow](img/alternative-checkout-place-order.png)
+
+The [GraphQL](https://graphql.org/learn/queries/) allows combining multiple queries/mutations in the same HTTP request which reduce the number of communications between client and backed applications. According to the proposed flow, the requests like getting available shipping and payment methods in some cases can be merged into a single request. Also, depending on how the checkout flow is built, requests to select a shipping method, payment, applying a discount, customer balance can be combined, which allows to do not re-calculate quote totals for each operation and do it only once for final input data.
 
 ## Data Flow
 
