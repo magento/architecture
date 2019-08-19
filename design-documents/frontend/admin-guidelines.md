@@ -40,12 +40,12 @@ For more information behind these technology choices, refer to the [Technical Vi
   "dependencies": {
 
     // Some utility functions (use native JS, don't install Lodash)
-    "@queso/camel-case": "^0.2",
+    "@queso/camel-case": "^0",
     "@queso/kebab-case": "^1",
 
     // Universal fetching (don't use axios or fetch)
-    "ky": "^0.12",
-    "ky-universal": "^0.3",
+    "ky": "^0",
+    "ky-universal": "^0",
 
     // React
     "react": "^16",
@@ -63,7 +63,7 @@ For more information behind these technology choices, refer to the [Technical Vi
     "@loadable/component": "^5",
 
     // Internationalization
-    "react-intl": "^2",
+    "react-intl": "^3",
 
     // Theming
     "react-theme-context": "^2",
@@ -85,7 +85,7 @@ For more information behind these technology choices, refer to the [Technical Vi
     "@jedmao/redux-mock-store": "^2",
 
     // don't use enzyme
-    "@testing-library/react": "^8"
+    "@testing-library/react": "^9"
   }
 }
 ```
