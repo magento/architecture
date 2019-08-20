@@ -14,8 +14,9 @@ The table status information is not calculated until the table is accessed, and 
 
 ### Real Use Cases
 
-1. Magento native import relies on auto_increment for entity relations. To do: get confirmation from Stepan Furman that import is broken on MySQL 8.
-2. Extensions may rely on the adapter interface for their scenarios.
+1. Magento native import relies on auto_increment for entity relations. See `\Magento\ImportExport\Model\ResourceModel\Helper::getNextAutoincrement()`.
+2. Mview. See `\Magento\Framework\Mview\View\Changelog::getVersion()`.
+3. Extensions may rely on the adapter interface for their scenarios.
 
 ## Possible Solutions
 
