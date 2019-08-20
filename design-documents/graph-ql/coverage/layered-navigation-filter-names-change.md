@@ -14,7 +14,7 @@ Currently the schema for layered navigation is very specific to how you would re
 **Current schema:**
 
 - Query and return value:
-```json
+```graphql
 filters {
       filter_items_count
       name
@@ -34,7 +34,7 @@ filters {
 - `filters->filter_items->value_string` it's actually the comparison ID value that we use in product filtering. Indeed is a string type for now because all attributes are. We don't make that distinction and when we will the 'value_string' won't make any sense.
 
     It is used as:
-    ```json
+    ```graphql
     products(
         filter: {
           request_var: {eq: "value_string"}
@@ -43,16 +43,16 @@ filters {
     ```
 
 **Proposed schema:**
-```json
+```graphql
 filters {
       filter_items_count @deprecated
-      filter_options_count
+      options_count
       
       name @deprecated
-      filter_label
+      label
       
       request_var @deprecated
-      filter_field_name
+      field_name
       
       filter_items @deprecated {
         items_count
@@ -60,54 +60,54 @@ filters {
         value_string
       }
       
-      filter_options {
-        filter_option_results_count
-        field_option_label
-        field_option_value
+      options {
+        results_count
+        label
+        value
       }
     }
 ```
 
 Response: 
 
-```json
+```graphql
 "filters": [
         {
-          "filter_options_count": 2,
-          "filter_label": "Price",
-          "filter_field_name": "price",
-          "filter_options": [
+          "options_count": 2,
+          "label": "Price",
+          "field_name": "price",
+          "options": [
             {
-              "filter_option_results_count": 3,
-              "field_option_label": "*-100",
-              "field_option_value": "*_100"
+              "results_count": 3,
+              "label": "*-100",
+              "value": "*_100"
             },
             {
-              "filter_option_results_count": 2,
-              "field_option_label": "100-*",
-              "field_option_value": "100_*"
+              "results_count": 2,
+              "label": "100-*",
+              "value": "100_*"
             }
           ]
         },
         {
-          "filter_options_count": 6,
-          "filter_label": "Category",
-          "filter_field_name": "category_id",
-          "filter_options": [
+          "options_count": 6,
+          "label": "Category",
+          "field_name": "category_id",
+          "options": [
             {
-              "filter_option_results_count": 5,
-              "field_option_label": "Category 1",
-              "field_option_value": "3"
+              "results_count": 5,
+              "label": "Category 1",
+              "value": "3"
             },
             {
-              "filter_option_results_count": 1,
-              "field_option_label": "Category 1.1",
-              "field_option_value": "4"
+              "results_count": 1,
+              "label": "Category 1.1",
+              "value": "4"
             },
             {
-              "filter_option_results_count": 1,
-              "field_option_label": "Category 1.1.2",
-              "field_option_value": "6"
+              "results_count": 1,
+              "label": "Category 1.1.2",
+              "value": "6"
             },
           ]
         },
@@ -117,7 +117,7 @@ Response:
 **ProductInterface filters field area is impacted:** 
 
 Example Query:
-```json
+```graphql
 {
   products(
     filter: {
