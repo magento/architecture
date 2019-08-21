@@ -215,7 +215,7 @@ aggregations {
           ]
         },
         {
-          "count": 6,
+          "count": 3,
           "label": "Category",
           "attribute_code": "category_id",
           "options": [
@@ -281,3 +281,25 @@ Example Query:
 }
 
 ```
+
+## Changes to customAttributeMetadata query output
+
+customAttributeMetadata returns an array of attributes `[Attribute]`
+
+```graphql
+Attribute: {
+    attribute_code: String
+    
+    attribute_options: [AttributeOption]
+    
+    attribute_type: String
+    
+    entity_type: String
+}
+```
+
+`attribute_type` only tells us the value type of the attribute (e.g. int, float, string, etc)
+
+We propose to add an additional field (`input_type`), that will explain which UI type should be used for the attribute. (e.g. multiselect, price, checkbox, etc)
+This information can then be used to determine what type of filter applies to a particular aggregation option so the client knows how to filter it. 
+
