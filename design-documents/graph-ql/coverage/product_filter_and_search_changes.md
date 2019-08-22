@@ -124,11 +124,14 @@ gift_message_available: SortEnum
 
 #### New available sort options (on fresh Magento installation)
 ```
+relevance: SortEnum
 name: SortEnum
 position: SortEnum
 price: SortEnum
-(addition attributes that are availabled to use for sorting)
+(addition attributes that are available to use for sorting)
 ```
+If no sort order is requested, results will be sorted by `relevance DESC` by default.
+
 
 ## Changes to Layered Navigation Output
 
