@@ -104,7 +104,21 @@ This packages will be used only on CICD systems and Development environments whe
 ### Disadvantages:
 1. Dependencies between test modules must be maintained manually by Automation engineer.
 
+----
+## Additional improvement
+Since architecture team agreed to move Functional Tests from `app/code` to `dev/tests` there is a request to rename `acceptance` folder to `ui-functional`.
+
+### Benefits:
+1. More clear definition of what tests located under that directory.
+
+### Disadvantages:
+1. Require changes to CI Infrastructure.
+2. Backward incompatible change because some SIs and Extension developers can have own tests located under `dev/tests/acceptance`.
+----
 ### Implementation tasks
-1. Move all existing tests from modules to modules by pattern `{ModuleName}FunctionalTest` and relocate them from `app/code` to `dev/tests/acceptance`
-2. Update MFTF framework configuration to read XML entities based on new module structure
-3. Update infrastructure to put `magento2-functional-test-module` package types into separate metapackage and put this metapackage under `require-dev` section
+1. Rename `dev/tests/acceptance` to `dev/tests/ui-functional`.
+2. Update CI Infrastructure to rely on new path where configuration and tests located.
+3. Move all existing tests from modules to modules by pattern `{ModuleName}FunctionalTest` and relocate them from `app/code` to `dev/tests/ui-functional`.
+4. Update MFTF framework configuration to read XML entities based on new module structure.
+5. Update infrastructure to put `magento2-functional-test-module` package types into separate metapackage and put this metapackage under `require-dev` section.
+6. Update Documentation to reflect all changes
