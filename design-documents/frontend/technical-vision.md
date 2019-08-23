@@ -43,6 +43,7 @@ Creating a new [React][] project has never been easier with [CRA][], which comes
 - [Redux](https://redux.js.org/) as a predictable state container.
   - Handling of data fetching and side effects now have first class support with [React Suspense, React.lazy](https://reactjs.org/blog/2018/10/23/react-v-16-6.html#reactlazy-code-splitting-with-suspense) and [hooks](https://reactjs.org/blog/2019/02/06/react-v16.8.0.html).
   - Logging with [redux-logger](https://github.com/evgenyrodionov/redux-logger).
+  - [Redux Starter Kit](https://redux-starter-kit.js.org/).
 - [Loadable components](https://www.smooth-code.com/open-source/loadable-components/) for code splitting.
 - **Internationalization** with [react-intl](https://www.npmjs.com/package/react-intl).
   - _Warning: the documented path here is to couple the components to this library. This will be fine for most projects, but if ultimate **portability** is required, you will need to decouple the component from the [i18n](https://en.wikipedia.org/wiki/Internationalization_and_localization) library._
@@ -90,7 +91,7 @@ For **performance** reasons, JavaScript should only be used for cheap operations
 
 All users should have a **consistent** user experience. For the best **performance**, those with the latest browsers should not be penalized by incurring an additional payload hit than those with older browsers.
 
-In a CRA, [react-app-pollyfill](https://github.com/facebook/create-react-app/tree/master/packages/react-app-polyfill#react-app-polyfill) is the de facto way to do it.
+In a CRA, [react-app-pollyfill](https://github.com/facebook/create-react-app/tree/master/packages/react-app-polyfill#react-app-polyfill) is the supported path.
 
 ## [React][] UI Component Library
 

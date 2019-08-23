@@ -78,12 +78,16 @@ Refer also to [Magento DevDocs | Supported browsers](https://devdocs.magento.com
 
 #### Utility functions
 
-Use vanilla (native) JS if possible, utility functions if not. [You don't (may not) need Lodash/Underscore](https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#you-dont-may-not-need-lodashunderscore-). See also [just](https://github.com/angus-c/just#just).
+Use vanilla (native) JS if possible, utility functions if not. [You don't (may not) need Lodash/Underscore](https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#you-dont-may-not-need-lodashunderscore-). See also [Just](https://github.com/angus-c/just#just) and [Queso](https://github.com/jedmao/queso#readme) for 1st-class TypeScript support.
+
+To be clear, if you adhere to the advice above and you still need some utility functions, it should only be a handful of them. Use your best judgment. Install what you need, but keep it slim!
 
 ```json
 "@queso/camel-case": "^0",
 "@queso/kebab-case": "^1",
 ```
+
+:point_up: just an example.
 
 #### SSR
 
@@ -112,13 +116,21 @@ See [The Future of React Router and @reach/router](https://reacttraining.com/blo
 
 #### State management
 
-[Immutability Helper](https://www.npmjs.com/package/immutability-helper) was [rewritten in TypeScript](https://github.com/kolodny/immutability-helper/pull/123) and strikes a balance between features and size.
+[React Context][] doesn't replace the need for [Redux][] in [every case](https://daveceddia.com/context-api-vs-redux/), so if you need it, you need it. It pairs well with [Immer][].
+
+That said, if you can manage to write your applications without [Redux][], absolutely go for it!
 
 ```json
-"immutability-helper": "^3",
+"immer": "^3",
 "react-redux": "^7",
 "redux": "^4",
 "redux-thunk": "^2",
+```
+
+Alternatively, [Redux Starter Kit](https://redux-starter-kit.js.org/) uses [Redux][] and [Immer][] under the hood, if that suits your fancy.
+
+```json
+"redux-starter-kit": "^0",
 ```
 
 #### Code splitting
@@ -143,11 +155,12 @@ For context, read [Optimize your React application with Loadable Components](htt
 
 #### GraphQL client
 
-[Why a GraphQL client?](https://www.prisma.io/blog/relay-vs-apollo-comparing-graphql-clients-for-react-apps-b40af58c1534#why-a-graphql-client)
+[Apollo Boost](https://www.npmjs.com/package/apollo-boost) is a zero-config way to start using Apollo Client.
 
 ```json
-"babel-plugin-relay": "^5",
-"react-relay": "^5",
+"apollo-boost": "^0",
+"graphql": "^14",
+"react-apollo": "^3",
 ```
 
 #### TypeScript import helpers
@@ -196,3 +209,6 @@ Don't use [enzyme](https://airbnb.io/enzyme/). Read [the problem statement of Re
 Please [submit an issue](https://github.com/magento/architecture/issues) if you want to have a discussion or suggest a change to any of these technology choices!
 
 [craco]: https://www.npmjs.com/package/@craco/craco
+[immer]: https://github.com/immerjs/immer
+[react context]: https://reactjs.org/docs/context.html
+[redux]: https://redux.js.org/
