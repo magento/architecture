@@ -103,7 +103,8 @@ Prepare for [SSR](https://medium.com/walmartlabs/the-benefits-of-server-side-ren
 ```json
 "react": "^16",
 "react-dom": "^16",
-"react-helmet": "^5",
+// pending https://github.com/nfl/react-helmet/issues/465
+"react-helmet-async": "^1",
 ```
 
 #### Routing
