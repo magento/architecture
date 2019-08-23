@@ -37,13 +37,15 @@ Creating a new [React][] project has never been easier with [CRA][], which comes
 
 [CRA][] also comes with [Jest][], a delightful JavaScript Testing Framework with a focus on simplicity. [Jest][] comes with [snapshot testing](https://jestjs.io/docs/en/snapshot-testing), another way to ensure **quality** in that we don't inadvertently introduce breaking changes. Add [react-testing-library](https://www.npmjs.com/package/react-testing-library) to encourage good testing practices. The better the development experience in these cycles, the better **quality** we achieve as a result.
 
-### Technologies
+### React Technologies
+
 - Create a new [React][] project with [CRA][].
 - [Redux](https://redux.js.org/) as a predictable state container.
-   - Handling of data fetching and side effects now have first class support with [React Suspense, React.lazy](https://reactjs.org/blog/2018/10/23/react-v-16-6.html#reactlazy-code-splitting-with-suspense) and [hooks](https://reactjs.org/blog/2019/02/06/react-v16.8.0.html).
-   - Logging with [redux-logger](https://github.com/evgenyrodionov/redux-logger).
+  - Handling of data fetching and side effects now have first class support with [React Suspense, React.lazy](https://reactjs.org/blog/2018/10/23/react-v-16-6.html#reactlazy-code-splitting-with-suspense) and [hooks](https://reactjs.org/blog/2019/02/06/react-v16.8.0.html).
+  - Logging with [redux-logger](https://github.com/evgenyrodionov/redux-logger).
+- [Loadable components](https://www.smooth-code.com/open-source/loadable-components/) for code splitting.
 - **Internationalization** with [react-intl](https://www.npmjs.com/package/react-intl).
-   - _Warning: the documented path here is to couple the components to this library. This will be fine for most projects, but if ultimate **portability** is required, you will need to decouple the component from the [i18n](https://en.wikipedia.org/wiki/Internationalization_and_localization) library._
+  - _Warning: the documented path here is to couple the components to this library. This will be fine for most projects, but if ultimate **portability** is required, you will need to decouple the component from the [i18n](https://en.wikipedia.org/wiki/Internationalization_and_localization) library._
 
 ## [TypeScript][]
 
@@ -59,13 +61,14 @@ Catching errors at compile time also increases **productivity**, because we don'
 
 _Disclaimer: though possible to introduce [TypeScript][] into an existing [CRA][] app and though [TypeScript][] can co-exist with JavaScript, it may not make sense to introduce it into an existing project if you feel it may hinder momentum._
 
-### Technologies
+### TypeScript Technologies
+
 - [Adding TypeScript to CRA](https://facebook.github.io/create-react-app/docs/adding-typescript).
-- Code **consistency** is enforced via [configuration](http://www.typescriptlang.org/docs/handbook/tsconfig-json.html), linting with [TSLint][] and formatting with [Prettier][].
-   - Use the most strict tsconfig rules before you write a single line of code, because it's much harder to introduce these rules later in a project.
-   - Use [`tslint-config-prettier`](https://www.npmjs.com/package/tslint-config-prettier) to ensure there is no overlap between [TSLint][] and [Prettier][].
-   - Extend `tslint-recommended` as a starting point. Introduce new rules with extreme hesitation to prevent bikeshedding over trivial and subjective preferences.
-   - With [`husky`](https://www.npmjs.com/package/husky), ensure errors are caught before CI with a [`lint-staged`](https://www.npmjs.com/package/lint-staged) pre-commit hook and a pre-push hook for checking types.
+- Code **consistency** is enforced via [configuration](http://www.typescriptlang.org/docs/handbook/tsconfig-json.html), linting with [TypeScript ESLint][] and formatting with [Prettier][].
+  - Use the most strict [compiler options](https://www.typescriptlang.org/docs/handbook/compiler-options.html) before you write a single line of code, because it's much harder to introduce these rules later in a project.
+  - Use [`eslint-config-prettier`](https://github.com/prettier/eslint-config-prettier) and extend `prettier/@typescript-eslint` to ensure there is no overlap between [TypeScript ESLint][] and [Prettier][]. See [installation instructions](https://github.com/prettier/eslint-config-prettier#installation).
+  - Extend `eslint:recommended` as a starting point. Introduce new rules with extreme hesitation to prevent bikeshedding over trivial and subjective preferences.
+  - With [`husky`](https://www.npmjs.com/package/husky), ensure errors are caught before CI with a [`lint-staged`](https://www.npmjs.com/package/lint-staged) pre-commit hook and a pre-push hook for checking types.
 - Generate [TypeScript][] declarations for [CSS Modules](https://github.com/css-modules/css-modules) via [css-modules-typescript-loader](https://www.npmjs.com/package/css-modules-typescript-loader).
 - Documentation via [TSDoc](https://github.com/Microsoft/tsdoc#tsdoc).
 
@@ -76,6 +79,7 @@ We should prepare to achieve as much code sharing as possible, regardless of env
 On top of sharing code between different environments, we should also be concerned about sharing code between projects. For this, we should introduce a business logic repository that includes common helper functions – logic that we're likely to use between projects.
 
 ### Business Logic Repository
+
 1. Written and [documented](https://github.com/Microsoft/tsdoc#tsdoc) in [TypeScript][].
 1. [Semantic versioning](https://semver.org/) to ensure that progress can be made without breaking things for existing - consumers.
 1. 100% unit test coverage via [Jest][] for **consistency**. Whether or not you enforce 100% coverage in the rest of your project, there is additional value in thoroughly testing business logic.
@@ -83,6 +87,7 @@ On top of sharing code between different environments, we should also be concern
 For **performance** reasons, JavaScript should only be used for cheap operations on the front end, reserving expensive operations for a services layer. It's worth calling out that we could achieve even more code sharing if this API were written in JavaScript. For practical reasons, however, it makes more sense to leverage internal PHP resources for this task.
 
 ## Browser Support
+
 All users should have a **consistent** user experience. For the best **performance**, those with the latest browsers should not be penalized by incurring an additional payload hit than those with older browsers.
 
 There are [various ways](https://polyfill.io) to achieve this goal; however, an in-house approach might be warranted to prevent the stability issues of relying on 3rd party resources. One idea would be to publish multiple build targets, tailored to various environments.
@@ -121,19 +126,23 @@ There are times when you may consider downloading a 3rd party package (e.g., a c
 1. Search and compare this package with other similar packages to gauge which package is the best choice and feel free to reach out to other team members for guidance.
 
 ### Resources
+
 - [spectrum-css](http://opensource.adobe.com/spectrum-css/)
 
 ## Styles
 
-Bundle optimization works best when CSS Modules are imported directly into the JavaScript components that use them (a better [TypeScript][] experience is [on the horizon](https://github.com/facebook/create-react-app/pull/5877)).
+Bundle optimization works best when CSS Modules are imported directly into the JavaScript components that use them. The coupling here is a bit unfortunate for some projects (e.g., libraries), but pretty standard for applications. For ultimate **portability**, reusable components should be provided their styles externally.
 
-The coupling here is a bit unfortunate for some projects (e.g., libraries), but pretty standard for applications. For ultimate **portability**, reusable components should be provided their styles externally.
+### Linaria
 
-### Resources
+If you are interested in a CSS in JS solution, look no further than [Linaria](https://linaria.now.sh/), offering a zero-runtime CSS in JS library. In a CRA, you'll need [craco](https://www.npmjs.com/package/@craco/craco) to [install it without ejecting](https://github.com/adobe/generator-tsx/pull/16/files).
+
+### Style Resources
 
 - [Adding CSS Modules to CRA](https://facebook.github.io/create-react-app/docs/adding-a-css-modules-stylesheet)
 - [css-modules-typescript-loader](https://www.npmjs.com/package/css-modules-typescript-loader)
 - [CSS Modules VSCode extension](https://marketplace.visualstudio.com/items?itemName=clinyong.vscode-css-modules)
+- [typescript-plugin-css-modules](https://www.npmjs.com/package/typescript-plugin-css-modules) with [CRA support](https://github.com/facebook/create-react-app/pull/5877/files).
 
 ## Accessibility
 
@@ -157,6 +166,7 @@ We should leverage the built-in code coverage reports that [Jest][] provides, bu
   - Code Climate’s engineering process insights and automated code review for GitHub and GitHub Enterprise help you ship **better software, faster**.
 
 ### Resources
+
 - [Code Climate for TypeScript is here!](https://codeclimate.com/changelog/5a147fcac7d08102b700084e/)
 - [Code Climate | TSLint](https://docs.codeclimate.com/docs/tslint)
 
@@ -168,7 +178,7 @@ There are many types of tests you can have for an application and many variables
 
 ### Static Type System with [TypeScript][]
 
-When building an application, like building a trophy, we start at the foundation with a static type system and linter (e.g., [TypeScript][] and [TSLint][]). This sets up a good foundation and comes at a relatively low cost for new projects.
+When building an application, like building a trophy, we start at the foundation with a static type system and linter (e.g., [TypeScript][] and [TypeScript ESLint][]). This sets up a good foundation and comes at a relatively low cost for new projects.
 
 ### Unit & Integration Tests with [Jest][]
 
@@ -198,10 +208,10 @@ Ideally, for each front-end project, there will be a separate project that cover
 
 [Yeoman][] is a tool for scaffolding modern web applications. In an effort to make the above guide as painless as possible and to encourage best practices, a [TSX Yeoman Generator](https://www.npmjs.com/package/generator-tsx) has been created for you. Refer to its documentation for more information.
 
-[CRA]: https://facebook.github.io/create-react-app/
-[Jest]: https://jestjs.io/
-[Prettier]: https://prettier.io/
-[React]: https://reactjs.org/
-[TSLint]: https://palantir.github.io/tslint/
-[Typescript]: http://www.typescriptlang.org/
-[Yeoman]: https://yeoman.io/
+[cra]: https://facebook.github.io/create-react-app/
+[jest]: https://jestjs.io/
+[prettier]: https://prettier.io/
+[react]: https://reactjs.org/
+[typescript]: http://www.typescriptlang.org/
+[typescript eslint]: https://github.com/typescript-eslint/typescript-eslint
+[yeoman]: https://yeoman.io/
