@@ -29,10 +29,10 @@ Each section of the `package.json` file has been broken down into different topi
   - [Code splitting](#code-splitting)
   - [i18n](#i18n)
   - [Theming](#theming)
-  - [Relay](#relay)
+  - [GraphQL client](#graphql-client)
   - [TypeScript import helpers](#typescript-import-helpers)
 - [devDependencies](#devdependencies)
-  - [@types](#types)
+  - [Craco](#craco)
   - [Redux mock store](#redux-mock-store)
   - [Testing library](#testing-library)
 
@@ -67,10 +67,12 @@ Don't forget your [polyfills](https://create-react-app.dev/docs/supported-browse
 "browserslist": [
   ">0.2%",
   "not dead",
-  "not ie <= 11",
+  "not ie < 11",
   "not op_mini all"
 ],
 ```
+
+Refer also to [Magento DevDocs | Supported browsers](https://devdocs.magento.com/guides/v2.3/install-gde/system-requirements_browsers.html).
 
 ### dependencies
 
@@ -139,7 +141,9 @@ For context, read [Optimize your React application with Loadable Components](htt
 "react-theme-context": "^2",
 ```
 
-#### Relay
+#### GraphQL client
+
+[Why a GraphQL client?](https://www.prisma.io/blog/relay-vs-apollo-comparing-graphql-clients-for-react-apps-b40af58c1534#why-a-graphql-client)
 
 ```json
 "babel-plugin-relay": "^5",
@@ -165,7 +169,7 @@ Combined with the following TypeScript [compiler options](https://www.typescript
 
 ### devDependencies
 
-#### @types
+#### [Craco][]
 
 ```json
 "@craco/craco": "^5",

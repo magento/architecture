@@ -90,7 +90,7 @@ For **performance** reasons, JavaScript should only be used for cheap operations
 
 All users should have a **consistent** user experience. For the best **performance**, those with the latest browsers should not be penalized by incurring an additional payload hit than those with older browsers.
 
-There are [various ways](https://polyfill.io) to achieve this goal; however, an in-house approach might be warranted to prevent the stability issues of relying on 3rd party resources. One idea would be to publish multiple build targets, tailored to various environments.
+In a CRA, [react-app-pollyfill](https://github.com/facebook/create-react-app/tree/master/packages/react-app-polyfill#react-app-polyfill) is the de facto way to do it.
 
 ## [React][] UI Component Library
 
