@@ -70,7 +70,6 @@ _Disclaimer: though possible to introduce [TypeScript][] into an existing [CRA][
   - Use [`eslint-config-prettier`](https://github.com/prettier/eslint-config-prettier) and extend `prettier/@typescript-eslint` to ensure there is no overlap between [TypeScript ESLint][] and [Prettier][]. See [installation instructions](https://github.com/prettier/eslint-config-prettier#installation).
   - Extend `eslint:recommended` as a starting point. Introduce new rules with extreme hesitation to prevent bikeshedding over trivial and subjective preferences.
   - With [`husky`](https://www.npmjs.com/package/husky), ensure errors are caught before CI with a [`lint-staged`](https://www.npmjs.com/package/lint-staged) pre-commit hook and a pre-push hook for checking types.
-- Generate [TypeScript][] declarations for [CSS Modules](https://github.com/css-modules/css-modules) via [css-modules-typescript-loader](https://www.npmjs.com/package/css-modules-typescript-loader).
 - Documentation via [TSDoc](https://github.com/Microsoft/tsdoc#tsdoc).
 
 ## Portability
@@ -141,9 +140,7 @@ If you are interested in a CSS in JS solution, look no further than [Linaria](ht
 ### Style Resources
 
 - [Adding CSS Modules to CRA](https://facebook.github.io/create-react-app/docs/adding-a-css-modules-stylesheet)
-- [css-modules-typescript-loader](https://www.npmjs.com/package/css-modules-typescript-loader)
 - [CSS Modules VSCode extension](https://marketplace.visualstudio.com/items?itemName=clinyong.vscode-css-modules)
-- [typescript-plugin-css-modules](https://www.npmjs.com/package/typescript-plugin-css-modules) with [CRA support](https://github.com/facebook/create-react-app/pull/5877/files).
 
 ## Accessibility
 
