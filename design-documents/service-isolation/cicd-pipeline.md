@@ -1,21 +1,28 @@
-# CI/CD pipeline for service isolation
+# CI/CD tools
 
 ## About
 
-CI/CD moves to GitOps direction where pipelines (builds, deployment, etc) triggered by interaction with Git.
+This proposal describes desired state of CI/CD tools and focuses on developer experience of CI tools.
 
-In the scope of service isolation we want to have CI/CD process that would allow
-* Running tests on code change and update preview environment
-* Update stage environment (environment used for demos)
-* PR delivery to mainline
+### Terminology
+Preview environment - environment used by the team for internal testing and experiments, contains code for a feature that being developed.
+Stage environment - environment used by the team to demo changes to product owner.
 
-These steps currently are not automated.
+### Desired state of tools
+1. Interaction with CI/CD tools should be aligned GitOps approach (see [this](https://www.youtube.com/watch?v=BF3MhFjvBTU) video)
+1. CI tools should allow update preview and stage environments
+1. CI tools should allow PR delivery to mainline (auto merging of PRs)
+1. Adding new types of tests, deployment configuration, etc should not require devops team and be developer activity to not have team blockage
+1. CI tools should support Magento application that consists from multiple services (for GraphQl and service isolation)
+1. CD tools should be available to deploy Magento application that consists from multiple services (for GraphQl and service isolation)
+1. CI/CD tools that used internally to test Magento available for extension developers and system integrators
+1. CD tools should support rollback (and other deployment best practices like blue/greed deployment)
+1. Publication also triggered from Git
 
 ### Use cases (current and future)
 1. Run builds on code change
-1. Update preview environment used by the team for testing
-1. Update stage environment used by the team for demos
-1. Automatically merge pull requests after approval and builds are passed
+1. Update preview and stage environment used by the team for testing
+1. Automatically merge pull requests after approval if builds are passed
 1. Run builds for multiple repo combinations (open source + bundled extensions, commerce + bundled extensions, commerce only, etc)
 1. Specify what type of tests to run, all or only unit tests for instance
 1. Specify branches in each repository to use for a build 
@@ -62,15 +69,28 @@ Alternative approaches for triggering pipeline that runs tests
 #### Storing pipeline configuration
 Pipeline configuration can be stored in the separate repo. Pipeline build specific configuration can be stored in a separate repo or in the comment section on of the the PRs. Seems like storing pipeline configuration in the separate repo would be more clear.
 
+Here is example of configuration.
+
+```
+{
+    "branches": {}
+    "run_tests": {
+        "unit": {
+            "skip": {}
+        },
+        "integration": {
+            "skip": {}
+        }
+        "functional": {
+            "skip": {}
+            "retries": 2
+        }
+    }
+}
+```
+
 #### Tools
 Existing tooling doesn't have support support of multiple repositories. We may need to create our own tooling. This will be investigated in separate proposals.
-
-## Future considerations
-We can also automate the following
-* Publication can be triggered by creating release on github
-* Update production environment
-* Blue/green deployment
-* Canary deployment
 
 ## Open questions
 * How to deliver security fixes?
