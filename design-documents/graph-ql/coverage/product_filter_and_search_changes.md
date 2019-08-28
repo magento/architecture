@@ -48,11 +48,11 @@ or: ProductFilterInput
 **New available filter options (On fresh Magento installation)**
 ```
 category_id: FilterEqualTypeInput
-description: FilterLikeTypeInput
-name: FilterLikeTypeInput
+description: FilterMatchTypeInput
+name: FilterMatchTypeInput
 price: FilterRangeTypeInput
-short_description: FilterLikeTypeInput
-sku: FilterLikeTypeInput
+short_description: FilterMatchTypeInput
+sku: FilterEqualTypeInput
 (Additional custom attributes): (filter type determined by attribute type)
 ```
 
@@ -79,7 +79,7 @@ nin | [String]
 **New filter types**
 ```
 FilterEqualTypeInput (eq: String | in: [String])
-FilterLikeTypeInput (eq: String | like: String)
+FilterMatchTypeInput (match: String)
 FilterRangeTypeInput (from: String | to: String)
 ```
 
