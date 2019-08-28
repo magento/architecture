@@ -15,7 +15,7 @@ Stage environment - environment used by the team to demo changes to product owne
 1. Adding new types of tests, deployment configuration, etc should not require devops team and be developer activity to not have team blockage
 1. CI tools should support Magento application that consists from multiple services (for GraphQl and service isolation)
 1. CD tools should be available to deploy Magento application that consists from multiple services (for GraphQl and service isolation)
-1. CI/CD tools that used internally to test Magento available for extension developers and system integrators
+1. CI/CD tools that used internally (by developers and on Magento cloud) for extension developers and system integrators
 1. CD tools should support rollback (and other deployment best practices like blue/greed deployment)
 1. Publication also triggered from Git
 
