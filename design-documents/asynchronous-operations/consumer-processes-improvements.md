@@ -27,17 +27,14 @@ There is currently too little control over these consumer processes.
 What if people only very irregularly use one of these features mentioned above, let's say they only once a year export all their products to check their inventory levels.  
 Then you have some consumer process sitting there, doing nothing for 364 days in the year, wasting precious cpu cycles and taking up precious memory, until finally once a year the shopowner decides to execute a certain task it can execute.
 
-There is also the potential problem that the consumer process will take up more and more memory due to some memory leak in the code it executes.
-
 ### The suggested solution
 
 The suggestion is to give more control per consumer to the shopowner or developers managing the shop.  
-We could add some additional options to the consumer processes to keep them more under control. Currently there is one limit available: `max-messages`. If that number of messages gets processed, the consumer will kill itself.  
-I'd like to suggest some other limits which we can set:
+We could add some additional options to the consumer processes to keep them more under control.  
+Currently there is one limit available: `max-messages`. If that number of messages get processed, the consumer will kill itself.  
+I'd like to suggest another limit which we can set:
 
 - `max-idle-time`: if no message was being handled in xx seconds, then kill yourself
-- `max-time`: after xx total seconds, and after you are done with handling the current message, kill yourself
-- `memory-limit`: if xx MB's of memory is being taken up by the process and after you are done with handling the current message, kill yourself (a way to work around potential memory leaks)
 
 Next to these limits, a configurable sleep time might be nice:
 
@@ -61,11 +58,16 @@ That should save some precious server resources.
 
 These options should be configurable per consumer type.
 Some sensible defaults could be set in the [`queue_consumer.xml`](https://devdocs.magento.com/guides/v2.3/extension-dev-guide/message-queues/config-mq.html#queueconsumerxml) file for some of these options.  
-Next to that, developers or shopowners should be able to override these values per consumer type. At least being able to override them in the `app/etc/env.php` file would be nice, but a backend interface for making these things configurable would also be very nice (but can maybe be done in a later phase?).
+Next to that, developers or shopowners should be able to override these values per consumer type. At least being able to override them in the `app/etc/env.php` file would be nice, but a backend interface for making these things configurable would also be very nice.
 
-### Credits
+### Other solution currently being worked on by Magento
 
-Some of these ideas where taken from the [`symfony/messenger` component](https://github.com/symfony/messenger/blob/3d65f22f9a56f6475c19999fdbc3a897cefc8900/Command/ConsumeMessagesCommand.php#L77-L80).
+[MC-19250](https://github.com/magento/magento2/commit/269b47af3e37fbbe76e9f38d45fdb0cf969d45e3) was recently introduced in the code base. ([Docs](https://github.com/magento/devdocs/pull/5289))  
+Which introduces an option `consumers_wait_for_messages`. When that option is set to false, a consumer will stop the moment it doesn't find any new messages.
+
+The problem with this option, is that every time the cronjob `consumers_runner` runs, it will spawn a new consumer process, the consumer checks if messages are available and if none found it will kill itself. So this means it will spawn unneeded processes which take up memory, live for a very short period and then disappear again.  
+
+In this proposal, the flag `only-spawn-when-message-available` would run logic to check *before* the consumer process gets spawned and not *after*.
 
 ## Problem 2: deployment problems
 
