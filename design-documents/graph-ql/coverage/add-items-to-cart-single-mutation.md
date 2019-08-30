@@ -10,8 +10,7 @@ In order to simplify the flow of adding different type of products to wishlist a
 - Bundle dynamic, grouped and configurable product are just templates which help merchant to select a set of simple products.
 - Product may have selected options and entered options (buyer input).
 - Options are sets of predefined values that a buyer can add to cart/wishlist in addition to a product.
-- Some of the options can be required by its nature but not by API signature.
-- The differences in payloads between wishlist and cart is that all fields in wishlist are optional.
+- The difference between wishlist and cart payloads is that all fields in wishlist are optional.
 
 ### Examples
 
@@ -34,22 +33,64 @@ In order to simplify the flow of adding different type of products to wishlist a
 ]
 ```
 
-In this example we want to add _personalized blue cup to cart_.
+In this example we want to add _personalized blue cup to cart_ to cart.
 
  - `selected_options` - predefined and selected by customer options. `base64` encoding will help to use UUID in future. In this example values will be following:
 
-    | Name  | Value | Real Data |
+    | Name  | Value | Buyer Selection |
     | ------------- | ------------- | ------------- |
     | option-type  | configurable   |
     | option-id  | 24 | color |
     | option-value-id  | 42  | blue |
-- `option-type` - predefined list of option types, e.g. downloadable link, configurable option, bundle option, customizable option.
+- `option-type` - predefined list of option types, e.g. downloadable, configurable, bundle, customizable.
 - `entered_options` - entered by customer options.
 
 This example is suitable for virtual product and gift card as well.
 
+#### Add virtual product to cart
+In this example we want to add _personalized membership with expiration date_ to cart.
+    | Name  | Value | Buyer Selection |
+    | ------------- | ------------- | ------------- |
+    | option-type  | configurable   |
+    | option-id  | 105 | date |
+    | option-value-id  | 156  | 12/31/2020 |
+```
+[
+  {
+    "sku": "Membership",
+    "selected_options" : [
+      base64_encode('configurable/105/156')
+    ],
+    "entered_options": [
+      {
+        id: 31,
+        value: base64_encode('Vasia's awesome cup')
+      }
+    ]
+  }
+]
+```
+
+#### Add giftcard to cart
+In this example we want to add _100$ gift card_ to cart.
+`entered_options` will contain encoded info of gift car amount.
+```
+[
+  {
+    "sku": "Membership",
+    "entered_options": [
+      {
+        id: 55,
+        value: base64_encode('100')
+      }
+    ]
+  }
+]
+```
+
+
 #### Add downloadable product to cart
-Here `selected_options` contain `<option-type>/<link-id>`.
+Here `selected_options` contain `link-id`.
 ```
 [
   {
@@ -63,17 +104,18 @@ Here `selected_options` contain `<option-type>/<link-id>`.
 ```
 
 #### Add bundle product to cart
+In this example we want to add _dinnerware kit, that contains cup and saucer_ to cart.
 ```
 [
   {
     "sku": "Cup",
     "qty": 1,
-    "parent_sku": "Kit",
+    "parent_sku": "Dinnerware Kit",
   },
   {
-    "sku": "Plate",
+    "sku": "Saucer",
     "qty": 1,
-    "parent_sku":  "Kit",
+    "parent_sku":  "Dinnerware Kit",
   }
 ]
 ```
@@ -99,7 +141,6 @@ Here `selected_options` contain `<option-type>/<link-id>`.
   },
 ]
 ```
-
 
 #### Add configurable product to cart
 In this example we want to add _glass blue cup to cart_.
@@ -134,7 +175,7 @@ Following approach will work with the partial option selection, for example for 
 [
   {
     "sku": "Cup Small",
-    "qty": 1.
+    "qty": 1
   },
   {
     "sku": "Cup Big",
@@ -143,6 +184,7 @@ Following approach will work with the partial option selection, for example for 
 ]
 ```
 :warning: Grouped product should be added to cart without parent, but to wish list - with parent.
+
 Wishlist functionality will preserve the same behaviour with the only difference that all fields are optional.
 
 #### Add product to wishlist
