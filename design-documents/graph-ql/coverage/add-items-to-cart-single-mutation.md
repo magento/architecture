@@ -21,12 +21,12 @@ In order to simplify the flow of adding different type of products to wishlist a
     "sku": "Cup",
     "qty": 1,
     "selected_options" : [
-      "Y29uZmlndXJhYmxlLzI0LzQy"
+      "Y29uZmlndXJhYmxlLzI0LzQy" //base64_encode('configurable/24/42')
     ],
     "entered_options": [
       {
-        id: "Y3VzdG9tLW9wdGlvbi8zMQ==",
-        value: "VmFzaWEncyBhd2Vzb21lIGN1cA=="
+        id: "Y3VzdG9tLW9wdGlvbi8zMQ==", //base64_encode("custom-option/31")
+        value: "VmFzaWEncyBhd2Vzb21lIGN1cA==" // base64_encode("Vasia's awesome cup")
       }
     ]
   }
@@ -35,7 +35,9 @@ In order to simplify the flow of adding different type of products to wishlist a
 
 In this example we want to add _personalized blue cup to cart_ to cart.
 
- - `selected_options` - `base64_encode('configurable/24/42')` predefined and selected by customer options. `base64` encoding will help to use UUID in future. In this example values will be following:
+ - `selected_options` - predefined and selected by customer options. `base64` encoding will help to use UUID in future.
+:warning: The encoded value will be returned from server and should be used by client as is.
+In this example values will be following:
 
     | Name  | Value | Buyer Selection |
     | ------------- | ------------- | ------------- |
@@ -44,14 +46,6 @@ In this example we want to add _personalized blue cup to cart_ to cart.
     | option-value-id  | 42  | blue |
 - `option-type` - predefined list of option types, e.g. downloadable, configurable, bundle, customizable.
 - `entered_options` - entered by customer and encoded options.
-```
-"entered_options": [
-  {
-    id: base64_encode("custom-option/31"),
-    value: base64_encode("Vasia's awesome cup")
-  }
-]
-```
 
 This example is suitable for virtual product and gift card as well.
 
@@ -105,12 +99,13 @@ In this example we want to add _100$ gift card_ to cart.
     "sku": "Video tutorial",
     "qty": 1,
     "selected_options" : [
-      "ZG93bmxvYWRhYmxlLzEz"
+      "ZG93bmxvYWRhYmxlLzEz" //base64_encode('downloadable/13')
     ]
   }
 ]
 ```
-Where `selected_options` contain link id: `base64_encode('downloadable/13')` -> `ZG93bmxvYWRhYmxlLzEz`.
+Where `selected_options` contain link id.
+
 #### Add bundle product to cart
 In this example we want to add _dinnerware kit, that contains cup and saucer_ to cart.
 ```
