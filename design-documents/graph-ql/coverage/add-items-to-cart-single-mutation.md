@@ -73,11 +73,11 @@ In this example we want to add _personalized membership with expiration date_ to
 
 #### Add giftcard to cart
 In this example we want to add _100$ gift card_ to cart.
-`entered_options` will contain encoded info of gift car amount.
+`entered_options` will contain encoded info about gift card amount.
 ```
 [
   {
-    "sku": "Membership",
+    "sku": "Gift Card",
     "entered_options": [
       {
         id: 55,
