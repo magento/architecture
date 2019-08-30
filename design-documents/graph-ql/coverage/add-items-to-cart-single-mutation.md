@@ -43,14 +43,14 @@ In this example we want to add _personalized blue cup to cart_ to cart.
     | option-id  | 24 | color |
     | option-value-id  | 42  | blue |
 - `option-type` - predefined list of option types, e.g. downloadable, configurable, bundle, customizable.
-- `entered_options` - entered and encoded by customer options.
+- `entered_options` - entered by customer and encoded options.
 ```
 "entered_options": [
-      {
-        id: base64_encode("custom-option/31"),
-        value: base64_encode("Vasia's awesome cup")
-      }
-    ]
+  {
+    id: base64_encode("custom-option/31"),
+    value: base64_encode("Vasia's awesome cup")
+  }
+]
 ```
 
 This example is suitable for virtual product and gift card as well.
