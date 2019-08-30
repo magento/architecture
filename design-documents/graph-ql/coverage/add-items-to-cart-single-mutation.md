@@ -21,12 +21,12 @@ In order to simplify the flow of adding different type of products to wishlist a
     "sku": "Cup",
     "qty": 1,
     "selected_options" : [
-      base64_encode('configurable/24/42')
+      "Y29uZmlndXJhYmxlLzI0LzQy"
     ],
     "entered_options": [
       {
-        id: 31,
-        value: base64_encode('Vasia's awesome cup')
+        id: "Y3VzdG9tLW9wdGlvbi8zMQ==",
+        value: "VmFzaWEncyBhd2Vzb21lIGN1cA=="
       }
     ]
   }
@@ -35,7 +35,7 @@ In order to simplify the flow of adding different type of products to wishlist a
 
 In this example we want to add _personalized blue cup to cart_ to cart.
 
- - `selected_options` - predefined and selected by customer options. `base64` encoding will help to use UUID in future. In this example values will be following:
+ - `selected_options` - `base64_encode('configurable/24/42')` predefined and selected by customer options. `base64` encoding will help to use UUID in future. In this example values will be following:
 
     | Name  | Value | Buyer Selection |
     | ------------- | ------------- | ------------- |
@@ -43,28 +43,38 @@ In this example we want to add _personalized blue cup to cart_ to cart.
     | option-id  | 24 | color |
     | option-value-id  | 42  | blue |
 - `option-type` - predefined list of option types, e.g. downloadable, configurable, bundle, customizable.
-- `entered_options` - entered by customer options.
+- `entered_options` - entered and encoded by customer options.
+```
+"entered_options": [
+      {
+        id: base64_encode("custom-option/31"),
+        value: base64_encode("Vasia's awesome cup")
+      }
+    ]
+```
 
 This example is suitable for virtual product and gift card as well.
 
 #### Add virtual product to cart
 In this example we want to add _personalized membership with expiration date_ to cart.
-    | Name  | Value | Buyer Selection |
-    | ------------- | ------------- | ------------- |
-    | option-type  | configurable   |
-    | option-id  | 105 | date |
-    | option-value-id  | 156  | 12/31/2020 |
+
+| Name  | Value | Buyer Selection |
+| ------------- | ------------- | ------------- |
+| option-type  | configurable   |
+| option-id  | 105 | date |
+| option-value-id  | 156  | 12/31/2020 |
+
 ```
 [
   {
     "sku": "Membership",
     "selected_options" : [
-      base64_encode('configurable/105/156')
+      "Y29uZmlndXJhYmxlLzEwNS8xNTY="
     ],
     "entered_options": [
       {
-        id: 31,
-        value: base64_encode('Vasia's awesome cup')
+        id: "Y3VzdG9tLW9wdGlvbi8zMQ==",
+        value: "VmFzaWEncyBhd2Vzb21lIGN1cA=="
       }
     ]
   }
@@ -80,29 +90,27 @@ In this example we want to add _100$ gift card_ to cart.
     "sku": "Gift Card",
     "entered_options": [
       {
-        id: 55,
-        value: base64_encode('100')
+        id: "Z2lmdC1jYXJkLWFtb3VudA==",
+        value: "MTAw"
       }
     ]
   }
 ]
 ```
 
-
 #### Add downloadable product to cart
-Here `selected_options` contain `link-id`.
 ```
 [
   {
     "sku": "Video tutorial",
     "qty": 1,
     "selected_options" : [
-      base64_encode('downloadable/13')
+      "ZG93bmxvYWRhYmxlLzEz"
     ]
   }
 ]
 ```
-
+Where `selected_options` contain link id: `base64_encode('downloadable/13')` -> `ZG93bmxvYWRhYmxlLzEz`.
 #### Add bundle product to cart
 In this example we want to add _dinnerware kit, that contains cup and saucer_ to cart.
 ```
@@ -128,7 +136,7 @@ In this example we want to add _dinnerware kit, that contains cup and saucer_ to
     "qty": 1,
     "parent_sku": "Kit",
     "selected_options" : [
-      base64_encode(configurable/42/24)
+      "Y29uZmlndXJhYmxlLzQyLzI0"
     ],
   },
   {
@@ -136,7 +144,7 @@ In this example we want to add _dinnerware kit, that contains cup and saucer_ to
     "qty": 1,
     "parent_sku": "Kit",
     "selected_options" : [
-      base64_encode(configurable/42/24)
+      "Y29uZmlndXJhYmxlLzQyLzI0"
     ],
   },
 ]
@@ -150,7 +158,7 @@ In this example we want to add _glass blue cup to cart_.
     "sku": "Glass Cup",
     "qty": 1,
     "selected_options" : [
-      base64_encode(configurable/42/24)
+      "Y29uZmlndXJhYmxlLzQyLzI0"
     ]
   }
 ]
@@ -164,7 +172,7 @@ Following approach will work with the partial option selection, for example for 
     "qty": 1,
     "parent_sku": "Glass Cup",
     "selected_options" : [
-      base64_encode(configurable/42/24)
+      "Y29uZmlndXJhYmxlLzQyLzI0"
     ],
   }
 ]
@@ -196,7 +204,7 @@ Wishlist functionality will preserve the same behaviour with the only difference
     "entered_options": [
       {
         id: 31,
-        value: base64_encode('Vasia's awesome cup')
+        value: "VmFzaWEncyBhd2Vzb21lIGN1cA=="
       }
     ]
   }
