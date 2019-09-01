@@ -79,11 +79,8 @@ Also when using a capistrano-style deployment where you have a symlinked a `curr
 
 ### The suggested solution
 
-The suggestion here would be to give deployment scripts the option to signal the running consumer proccesses to handle their current messages and then kill themselves as soon as possible.  
-We already have the poison pill functionality which could be used here, but the problem with that one is that it will only be checked when a new message appears in the queue. If no messages appear in the queue during a deploy, and we only update the poison pill version, the consumer will still keep running because it doesn't check for the poison pill version until a new message appears.  
-So I would suggest some kind of dummy message to be created in each queue which only purpose is for the consumers to check the poison pill version and that message then should get removed again from the queue and nothing should be done with it.
+The suggestion here would be to update the poison pill version using a command.  
+That way, consumers which have messages in the queue, will see an updated poison pill version, stop and get spawned again by the cronjob.  
+And for consumers not having messages in the queue, they will either stop after a single message was put in the queue eventually, or if they make use of this new `max-idle-time` flag, they will stop when that time is reached.
 
-I'm seeing this as some new command being added to `bin/magento` (`queue:consumers:suicide` ?) which does both these things:
-
-- updates the poison pill version
-- sends a dummy message to all queues
+I'm seeing this as some new command being added to `bin/magento` (suggestion: `queue:poison-pill:update-version` ?).
