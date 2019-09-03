@@ -34,7 +34,7 @@ The Cart will depend on Catalog. Quote will have a knowledge about PIM, Shipping
 
 ![One-directional checkout flow](img/alternative-checkout-flow-2.png)
 
-The `Quotes Estimator` will be the main entry point to create a quote based on the provided input and the `Totals Collector` will provide totals calculation based on the provided quote object and the configuration. The `Shipping Rates Estimator` will be agnostic to the quote object and will provide shipping rates based on input data like shipping origin, shipping destination, items dimensions. The unified input data would allow using the same `Shipping Rates Estimator` for RMA, order estimated delivery, etc. without modifications. Also, the estimator will support rates retrieving only for a specified shipping method to reduce a number of calls to other shipping carriers (the current implementation get rates from all configured carriers).
+The `Quotes Estimator` will be the main entry point to create a quote based on the provided input and the `Totals Collector` will provide totals calculation based on the provided quote object and the configuration. The `Shipping Rates Estimator` will be agnostic to the quote object and will provide shipping rates based on input data like shipping origin, shipping destination, items dimensions. The unified input data would allow using the same `Shipping Rates Estimator` for RMA, order estimated delivery, etc. without modifications. Also, the estimator will support rates retrieving only for a specified shipping method to reduce a number of calls to other shipping carriers (the current implementation gets rates from all configured carriers).
 
 The following sequence diagram shows how the place order will look like according to the proposed solution:
 
