@@ -1,0 +1,53 @@
+type Cart{
+
+    /// Deprecated Feilds
+    applied_coupon: applied_coupon @deprecated(reason: "Use CartPromotions.coupons instead ")                               
+    applied_gift_cards: [AppliedGiftCard] @deprecated(reason: "Use CartPrices.gift_cards instead ") 
+    applied_store_credit: AppliedStoreCredit @deprecated(reason: "Use CartPrices.store_credit instead ") 
+
+    available_payment_methods: [AvailablePaymentMethod]
+    billing_address: BillingCartAddress!
+    email: String
+    items: [CartItemInterface]
+    prices: CartPrices
+    selected_payment_method: SelectedPaymentMethod
+    shipping_addresses: [ShippingCartAddress]!
+}
+
+type CartPrices{
+    applied_taxes: [CartTaxItem]
+    grand_total: Money
+    subtotal_excluding_tax: Money
+    subtotal_including_tax: Money
+    subtotal_with_discount_excluding_tax: Money
+
+    /// Deprecated Fields
+    discount: CartDiscount @deprecated(reason: "Use CartPromotions.discounts instead ") 
+
+    //New Fields
+    discounts: CartPromotions
+    gift_cards: [AppliedGiftCards]
+    store_credit: AppliedStoreCredit
+    
+}
+
+type Discount{
+    amount: Money!
+    label: String!
+}
+
+//New Type
+type CartPromotions{
+  discounts: [Discount] @doc(description: "Shows discount breakdown at Cart level")
+  coupons: [AppliedCoupon]
+  
+}
+type CartItemPrices
+{
+    price: Money!
+    row_total: Money!
+    row_total_including_tax: Money!
+
+    //New Fields - To show discount breakdown at item level
+    discounts: [Discount]
+}
