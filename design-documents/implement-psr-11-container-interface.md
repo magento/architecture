@@ -1,6 +1,8 @@
 # Implement PSR-11: Container Interface
 PSR-11 is a set of basic interfaces to standardize dependency injection (obtaining objects and parameters) across frameworks and libraries. 
 
+[More info about PSR-11](https://www.php-fig.org/psr/psr-11/)
+
 ## Why?
 Say a general purpose PHP package makes use of the PSR-11 Container Interface(CI) to instantiate objects in a dependency injection(DI) friendly manner:
 
