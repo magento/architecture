@@ -6,13 +6,13 @@ Declarative schema relies on querying data that may have different format depend
 
 ```
 SELECT 
-	COLUMN_NAME as 'name',
-	COLUMN_DEFAULT as 'default',
-	DATA_TYPE as 'type',
-	IS_NULLABLE as 'nullable',
-	COLUMN_TYPE as 'definition',
-	EXTRA as 'extra',
-	COLUMN_COMMENT as 'comment'
+    COLUMN_NAME as 'name',
+    COLUMN_DEFAULT as 'default',
+    DATA_TYPE as 'type',
+    IS_NULLABLE as 'nullable',
+    COLUMN_TYPE as 'definition',
+    EXTRA as 'extra',
+    COLUMN_COMMENT as 'comment'
 FROM
     information_schema.COLUMNS
 WHERE
@@ -34,7 +34,7 @@ Introduce concept of database adapters to allow normalize values in declarative 
 Similar approach need to be taken for clients of the following interfaces
 1. `\Magento\Framework\Setup\Declaration\Schema\Db\DDLTriggerInterface`
 1. `\Magento\Framework\Setup\Declaration\Schema\Db\DbSchemaWriterInterface`
-1. `\Magento\Framework\Setup\Declaration\Schema\Db\DbDefinitionProcessorInterface`
+1. `\Magento\Framework\Setup\Declaration\Schema\Db\DbDefinitionProcessorInterface` (see usages of `\Magento\Framework\Setup\Declaration\Schema\Db\DefinitionAggregator`)
 
 Not needed for declarative schema, but with this refactoring would also make sense to add ability have different adapters for different databases.
 
