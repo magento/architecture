@@ -17,9 +17,18 @@ This proposal describes multiple approaches for the checkout flow.
 ## Current checkout flow
 
 This section describes current checkout flow.
+
 ![Current checkout flow](img/alternative-checkout-flow.png)
 
-The `Add to Cart` operation receives only product id and quantity. All additional details like product dimensions for shipping rates calculations, each module requests from the Catalog.
+1. Products rendered from Catalog. An item is added to the cart.
+2. The cart calls the catalog product’s repository to get product details.
+3. The view cart action calls a totals collector to estimate totals on the quote.
+4. “Proceed to Checkout” starts a one-page checkout flow, where a customer can specify shipping and billing addresses, choose a payment solution and place an order.
+5. When the customer enters or selects the shipping address, shipping rates are estimated, which triggers whole totals calculation.
+6. On the Select Payment Method step, the customer can specify a billing address, choose a payment method, and apply discounts and gift cards.
+7. Actions like applying a customer balance, discounts, gift cards trigger the recalculation of the totals.
+8. The payment review step also contains summary details like items, shipping method, totals.
+
 Most of the actions like page reloading, retrieving shipping rates, applying discounts, gift cards, etc. triggers whole cart/quote recalculation.
 
 The different quote's calculators, like Cart Price Rule calculator, change quote object and totals and behavior might be unpredictable as different calculators can operate with the same data.
@@ -34,7 +43,17 @@ The Cart will depend on Catalog. Quote will have a knowledge about PIM, Shipping
 
 ![One-directional checkout flow](img/alternative-checkout-flow-2.png)
 
-The `Quotes Estimator` will be the main entry point to create a quote based on the provided input and the `Totals Collector` will provide totals calculation based on the provided quote object and the configuration. The `Shipping Rates Estimator` will be agnostic to the quote object and will provide shipping rates based on input data like shipping origin, shipping destination, items dimensions. The unified input data would allow using the same `Shipping Rates Estimator` for RMA, order estimated delivery, etc. without modifications. Also, the estimator will support rates retrieving only for a specified shipping method to reduce a number of calls to other shipping carriers (the current implementation gets rates from all configured carriers).
+1. An item that contains all needed attributes (like SKU, quantity, regular price and options) is added to the cart.
+2. The cart calls the totals estimator for basic items price calculation. This calculation is needed only for a summary representation in the shopping cart. It does not make sense to check prices from PIM or Catalog.
+3. The “Proceed to Checkout” triggers the creation of a Quote entity. It does not contain an estimate of the totals. 
+4. After the customer specifies a shipping method, the shipping rates estimator provides all available shipping methods for this address. If a customer wants to specify multiple shipping addresses, then multiple quotes will be created (one per shipping address) and a list of available shipping methods will be provided for all addresses.
+5. On the select payment method step, a customer chooses the payment method, specifies a billing address while Magento applies discounts and gift cards, calculates customer balance, etc.
+6. After a payment method is chosen and all possible price adjustments are specified, the summary can be reloaded dynamically based on changes for each item.
+7. The summary block includes quote items, shipping addresses and other quote/multi-quote details.
+8. The change of any or all price adjustments triggers a new quote creation and totals recalculation.
+9. The Quotes Estimator triggers totals calculation. Each calculator gets all the needed data, like the actual shipping rate, product prices, tax rules, the current state of customer balance, etc.
+
+The `Quotes Estimator` will be the main entry point to create a quote based on the provided input and the `Totals Collector` will provide totals calculation based on the provided quote object and the configuration. The `Shipping Rates Estimator` will be agnostic to the quote object and will provide shipping rates based on input data like shipping origin, shipping destination, items dimensions. The unified input data would allow using the same `Shipping Rates Estimator` for RMA, order estimated delivery, etc. Also, the estimator will support rates retrieving only for a specific shipping method to reduce a number of calls to other shipping carriers (the current implementation gets rates from all configured carriers).
 
 The following sequence diagram shows how the place order will look like according to the proposed solution:
 
@@ -228,3 +247,5 @@ The main benefits of the proposed changes are the following:
  - One-directional flow allows reducing communication between components
  - Possibility to separate quotes based on stock availability
  - Improving API customizability and extensibility
+ - Performance improvements based on reducing dependencies between components and their communication
+ - Simplified and unified totals storage
