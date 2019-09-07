@@ -43,3 +43,7 @@ Not needed for declarative schema, but with this refactoring would also make sen
 `model` is the name of parameter that supposed to be used to configure database specific adapters. Somehow functionality behind it is absent.
 
 It has default value of `mysql4`. I propose to add 2 values: `mysql` and `mariadb` and have `mysql4` be alias for `mysql`.
+
+## Considerations
+
+`\Magento\Framework\DB\Adapter\AdapterInterface` has methods like `describeTable` which return raw values from database engine. This is leaky interface. Ideally we should have an interface that would return normalized data and be compatible with all databases. This is a much larger change and might be considered for minor release.
