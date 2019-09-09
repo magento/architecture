@@ -1,10 +1,13 @@
 type Cart{
 
-    /// Deprecated Feilds
-    applied_coupon: applied_coupon @deprecated(reason: "Use CartPromotions.coupons instead ")                               
-    applied_gift_cards: [AppliedGiftCard] @deprecated(reason: "Use CartPrices.gift_cards instead ") 
-    applied_store_credit: AppliedStoreCredit @deprecated(reason: "Use CartPrices.store_credit instead ") 
+    // Deprecated Fields
+    applied_coupon: applied_coupon @deprecated(reason: "Use applied_coupons instead ")
+    // New field 
+    applied_coupons: [AppliedCoupon]     
 
+    // Unchanged Fields
+    applied_gift_cards: [AppliedGiftCard]
+    applied_store_credit: AppliedStoreCredit
     available_payment_methods: [AvailablePaymentMethod]
     billing_address: BillingCartAddress!
     email: String
@@ -22,13 +25,10 @@ type CartPrices{
     subtotal_with_discount_excluding_tax: Money
 
     /// Deprecated Fields
-    discount: CartDiscount @deprecated(reason: "Use CartPromotions.discounts instead ") 
+    discount: CartDiscount @deprecated(reason: "Use discounts instead ") 
 
-    //New Fields
-    discounts: CartPromotions
-    gift_cards: [AppliedGiftCards]
-    store_credit: AppliedStoreCredit
-    
+    //New Field
+    discounts: [Discount]
 }
 
 type Discount{
@@ -36,12 +36,6 @@ type Discount{
     label: String!
 }
 
-//New Type
-type CartPromotions{
-  discounts: [Discount] @doc(description: "Shows discount breakdown at Cart level")
-  coupons: [AppliedCoupon]
-  
-}
 type CartItemPrices
 {
     price: Money!
