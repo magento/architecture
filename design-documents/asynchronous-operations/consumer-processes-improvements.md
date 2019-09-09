@@ -1,5 +1,9 @@
 # Improvements to message queue consumer processes
 
+## Remark
+
+The naming suggested in this proposal for the new configuration options and for the new CLI command aren't final yet.
+
 ## The current situation
 
 Currently all defined message queue consumers are getting spawned by a cronjob called `consumers_runner`. You can optionally choose to disable this entirely or only allow specific consumers to run based on some config settings in the `app/etc/env.php` file (see [docs](https://devdocs.magento.com/guides/v2.3/config-guide/mq/manage-message-queues.html#configuration)).  
