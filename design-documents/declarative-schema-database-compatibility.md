@@ -29,7 +29,7 @@ MySQL returns NULL for COLUMN_DEFAULT and MariaDB returns NULL as a string.
 
 Introduce concept of database adapters to allow normalize values in declarative schema for different databases.
 
-`\Magento\Framework\Setup\Declaration\Schema\Db\SchemaBuilder` should accept `\Schema\Db\MySQL\DbSchemaReaderFactory` that would allow to create database specific implementations of `DbSchemaReaderInterface` for given connection. `\Schema\Db\MySQL\DbSchemaReaderFactory` will depend on `\Magento\Framework\App\DeploymentConfig` to get configuration for connection, `model` will contain name of database adapter.
+`\Magento\Framework\Setup\Declaration\Schema\Db\SchemaBuilder` should accept `\Magento\Framework\Setup\Declaration\Schema\Db\DbSchemaReaderFactory` that would allow to create database specific implementations of `DbSchemaReaderInterface` for given connection. `\Magento\Framework\Setup\Declaration\Schema\Db\DbSchemaReaderFactory` will depend on `\Magento\Framework\App\DeploymentConfig` to get configuration for connection, `model` will contain name of database adapter.
 
 Similar approach need to be taken for clients of the following interfaces
 1. `\Magento\Framework\Setup\Declaration\Schema\Db\DDLTriggerInterface`
