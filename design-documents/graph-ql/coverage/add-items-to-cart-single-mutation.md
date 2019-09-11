@@ -39,7 +39,7 @@ In this example we want to add _personalized blue cup to cart_ to cart.
 :warning: The encoded value will be returned from server and should be used by client as is. In order to achieve this:
 
 ``` graphql
-interface CustomizableOptionInterface @typeResolver(class: "Magento\\CatalogGraphQl\\Model\\CustomizableOptionTypeResolver") @doc(description: "The CustomizableOptionInterface contains basic information about a customizable option. It can be implemented by several types of configurable options.") {
+interface CustomizableOptionInterface {
     ...
     id: ID @doc(description: "Option ID.")
 }
