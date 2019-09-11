@@ -37,22 +37,22 @@ In this example we want to add _personalized blue cup to cart_ to cart.
 
  - `selected_options` - predefined and selected by customer options. `base64` encoding will help to use UUID in future.
 :warning: The encoded value will be returned from server and should be used by client as is. In order to achieve this:
+
 ``` graphql
 interface CustomizableOptionInterface @typeResolver(class: "Magento\\CatalogGraphQl\\Model\\CustomizableOptionTypeResolver") @doc(description: "The CustomizableOptionInterface contains basic information about a customizable option. It can be implemented by several types of configurable options.") {
     ...
     id: ID @doc(description: "Option ID.")
 }
-
 ```
-
 
 In this example values will be following:
 
-    | Name  | Value | Buyer Selection |
-    | ------------- | ------------- | ------------- |
-    | option-type  | configurable   |
-    | option-id  | 24 | color |
-    | option-value-id  | 42  | blue |
+| Name  | Value | Buyer Selection |
+| ------------- | ------------- | ------------- |
+| option-type  | configurable   |
+| option-id  | 24 | color |
+| option-value-id  | 42  | blue |
+
 - `option-type` - predefined list of option types, e.g. downloadable, configurable, bundle, customizable.
 - `entered_options` - entered by customer (text, image, etc) and encoded options.
 
