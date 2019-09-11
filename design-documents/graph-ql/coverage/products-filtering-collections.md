@@ -115,9 +115,9 @@ products (
 )
 
 }
-
+```
 **Search After**
-
+```
 {
 
 products (
@@ -145,7 +145,7 @@ products (
 )
 
 }
-
+```
 **Positives**
 Schema need not be generated dynamically
 When an attribute is added the client need not wait for the cache to be cleaned to filter on
