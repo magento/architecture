@@ -23,7 +23,8 @@ input FilterRangeTypeInput @doc(description: "Specifies which action will be per
 input FilterMatchTypeInput @doc(description: "Specifies which action will be performed in a query ") {
     like: String
     eq: String
-}```
+}
+```
 And the attributes belong to any of the 3 types. A dynamically generated schema will look like this
 ```
 input ProductAttributeFilterInput @doc(description: "ProductAttributeFilterInput defines the filters to be used in the search. A filter contains at least one attribute, a comparison operator, and the value that is being searched for.") {
