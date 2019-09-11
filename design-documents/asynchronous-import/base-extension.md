@@ -1,16 +1,19 @@
-# Phase 1
+# Phase 1 - MVP
 
 With phase 1 we are planning to develop next functionality: 
-- Endpoint to receive file
-- Endpoint to start processing
-- Endpoint to receive status
+- Retrieving source data endpoints
+    * Source Retrieving: (local, remote file, base64 encoded)
+- Import process
+    * Import of Product Advanced Prices
+    * Import of Stock / Sources 
+    * Simple products import
 
-## File Upload Endpoint
-### Source Upload endpoint
+## Source management
+### Retrieving source data endpoints
 
-So import will start from uploading import Source file. Currently we will support "csv" files format
+So import will start from uploading import Source file. Currently we will support "csv" files format only
 
-POST  `/V1/import/source/csv`
+POST  `/V1/import/sources/csv`
  
 This request can accept files from different sources:
 - Local file path
@@ -23,16 +26,15 @@ Path is relative from Magento Root folder
 
 ```
 {
-  "source": {
-      "import_data": "var/catalog_product.csv",
-      "import_type": "local_path",
-      "uuid": "UUID",
-      "format": {
-          "csv_separator": "string",
-          "csv_enclosure": "string",
-          "csv_delimiter": "string",
-          "multiple_value_separator": "string"
-      }
+  "uuid": "UUID",
+  "source_data": {
+    "source_type": "local",
+    "source_data": "var/catalog_product.csv" 
+  } 
+  "format": {
+    "csv_separator": "string",
+    "csv_enclosure": "string",
+    "multiple_value_separator": "string"
   }
 }
 ```
@@ -41,70 +43,35 @@ Path is relative from Magento Root folder
 
 ```
 {
-  "source": {
-      "import_data": "http://some.domain/file.csv",
-      "import_type": "external",
-      "uuid": "UUID",
-      "format": {
-          "csv_separator": "string",
-          "csv_enclosure": "string",
-          "csv_delimiter": "string",
-          "multiple_value_separator": "string"
-      }
+  "uuid": "UUID",
+  "source_data": {
+    "source_type": "remote",
+    "source_data": "http://some.domain/file.csv" 
+  } 
+  "format": {
+    "csv_separator": "string",
+    "csv_enclosure": "string",
+    "multiple_value_separator": "string"
   }
 }
 ```
 
-#### Base64 encoded file content 
+#### Upload file (Base64 encoded)
 
 ```
 {
-  "source": {
-      "import_data": "c2t1LHN0b3JlX3ZpZXdfY29kZSxhdHRyaWJ1dGVfc2V0X2NvZGUscHJvZHVjdF90eXBlLGNhdGVnb3JpZXMscHJvZHVjdF93ZWJzaXRlcyxuYW1lLGRlc2NyaXB0aW9uLHNob3J0X2Rlc2NyaXB0aW9uLHdlaWdodCxwcm9kdWN0X29ubGluZSx0YXhfY2xhc3NfbmFtZSx2aXNpYmlsaXR5LHBya......",
-      "import_type": "base64_encoded_data",
-      "uuid": "UUID",
-      "format": {
-          "csv_separator": "string",
-          "csv_enclosure": "string",
-          "csv_delimiter": "string",
-          "multiple_value_separator": "string"
-      }
+  "uuid": "UUID",
+  "source_data": {
+    "source_type": "upload_file",
+    "source_data": "c2t1LHN0b3JlX3ZpZXdfY29kZSxhdHRya..." 
+  } 
+  "format": {
+    "csv_separator": "string",
+    "csv_enclosure": "string",
+    "multiple_value_separator": "string"
   }
 }
 ```
-
-Import of big file also can be divided in several parts.
-For this case we have separate endpoint
-
-POST  `/V1/import/source/csv/partial/`
-
-Input request will looks like:
-
-```
-{
-  "source": {
-      "import_data": "c2t1LHN0b3JlX3ZpZXdfY29kZSxhdHRyaWJ1dGVfc2V0X2NvZGUscHJvZHVjdF90eXBlLGNhdGVnb3JpZXMscHJvZHVjdF93ZWJzaXRlcyxuYW1lLGRlc2NyaXB0aW9uLHNob3J0X2Rlc2NyaXB0aW9uLHdlaWdodCxwcm9kdWN0X29ubGluZSx0YXhfY2xhc3NfbmFtZSx2aXNpYmlsaXR5LHBya...",
-      "data_hash" : "sha256 encoded data of the full 'import_data' value"
-      "pieces_count": "5"
-      "piece_number": "1",
-      "import_type": "base64_encoded_data",
-      "uuid": "UUID",
-      "format": {
-         "csv_separator": "string",
-         "csv_enclosure": "string",
-         "csv_delimiter": "string",
-         "multiple_value_separator": "string"
-    }
-  }
-}
-```
-where *import_data* is a 1/N part of the whole content, and *data_hash* contains sha256 hash of full import_data body.
-
-`pieces_count` - its an amount of pieces that will be transferred for 1 file. We need it to be sure that import is completed and then we could detect if it was successfully finished or failed
-
-`piece_number` - its a number that detects which part of file currently transferred. This is required to have to support Asynchronous File import when we dont need to send parts in correct sequence
-
-Those parts could be send asynchronously. They will be merged together after all data are transferred.
 
 ### Return values
 
@@ -120,38 +87,26 @@ Example:
 
 ```
 {
-    "uuid": null,
-    "status": null,
-    "error": null,
-    "source": {
-        // Source object is coming here
-    }
+    "uuid": null
 }
 ```
 
-### Update Imported Source Format
+### Update Uploaded Source Format
 
-Its possible also to Update Format 
+Update of 
 
-PUT  `/V1/import/source/csv/:uuid`
+PUT  `/V1/import/sources/csv/:uuid`
 
 ```
 {
-  "source": {
-      "uuid": "uuid",
-      "format": {
-          "csv_separator": "string",
-          "csv_enclosure": "string",
-          "csv_delimiter": "string",
-          "multiple_value_separator": "string"
-      }
+  "uuid": "UUID",
+  "format": {
+    "csv_separator": "string",
+    "csv_enclosure": "string",
+    "multiple_value_separator": "string"
   }
 }
 ```
-
-### Delete Imported Source Format
-
-DELETE  `/V1/import/source/:uuid`
 
 ### Get List of sources
 
@@ -167,7 +122,6 @@ Will return list of Source that was uploaded before.
       "format": {
           "csv_separator": "string",
           "csv_enclosure": "string",
-          "csv_delimiter": "string",
           "multiple_value_separator": "string"
       }
   },
@@ -176,7 +130,6 @@ Will return list of Source that was uploaded before.
         "format": {
             "csv_separator": "string",
             "csv_enclosure": "string",
-            "csv_delimiter": "string",
             "multiple_value_separator": "string"
         }
     }
@@ -207,70 +160,88 @@ Will return list of Source that was uploaded before.
 }
 ```
 
-## Start File Import Endpoint
+### Base CSV Parser
+
+As in first iteration we will support CSV format only, will be implemented CSV reader.
+
+#### Problem
+In case of heavy import data, it may require a lot of memory resources to hold all information from the file in the memory.
+
+#### Solution
+Will be implemented CSV reader that will read source partially, process information and then proceed with next part.
+
+### Asynchronous web endpoints
+As we are moving in service isolation approach, we will support 2 ways of communicating between Asynchronous Import and Magento.
+
+* Service installed with monolith: will be user MFQF and Direct usage of Service Contracts
+* Service installed independently: HTTP communication by using Bulk API
+
+
+## Start Import Endpoint
+
 ### Main endpoint
 
 Current Endpoint starts import process based on FileID. Where Module will read file, split it into message and send to Async API
 
-POST  `/V1/import/start/{uuid}`
+POST  `/V1/imports`
 
-`type` - its an import type like: catalog_product, catalog_category, customer, order ... etc...
-
-Start File Import
+Start Import
 
 ```
 {
-    "importConfig": {
+    "import": {
+        "uuid": "",
+        "source_uuid": "",
         "import_type": "catalog_product",
-        "import_strategy": "add_update, delete, replace",
         "validation_strategy": "string",
         "allowed_error_count": 0,
         "import_image_archive": "string",
-        "import_images_file_dir": "string",
-        "mapping": [
-              {
-                  "name": "string",
-                  "source_path": "string",
-                  "target_path": "string",
-                  "target_value": "mixed",
-                  "processing_rules": [
-                        {
-                              "sort": int,
-                              "function": "string",
-                              "args": "array"
-                        }
-                  ]
-              }
-        ]
-    }
+        "import_images_file_dir": "string"
+    },
+    "convertingRules": [
+          {
+              "name": "string",
+              "paramethers": [
+                  ..... free array format here .....
+              ],
+              "sort": "string",
+          }
+    ]
 }
 ```
 
 | Key | Value |
 | --- | --- |
-| uuid | UUID that was returned by source upload call |
+| uuid | UUID of the import |
+| source_uuid | UUID of the source |
+| import_type | Type of the import: products, categories, prices, etc ... |
 | behaviour | Import behaviour (add_update, delete, update, add, replace) |
 | import_image_archive | Relative path to product images archive file |
 | import_images_file_dir | Relative path to product images files |
 | validation_strategy | Moved from main standard Import, not sure if we will use if |
 | allowed_error_count | How many errors allowed to be during the import |
-| mapping | Data format mapping |
+
+*convertingRules*
+
+| Key | Value |
+| --- | --- |
+| name | Name of the rule - will be defined in configuration xml |
+| paramethers | array of paramethers. Flexible array here, will depend from method used |
+| sort | Sorf order of rules execution |
 
 
 #### Return
 
 ```
 {
-	"uuid": string
-	"status": "proccessing",
-	"error": "string"
+	"uuid": string	
 }
 ```
 
 ### Get import status
 
 Receive information about imported file
-GET  `/V1/import/:uuid`
+GET  `/V1/imports/:uuid`
 
 #### Return
 
@@ -279,30 +250,78 @@ Will be returned list of objects that we tried to import
 ```
 {
   "status": "string", 
-  "error": "string",
-  "uuid": 0,
-  "entity_type": "catalog_product, customers ....",
-  "user_id": "User ID who created this request",
-  "user_type": "User Type who created this request",
-  "items": [
-  {
-    "uuid": 0,
-    "status": "",
-    "serialized_data": "",
-    "result_serialized_data": "",
-    "error_code":"",
-    "result_message":""
-  }]
+  "errors": [],
+  "created_at": "string",
+  "finished_at": "string",
+  "import": {
+        "uuid": "",
+        "source_uuid": "",
+        "import_type": "catalog_product",
+        "validation_strategy": "string",
+        "allowed_error_count": 0,
+        "import_image_archive": "string",
+        "import_images_file_dir": "string"
+    }
 }
 ```
 
-| Key | Value |
-| --- | --- |
-| uuid | Imported File ID |
-| status | Status of this file. Possible values: completed, not_completed, error |
-| error | Error message if exists |
-| entity_type | Import type: eg. customers, products, etc ... |
-| items | List of items that were imported. As an array |
+## Import types
+
+MVP will implement import of following objects:
+
+* Advanced Pricing
+    * Add/Update
+    * Delete
+* Simple Products import
+    * Add/Update
+    * Delete
+* Single stock inventory
+    * Add/Update
+* Multi stock inventory
+    * Add/Update
+    * Delete
+
+
+# Phase 2
+
+### Partial Source Upload
+
+Import of big file also can be divided in several parts.
+For this case we have separate endpoint
+
+POST  `/V1/import/sources/csv/partial/`
+
+Input request will looks like:
+
+```
+{
+  "uuid": "UUID",
+  "source_data": {
+    "source_type": "upload_file",
+    "source_data": "c2t1LHN0b3JlX3ZpZXdfY29kZSxhdHRya...",
+    "data_hash" : "sha256 encoded data of the full 'import_data' value",
+    "pieces_count": "5"
+    "piece_number": "1"
+  } 
+  "format": {
+    "csv_separator": "string",
+    "csv_enclosure": "string",
+    "multiple_value_separator": "string"
+  }
+}
+```
+
+where *source_data* is a 1/N part of the whole content, and *data_hash* contains sha256 hash of full source_data body.
+
+`pieces_count` - its an amount of pieces that will be transferred for 1 file. We need it to be sure that import is completed and then we could detect if it was successfully finished or failed
+
+`piece_number` - its a number that detects which part of file currently transferred. This is required to have to support Asynchronous File import when we dont need to send parts in correct sequence
+
+Those parts could be send asynchronously. They will be merged together after all data are transferred.
+
+### Delete Imported Source Format
+
+DELETE  `/V1/import/sources/:uuid`
 
 ### Get single import operation status
 
@@ -372,3 +391,6 @@ PUT  `/V1/import/operation-id/{uuid}`
 ```
 []
 ```
+
+
+More will come ...
