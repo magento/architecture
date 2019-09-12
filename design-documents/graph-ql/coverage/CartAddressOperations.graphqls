@@ -33,6 +33,7 @@ input SetShippingAddressesOnCartInput {
 input ShippingAddressInput {
     customer_address_id: Int # If provided then will be used address from address book
     address: CartAddressInput
+    pickup_location_code: String
 }
 
 input CartAddressInput {
@@ -83,6 +84,7 @@ type ShippingCartAddress implements CartAddressInterface {
     selected_shipping_method: SelectedShippingMethod
     items_weight: Float
     cart_items: [CartItemQuantity]
+    pickup_location_code: String
 }
 
 type BillingCartAddress implements CartAddressInterface {
