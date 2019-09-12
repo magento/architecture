@@ -1,0 +1,71 @@
+type Query {
+    pickup_locations (
+        distance: DistanceFilterInput,
+        filter: PickupLocationFilterInput,
+        sort: PickupLocationSortInput,
+        page_size: Int = 20,
+        current_page: Int = 1
+    ): PickupLocations
+}
+
+input DistanceFilterInput {
+    radius: Int!
+    country_code: String!
+    region: String
+    city: String
+    postcode: String
+}
+
+input PickupLocationFilterInput {
+    name: FilterTypeInput
+    pickup_location_code: FilterTypeInput
+    country_id: FilterTypeInput
+    postcode: FilterTypeInput
+    region: FilterTypeInput
+    region_id: FilterTypeInput
+    city: FilterTypeInput
+    street: FilterTypeInput
+}
+
+input PickupLocationSortInput {
+    name: SortEnum
+    pickup_location_code: SortEnum
+    distance: SortEnum
+    country_id: SortEnum
+    region: SortEnum
+    region_id: SortEnum
+    city: SortEnum
+    street: SortEnum
+    postcode: SortEnum
+    longitude: SortEnum
+    latitude: SortEnum
+    email: SortEnum
+    fax: SortEnum
+    phone: SortEnum
+    contact_name: SortEnum
+    description: SortEnum
+}
+
+type PickupLocations {
+    items: [PickupLocation]
+    page_info: SearchResultPageInfo
+    total_count: Int
+}
+
+type PickupLocation {
+    pickup_location_code: String
+    name: String
+    email: String
+    fax: String
+    contact_name: String
+    description: String
+    latitude: Float
+    longitude: Float
+    country_id: String
+    region_id: Int
+    region: String
+    city: String
+    street: String
+    postcode: String
+    phone: String
+}
