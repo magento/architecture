@@ -14,19 +14,24 @@ A sizable portion of this can be attributed to our current high-level testing me
 
 ### Design
 
-* Any class marked with an `@api` annotation MUST be covered with explicit test coverage. This coverage MAY be accomplished via  integration or unit tests (as possible). All behavior that can be invoked either directly or indirectly MUST have some form of test coverage that ensures that the concrete implementation (that is, the subject of the test) can not be inadvertently changed except in the test itself.
-* You MUST write as much incremental test coverage as possible prioritized based on level:
-  1. **Components MUST be tested on their own.** This MAY be done through unit or integration testing as appropriate. This level of test coverage ensures that the component can properly function on its own.  
-  1. **Components MUST be shown to work with known collaborators.** This MUST be done through integration tests and ideally SHOULD involve as few components as possible per test case. This level of tests ensures that the component will work with its known associates. Examples of such associates would include aggregators, composites, or TODO.
-  1. webapi behavior MUST be covered by blackbox tests to assert that the service contracts are properly satisfied. This ensures that the software package as a whole functions properly when everything is compiled together. This is in addition to other testing explained.
-  1. MFTF tests SHOULD only be used to cover P0/P1 testing scenarios. Until these scenarios are all completed, a product owner MUST be consulted for approval of new tests. Additionally, MFTF MUST NOT be used for testing scenarios that are not P0/P1
+#### New Testing Strategy:
 
+The new strategy for testing relies on having test coverage at each layer. The idea is to have many small and fast tests. Therefore, tests MUST be written in the following order of granularity and the higher-level the test, the fewer tests there will be:
+
+1. Code MUST be tested on its own. This MAY be done through unit or integration testing as appropriate. This level of test coverage ensures that the code can properly function on its own.  
+1. Code MUST be shown to work with known collaborators. This MUST be done through integration tests and ideally SHOULD involve as few components as possible per test case. This level of tests ensures that the code will work with its known associates. Examples of such associates would include aggregators, composites, or other obvious.
+1. webapi behavior MUST be covered by blackbox tests to assert that the service contracts are properly satisfied. This ensures that the software package as a whole functions properly when everything is compiled together. This includes REST/SOAP/GraphQl etc. This is in addition to other testing explained.
+1. MFTF tests SHOULD only be used to cover P0/P1 testing scenarios. Until these scenarios are all completed, a product owner MUST be consulted for approval of new tests. Additionally, MFTF MUST NOT be used for testing scenarios that are not P0/P1
+
+In addition, regardless of the interpretation of the strategy above: Any class marked with an `@api` annotation MUST be covered with explicit test coverage via integration or unit tests. These tests MUST test the concrete implementation's behavior in a way that can not be inadvertently changed outside of the test itself. For example: testing a concrete class through DI preference, is not safe because it could be overridden via configuration of another loaded module.
+
+#### What to test when changing code
+1. Before changing code or writing new code, write passing tests (either blackbox or whitebox as appropriate) for existing behavior that doesn't already have test coverage.
+1. Write code/refactor as needed adding new tests as appropriate
 
 #### Acceptance Criteria Fulfillment
 
-<!-- If the document is intended for an existing story/task, provide alignment with its acceptance criteria. -->
-
-* A new Definition of Done will be created and serve as a definitive test coverage rule for all of Magento Commerce.
+* A new Definition of Done will be created and serve as a definitive test coverage rule for all of Magento Commerce using the rules from the Design section above.
 * Training presentations will also be given to help ease this transition. 
 
 #### Extension Points and Scenarios
