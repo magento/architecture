@@ -36,5 +36,4 @@ In addition, regardless of the interpretation of the strategy above: Any class m
 
 #### Extension Points and Scenarios
 
-Theoretically we may need to add additional functionality to our integration test framework to be able to cover certain types of extensibility corner cases. This is a problem that has often been discussed but nobody has yet to present an actual use case so the way in which we may need to make the framework more flexible isn't actually known at this time.
-
+Theoretically we may need to add additional functionality to our integration test framework to be able to cover certain types of extensibility corner cases. However it is unclear what types of changes we may need to make at this time because an investigation into this issue showed that no real use cases have ever been discovered or documented.
