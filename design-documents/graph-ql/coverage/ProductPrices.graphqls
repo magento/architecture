@@ -1,0 +1,46 @@
+interface ProductInterface{
+    ...
+    price: ProductPrices @deprecated (use price_range)
+    price_range: PriceRange!
+    tier_price: Float @deprecated (use tier_prices)
+    tier_prices: [ProductTierPrices]
+    ...
+}
+
+type ProductPrices { @deprecated (use PriceRange)
+    minimalPrice: @deprecated
+    maximalPrice: @deprecated
+    regularPrice: @deprecated
+}
+
+type ProductTierPrices {
+    customer_group_id: String
+    qty: Float
+    value: Float @deprecated (use final_price)
+    final_price: Money
+    percentage_value: Float @deprecated (use discount)
+    discount: ItemDiscount
+    website_id: Float
+}
+
+type PriceRange{
+    minimum_price : ProductPrice!
+    maximum_price : ProductPrice
+}
+
+type ProductPrice{
+    regular_price : Money!
+    final_price : Money!
+    discount : ItemDiscount
+}
+
+type ProductDiscount{
+    percent_off : Float
+    amount_off : Float
+}
+
+type Money{
+    value : Float!
+    currency : Currency!
+}
+
