@@ -14,13 +14,13 @@ type ProductPrices { @deprecated (use PriceRange)
 }
 
 type ProductTierPrices {
-    customer_group_id: String
+    customer_group_id: String @deprecated (not relevant on storefront)
     qty: Float
     value: Float @deprecated (use final_price)
     final_price: Money
     percentage_value: Float @deprecated (use discount)
     discount: ProductDiscount
-    website_id: Float
+    website_id: Float @deprecated (not relevant on storefront)
 }
 
 type PriceRange{
