@@ -3,7 +3,7 @@ interface ProductInterface{
     price: ProductPrices @deprecated (use price_range)
     price_range: PriceRange!
     tier_price: Float @deprecated (use tier_prices)
-    tier_prices: [ProductTierPrices]
+    tier_prices: [ProductTierPrice] #TODO this changes output type. not backwards-compatible
     ...
 }
 
@@ -13,14 +13,18 @@ type ProductPrices { @deprecated (use PriceRange)
     regularPrice: @deprecated
 }
 
-type ProductTierPrices {
+type ProductTierPrices @deprecated (replaced by ProductTierPrice because it should be singular) {
     customer_group_id: String @deprecated (not relevant on storefront)
-    qty: Float
-    value: Float @deprecated (use final_price)
-    final_price: Money
-    percentage_value: Float @deprecated (use discount)
-    discount: ProductDiscount
+    qty: Float @deprecated (use ProductTierPrice.quantity)
+    value: Float @deprecated (use ProductTierPrice.final_price)
+    percentage_value: Float @deprecated (use ProductTierPrice.discount)
     website_id: Float @deprecated (not relevant on storefront)
+}
+
+type ProductTierPrice {
+    final_price: Money
+    quantity: Float
+    discount: ProductDiscount
 }
 
 type PriceRange{
@@ -29,9 +33,10 @@ type PriceRange{
 }
 
 type ProductPrice{
-    regular_price : Price!
-    final_price : Price!
+    regular_price : Money!
+    final_price : Money!
     discount : ProductDiscount
+    fixed_product_tax: [FixedProductTax]
 }
 
 type ProductDiscount{
@@ -39,31 +44,34 @@ type ProductDiscount{
     amount_off : Float
 }
 
-#No changes, just for reference
-
-type Price @doc(description: "The Price object defines the price of a product as well as any tax-related adjustments.") {
-    amount: Money @doc(description: "The price of a product plus a three-letter currency code.")
-    adjustments: [PriceAdjustment] @doc(description: "An array that provides information about tax, weee, or weee_tax adjustments.")
+type FixedProductTax {
+    amount: Money
+    label: String
 }
 
-type Money{
-    value : Float!
-    currency : Currency!
+type Price @deprecated (replaced by ProductPrice){
+    amount: Money
+    adjustments: [PriceAdjustment]
 }
 
-type PriceAdjustment @doc(description: "The PricedAdjustment object defines the amount of money to apply as an adjustment, the type of adjustment to apply, and whether the item is included or excluded from the adjustment.") {
-    amount: Money @doc(description: "The amount of the price adjustment and its currency code.")
-    code: PriceAdjustmentCodesEnum @doc(description: "Indicates whether the adjustment involves tax, weee, or weee_tax.")
-    description: PriceAdjustmentDescriptionEnum @doc(description: "Indicates whether the entity described by the code attribute is included or excluded from the adjustment.")
+type PriceAdjustment @deprecated (replaced by FixedProductTax) {
+    amount: Money
+    code: PriceAdjustmentCodesEnum
+    description: PriceAdjustmentDescriptionEnum
 }
 
-enum PriceAdjustmentCodesEnum @doc(description: "Note: This enumeration contains values defined in modules other than the Catalog module.") {
+enum PriceAdjustmentCodesEnum @deprecated (replaced by FixedProductTax) {
     # From WeeGraphQl
     WEE
     WEETAX
 }
 
-enum PriceAdjustmentDescriptionEnum @doc(description: "This enumeration states whether a price adjustment is included or excluded.") {
+enum PriceAdjustmentDescriptionEnum @deprecated (replaced by FixedProductTax) {
     INCLUDED
     EXCLUDED
+}
+
+type Money{
+    value : Float!
+    currency : Currency!
 }
