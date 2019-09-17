@@ -19,7 +19,7 @@ type ProductTierPrices {
     value: Float @deprecated (use final_price)
     final_price: Money
     percentage_value: Float @deprecated (use discount)
-    discount: ItemDiscount
+    discount: ProductDiscount
     website_id: Float
 }
 
@@ -31,7 +31,7 @@ type PriceRange{
 type ProductPrice{
     regular_price : Price!
     final_price : Price!
-    discount : ItemDiscount
+    discount : ProductDiscount
 }
 
 type ProductDiscount{
