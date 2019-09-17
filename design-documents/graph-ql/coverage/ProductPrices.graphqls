@@ -50,3 +50,20 @@ type Money{
     value : Float!
     currency : Currency!
 }
+
+type PriceAdjustment @doc(description: "The PricedAdjustment object defines the amount of money to apply as an adjustment, the type of adjustment to apply, and whether the item is included or excluded from the adjustment.") {
+    amount: Money @doc(description: "The amount of the price adjustment and its currency code.")
+    code: PriceAdjustmentCodesEnum @doc(description: "Indicates whether the adjustment involves tax, weee, or weee_tax.")
+    description: PriceAdjustmentDescriptionEnum @doc(description: "Indicates whether the entity described by the code attribute is included or excluded from the adjustment.")
+}
+
+enum PriceAdjustmentCodesEnum @doc(description: "Note: This enumeration contains values defined in modules other than the Catalog module.") {
+    # From WeeGraphQl
+    WEE
+    WEETAX
+}
+
+enum PriceAdjustmentDescriptionEnum @doc(description: "This enumeration states whether a price adjustment is included or excluded.") {
+    INCLUDED
+    EXCLUDED
+}
