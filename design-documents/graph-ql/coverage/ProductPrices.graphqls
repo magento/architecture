@@ -29,8 +29,8 @@ type PriceRange{
 }
 
 type ProductPrice{
-    regular_price : Money!
-    final_price : Money!
+    regular_price : Price!
+    final_price : Price!
     discount : ItemDiscount
 }
 
@@ -39,8 +39,14 @@ type ProductDiscount{
     amount_off : Float
 }
 
+#No changes, just for reference
+
+type Price @doc(description: "The Price object defines the price of a product as well as any tax-related adjustments.") {
+    amount: Money @doc(description: "The price of a product plus a three-letter currency code.")
+    adjustments: [PriceAdjustment] @doc(description: "An array that provides information about tax, weee, or weee_tax adjustments.")
+}
+
 type Money{
     value : Float!
     currency : Currency!
 }
-
