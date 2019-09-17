@@ -1,10 +1,10 @@
 type Query {
-    pickup_locations (
+    pickupLocations (
         distance: DistanceFilterInput,
         filter: PickupLocationFilterInput,
         sort: PickupLocationSortInput,
-        page_size: Int = 20,
-        current_page: Int = 1
+        pageSize: Int = 20,
+        currentPage: Int = 1
     ): PickupLocations
 }
 
