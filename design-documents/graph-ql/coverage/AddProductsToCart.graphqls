@@ -1,0 +1,25 @@
+type Mutation {
+    addProductsToCart(input: AddProductsToCartInput): AddProductsToCartOutput
+}
+
+input AddProductsToCartInput {
+    cart_id: String!,
+    cart_items: [CartItemInput!]!
+}
+
+input CartItemInput {
+    sku: String! # already in use
+    quantity: Float # already in use
+    parent_sku: String, # will not be used in deprecated methods
+    selected_options: [String!] # will not be used in deprecated methods
+    entered_options: [EnteredOptionInput!] # will not be used in deprecated methods
+}
+
+input EnteredOptionInput {
+    id: String!
+    value: String!
+}
+
+type AddProductsToCartOutput {
+    cart: Cart!
+}
