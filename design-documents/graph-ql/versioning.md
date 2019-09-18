@@ -6,7 +6,7 @@ Some GraphQL schema changes can be covered using versionless strategy, which [is
  - new fields in return types
  - deprecation and subsequent removal of fields in return types
  - new optional arguments of the fields, queries and mutations
- - replacement of existing query or mutation with a new semantically different one. Example is replacing a set of mutations for adding products to cart with a single unified mutation which can add products of any type to cart. Semantics of the operations is different in this case, that is why it is not difficult to come up with a new meaningful name.
+ - replacement of existing query or mutation with a new semantically different one. Example is replacing a set of mutations for adding products to cart with a single unified mutation which can add products of any type to cart. Semantics of the operations is different in this case, that is why it is not difficult to come up with a new meaningful name. The old mutations and queries should be deprecated and eventually removed.
  
 Sometimes a new query which is meant to replace existing one has the same semantics and thus it is difficult to give the new query meaningful name. Example is new `products` query, which has a set of filters incompatible with existing implementations, thus it is impossible to comply with backward compatibility and deprecation policies.
 
@@ -20,7 +20,7 @@ The main benefit of the proposed solution is simplicity for server and client si
 ## Alternatives considered
 
  1. Versioning of the GraphQL endpoint itself: `http://magento.host/graphql/v2`
-    1. The drawback of such approach is that it is not common in GraphQL world to have multiple endpoints
+    1. Uncommon and considered [bad practice](https://graphql.org/learn/best-practices/#versioning)
     1. Another issue is that we will have to support multiple versions of the schema and third parties will have to extend all of them
     1. Custom implementation will be required to avoid schema duplication and versioning
  1. Versioning of all fields based on the version of the module they belong to
