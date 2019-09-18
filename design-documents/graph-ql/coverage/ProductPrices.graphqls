@@ -2,8 +2,9 @@ interface ProductInterface{
     ...
     price: ProductPrices @deprecated (use price_range)
     price_range: PriceRange!
-    tier_price: Float @deprecated (use tier_prices)
-    tier_prices: [TierPrice] #TODO this changes output type. not backwards-compatible
+    tier_price: Float @deprecated
+    tier_prices: [ProductTierPrices] @deprecated (use price_tiers)
+    price_tiers: [TierPrice]
     ...
 }
 
