@@ -3,7 +3,7 @@ interface ProductInterface{
     price: ProductPrices @deprecated (use price_range)
     price_range: PriceRange!
     tier_price: Float @deprecated (use tier_prices)
-    tier_prices: [ProductTierPrice] #TODO this changes output type. not backwards-compatible
+    tier_prices: [TierPrice] #TODO this changes output type. not backwards-compatible
     ...
 }
 
@@ -13,15 +13,15 @@ type ProductPrices { @deprecated (use PriceRange)
     regularPrice: @deprecated
 }
 
-type ProductTierPrices @deprecated (replaced by ProductTierPrice because it should be singular) {
+type ProductTierPrices @deprecated (replaced by TierPrice because it should be singular) {
     customer_group_id: String @deprecated (not relevant on storefront)
-    qty: Float @deprecated (use ProductTierPrice.quantity)
-    value: Float @deprecated (use ProductTierPrice.final_price)
-    percentage_value: Float @deprecated (use ProductTierPrice.discount)
+    qty: Float @deprecated (use TierPrice.quantity)
+    value: Float @deprecated (use TierPrice.final_price)
+    percentage_value: Float @deprecated (use TierPrice.discount)
     website_id: Float @deprecated (not relevant on storefront)
 }
 
-type ProductTierPrice {
+type TierPrice {
     final_price: Money
     quantity: Float
     discount: ProductDiscount
