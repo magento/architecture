@@ -32,8 +32,9 @@ Path is relative from Magento Root folder
     "source_data": "var/catalog_product.csv" 
   } 
   "format": {
-    "csv_separator": "string",
-    "csv_enclosure": "string",
+    "delimiter": "string",
+    "enclosure": "string",
+    "escape": "string",
     "multiple_value_separator": "string"
   }
 }
@@ -49,8 +50,9 @@ Path is relative from Magento Root folder
     "source_data": "http://some.domain/file.csv" 
   } 
   "format": {
-    "csv_separator": "string",
-    "csv_enclosure": "string",
+    "delimiter": "string",
+    "enclosure": "string",
+    "escape": "string",
     "multiple_value_separator": "string"
   }
 }
@@ -66,8 +68,9 @@ Path is relative from Magento Root folder
     "source_data": "c2t1LHN0b3JlX3ZpZXdfY29kZSxhdHRya..." 
   } 
   "format": {
-    "csv_separator": "string",
-    "csv_enclosure": "string",
+    "delimiter": "string",
+    "enclosure": "string",
+    "escape": "string",
     "multiple_value_separator": "string"
   }
 }
@@ -101,8 +104,9 @@ PUT  `/V1/import/sources/csv/:uuid`
 {
   "uuid": "UUID",
   "format": {
-    "csv_separator": "string",
-    "csv_enclosure": "string",
+    "delimter": "string",
+    "enclosure": "string",
+    "escape": "string",
     "multiple_value_separator": "string"
   }
 }
@@ -120,17 +124,19 @@ Will return list of Source that was uploaded before.
   {
       "uuid": "uuid",
       "format": {
-          "csv_separator": "string",
-          "csv_enclosure": "string",
+          "delimiter": "string",
+          "enclosure": "string",
+          "escape": "string",
           "multiple_value_separator": "string"
       }
   },
   {
         "uuid": "uuid",
         "format": {
-            "csv_separator": "string",
-            "csv_enclosure": "string",
-            "multiple_value_separator": "string"
+            "delimiter": "string",
+            "enclosure": "string",
+            "escape": "string",
+	    "multiple_value_separator": "string"
         }
     }
     .....
@@ -304,8 +310,9 @@ Input request will looks like:
     "piece_number": "1"
   } 
   "format": {
-    "csv_separator": "string",
-    "csv_enclosure": "string",
+    "delimiter": "string",
+    "enclosure": "string",
+    "escape": "string",
     "multiple_value_separator": "string"
   }
 }
