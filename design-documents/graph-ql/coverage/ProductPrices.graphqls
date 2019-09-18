@@ -37,7 +37,7 @@ type ProductPrice{
     regular_price : Money!
     final_price : Money!
     discount : ProductDiscount
-    fixed_product_tax: [FixedProductTax]
+    fixed_product_taxes: [FixedProductTax]
 }
 
 type ProductDiscount{
