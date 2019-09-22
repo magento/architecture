@@ -202,17 +202,18 @@ Start Import
         "validation_strategy": "string",
         "allowed_error_count": 0,
         "import_image_archive": "string",
-        "import_images_file_dir": "string"
-    },
-    "convertingRules": [
+        "import_images_file_dir": "string",
+	"convertingRules": [
           {
               "name": "string",
-              "paramethers": [
+              "parameters": [
                   ..... free array format here .....
               ],
               "sort": "string",
           }
-    ]
+    	]
+    }
+    
 }
 ```
 
@@ -232,7 +233,7 @@ Start Import
 | Key | Value |
 | --- | --- |
 | name | Name of the rule - will be defined in configuration xml |
-| paramethers | array of paramethers. Flexible array here, will depend from method used |
+| parameters | array of paramethers. Flexible array here, will depend from method used |
 | sort | Sorf order of rules execution |
 
 
