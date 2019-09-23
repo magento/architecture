@@ -207,7 +207,8 @@ Start Import
           {
               "name": "string",
               "parameters": [
-                  ..... free array format here .....
+                  {"name": "PARAM NAME", "value": mixed},
+		  {"name": "PARAM NAME", "value": mixed}
               ],
               "sort": "string",
           }
