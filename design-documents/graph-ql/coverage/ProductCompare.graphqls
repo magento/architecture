@@ -1,0 +1,40 @@
+type Query {
+    compareProductsList(hashed_id: String): CompareProductsList @doc(description: "Get compare products list")
+}
+
+type CompareProductsList {
+    items: [CompareItem] @doc (description: "Compare products list which contains items as products")
+}
+
+type CompareItem {
+    item_id: Int
+    product: ProductInterface
+}
+
+type Mutation {
+    addProductToCompareList(hashed_id: String, input: addProductToCompareListInput): addProductToCompareListOutput @doc(description: "Add product to compare list")
+    removeProductFromCompareList(hashed_id: String, input: removeProductFromCompareListInput): removeProductFromCompareListOutput @doc(description: "Remove product from compare list")
+    createCompareList: CreateCompareListOutput @doc(description: "Create compare list to add product to this list")
+}
+
+input addProductToCompareListInput {
+    ids: [Int!]
+}
+
+type addProductToCompareListOutput {
+    result: Boolean!
+    compareProductsList: CompareProductsList
+}
+
+input removeProductFromCompareListInput {
+    ids: [Int!]
+}
+
+type removeProductFromCompareListOutput {
+    result: Boolean!
+    compareProductsList: CompareProductsList
+}
+
+type CreateCompareListOutput {
+    hashed_id: String
+}
