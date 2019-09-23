@@ -206,10 +206,8 @@ Start Import
 	"convertingRules": [
           {
               "name": "string",
-              "parameters": [
-                  {"name": "PARAM NAME", "value": mixed},
-		  {"name": "PARAM NAME", "value": mixed}
-              ],
+	      "apply_to": string[],
+              "parameters": string[],
               "sort": "string",
           }
     	]
