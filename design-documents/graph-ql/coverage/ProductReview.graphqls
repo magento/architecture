@@ -1,0 +1,91 @@
+type Query {
+    productReviews (
+    sku: String! @doc(description: "The product SKU to get reviews for"),
+    pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. This attribute is optional."),
+    currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
+    sort: ReviewSortInput @doc(description: "Specifies which field to sort on, and whether to return the results in ascending or descending order.")
+): ProductReviews @doc(description: "The product review query returns information about approved product reviews")
+    customerProductReviews (
+    filter: ReviewFilterInput @doc(description: "Identifies which review fields to search for and return."),
+    pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. This attribute is optional."),
+    currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
+    sort: ReviewSortInput @doc(description: "Specifies which field to sort on, and whether to return the results in ascending or descending order.")
+): ProductReviews @doc(description: "The customer product review query returns information about a product reviews given by a customer")
+    productRatings: ProductRatings @doc(description: "An array of available product ratings")
+}
+
+type Mutation {
+    createProductReview(input: CreateProductReviewInput!): ProductReview!
+}
+
+input CreateProductReviewInput {
+    sku: String! @doc(description: "The SKU of the product that the review is assigned")
+    nickname: String! @doc(description: "The customer's nickname")
+    title: String! @doc(description: "The review title")
+    review_text: String! @doc(description: "The review text")
+    ratings: [RatingsInput!]!
+}
+
+type RatingsInput @doc(description: "An array of ratings applied to the review") {
+    rating_name: String! @doc(description: "The name of rating")
+    rating_value: Int! @doc(description: "The rating value. Possible values: 1 to 5")
+}
+
+type ProductReviews {
+    items: [ProductReview] @doc(description: "And array of product reviews")
+    page_info: SearchResultPageInfo @doc(description: "An object that includes the page_info and currentPage values specified in the query")
+    total_count: Int @doc(description: "The number of product reviews returned")
+}
+
+type ProductReview @doc(description: "ProductReview defines the review details") {
+    review_id: Int! @doc(description: "The ID assigned to the review")
+    product: ProductInterface! @doc(description: "Contains details about this product option")
+    title: String! @doc(description: "The review title")
+    review_text: String! @doc(description: "The review text")
+    nickname: String! @doc(description: "The customer's nickname")
+    created_at: String! @doc(description: "Date indicating when the review was created")
+    average_rating: Float! @doc(description: "The average rating for product review")
+    ratings: [ReviewRating!]! @doc(description: "An array of review ratings")
+}
+
+type ReviewRating {
+    name: String! @doc(description: "The review rating name")
+    percent: Float! @doc(description: "The rating percent given by customer to the review")
+    value: Int! @doc(description: "The rating value given by customer. Possible values: 1 to 5")
+}
+
+type ProductRatings {
+    items: [Rating!]! @doc(description: "And array of product ratings")
+}
+
+type Rating @doc(description: "Rating defines the rating details") {
+    name: String! @doc(description: "The rating name")
+    position: Int! @doc(description: "The rating sort order")
+    options: RatingOptions @doc(description: "An array of rating options")
+}
+
+type RatingOptions {
+    items: [RatingOption!]! @doc(description: "And array of rating options")
+}
+
+type RatingOption {
+    code: Int! @doc(description: "The option code")
+    value: Int! @doc(description: "The option value")
+    position: Int! @doc(description: "The option sort order")
+}
+
+interface ProductInterface {
+    reviews(
+    pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. This attribute is optional."),
+    currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
+    sort: ReviewSortInput @doc(description: "Specifies which field to sort on, and whether to return the results in ascending or descending order.")
+): ProductReviews @doc(description: "ProductReview returns an array containing approved product reviews")
+}
+
+input ReviewSortInput @doc(description: "Specifies the field to use for sorting results and indicates whether the results are sorted in ascending or descending order") {
+    created_at: SortEnum @doc(description: "Timestamp indicating when the product review was created")
+}
+
+input ReviewFilterInput @doc(description: "ReviewFilterInput defines the filters to be used in the search.") {
+    review_id: FilterTypeInput @doc(description: "The review ID.")
+}
