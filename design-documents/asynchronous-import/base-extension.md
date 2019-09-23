@@ -35,7 +35,7 @@ Path is relative from Magento Root folder
     "delimiter": "string",
     "enclosure": "string",
     "escape": "string",
-    "multiple_value_separator": "string"
+    "multiple_value_delimiter": "string"
   }
 }
 ```
