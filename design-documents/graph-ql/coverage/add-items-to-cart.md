@@ -1,5 +1,7 @@
 **Overview**
 
+:warning: Current proposal is deprecated in favor of [add-items-to-cart-single-mutation.md](add-items-to-cart-single-mutation.md)
+
 As a Magento developer, I need to manipulate the shopping cart via GraphQL so that I can programmatically create orders on behalf of a shopper.
 
 GraphQL needs to provide sufficient mutations (ways to create/update/delete data) for a developer to build out the storefront checkout experience for a shopper.
@@ -31,13 +33,13 @@ GraphQL needs to provide sufficient mutations (ways to create/update/delete data
 
 **Proposed schema for adding items to cart:**
 
-- [AddSimpleProductToCart](AddSimpleProductToCart.graphqls)
-- [AddBundleProductToCart](AddBundleProductToCart.graphqls)
-- [AddConfigurableProductToCart](AddConfigurableProductToCart.graphqls)
-- [AddDownloadableProductToCart](AddDownloadableProductToCart.graphqls)
-- [AddGiftCardProductToCart](AddGiftCardProductToCart.graphqls)
-- [AddGroupedProductToCart](AddGroupedProductToCart.graphqls)
-- [AddVirtualProductToCart](AddVirtualProductToCart.graphqls)
+- [AddSimpleProductToCart](add-items-to-cart/AddSimpleProductToCart.graphqls)
+- [AddBundleProductToCart](add-items-to-cart/AddBundleProductToCart.graphqls)
+- [AddConfigurableProductToCart](add-items-to-cart/AddConfigurableProductToCart.graphqls)
+- [AddDownloadableProductToCart](add-items-to-cart/AddDownloadableProductToCart.graphqls)
+- [AddGiftCardProductToCart](add-items-to-cart/AddGiftCardProductToCart.graphqls)
+- [AddGroupedProductToCart](add-items-to-cart/AddGroupedProductToCart.graphqls)
+- [AddVirtualProductToCart](add-items-to-cart/AddVirtualProductToCart.graphqls)
 
 
 **My Account area impacted:** 
