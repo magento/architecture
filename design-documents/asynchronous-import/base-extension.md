@@ -53,7 +53,7 @@ Path is relative from Magento Root folder
     "delimiter": "string",
     "enclosure": "string",
     "escape": "string",
-    "multiple_value_separator": "string"
+    "multiple_value_delimiter": "string"
   }
 }
 ```
@@ -71,7 +71,7 @@ Path is relative from Magento Root folder
     "delimiter": "string",
     "enclosure": "string",
     "escape": "string",
-    "multiple_value_separator": "string"
+    "multiple_value_delimiter": "string"
   }
 }
 ```
@@ -107,7 +107,7 @@ PUT  `/V1/import/sources/csv/:uuid`
     "delimter": "string",
     "enclosure": "string",
     "escape": "string",
-    "multiple_value_separator": "string"
+    "multiple_value_delimiter": "string"
   }
 }
 ```
@@ -127,7 +127,7 @@ Will return list of Source that was uploaded before.
           "delimiter": "string",
           "enclosure": "string",
           "escape": "string",
-          "multiple_value_separator": "string"
+          "multiple_value_delimiter": "string"
       }
   },
   {
@@ -136,7 +136,7 @@ Will return list of Source that was uploaded before.
             "delimiter": "string",
             "enclosure": "string",
             "escape": "string",
-	    "multiple_value_separator": "string"
+	    "multiple_value_delimiter": "string"
         }
     }
     .....
@@ -315,7 +315,7 @@ Input request will looks like:
     "delimiter": "string",
     "enclosure": "string",
     "escape": "string",
-    "multiple_value_separator": "string"
+    "multiple_value_delimiter": "string"
   }
 }
 ```
