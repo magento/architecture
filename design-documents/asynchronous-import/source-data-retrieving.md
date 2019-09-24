@@ -140,3 +140,5 @@ Current supported adapters:
 - WebDAV
 - PHPCR
 - ZipArchive
+
+**Pay attention:** HTTP and HTTPS adapters are not supported and should be created own
