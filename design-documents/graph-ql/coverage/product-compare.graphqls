@@ -1,0 +1,18 @@
+type Mutation {
+    createCompareList(): String! # Guest only
+    addProductsToCompareList(compare_list_id: String!, skus: [String!]!): AddProductToCompareListOutput!
+}
+
+type Query {
+    getCustomerCompareList(): String! # Customer only
+    productCompareList(compare_list_id: String!): ProductCompareList!
+}
+
+input ProductCompareList {
+    compare_list_id: String!
+    products: [ProductInterface]!
+}
+
+input AddProductToCompareListOutput {
+    compare_list: ProductCompareList!
+}
