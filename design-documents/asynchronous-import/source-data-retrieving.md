@@ -100,11 +100,21 @@ interface RetrievingResultInterface
 ```
 
 Current implementation *MUST* operate and rely on:
+
+Reading data
 ```php
 \Magento\Framework\Filesystem\File\ReadInterface
 \Magento\Framework\Filesystem\File\ReadFactory
 \Magento\Framework\Filesystem\DriverPool::FILE|HTTP|HTTPS|ZLIB
 ```
+
+Writing data
+```php
+\Magento\Framework\Filesystem\File\WriteInterface
+\Magento\Framework\Filesystem\File\WriteFactory
+\Magento\Framework\Filesystem\DriverPool::FILE|HTTP|HTTPS|ZLIB
+```
+
 **Pay attention:** NOT Guzzle library
 
 
