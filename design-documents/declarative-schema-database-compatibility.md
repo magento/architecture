@@ -51,10 +51,10 @@ class ConstraintType extends \SplEnum
 ```
 class IndexType extends \SplEnum
 {
-    // For MySQL, Oracle and Postgres will use btree
+    // For MySQL, Oracle, MS SQL and Postgres will use btree
     const normal = 'normal';
 
-    // For MySQL fulltext, one of text indexes for Oracle and text for Postgres
+    // For MySQL and MS SQL fulltext, one of text indexes for Oracle and text for Postgres
     const text = 'text';
 }
 ```
@@ -296,6 +296,19 @@ interface TableManagementInterface
 }
 ```
 
+### Alternative approach
+
+Alternative approach is to reuse existing interfaces and add replaceability on the level of declarative schema.
+
+`\Magento\Framework\Setup\Declaration\Schema\Db\SchemaBuilder` should accept `\Magento\Framework\Setup\Declaration\Schema\Db\DbSchemaReaderFactory` that would allow to create database specific implementations of `DbSchemaReaderInterface` for given connection. `\Magento\Framework\Setup\Declaration\Schema\Db\DbSchemaReaderFactory` will depend on `\Magento\Framework\App\DeploymentConfig` to get configuration for connection, `model` will contain name of database adapter.
+
+Similar approach need to be taken for clients of the following interfaces
+1. `\Magento\Framework\Setup\Declaration\Schema\Db\DDLTriggerInterface`
+1. `\Magento\Framework\Setup\Declaration\Schema\Db\DbSchemaWriterInterface`
+1. `\Magento\Framework\Setup\Declaration\Schema\Db\DbDefinitionProcessorInterface` (see usages of `\Magento\Framework\Setup\Declaration\Schema\Db\DefinitionAggregator`)
+
+### Replaceability of `\Magento\Framework\DB\Adapter\AdapterInterface`
+
 Not needed for declarative schema, but with this refactoring would also make sense to add ability have different adapters for different databases.
 
 `\Magento\Framework\Model\ResourceModel\Type\Db\ConnectionFactoryInterface` currently returns instance of `Magento\Framework\App\ResourceConnection\ConnectionAdapterInterface` that is defined by preference, similarly to approach above it should resolve database specific adapter based on configuration.
@@ -307,3 +320,5 @@ It has default value of `mysql4`. I propose to add 2 values: `mysql` and `mariad
 ## Considerations
 
 `\Magento\Framework\DB\Adapter\AdapterInterface` has methods like `describeTable` which return raw values from database engine. This is leaky interface. We should have interfaces that return normalized data and are compatible with all databases. Methods that don't return normalized data need to be deprecated on `\Magento\Framework\DB\Adapter\AdapterInterface`.
+
+`engine` field in declarative schema need to be deprecated.
