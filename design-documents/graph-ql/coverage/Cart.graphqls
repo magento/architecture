@@ -27,6 +27,8 @@ type Cart {
 
     is_multishipping: Boolean!
     is_virtual: Boolean!
+
+    errors: [CartError]
 }
 
 type CheckoutCustomer {
@@ -56,4 +58,9 @@ type CheckoutPaymentMethod {
 
 type CartGiftCard {
     code: String!
+}
+
+type CartError {
+    identifier: String
+    text: String
 }
