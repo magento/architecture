@@ -1,0 +1,35 @@
+type Customer {
+    reviews(
+    pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. This attribute is optional."),
+    currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
+): ProductReviews!
+}
+
+type ProductInterface {
+    average_review_rating: Float!
+    review_count: Int!
+    reviews(
+    pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. This attribute is optional."),
+    currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
+): ProductReviews!
+}
+
+type ProductReviews {
+    items: [ProductReview]! @doc(description: "And array of product reviews")
+    page_info: SearchResultPageInfo! @doc(description: "An object that includes the page_info and currentPage values specified in the query")
+}
+
+type ProductReview @doc(description: "TODO") {
+    product: ProductInterface! @doc(description: "Contains details about this product option")
+    summary: String! @doc(description: "The review summary")
+    text: String! @doc(description: "The review text")
+    nickname: String! @doc(description: "The customer's nickname")
+    created_at: String! @doc(description: "Date indicating when the review was created")
+    average_rating: Float! @doc(description: "The average rating for product review")
+    ratings_breakdown: [ProductReviewRating!]! @doc(description: "An array of review ratings")
+}
+
+type ProductReviewRating {
+    name: String! @doc(description: "The review rating name")
+    value: Int! @doc(description: "The rating value given by customer. Possible values: 1 to 5")
+}
