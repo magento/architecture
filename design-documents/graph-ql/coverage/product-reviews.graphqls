@@ -1,17 +1,17 @@
 type Customer {
     reviews(
-    pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. This attribute is optional."),
-    currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
-): ProductReviews!
+        pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. This attribute is optional."),
+        currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
+    ): ProductReviews!
 }
 
 type ProductInterface {
     average_review_rating: Float!
     review_count: Int!
     reviews(
-    pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. This attribute is optional."),
-    currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
-): ProductReviews!
+        pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. This attribute is optional."),
+        currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
+    ): ProductReviews!
 }
 
 type ProductReviews {
@@ -32,4 +32,45 @@ type ProductReview @doc(description: "TODO") {
 type ProductReviewRating {
     name: String! @doc(description: "The review rating name")
     value: Int! @doc(description: "The rating value given by customer. Possible values: 1 to 5")
+}
+
+
+type Query {
+    productReviewRatingsMetadata(): ProductReviewRatingsMetadata!
+}
+
+type ProductReviewRatingsMetadata {
+    items: [ProductReviewRatingMetadata!]! @doc(description: "Sorted based on position")
+}
+
+type ProductReviewRatingMetadata {
+    id: String! @doc(description: "Base64")
+    name: String! @doc(description: "Base64")
+    values: [ProductReviewRatingValueMetadata!]! @doc(description: "Sorted based on position")
+}
+
+type ProductReviewRatingValueMetadata {
+    value_id: String! @doc(description: "Base64")
+    value: String! @doc(description: "e.g Good, Perfect, 3, 4, 5")
+}
+
+type Mutation {
+    createProductReview(input: CreateProductReviewInput!): CreateProductReviewOutput!
+}
+
+type CreateProductReviewOutput {
+    review: ProductReview!
+}
+
+input CreateProductReviewInput {
+    sku: String! @doc(description: "The SKU of the product that the review is assigned")
+    nickname: String! @doc(description: "The customer's nickname")
+    summary: String! @doc(description: "The review title")
+    text: String! @doc(description: "The review text")
+    ratings: [ProductReviewRatingInput!]!
+}
+
+type ProductReviewRatingInput @doc(description: "TODO") {
+    id: String! @doc(description: "Base 64")
+    value_id: String! @doc(description: "The rating value.")
 }
