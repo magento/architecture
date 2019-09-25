@@ -1,0 +1,42 @@
+type Query {
+    pickupLocations (
+    distance: DistanceFilterInput, # TODO: Do if it is easy to implement, not available in current storefront
+    filter: PickupLocationFilterInput,
+    # Need to check if pagination is required. Maybe just pageSize is enough,
+    # the client will have to adjust search term to narrow down the results
+    pageSize: Int = 20,
+    currentPage: Int = 1
+): PickupLocations
+}
+
+# TODO: May be removed
+input DistanceFilterInput {
+    radius: Int!
+    country_code: String!
+    region: String
+    city: String
+    postcode: String
+}
+
+input PickupLocationFilterInput {
+    # TODO: This type exists for extensibility
+    search_term: String!
+}
+
+type PickupLocations {
+    items: [PickupLocation]!
+    page_info: SearchResultPageInfo
+    total_count: Int
+}
+
+type PickupLocation {
+    name: String!
+    country: String!
+    region: String!
+    city: String!
+    street: String!
+    postcode: String!
+    # TODO: Need to check if there is customer-facing phone number
+    phone: String
+    #TODO: Need a field with extra info, e.g. hours of operation
+}
