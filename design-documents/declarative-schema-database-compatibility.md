@@ -47,11 +47,9 @@ class ConstraintType extends \SplEnum
 ```
 class IndexType extends \SplEnum
 {
-    // For MySQL, Oracle, MS SQL and Postgres will use btree
-    const normal = 'normal';
+    const btree = 'btree';
 
-    // For MySQL and MS SQL fulltext, one of text indexes for Oracle and text for Postgres
-    const text = 'text';
+    const fulltext = 'fulltext';
 }
 ```
 
