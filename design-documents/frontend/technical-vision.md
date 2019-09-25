@@ -90,7 +90,7 @@ For **performance** reasons, JavaScript should only be used for cheap operations
 
 All users should have a **consistent** user experience. For the best **performance**, those with the latest browsers should not be penalized by incurring an additional payload hit than those with older browsers.
 
-In a CRA, [react-app-pollyfill](https://github.com/facebook/create-react-app/tree/master/packages/react-app-polyfill#react-app-polyfill) is the supported path.
+In a CRA, [react-app-polyfill](https://github.com/facebook/create-react-app/tree/master/packages/react-app-polyfill#react-app-polyfill) is the supported path.
 
 ## [React][] UI Component Library
 
