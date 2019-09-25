@@ -27,11 +27,7 @@ MySQL returns NULL for COLUMN_DEFAULT and MariaDB returns NULL as a string.
 
 ## Design
 
-Introduce new interfaces under Db namespace that allow to manage table schema, refactor implementations of the following interfaces in declarative schema to use interfaces under Db namespace.
-
-Similar approach need to be taken for clients of the following interfaces
-1. `\Magento\Framework\Setup\Declaration\Schema\Db\DbSchemaReaderInterface`
-1. `\Magento\Framework\Setup\Declaration\Schema\Db\DbSchemaWriterInterface`
+Introduce new interfaces under Db namespace that allow to allow get information about table schema, refactor implementations of `\Magento\Framework\Setup\Declaration\Schema\Db\DbSchemaReaderInterface` in declarative schema to use interfaces under Db namespace.
 
 Revise implementation of these interfaces to see if anything need to be changed here
 1. `\Magento\Framework\Setup\Declaration\Schema\Db\DDLTriggerInterface`
@@ -166,135 +162,53 @@ class DateTimeColumn extends Column
 ```
 
 ```
-interface TableInformationInterface
+interface InformationSchema\Table\ConstraintInterface
 {
     /**
      * @return Constraint[]
      */
     public function getConstraints($tableName, $resource);
+}
+```
 
+```
+interface InformationSchema\Table\ReferenceInterface
+{
     /**
      * @return ForeignKey[]
      */
     public function getReferences($tableName, $resource);
+}
+```
 
+```
+interface InformationSchema\Table\IndexInterface
+{
     /**
      * @return Index[]
      */
     public function getIndexes($tableName, $resource);
+}
+```
 
+```
+interface InformationSchema\Table\ColumnInterface
+{
     /**
      * @return Column
      */
     public function getColumns($tableName, $resource);
+}
+```
 
+```
+interface InformationSchema\Table\OptionsInterface
+{
     public function getTableOptions($tableName, $resource): TableOptions;
 }
 ```
 
-```
-interface TableManagementInterface
-{
-    public function createTable(TableOptions $tableOptions, $resource);
-    public function dropTable($tableName, $resource);
-
-    /**
-     * @param string $tableName
-     * @param Column|IntegerColumn|DecimalColumn|DateTimeColumn $column
-     * @param $resource
-     */
-    public function addColumn($tableName, Column $column, $resource);
-    public function dropColumn($tableName, $columnName, $resource);
-    public function addIndex($tableName, Index $index, $resource);
-    public function dropIndex($tableName, $indexName, $resource);
-    public function addConstraint($tableName, Constraint $constraint, $resource);
-    public function dropConstraint($tableName, $constraintName, $resource);
-    public function addForeignKey($tableName, ForeignKey $foreignKey, $resource);
-    public function dropForeignKey($tableName, $foreignKeyName, $resource);
-    public function updateTableOptions($tableName, TableOptions $tableOptions, $resource);
-}
-```
-
-```
-class TableDiff
-{
-    public function getName(): string {}
-
-    /**
-     * Column[]|IntegerColumn[]|DecimalColumn[]|DateTimeColumn[]
-     */
-    public function getAddedColumns() {}
-
-    /**
-     * Column[]|IntegerColumn[]|DecimalColumn[]|DateTimeColumn[]
-     */
-    public function getChangedColumns() {}
-
-    /**
-     * Column[]|IntegerColumn[]|DecimalColumn[]|DateTimeColumn[]
-     */
-    public function getRemovedColumns() {}
-
-    /**
-     * Index[]
-     */
-    public function getAddedIndexes() {}
-
-    /**
-     * Index[]
-     */
-    public function getChangedIndexes() {}
-
-    /**
-     * Index[]
-     */
-    public function getRemovedIndexes() {}
-
-    /**
-     * Constraint[]
-     */
-    public function getAddedConstraints() {}
-
-    /**
-     * Constraint[]
-     */
-    public function getChangedConstraints() {}
-
-    /**
-     * Constraint[]
-     */
-    public function getRemovedConstraints() {}
-
-    /**
-     * ForeignKey[]
-     */
-    public function getAddedForeignKeys() {}
-
-    /**
-     * ForeignKey[]
-     */
-    public function getChangedForeignKeys() {}
-
-    /**
-     * ForeignKey[]
-     */
-    public function getRemovedForeignKeys() {}
-
-    public function getFromTable(): string {}
-}
-```
-
-```
-/**
- * Alternative interface
- */
-interface TableManagementInterface
-{
-    public function createTable(TableOptions $tableOptions, $resource);
-    public function dropTable($tableName, $resource);
-    public function alterTable($tableName, $resource, TableDiff $tableDiff);
-}
-```
+Management interfaces will not be introduced.
 
 ### Alternative approach
 
