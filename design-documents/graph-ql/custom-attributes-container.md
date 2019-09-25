@@ -23,6 +23,107 @@ Flat representation of custom attributes in `ProductInterface` (and other EAV en
 
 It is necessary to keep in mind that with `custom_attributes` it is not possible to query product EAV attributes selectively, which may lead to performance degradation.
 
+### Sample queries
+
+Current implementation allows the following query
+```graphql
+{
+  products(search: "test") {
+    items {
+      name
+      sku
+      color
+      manufacturer
+      size
+    }
+  }
+}
+```
+
+Let's assume the response will be
+
+```graphql
+{
+  "data": {
+    "products": {
+      "items": [
+        {
+          "name": "Test Simple Product",
+          "sku": "testSimpleProduct",
+          "color": "Red",
+          "manufacturer": "Company A"
+          "size": null
+        },
+        {
+          "name": "Test Configurable Product",
+          "sku": "testConfigProduct",
+          "color": null,
+          "manufacturer": "Company B"
+          "size": "XXL"
+        }
+      ]
+    }
+  }
+}
+```
+
+With the proposed changes the above mentioned queries will still be supported. In addition, the following query will become possible
+ 
+ ```graphql
+ {
+   products(search: "test") {
+     items {
+       name
+       sku
+       custom_attributes {
+         code
+         value
+       }
+     }
+   }
+ }
+ ```
+Note that color and size are not applicable to some products in the search result. In the previous example they were returned as `null`. In the following example they are not returned at all
+
+```graphql
+{
+  "data": {
+    "products": {
+      "items": [
+        {
+          "name": "Test Simple Product",
+          "sku": "testSimpleProduct",
+          "custom_attributes": [
+            {
+                "code": "color"
+                "value": "Red"
+            },
+            {
+                "code": "manufacturer"
+                "value": "Company A"
+            }
+          ]
+        },
+        {
+          "name": "Test Configurable Product",
+          "sku": "testConfigProduct",
+          "custom_attributes": [
+            {
+              "code": "manufacturer"
+              "value": "Company B"
+            },
+            {
+              "code": "size"
+              "value": "XXL"
+            }
+          ]
+        },
+      ]
+    }
+  }
+}
+```
+
 # Alternatives considered
 
  1. [Persisted queries](https://github.com/magento/graphql-ce/issues/781) can be leveraged to mitigate described issue with the increased size of the request.
