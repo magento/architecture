@@ -113,7 +113,7 @@ class ForeignKey
 /**
  * There is no option for engine. Do we want to support different engines, if so how to abstract them, normal/memory?
  */
-class TableOptions
+class Table
 {
     public function getName(): string {}
     public function getComment(): string {}
@@ -167,17 +167,32 @@ interface InformationSchema\Table\ConstraintInterface
     /**
      * @return Constraint[]
      */
-    public function getConstraints($tableName, $resource);
+    public function getConstraints($tableName, $connectionName);
+
+    /**
+     * @return Constraint
+     */
+    public function getConstraintByName($tableName, $constraintName, $connectionName);
 }
 ```
 
 ```
-interface InformationSchema\Table\ReferenceInterface
+interface InformationSchema\Table\ForeignKeyInterface
 {
     /**
      * @return ForeignKey[]
      */
-    public function getReferences($tableName, $resource);
+    public function getForeignKeys($tableName, $connectionName);
+    
+    /**
+     * @return ForeignKey
+     */
+    public function getForeignKeyByName($tableName, $foreignKeyName, $connectionName);
+    
+    /**
+     * @return ForeignKey[]
+     */
+    public function getForeignKeyForTable($tableName, $connectionName);
 }
 ```
 
@@ -187,7 +202,12 @@ interface InformationSchema\Table\IndexInterface
     /**
      * @return Index[]
      */
-    public function getIndexes($tableName, $resource);
+    public function getIndexes($tableName, $connectionName);
+    
+    /**
+     * @return Index
+     */
+    public function getIndexByName($tableName, $indexName, $connectionName);
 }
 ```
 
@@ -197,14 +217,14 @@ interface InformationSchema\Table\ColumnInterface
     /**
      * @return Column
      */
-    public function getColumns($tableName, $resource);
+    public function getColumns($tableName, $connectionName);
 }
 ```
 
 ```
-interface InformationSchema\Table\OptionsInterface
+interface InformationSchema\TableInterface
 {
-    public function getTableOptions($tableName, $resource): TableOptions;
+    public function getInformation($tableName, $connectionName): Table;
 }
 ```
 
