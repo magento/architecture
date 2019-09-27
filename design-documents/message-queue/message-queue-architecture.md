@@ -35,13 +35,6 @@ This QueueInterface is been utilized by Consumer classes, there are currently th
 
 ##Queue Interface
 
-The below diagram shows the Queue Interface, and current two implementations of it.
-
-1. MySQL Database 
-2. RabbitMQ based on AMQP protocol
-
-![Queue Interface UML Diagram](QueueInterfaceUML.png)
-
 | #    | Method        | Purpose / Description                                        |
 | ---- | ------------- | ------------------------------------------------------------ |
 | 1    | dequeue()     | Get a single message from the queue                          |
