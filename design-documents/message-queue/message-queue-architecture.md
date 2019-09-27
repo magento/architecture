@@ -1,14 +1,20 @@
-﻿# Messaging Queue Architecture and Options in Magento
+# Messaging Queue Architecture and Options in Magento
 
 Magento uses message queue architecture for all asynchronous communication, where message sender and receiver are loosely coupled and doesn't talk to each other directly. For more information go through the following document 
 
 [Magento Message Queue Overview](https://devdocs.magento.com/guides/v2.3/extension-dev-guide/message-queues/message-queues.html)
 
-### Terms
-|hello  | hi | hello 
-|---|---|---|
-| fdfd |  fdfd | flgk 
+## Queue Interface
 
+
+
+| #    | Method        | Purpose / Description                                        |
+| ---- | ------------- | ------------------------------------------------------------ |
+| 1    | dequeue()     | Get a single message from the queue                          |
+| 2    | acknowledge() | Acknowledge message delivery                                 |
+| 3    | subscribe()   | Wait for messages and dispatch them, this is based on pub/sub mechanism, consumes the messages through callbacks, until connection is closed |
+| 4    | reject()      | Reject message, messages gets returned to the queue          |
+| 5    | push()        | Push message to queue directly without using exchange; it uses publish behind the scenes |
 <!-- Describe any new terms used in the document -->
 
 ### Overview
