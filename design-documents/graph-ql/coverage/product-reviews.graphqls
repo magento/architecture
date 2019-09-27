@@ -30,7 +30,7 @@ type ProductReview @doc(description: "Details of a product review") {
 }
 
 type ProductReviewRating {
-    name: String! @doc(description: "The review rating name for e.g. quality, price etc.")
+    name: String! @doc(description: "The review rating name for example quality, price.")
     value: Int! @doc(description: "The rating value given by customer. Possible values by default: 1 to 5.")
 }
 
