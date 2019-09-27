@@ -67,7 +67,7 @@ There are many messaging technologies available in the market, we are specially 
 
 ------
 
-#### 1- AWS EventBridge - Interface Evaluation 
+#### 1- AWS EventBridge
 
 AWS EventBridge is a serverless event bus, it facilitates receving data from your application & third parties to AWS Services. Currently it seems like the Targets are specifically AWS Services. These targets are set using specialized rules.  Following targets can be specified as of now 
 
@@ -89,7 +89,7 @@ AWS EventBridge is a serverless event bus, it facilitates receving data from you
 
 ------
 
-#### 2- AWS MQ - Interface Evaluation 
+#### 2- AWS MQ 
 
 AWS MQ is a Message Broker based on popular Apache ActiveMQ; it supports multiple protocols for connectivity for instance AMQP, JMS, STOMP, NMS, MQTT and WebSocket. 
 
@@ -109,7 +109,7 @@ AWS MQ is a Message Broker based on popular Apache ActiveMQ; it supports multipl
 
 Since its a managed service, it provides multi zone fault tolreance and resiliancy out of the box.
 
-<img src="AWSMQArchitecture.png" alt="image-20190927143906508" style="zoom:50%;" />
+<img src="AWSMQArchitecture.png" alt="image-20190927143906508" style="zoom: 25%;" />
 
 ##### AWS MQ Evaluation Table - Details
 
@@ -122,4 +122,34 @@ Most of the features are available since Magento is also using AMQP protocol wit
 | subscribe()   | Available  | AMQPQueue::consume()     |
 | reject()      | Available  | AMQPQueue::nack()        |
 | push()        | Available  | AMQPExchange::publish()  |
+
+#### 3- AWS SQS 
+
+AWS SQS is a distributed & fault tolerant Queuing Technology; it provides point to point connectivity. It can be used with SNS to add publish / subscribe mechanism as well. Single message gets replicated across different SQS Servers.
+
+##### High Level Architecture of AWS SQS
+
+
+
+![image-20190927145647952](AWS_SQSArchitecture1.png)
+
+
+
+SQS uses Visibility Timeout to prevent other consumers to receive the same message, during which a consumer has to Delete the message explicitly afrer processing it or the message will be available for others for reuse.
+
+![image-20190927150306008](AWS_SQSArchitecture2.png)
+
+
+
+##### AWS MQ Evaluation Table - Details
+
+Most of the features are available since Magento is also using AMQP protocol with RabbitMQ, there is a possiblity of using much of the same codebase, [AMQP Protocol Functions](http://docs.php.net/manual/da/book.amqp.php)
+
+| Method        | Evaluation | Implementation Readiness                                     |
+| ------------- | ---------- | ------------------------------------------------------------ |
+| dequeue()     | Available  | ReceiveMessage() - possiblity with many available options for instance long & short polling. |
+| acknowledge() | Possiblity | DeleteMessage() for positive acknowledge, by default message locked for **Visibility Timeout** period for other consumers. |
+| subscribe()   | Workaround | ReceiveMessage() - Using polling based mechanism, it can be implemented; but not exactly as true callback mechanism. |
+| reject()      | Possiblity | The messages are auto visible again for consumption, if explicit DeleteMessage() is not called before timeout, as explained above. |
+| push()        | Available  | SendMessage()                                                |
 
