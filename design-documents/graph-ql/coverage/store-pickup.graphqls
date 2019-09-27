@@ -30,7 +30,8 @@ type PickupLocations {
 }
 
 type PickupLocation {
-    name: String!
+    name: String! # In the admin is called Frontend Name
+    description: String! # In the admin is called Frontend Description
     country: String!
     region: String!
     city: String!
