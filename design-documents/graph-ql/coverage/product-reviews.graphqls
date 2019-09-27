@@ -72,5 +72,5 @@ input CreateProductReviewInput {
 
 type ProductReviewRatingInput {
     id: String! @doc(description: "Base 64 encoded id of the value id.")
-    value_id: String! @doc(description: "e.g Good, Perfect, 3, 4, 5")
+    value_id: String! @doc(description: "Base 64 encoded rating value id.")
 }
