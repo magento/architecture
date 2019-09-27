@@ -1,12 +1,46 @@
-# Messaging Queue Architecture and Options in Magento
+# Messaging Architecture and Options
 
 Magento uses message queue architecture for all asynchronous communication, where message sender and receiver are loosely coupled and doesn't talk to each other directly. For more information go through the following document 
 
 [Magento Message Queue Overview](https://devdocs.magento.com/guides/v2.3/extension-dev-guide/message-queues/message-queues.html)
 
-## Queue Interface
+## Message Queue Processing Design
 
+Currently we have two types of implementations of QueueInterface.
 
+| Implementation | Description                                                  |
+| -------------- | ------------------------------------------------------------ |
+| MySQL          | This is based on MySQL database, currently it doesn't support the Bulk APIs; this doesn't scale well and designed for out of the box experience; for practical purposes RabbitMQ should be utilized to handle large scale requirements |
+| RabbitMQ       | RabbitMQ implementations is based on AMQP protocol, which supports callback mechanism and polling based approach as its supported by underlying channel implementation & specification |
+
+![Queue Interface UML Diagram](QueueInterfaceUML.png)
+
+### Consumers Runner Process
+
+ConsumersRunner is the main class, which facilitates the processing of Queued Messages, and based on the configuration in **queue_consumer.xml**, it calls the appropriate ConsumerInterface implementation. 
+
+![Queue Interface UML Diagram](ConsumersRunnerProcessUML.png)
+
+### Different Types of Consumers
+
+This QueueInterface is been utilized by Consumer classes, there are currently three different implementations of ConsumerInterface
+
+|      | Class Name    | Purpose / Description                                        |
+| ---- | ------------- | ------------------------------------------------------------ |
+| 1    | Consumer      | This class is for both synchronous and asynchronous style message processing |
+| 2    | MassConsumer  | This is mainly designed for asynchronous style message processing; primarily used for Async APIs and Async Bulk APIs |
+| 3    | BatchConsumer | This class supports batch processing of messages, helps in picking & merging the messages to a specified batch size, and then process them together, before querying another batch |
+
+![Queue Interface UML Diagram](ConsumerInterfaceUML.png)
+
+##Queue Interface
+
+The below diagram shows the Queue Interface, and current two implementations of it.
+
+1. MySQL Database 
+2. RabbitMQ based on AMQP protocol
+
+![Queue Interface UML Diagram](QueueInterfaceUML.png)
 
 | #    | Method        | Purpose / Description                                        |
 | ---- | ------------- | ------------------------------------------------------------ |
@@ -15,57 +49,9 @@ Magento uses message queue architecture for all asynchronous communication, wher
 | 3    | subscribe()   | Wait for messages and dispatch them, this is based on pub/sub mechanism, consumes the messages through callbacks, until connection is closed |
 | 4    | reject()      | Reject message, messages gets returned to the queue          |
 | 5    | push()        | Push message to queue directly without using exchange; it uses publish behind the scenes |
-<!-- Describe any new terms used in the document -->
+**Legends**
 
-### Overview
-
-<!-- Describe what we are trying to solve and a few sentence summary of design approach. -->
-
-### Design
-
-<!-- In this section provide relevant details at a high level, including the introduction of any new technologies being utilized for the design. 
-
-Hints:
-1. What breaking changes are expected? 
-1. What information will be logged?
-1. New data or config that should be propagated from dev to production?
-1. Will this work on read-only filesystem? If no, provide details about what functionality requires writable filesystem.
-1. Does this increase downtime?
-1. What data or code migration is required? Describe possible ways of automatic migration, as well as highlight what can be done only manually.
-1. Is there existing open source solution that can be used here? Can it be implemented using existing Magento feature?
-1. Is any performance degradation expected, including application under high load?
-1. Will it influence horizontal scalability of Magento? Does it introduce new tables? New foreign Keys? Can it be put to separate database? Is it failsafe?
-1. Any new vulnerability type possible?
-   1. New entry point introduced?
-   1. Store or user data exposed?
-   1. Is encryption needed?
-   1. New ACL rule is needed?
-1. New type of tests needed? New static tests?
-1. Any staged content? How will it work with staged content?
-1. Any new cacheable content? What pages will have to be invalidated if the content changes? Any new pages? More versions of existing content should be cached? Modifications to caching engine?
-1. Is it isolated? Is it a routine work that does not require domain knowledge?
--->
-
-#### Acceptance Criteria Fulfillment
-
-<!-- If the document is intended for an existing story/task, provide alignment with its acceptance criteria. -->
-
-1. Acceptance Criteria 1
-  <!-- Description how acceptance criteria will be achieved --> 
-
-#### Component Dependencies
-
-<!-- List of components or epics that should be implemented to finish this epic --> 
-
-#### Extension Points and Scenarios
-
-<!-- In this section describe customization points that can be used by third party developers to customize behavior described in design -->
-
-### Prototype or Proof of Concept
-
-<!-- Is a proof of concept available for the design? If so provide a git gist or branch demonstrating the design. --> 
-
-### Data size and Performance Requirements
-
-<!-- If new behaviour is planned to be implemented, data and performance requirements must be described here. No significant resource consumption growth is allowed. --> 
+| Available                | Possiblity                                | Workaround                                                   | Not Possible or N/A                                         |
+| ------------------------ | ----------------------------------------- | ------------------------------------------------------------ | ----------------------------------------------------------- |
+| Feature is fully support | Feature can be implemented with some work | Feature not directly available, but non-optimal workaround can be implemented | May not be possible due to non-existent platform capability |
 
