@@ -37,27 +37,47 @@ This QueueInterface is been utilized by Consumer classes, there are currently th
 
 The table below describes all the method expected to be implemented by the specific Queue provider, and the intention of what functionality is expected from these methods?
 
-| #    | Method        | Purpose / Description                                        | RabbitMQ        |
-| ---- | ------------- | ------------------------------------------------------------ | --------------- |
-| 1    | dequeue()     | Get a single message from the queue                          | basic_get()     |
-| 2    | acknowledge() | Acknowledge message delivery                                 | basic_ack()     |
-| 3    | subscribe()   | Wait for messages and dispatch them, this is based on pub/sub mechanism, consumes the messages through callbacks, until connection is closed | basic_consume() |
-| 4    | reject()      | Reject message, messages gets returned to the queue          | basic_reject()  |
-| 5    | push()        | Push message to queue directly without using exchange; it uses publish behind the scenes | basic_publish() |
-### Evaluation of Technologies 
+| #    | Method        | Purpose / Description                                        | Related RabbitMQ Method |
+| ---- | ------------- | ------------------------------------------------------------ | ----------------------- |
+| 1    | dequeue()     | Get a single message from the queue                          | basic_get()             |
+| 2    | acknowledge() | Acknowledge message delivery                                 | basic_ack()             |
+| 3    | subscribe()   | Wait for messages and dispatch them, this is based on pub/sub mechanism, consumes the messages through callbacks, until connection is closed | basic_consume()         |
+| 4    | reject()      | Reject message, messages gets returned to the queue          | basic_reject()          |
+| 5    | push()        | Push message to queue directly without using exchange; it uses publish behind the scenes | basic_publish()         |
+## Evaluation of Technologies 
 
-| Method        | AWS EventBridge | AWS MQ | AWS SQS | AWS Kinesis |
-| ------------- | --------------- | ------ | ------- | ----------- |
-| dequeue()     |                 |        |         |             |
-| acknowledge() |                 |        |         |             |
-| subscribe()   |                 |        |         |             |
-| reject()      |                 |        |         |             |
-| push()        |                 |        |         |             |
+There are many messaging technologies available in the market, we are specially focusing on AWS cloud and its provided managed services, for this exercise. Please note that this evaluation is based on the current interface/contract and evaluating the possiblity of having another implementation of QueueInterface without breaking related functionality. 
+
+### Interface based Comparison Summary
+
+| Method        | AWS EventBridge     | AWS MQ    | AWS SQS    | AWS Kinesis |
+| ------------- | ------------------- | --------- | ---------- | ----------- |
+| dequeue()     | Not Possible or N/A | Available | Available  | Possiblity  |
+| acknowledge() | Not Possible or N/A | Available | Possiblity | Possiblity  |
+| subscribe()   | Not Possible or N/A | Available | Workaround | Workaround  |
+| reject()      | Not Possible or N/A | Available | Possiblity | Possiblity  |
+| push()        | Available           | Available | Available  | Possiblity  |
 
 **Legends**
 
 - *Available - "Feature is fully suppoted"*
-- *Possiblity - "Feature can be implemented with some work"*
+- *Possiblity - "Feature can be implemented with some work, without much drawbacks"*
 - *Workaround - "Feature not directly available, but non-optimal workaround can be implemented"*
 - *Not Possible or N/A - "May not be possible due to non-existent platform capability"*
+
+
+
+#### AWS EventBridge - Interface Evaluation 
+
+AWS EventBridge is a serverless event bus, it facilitates receving data from your application & third parties to AWS Services. Currently it seems like the Targets are specifically AWS Services. These targets are set using specialized rules. 
+
+![product-page-diagram-EventBridge_How-it-works_V2@2x](AWSEventBridgeArchitecture.png)
+
+| Method        | Evaluation          | Implementation Readiness                                     |
+| ------------- | ------------------- | ------------------------------------------------------------ |
+| dequeue()     | Not Possible or N/A | Multiple **Targets** can be set, to receive the messages when they are available asynchronously. There is no concept of fetching the message from the Event Bus on-demand, its more of a serverless architecture. |
+| acknowledge() | Not Possible or N/A | There is no need to acknowledge the message, AWS internally makesure that the Target receives the message. |
+| subscribe()   | Not Possible or N/A | AWS related Targets can be set or subscribed for the EventBus based on the Rules; but we cannot set PHP Callback as Functions. |
+| reject()      | Not Possible or N/A | The concept is not available or used.                        |
+| push()        | Available           | PutEvents or PutPartnerEvents functions can be used for this purpose. |
 
