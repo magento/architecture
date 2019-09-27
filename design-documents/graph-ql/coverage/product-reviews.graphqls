@@ -46,7 +46,7 @@ type ProductReviewRatingsMetadata {
 type ProductReviewRatingMetadata {
     id: String! @doc(description: "Base 64 encoded rating id.")
     name: String! @doc(description: "The review rating name for e.g. quality, price etc.")
-    values: [ProductReviewRatingValueMetadata!]! @doc(description: "Sorted based on position")
+    values: [ProductReviewRatingValueMetadata!]! @doc(description: "List of product review ratings sorted based on position.")
 }
 
 type ProductReviewRatingValueMetadata {
