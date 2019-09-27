@@ -50,13 +50,13 @@ There are many messaging technologies available in the market, we are specially 
 
 ### Interface based Comparison Summary
 
-| Method        | AWS EventBridge     | AWS MQ    | AWS SQS    | AWS Kinesis |
-| ------------- | ------------------- | --------- | ---------- | ----------- |
-| dequeue()     | Not Possible or N/A | Available | Available  | Possiblity  |
-| acknowledge() | Not Possible or N/A | Available | Possiblity | Possiblity  |
-| subscribe()   | Not Possible or N/A | Available | Workaround | Workaround  |
-| reject()      | Not Possible or N/A | Available | Possiblity | Possiblity  |
-| push()        | Available           | Available | Available  | Possiblity  |
+| Method        | (1) AWS EventBridge | (2) AWS MQ | (3) AWS SQS | (4) AWS Kinesis |
+| ------------- | ------------------- | ---------- | ----------- | --------------- |
+| dequeue()     | Not Possible or N/A | Available  | Available   | Possiblity      |
+| acknowledge() | Not Possible or N/A | Available  | Possiblity  | Possiblity      |
+| subscribe()   | Not Possible or N/A | Available  | Workaround  | Workaround      |
+| reject()      | Not Possible or N/A | Available  | Possiblity  | Possiblity      |
+| push()        | Available           | Available  | Available   | Possiblity      |
 
 **Legends**
 
@@ -65,13 +65,19 @@ There are many messaging technologies available in the market, we are specially 
 - *Workaround - "Feature not directly available, but non-optimal workaround can be implemented"*
 - *Not Possible or N/A - "May not be possible due to non-existent platform capability"*
 
+------
 
+#### 1- AWS EventBridge - Interface Evaluation 
 
-#### AWS EventBridge - Interface Evaluation 
+AWS EventBridge is a serverless event bus, it facilitates receving data from your application & third parties to AWS Services. Currently it seems like the Targets are specifically AWS Services. These targets are set using specialized rules.  Following targets can be specified as of now 
 
-AWS EventBridge is a serverless event bus, it facilitates receving data from your application & third parties to AWS Services. Currently it seems like the Targets are specifically AWS Services. These targets are set using specialized rules. 
+[EventBridge Targets](https://docs.aws.amazon.com/eventbridge/latest/APIReference/API_PutTargets.html)
+
+##### High Level Architecture of AWS EventBridge
 
 ![product-page-diagram-EventBridge_How-it-works_V2@2x](AWSEventBridgeArchitecture.png)
+
+##### AWS EventBridge Evaluation Table - Details
 
 | Method        | Evaluation          | Implementation Readiness                                     |
 | ------------- | ------------------- | ------------------------------------------------------------ |
@@ -80,4 +86,40 @@ AWS EventBridge is a serverless event bus, it facilitates receving data from you
 | subscribe()   | Not Possible or N/A | AWS related Targets can be set or subscribed for the EventBus based on the Rules; but we cannot set PHP Callback as Functions. |
 | reject()      | Not Possible or N/A | The concept is not available or used.                        |
 | push()        | Available           | PutEvents or PutPartnerEvents functions can be used for this purpose. |
+
+------
+
+#### 2- AWS MQ - Interface Evaluation 
+
+AWS MQ is a Message Broker based on popular Apache ActiveMQ; it supports multiple protocols for connectivity for instance AMQP, JMS, STOMP, NMS, MQTT and WebSocket. 
+
+| #    | Features                         |
+| ---- | -------------------------------- |
+| 1    | Queues & Topics with Ordering    |
+| 2    | Transient & persistent messaging |
+| 3    | Local & distributed transactions |
+| 4    | Request/reply                    |
+| 5    | Message filtering                |
+| 6    | Scheduled messages delivery      |
+| 7    | Large message sizes              |
+
+
+
+##### High Level Architecture of AWS MQ
+
+Since its a managed service, it provides multi zone fault tolreance and resiliancy out of the box.
+
+<img src="AWSMQArchitecture.png" alt="image-20190927143906508" style="zoom:50%;" />
+
+##### AWS MQ Evaluation Table - Details
+
+Most of the features are available since Magento is also using AMQP protocol with RabbitMQ, there is a possiblity of using much of the same codebase, [AMQP Protocol Functions](http://docs.php.net/manual/da/book.amqp.php)
+
+| Method        | Evaluation | Implementation Readiness |
+| ------------- | ---------- | ------------------------ |
+| dequeue()     | Available  | AMQPQueue::get()         |
+| acknowledge() | Available  | AMQPQueue::ack()         |
+| subscribe()   | Available  | AMQPQueue::consume()     |
+| reject()      | Available  | AMQPQueue::nack()        |
+| push()        | Available  | AMQPExchange::publish()  |
 
