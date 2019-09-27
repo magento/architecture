@@ -1,8 +1,14 @@
+[TOC]
+
+------
+
 # Messaging Architecture and Options
 
 Magento uses message queue architecture for all asynchronous communication, where message sender and receiver are loosely coupled and doesn't talk to each other directly. For more information go through the following document 
 
 [Magento Message Queue Overview](https://devdocs.magento.com/guides/v2.3/extension-dev-guide/message-queues/message-queues.html)
+
+This document is looking into the current Queueing Interface, its implementations, important interconnected modules like Queue Consumers & ConsumersRunner process; then finally looking into the different potential candidates for alternative Cloud Queueing technologies that can be used within Magento as potential candidate; which can serve as a choice for the Magento customers.
 
 ## Message Queue Processing Design
 
