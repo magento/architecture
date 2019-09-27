@@ -42,9 +42,11 @@ This QueueInterface is been utilized by Consumer classes, there are currently th
 | 3    | subscribe()   | Wait for messages and dispatch them, this is based on pub/sub mechanism, consumes the messages through callbacks, until connection is closed |
 | 4    | reject()      | Reject message, messages gets returned to the queue          |
 | 5    | push()        | Push message to queue directly without using exchange; it uses publish behind the scenes |
+
+
 **Legends**
 
 | Available                | Possiblity                                | Workaround                                                   | Not Possible or N/A                                         |
-| ------------------------ | ----------------------------------------- | ------------------------------------------------------------ | ----------------------------------------------------------- |
+| :----------------------- | ----------------------------------------- | ------------------------------------------------------------ | ----------------------------------------------------------- |
 | Feature is fully support | Feature can be implemented with some work | Feature not directly available, but non-optimal workaround can be implemented | May not be possible due to non-existent platform capability |
 
