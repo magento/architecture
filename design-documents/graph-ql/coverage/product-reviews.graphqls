@@ -16,7 +16,7 @@ type ProductInterface {
 
 type ProductReviews {
     items: [ProductReview]! @doc(description: "And array of product reviews.")
-    page_info: SearchResultPageInfo! @doc(description: "An object that includes the page_info and currentPage values specified in the query.")
+    page_info: SearchResultPageInfo! @doc(description: "Metadata for pagination rendering.")
 }
 
 type ProductReview @doc(description: "Details of a product review") {
