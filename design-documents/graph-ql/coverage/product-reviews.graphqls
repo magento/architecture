@@ -15,7 +15,7 @@ type ProductInterface {
 }
 
 type ProductReviews {
-    items: [ProductReview]! @doc(description: "And array of product reviews.")
+    items: [ProductReview]! @doc(description: "An array of product reviews.")
     page_info: SearchResultPageInfo! @doc(description: "Metadata for pagination rendering.")
 }
 
