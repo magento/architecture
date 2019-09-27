@@ -40,7 +40,7 @@ type Query {
 }
 
 type ProductReviewRatingsMetadata {
-    items: [ProductReviewRatingMetadata!]! @doc(description: "Sorted based on position")
+    items: [ProductReviewRatingMetadata!]! @doc(description: "List of product reviews sorted based on position")
 }
 
 type ProductReviewRatingMetadata {
