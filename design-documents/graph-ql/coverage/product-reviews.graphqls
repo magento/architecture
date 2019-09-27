@@ -9,7 +9,7 @@ type ProductInterface {
     average_review_rating: Float! @doc(description: "The average of all the ratings given to the product.")
     review_count: Int! @doc(description: "The total count of all the reviews given to the product.")
     reviews(
-        pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. This attribute is optional."),
+        pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once."),
         currentPage: Int = 1 @doc(description: "Specifies which page of results to return."),
     ): ProductReviews!
 }
