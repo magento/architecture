@@ -26,7 +26,7 @@ type ProductReview @doc(description: "Details of a product review") {
     nickname: String! @doc(description: "The customer's nickname. Defaults to customer name if logged in.")
     created_at: String! @doc(description: "Date indicating when the review was created.")
     average_rating: Float! @doc(description: "The average rating for product review.")
-    ratings_breakdown: [ProductReviewRating!]! @doc(description: "An array of ratings by rating category. for e.g. quality, price etc.")
+    ratings_breakdown: [ProductReviewRating!]! @doc(description: "An array of ratings by rating category. For example quality, price.")
 }
 
 type ProductReviewRating {
