@@ -1,3 +1,5 @@
+
+
 [TOC]
 
 # Messaging Architecture and Options
@@ -179,3 +181,4 @@ Most of the features are available since Magento is also using AMQP protocol wit
 | reject()      | Possiblity | If we don't move the ShardIterator to NextShardIterator, we are pretty much staying on the same message. |
 | push()        | Possiblity | Since you will have to provide stream, data & partition; we need to have some strategy to for partition selection; and need to maintain these values for Consumers. |
 
+#### 
