@@ -1,6 +1,24 @@
+# Table of Contents
 
+[Messaging Architecture and Options](#messaging-architecture-and-options)
 
-[TOC]
+[Message Queue Processing Design](#message-queue-processing-design)
+
+[Consumers Runner Process](#consumers-runner-process)
+
+[Queue Interface](#queue-interface)
+
+[Evaluation of Technologies](#evaluation-of-technologies)
+
+[(1) AWS EventBridge](#1--AWS-EventBridge) 
+
+[(2) AWS MQ](#2--AWS-MQ)
+
+[(3) AWS SQS](#3--AWS-SQS)
+
+[(4) AWS Kinesis](#4--AWS-Kinesis)
+
+------
 
 # Messaging Architecture and Options
 
@@ -8,7 +26,7 @@ Magento uses message queue architecture for all asynchronous communication, wher
 
 [Magento Message Queue Overview](https://devdocs.magento.com/guides/v2.3/extension-dev-guide/message-queues/message-queues.html)
 
-This document is looking into the current Queueing Interface, its implementations, important interconnected modules like Queue Consumers & ConsumersRunner process; then finally looking into the different potential candidates for alternative Cloud Queueing technologies that can be used within Magento as potential candidate; which can serve as a choice for the Magento customers.
+This document is looking into the current Queue Interface, its implementations, important interconnected modules like Queue Consumers & ConsumersRunner process; then finally looking into the different potential candidates for alternative Cloud Queueing technologies that can be used within Magento as potential candidate; which can serve as an alternative choice for the Magento customers in addition to currently supported technologies.
 
 ## Message Queue Processing Design
 
