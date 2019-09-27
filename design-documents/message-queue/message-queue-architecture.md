@@ -33,20 +33,31 @@ This QueueInterface is been utilized by Consumer classes, there are currently th
 
 ![Queue Interface UML Diagram](ConsumerInterfaceUML.png)
 
-##Queue Interface
+## Queue Interface
 
-| #    | Method        | Purpose / Description                                        |
-| ---- | ------------- | ------------------------------------------------------------ |
-| 1    | dequeue()     | Get a single message from the queue                          |
-| 2    | acknowledge() | Acknowledge message delivery                                 |
-| 3    | subscribe()   | Wait for messages and dispatch them, this is based on pub/sub mechanism, consumes the messages through callbacks, until connection is closed |
-| 4    | reject()      | Reject message, messages gets returned to the queue          |
-| 5    | push()        | Push message to queue directly without using exchange; it uses publish behind the scenes |
+The table below describes all the method expected to be implemented by the specific Queue provider, and the intention of what functionality is expected from these methods?
 
+| #    | Method        | Purpose / Description                                        | RabbitMQ        |
+| ---- | ------------- | ------------------------------------------------------------ | --------------- |
+| 1    | dequeue()     | Get a single message from the queue                          | basic_get()     |
+| 2    | acknowledge() | Acknowledge message delivery                                 | basic_ack()     |
+| 3    | subscribe()   | Wait for messages and dispatch them, this is based on pub/sub mechanism, consumes the messages through callbacks, until connection is closed | basic_consume() |
+| 4    | reject()      | Reject message, messages gets returned to the queue          | basic_reject()  |
+| 5    | push()        | Push message to queue directly without using exchange; it uses publish behind the scenes | basic_publish() |
+### Evaluation of Technologies 
+
+| Method        | AWS EventBridge | AWS MQ | AWS SQS | AWS Kinesis |
+| ------------- | --------------- | ------ | ------- | ----------- |
+| dequeue()     |                 |        |         |             |
+| acknowledge() |                 |        |         |             |
+| subscribe()   |                 |        |         |             |
+| reject()      |                 |        |         |             |
+| push()        |                 |        |         |             |
 
 **Legends**
 
-| Available                | Possiblity                                | Workaround                                                   | Not Possible or N/A                                         |
-| :----------------------- | ----------------------------------------- | ------------------------------------------------------------ | ----------------------------------------------------------- |
-| Feature is fully support | Feature can be implemented with some work | Feature not directly available, but non-optimal workaround can be implemented | May not be possible due to non-existent platform capability |
+- *Available - "Feature is fully suppoted"*
+- *Possiblity - "Feature can be implemented with some work"*
+- *Workaround - "Feature not directly available, but non-optimal workaround can be implemented"*
+- *Not Possible or N/A - "May not be possible due to non-existent platform capability"*
 
