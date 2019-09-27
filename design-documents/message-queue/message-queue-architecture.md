@@ -50,13 +50,13 @@ There are many messaging technologies available in the market, we are specially 
 
 ### Interface based Comparison Summary
 
-| Method        | (1) [AWS EventBridge](####1- AWS EventBridge) | (2) AWS MQ | (3) AWS SQS | (4) AWS Kinesis |
-| ------------- | --------------------------------------------- | ---------- | ----------- | --------------- |
-| dequeue()     | Not Possible or N/A                           | Available  | Available   | Possiblity      |
-| acknowledge() | Not Possible or N/A                           | Available  | Possiblity  | Possiblity      |
-| subscribe()   | Not Possible or N/A                           | Available  | Workaround  | Workaround      |
-| reject()      | Not Possible or N/A                           | Available  | Possiblity  | Possiblity      |
-| push()        | Available                                     | Available  | Available   | Possiblity      |
+| Method        | (1) [AWS EventBridge]((####1- AWS EventBridge)) | (2) AWS MQ | (3) AWS SQS | (4) AWS Kinesis |
+| ------------- | ----------------------------------------------- | ---------- | ----------- | --------------- |
+| dequeue()     | Not Possible or N/A                             | Available  | Available   | Possiblity      |
+| acknowledge() | Not Possible or N/A                             | Available  | Possiblity  | Possiblity      |
+| subscribe()   | Not Possible or N/A                             | Available  | Workaround  | Workaround      |
+| reject()      | Not Possible or N/A                             | Available  | Possiblity  | Possiblity      |
+| push()        | Available                                       | Available  | Available   | Possiblity      |
 
 **Legends**
 
