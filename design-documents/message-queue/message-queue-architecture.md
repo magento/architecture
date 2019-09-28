@@ -133,7 +133,7 @@ AWS MQ is a Message Broker based on popular Apache ActiveMQ; it supports multipl
 
 Since its a managed service, it provides multi zone fault tolreance and resiliancy out of the box.
 
-<img src="AWSMQArchitecture.png" alt="image-20190927143906508" style="zoom: 25%;" />
+<img src="AWSMQArchitectureNew.png" alt="image-20190927212814114" style="zoom:50%;" />
 
 ##### AWS MQ Evaluation Table - Details
 
@@ -165,7 +165,7 @@ SQS uses Visibility Timeout to prevent other consumers to receive the same messa
 
 
 
-##### AWS MQ Evaluation Table - Details
+##### AWS SQS Evaluation Table - Details
 
 Most of the features are available since Magento is also using AMQP protocol with RabbitMQ, there is a possiblity of using much of the same codebase, [AMQP Protocol Functions](http://docs.php.net/manual/da/book.amqp.php)
 
