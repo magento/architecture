@@ -1,3 +1,5 @@
+
+
 # Table of Contents
 
 [Messaging Architecture and Options](#messaging-architecture-and-options)
@@ -84,7 +86,7 @@ There are many messaging technologies available in the market, we are specially 
 
 
 
-<img src="legend_img.png" alt="Legend" style="zoom:50%;" />
+<img src="legend_img.png" alt="Legend" width="70%" height="70%" />
 
 
 
@@ -110,7 +112,7 @@ AWS EventBridge is a serverless event bus, it facilitates receving data from you
 
 
 
-<img src="legend_img.png" alt="Legend" style="zoom:50%;" />
+<img src="legend_img.png" alt="Legend" width="70%" height="70%" />
 
 
 
@@ -150,7 +152,7 @@ Most of the features are available since Magento is also using AMQP protocol wit
 
 
 
-<img src="legend_img.png" alt="Legend" style="zoom:50%;" />
+<img src="legend_img.png" alt="Legend" width="70%" height="70%" />
 
 
 
@@ -184,7 +186,11 @@ Most of the features are available since Magento is also using AMQP protocol wit
 | reject()      | Possiblity | The messages are auto visible again for consumption, if explicit DeleteMessage() is not called before timeout, as explained above. |
 | push()        | Available  | SendMessage()                                                |
 
-<img src="legend_img.png" alt="Legend" style="zoom:50%;" />
+
+
+<img src="legend_img.png" alt="Legend" width="70%" height="70%" />
+
+
 
 #### 4- AWS Kinesis 
 
@@ -210,4 +216,5 @@ Most of the features are available since Magento is also using AMQP protocol wit
 
 
 
-<img src="legend_img.png" alt="Legend" style="zoom:50%;" />
+<img src="legend_img.png" alt="Legend" width="70%" height="70%" />
+
