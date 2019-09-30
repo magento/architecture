@@ -136,7 +136,9 @@ AWS MQ is a Message Broker based on popular Apache ActiveMQ; it supports multipl
 
 Since its a managed service, it provides multi zone fault tolreance and resiliancy out of the box.
 
-<img src="AWSMQArchitectureNew.png" alt="image-20190927212814114" style="zoom:50%;" />
+<img src="AWSMQArchitectureNew.png" alt="image-20190927212814114" width="50%" />
+
+
 
 ##### AWS MQ Evaluation Table - Details
 
