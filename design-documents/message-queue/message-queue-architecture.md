@@ -82,14 +82,11 @@ There are many messaging technologies available in the market, we are specially 
 | reject()      | Not Possible or N/A                        | Available                | Possiblity                 | Possiblity                         |
 | push()        | Available                                  | Available                | Available                  | Possiblity                         |
 
-**Legends**
 
-- *Available - "Feature is fully suppoted"*
-- *Possiblity - "Feature can be implemented with some work, without much drawbacks"*
-- *Workaround - "Feature not directly available, but non-optimal workaround can be implemented"*
-- *Not Possible or N/A - "May not be possible due to non-existent platform capability"*
 
-------
+![Legend](legend_img.png)
+
+
 
 #### 1- AWS EventBridge
 
@@ -111,7 +108,11 @@ AWS EventBridge is a serverless event bus, it facilitates receving data from you
 | reject()      | Not Possible or N/A | The concept is not available or used.                        |
 | push()        | Available           | PutEvents or PutPartnerEvents functions can be used for this purpose. |
 
-------
+
+
+![Legend](legend_img.png)
+
+
 
 #### 2- AWS MQ 
 
@@ -147,6 +148,12 @@ Most of the features are available since Magento is also using AMQP protocol wit
 | reject()      | Available  | AMQPQueue::nack()        |
 | push()        | Available  | AMQPExchange::publish()  |
 
+
+
+![Legend](legend_img.png)
+
+
+
 #### 3- AWS SQS 
 
 AWS SQS is a distributed & fault tolerant Queuing Technology; it provides point to point connectivity. It can be used with SNS to add publish / subscribe mechanism as well. Single message gets replicated across different SQS Servers.
@@ -177,6 +184,12 @@ Most of the features are available since Magento is also using AMQP protocol wit
 | reject()      | Possiblity | The messages are auto visible again for consumption, if explicit DeleteMessage() is not called before timeout, as explained above. |
 | push()        | Available  | SendMessage()                                                |
 
+
+
+![Legend](legend_img.png)
+
+
+
 #### 4- AWS Kinesis 
 
 AWS Kinesis is a streaming based distributed messaging technology; it uses publish/subscribe mechanism for loose coupling between senders and receivers. It is designed for extremely high throughput for realtime applications. 
@@ -199,4 +212,4 @@ Most of the features are available since Magento is also using AMQP protocol wit
 | reject()      | Possiblity | If we don't move the ShardIterator to NextShardIterator, we are pretty much staying on the same message. |
 | push()        | Possiblity | Since you will have to provide stream, data & partition; we need to have some strategy to for partition selection; and need to maintain these values for Consumers. |
 
-#### 
+#### ![Legend](legend_img.png)
