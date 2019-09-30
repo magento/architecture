@@ -84,7 +84,7 @@ There are many messaging technologies available in the market, we are specially 
 
 
 
-![Legend](legend_img.png)
+<img src="legend_img.png" alt="Legend" style="zoom:50%;" />
 
 
 
@@ -110,7 +110,7 @@ AWS EventBridge is a serverless event bus, it facilitates receving data from you
 
 
 
-![Legend](legend_img.png)
+<img src="legend_img.png" alt="Legend" style="zoom:50%;" />
 
 
 
@@ -150,7 +150,7 @@ Most of the features are available since Magento is also using AMQP protocol wit
 
 
 
-![Legend](legend_img.png)
+<img src="legend_img.png" alt="Legend" style="zoom:50%;" />
 
 
 
@@ -184,11 +184,7 @@ Most of the features are available since Magento is also using AMQP protocol wit
 | reject()      | Possiblity | The messages are auto visible again for consumption, if explicit DeleteMessage() is not called before timeout, as explained above. |
 | push()        | Available  | SendMessage()                                                |
 
-
-
-![Legend](legend_img.png)
-
-
+<img src="legend_img.png" alt="Legend" style="zoom:50%;" />
 
 #### 4- AWS Kinesis 
 
@@ -212,4 +208,6 @@ Most of the features are available since Magento is also using AMQP protocol wit
 | reject()      | Possiblity | If we don't move the ShardIterator to NextShardIterator, we are pretty much staying on the same message. |
 | push()        | Possiblity | Since you will have to provide stream, data & partition; we need to have some strategy to for partition selection; and need to maintain these values for Consumers. |
 
-#### ![Legend](legend_img.png)
+
+
+<img src="legend_img.png" alt="Legend" style="zoom:50%;" />
