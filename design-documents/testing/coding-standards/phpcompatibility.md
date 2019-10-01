@@ -8,7 +8,7 @@ Requirements include determining PHP version from `composer.json` of the Magento
 This requirement though introduces additional complexity to the ruleset/sniff implementation:
 - `composer.json` may be absent
 - it requires custom bootstrapping logic for `phpcs`
-- it's not clear whether we should analyze different files differently in case they are from different modules and those modules hav different PHP constraints
+- it's not clear whether we should analyze different files differently in case they are from different modules and those modules have different PHP constraints
 
 Based on the above it is proposed to put the responsibility of specifying PHP version to the user (owner of the project).
 
