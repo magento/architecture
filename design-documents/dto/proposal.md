@@ -23,22 +23,24 @@ The XML declarative DTO definition should be base on the following model:
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Dto:etc/dto.xsd">
 
-    <dto
-            id="test-dto"
+    <interface
+            type="Test\DtoGenerator\Api\TestInterface"
             mutable="false"
     >
-        <class>Test\DtoGenerator\Dto\Test</class>
-        <interface>Test\DtoGenerator\Api\TestInterface</interface>
         <property name="test1" type="string" nullable="true" />
         <property name="test2" type="string" optional="true" />
         <property name="test3" type="string" />
         <property name="test_abc" type="string" />
-    </dto>
-</config>
+    </interface>
 
+    <class type="Test\DtoGenerator\Dto\Test" for="Test\DtoGenerator\Api\TestInterface" />
+</config>
 ```
 
-The class name and the interface name should be declaread as fully qualified class names to allow a valid code generation.
+The class name and the interface name should be declared as fully qualified class names to allow a valid code generation.
+
+Class and interface declarations must be separated to allow their definition in different modules (eg.: Api module and implementation module).
+A preference should be automatically applied together with the class definition and without explicitly declare it in `di.xml`. 
 
 ### DTO mutability
 
@@ -179,6 +181,60 @@ class MyInjector implements InjectorProcessorInterface
 ```
 
 The attributes extension injector mechanism could also be used in mutable DTOs or existing classes.
+
+### Projection
+
+DTOs, and especially immutable DTOs, are widely used as read-only projections of existing data models or objects.
+
+An additional node `projection` can be specified in the `dto.xml` file containing the definition of the mapping procedure from an existing model.
+
+```
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Dto:etc/dto.xsd">
+
+    <interface
+            type="Test\DtoGenerator\Api\TestInterface"
+            mutable="false"
+    >
+        <property name="test1" type="string" nullable="true" />
+        <property name="test2" type="string" optional="true" />
+        <property name="test3" type="string" />
+        <property name="test_abc" type="string" />
+    </interface>
+
+    <class type="Test\DtoGenerator\Dto\Test" for="Test\DtoGenerator\Api\TestInterface" />
+
+    <projection for="Test\DtoGenerator\Api\TestInterface">
+        <from type="Magento\Catalog\Api\Data\ProductInterface">
+            <preprocessor type="Test\DtoGenerator\Processor\PreProcessor" />
+            <preprocessor type="Test\DtoGenerator\Processor\AnotherPreProcessor" />
+            <map from="sku" to="test1" />
+            <map from="name" to="test2" />
+            <map from="extension_attributes.some_attribute" to="test3" />
+            <map from="something.that.is.nested" to="test3" />
+            <postprocessor type="Test\DtoGenerator\Processor\PostProcessor" />
+            <postprocessor type="Test\DtoGenerator\Processor\AnotherPostProcessor" />
+        </from>
+    </projection>
+</config>
+```
+
+Processors should implement `Magento\Framework\Dto\DtoProjection\ProcessorInterface` and define an `execute` method of the following form:
+
+```
+public function execute(array $data, array $originalData): array;
+```
+
+The `execute` method will accept the result from the previous processor in `$data` and return the processed version as array.
+An additional `originalData` parameter is provided to access the object information as it was before the projection procedure.
+
+A processor should be as much as possible a **pure function** and, more in general, **should avoid any kind of side-effect**.
+
+#### Projection
+
+A projection can be executed by invoking `\Magento\Framework\Dto\DtoProjection::execute` and passing the destination type, the original type/interface and the source object itself.
+The result will be represented by the newly created DTO.
 
 ## Generated code examples
 
