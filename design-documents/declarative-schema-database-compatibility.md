@@ -50,8 +50,6 @@ class InformationSchema\Table
 ```
 Note: auto increment is omitted intentionally. Auto increment should not be used for the application logic.
 
-Those classes duplicate already existing ones in `lib/internal/Magento/Framework/Setup/Declaration/Schema/Dto/Columns`
-
 ```
 class InformationSchema\Extra
 {
@@ -64,23 +62,29 @@ abstract class InformationSchema\Table\Column
 {
     public function getTableName(): string {}
     public function getName(): string {}
-    public function getType(): string {}
     public function getIsNullable(): bool {}
     public function getExtra(): Extra {}
     public function getComment() {}
     public function getDefaultValue(): string {}
-    public function getCharLength(): ?int {} // for string only
-    public function getCharsetName(): string {} // for string only
-    public function getCollationName(): string {} // for string only
-    public function getPrecision(): ?int {} // for int/dec only
-    public function getNumericScale(): ?int {} // for int/dec only
-    public function getDatetimePrecision(): ?int {} // for temporal only
 }
 ```
 
 ```
-class InformationSchema\Table\IntegerColumn extends Column
+class InformationSchema\Table\VarcharColumn extends Column
 {
+    public const TYPE = 'VARCHAR';
+
+    public function getCharLength(): int {}
+    public function getCharsetName(): string {}
+    public function getCollationName(): string {}
+}
+```
+
+```
+class InformationSchema\Table\IntColumn extends Column
+{
+    public const TYPE = 'INT';
+
     public function isUnsigned(): bool {}
     public function getPadding(): int {}
     public function getType(): IntEnum {}
@@ -88,18 +92,24 @@ class InformationSchema\Table\IntegerColumn extends Column
 ```
 
 ```
-class InformationSchema\Table\DecimalColumn extends Column
+class InformationSchema\Table\FloatColumn extends Column
 {
+    public const TYPE = 'FLOAT';
+
     public function getDefaultValue() {}
     public function getScale(): int {}
     public function getPrecision(): int {}
+    public function getNumericScale(): int {}
 }
 ```
 
 ```
-class InformationSchema\Table\DateTimeColumn extends Column
+class InformationSchema\Table\DateColumn extends Column
 {
+    public const TYPE = 'DATE';
+
     public function getDefaultValue(): string {}
+    public function getDatetimePrecision(): int {}
 }
 ```
 
