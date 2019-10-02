@@ -5,10 +5,10 @@
 To improve performance for querying data via GraphQL 
  
 ## How?
-**Aggregate** request data during iterating over resolvers (solving "N+1 select" problem) and execute **direct queries**(SQL/Elasticsearch) instead of using existing API.
+**Aggregate** request data during iterating over resolvers (solving "N+1 select" problem) and execute **direct queries** (SQL/Elasticsearch) instead of using existing API.
 
 
-Lets see example
+Check this example:
 
 ```graphql
 query products_with_categories {
@@ -30,10 +30,10 @@ The old approach will do the following for executing query:
 1. Load product collection
 2. Iterate over each product and load categories
 
-As a result it will perform 1 + N actions, where N amount of products
+As a result it will perform 1 + N actions, where N is the amount of products.
 
-In the new approach product ids will be aggregated and later used for retrieve categories.
-As a result it will perform 1 + 1 actions
+In the new approach product ids will be aggregated and later used to retrieve categories.
+As a result it will perform 1 + 1 actions.
 
 # Known limitations (Products query)
 Current implementation of Product Resolver for GraphQL support "search" and "filter" operations. "filter" support all possible operations (eq, like, finset, ...) for hard-coded list of product attributes. Some of the attributes are not "filterable", that not allow using index for filter by those attributes.
