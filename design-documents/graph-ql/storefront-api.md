@@ -152,7 +152,7 @@ Search (full text search) and Filtration of entities data is combined into one A
 
 **Execution result is returned in the order of received requests**
 
-We agreed, that the order of received result containers is equal to the order of sent Requests. Service implementation has to guarantee this sort order.
+We agreed, that the order of received result containers is equal to the order of sent requests. Service implementation has to guarantee this sort order.
 
 ```php
 
@@ -323,7 +323,7 @@ interface ProductResponseContainer extends \Magento\Framework\Api\ExtensionAttri
 <details>
 <summary>
 
-### To be discused...
+### To be discussed...
 </summary>
 
 
