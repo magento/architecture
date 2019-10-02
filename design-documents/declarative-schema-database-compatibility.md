@@ -2,7 +2,9 @@
 
 ## About
 
-Declarative schema relies on querying data that may have different format depending on database. For example, here is the query from `Magento\Framework\Setup\Declaration\Schema\Db\MySQL\DbSchemaReader::readColumns`
+Declarative schema relies on querying metadata from the DB.
+The query itself and format of the result may differ for different RDBMS systems.
+For example, here is the query from `Magento\Framework\Setup\Declaration\Schema\Db\MySQL\DbSchemaReader::readColumns`
 
 ```
 SELECT 
@@ -23,11 +25,11 @@ ORDER BY
     ORDINAL_POSITION ASC;
 ```
 
-MySQL returns NULL for COLUMN_DEFAULT and MariaDB returns NULL as a string.
+For `COLUMN_DEFAULT`, PHP PDO connector returns `NULL` for MySQL and `"NULL"` (string) for MariaDB 10.2.7+.
 
 ## Design
 
-Introduce new interfaces under Db namespace that allow to allow get information about table schema, refactor implementations of `\Magento\Framework\Setup\Declaration\Schema\Db\DbSchemaReaderInterface` in declarative schema to use interfaces under Db namespace.
+Introduce new interfaces under Db namespace that would allow to get information about table schema, refactor implementations of `\Magento\Framework\Setup\Declaration\Schema\Db\DbSchemaReaderInterface` in declarative schema to use interfaces under Db namespace.
 
 Revise implementation of these interfaces to see if anything need to be changed here
 1. `\Magento\Framework\Setup\Declaration\Schema\Db\DDLTriggerInterface`
@@ -36,115 +38,57 @@ Revise implementation of these interfaces to see if anything need to be changed 
 New interfaces and types for managing table schema.
 
 ```
-class ConstraintType extends \SplEnum
+class InformationSchema\Table
 {
-    const primary = 'primary';
-    const unique = 'unique';
-    const auto_increment = 'auto_increment';
-}
-```
-
-```
-class IndexType extends \SplEnum
-{
-    const btree = 'btree';
-
-    const fulltext = 'fulltext';
-}
-```
-
-```
-class OnDelete extends \SplEnum
-{
-    const cascade = 'cascade';
-}
-```
-
-```
-class CollationType extends \SplEnum
-{
-    const utf8 = 'utf8';
-}
-```
-
-```
-class Constraint
-{
+    public function getSchema(): string {}
     public function getName(): string {}
-
-    /**
-     * @return string[]
-     */
-    public function getColumns() {}
-
-    public function getType(): ConstraintType {}
-}
-```
-
-```
-class Index
-{
-    public function getName(): string {}
-
-    /**
-     * @return string[]
-     */
-    public function getColumns() {}
-
-    public function getType(): IndexType {}
-}
-```
-
-```
-class ForeignKey
-{
-    public function getType(): string {}
-    public function getName(): string {}
-    public function getColumn(): string {}
-    public function getReferenceTable(): string {}
-    public function getReferenceColumn(): string {}
-    public function getOnDelete(): OnDelete {}
-}
-```
-
-```
-/**
- * There is no option for engine. Do we want to support different engines, if so how to abstract them, normal/memory?
- */
-class Table
-{
-    public function getName(): string {}
+    public function getEngine(): string {}
     public function getComment(): string {}
+    public function getCollation(): string {}
+    public function getCharset(): string {}
+}
+```
+Note: auto increment is omitted intentionally. Auto increment should not be used for the application logic.
 
-    /**
-     * Potentially can be removed as well?
-     */
-    public function getCollation(): CollationType {}
+Those classes duplicate already existing ones in `lib/internal/Magento/Framework/Setup/Declaration/Schema/Dto/Columns`
+
+```
+class InformationSchema\Extra
+{
+    public function getOnUpdate(): string {}
 }
 ```
 
 ```
-class Column
+abstract class InformationSchema\Table\Column
 {
+    public function getTableName(): string {}
     public function getName(): string {}
-    public function getType() {}
-    public function getIsNullable() {}
-    public function getExtra() {}
+    public function getType(): string {}
+    public function getIsNullable(): bool {}
+    public function getExtra(): Extra {}
     public function getComment() {}
+    public function getDefaultValue(): string {}
+    public function getCharLength(): ?int {} // for string only
+    public function getCharsetName(): string {} // for string only
+    public function getCollationName(): string {} // for string only
+    public function getPrecision(): ?int {} // for int/dec only
+    public function getNumericScale(): ?int {} // for int/dec only
+    public function getDatetimePrecision(): ?int {} // for temporal only
 }
 ```
 
 ```
-class IntegerColumn extends Column
+class InformationSchema\Table\IntegerColumn extends Column
 {
-    public function getDefaultValue() {}
     public function isUnsigned(): bool {}
     public function getPadding(): int {}
+    public function getType(): IntEnum {}
 }
 ```
 
 ```
-class DecimalColumn extends Column
+class InformationSchema\Table\DecimalColumn extends Column
 {
     public function getDefaultValue() {}
     public function getScale(): int {}
@@ -153,80 +97,72 @@ class DecimalColumn extends Column
 ```
 
 ```
-class DateTimeColumn extends Column
+class InformationSchema\Table\DateTimeColumn extends Column
 {
     public function getDefaultValue(): string {}
 }
 ```
 
 ```
-interface InformationSchema\Table\ConstraintInterface
+interface InformationSchema\Table\ColumnProviderInterface
 {
     /**
-     * @return Constraint[]
+     * @return Column[]
      */
-    public function getConstraints($tableName, $connectionName);
-
-    /**
-     * @return Constraint
-     */
-    public function getConstraintByName($tableName, $constraintName, $connectionName);
+    public function getColumns(string $tableName, string $connectionName);
 }
 ```
 
+// Consider removing $connectionName from the interface (move to constructor via resolver that returns by table name)
 ```
-interface InformationSchema\Table\ForeignKeyInterface
+interface InformationSchema\TableProviderInterface
 {
-    /**
-     * @return ForeignKey[]
-     */
-    public function getForeignKeys($tableName, $connectionName);
-    
-    /**
-     * @return ForeignKey
-     */
-    public function getForeignKeyByName($tableName, $foreignKeyName, $connectionName);
-    
-    /**
-     * @return ForeignKey[]
-     */
-    public function getForeignKeyForTable($tableName, $connectionName);
+    public function getTableByName(string $tableName, string $connectionName): Table;
+    public function getAllTables(string $connectionName): Table; // check if we use it anywhere
 }
 ```
 
-```
-interface InformationSchema\Table\IndexInterface
-{
-    /**
-     * @return Index[]
-     */
-    public function getIndexes($tableName, $connectionName);
-    
-    /**
-     * @return Index
-     */
-    public function getIndexByName($tableName, $indexName, $connectionName);
-}
-```
+### Profiles
+
+The above interfaces will have multiple implementations, and the framework should be switching between them depending on the RDBMS it works with.
+The framework decides which implementations to use based on declared profiles.
+The profiles are declared in `di.xml` or as a separate configuration, with the following structure:
 
 ```
-interface InformationSchema\Table\ColumnInterface
-{
-    /**
-     * @return Column
-     */
-    public function getColumns($tableName, $connectionName);
-}
+information_schema_profiles:
+  mysql-5.6:
+    table_provider: InformationSchema\TableProviderMysql56
+    column_provider: InformationSchema\Table\ColumnProviderMysql56
+  mysql-8:
+    table_provider: InformationSchema\TableProviderMysql8
+    column_provider: InformationSchema\Table\ColumnProviderMysql8
+  mariadb-10.2.0:
+    table_provider: InformationSchema\TableProviderMariaDb1020
+    column_provider: InformationSchema\Table\ColumnProviderMariaDb1020
+  mariadb-10.2.3:
+    table_provider: InformationSchema\TableProviderMariaDb1020 // note that it's the same as for 'mariadb-10.2.0' - example of nochanges in TableProvider interface for this version
+    column_provider: InformationSchema\Table\ColumnProviderMariaDb1023
+  mariadb-10.2.7:
+    table_provider: InformationSchema\TableProviderMariaDb1020 // note that it's the same as for 'mariadb-10.2.0' - example of nochanges in TableProvider interface for this version
+    column_provider: InformationSchema\Table\ColumnProviderMariaDb1027
+information_schema_default_profile: mysql-8
 ```
 
-```
-interface InformationSchema\TableInterface
-{
-    public function getInformation($tableName, $connectionName): Table;
-}
-```
+During application installation and upgrade, the application tries to determine profile based on RDBMS used.
+For example, if Magento application is being installed on MariaDB 10.2.5, 'mariadb-10.2.3' profile is selected.
+If the application can't determine which RDBMS is used, `information_schema_default_profile` is selected.
+This is repeated for each connection.
 
-Management interfaces will not be introduced.
+The profile is recorded in `env.php` as part of installation/upgrade process.
+
+A user (SI) also can specify the profile manually. This can be helpful in case a custom distributive of RDBMS is used and Magento application can't identify correctly which profile to use.
+The following tools should provide an ability for the user to specify the profile:
+
+* CLI installation command
+* Web installation UI
+* CLI command to update the profile (or manually update `env.php`)
+
+When Magento application is running and needs to read DB Information Schema, necessary implementation is selected based on the profile in `env.php`.
 
 ### Alternative approach
 
@@ -241,7 +177,7 @@ Similar approach need to be taken for clients of the following interfaces
 
 ### Replaceability of `\Magento\Framework\DB\Adapter\AdapterInterface`
 
-Not needed for declarative schema, but with this refactoring would also make sense to add ability have different adapters for different databases.
+Not needed for declarative schema, but with this refactoring would also make sense to add ability to have different adapters for different databases.
 
 `\Magento\Framework\Model\ResourceModel\Type\Db\ConnectionFactoryInterface` currently returns instance of `Magento\Framework\App\ResourceConnection\ConnectionAdapterInterface` that is defined by preference, similarly to approach above it should resolve database specific adapter based on configuration.
 
@@ -254,3 +190,10 @@ It has default value of `mysql4`. I propose to add 2 values: `mysql` and `mariad
 `\Magento\Framework\DB\Adapter\AdapterInterface` has methods like `describeTable` which return raw values from database engine. This is leaky interface. We should have interfaces that return normalized data and are compatible with all databases. Methods that don't return normalized data need to be deprecated on `\Magento\Framework\DB\Adapter\AdapterInterface`.
 
 `engine` field in declarative schema need to be deprecated.
+
+## Resources
+
+* https://en.wikipedia.org/wiki/Information_schema
+* [MariaDB Information Schema COLUMNS](https://mariadb.com/kb/en/library/information-schema-columns-table/)
+* [MySQL Information Schema COLUMNS](https://dev.mysql.com/doc/refman/5.7/en/columns-table.html)
+* [MDEV-13132](https://jira.mariadb.org/browse/MDEV-13132) - ticket in MariaDB issue tracker, where they changes behavior of `COLUMN_DEFAULT`
