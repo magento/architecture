@@ -25,5 +25,4 @@ type PickupLocation {
     city: String!
     street: String!
     postcode: String!
-    phone: String
 }
