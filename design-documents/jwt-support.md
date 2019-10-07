@@ -6,9 +6,9 @@ JSON Web Token (JWT) is an open standard ([RFC 7519](https://tools.ietf.org/html
 
 The main use cases of JWT usage:
 
-#### User authorization
+#### Client side sessions
 
-![User authorization](img/jwt-user-authorization.png)
+![Client side sessions](img/jwt-user-authorization.png)
 
 JWT contains user's "session" representation. After successful login, all user session data (like ID, permissions, etc.) is stored in JWT token and user's permissions and allowed operations can be verified just based on information from JWT.
 
@@ -63,7 +63,7 @@ The `\Magento\Framework\Jwt\KeyGeneratorInterface` provides a possibility to use
 ```php
 interface KeyGeneratorInterface
 {
-    public function create(): Jwk;
+    public function generate(): Jwk;
 }
 
 class CryptKey implements KeyGeneratorInterface
@@ -74,7 +74,7 @@ class CryptKey implements KeyGeneratorInterface
         $this->keyFactory = $keyFactory;
     }
 
-    public function create(): Jwk
+    public function generate(): Jwk
     {
         $secret = (string) $this->deploymentConfig->get('crypt/key');
         return $this->keyFactory->create($secret);
@@ -102,16 +102,6 @@ interface ManagementInterface
      * @return array
      */
     public function decode(string $token): array;
-
-    /**
-     * Verifies JWT signature and claims.
-     * Throws \InvalidArgumentException if claims verification fails.
-     *
-     * @param string $token
-     * @return bool
-     * @throws \InvalidArgumentException
-     */
-    public function verify(string $token): bool;
 }
 ```
 
@@ -124,56 +114,61 @@ class Management implements ManagementInterface
         SerializerInterface $serializer,
         AlgorithmFactory $algorithmFactory,
         Json $json,
-        ClaimCheckerManager $claimCheckerManager
+        Manager $claimCheckerManager,
+        BuilderFactory $builderFactory
     ) {
         $this->keyGenerator = $keyGenerator;
         $this->serializer = $serializer;
         $this->algorithmFactory = $algorithmFactory;
         $this->json = $json;
         $this->claimCheckerManager = $claimCheckerManager;
+        $this->builderFactory = $builderFactory;
     }
-
+    
     public function encode(array $claims): string
     {
         // as payload represented by url encode64 on json string,
         // the same claims structure with different key's order will get different payload hash
         ksort($claims);
         $payload = $this->json->serialize($claims);
-
-        $jwsBuilder = new JWSBuilder($this->algorithmFactory->getAlgorithmManager());
+        
+        $jwsBuilder = $this->builderFactory->create($this->algorithmFactory->getAlgorithmManager());
         $jws = $jwsBuilder->create()
             ->withPayload($payload)
             ->addSignature(
-                $this->keyGenerator->create()->getKey(),
+                $this->keyGenerator->generate()->getKey(),
                 [
                     'alg' => $this->algorithmFactory->getAlgorithmName(),
                     'typ' => 'JWT'
                 ]
             )
             ->build();
-
+        
         return $this->serializer->serialize(new Jwt($jws));
     }
-
+    
     public function decode(string $token): array
     {
-        $decoded = $this->serializer->unserialize($token);
-        return $this->json->unserialize($decoded->getToken()->getPayload());
-    }
-
-    public function verify(string $token): bool
-    {
-        $verifier = $this->getVerifier();
         $jws = $this->serializer->unserialize($token)
             ->getToken();
-
-        if (!$verifier->verifyWithKey($jws, $this->keyGenerator->create()->getKey(), 0)) {
+        
+        if (!$this->verify($jws)) {
+            throw new \InvalidArgumentException('JWT signature verification failed');
+        }
+        
+        return $this->json->unserialize($jws->getPayload());
+    }
+    
+    private function verify(CoreJwt $jws): bool
+    {
+        $verifier = $this->getVerifier();
+        if (!$verifier->verifyWithKey($jws, $this->keyGenerator->generate()->getKey(), 0)) {
             return false;
         };
-
+        
         $payload = $this->json->unserialize($jws->getPayload());
         $this->claimCheckerManager->check($payload);
-
+        
         return true;
     }
 }
