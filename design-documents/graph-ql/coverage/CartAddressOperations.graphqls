@@ -33,6 +33,7 @@ input SetShippingAddressesOnCartInput {
 input ShippingAddressInput {
     customer_address_id: Int # If provided then will be used address from address book
     address: CartAddressInput
+    customer_notes: String
     pickup_location_code: String
 }
 
@@ -76,7 +77,6 @@ interface CartAddressInterface {
     postcode: String
     country: CartAddressCountry
     telephone: String
-    customer_notes: String
 }
 
 type ShippingCartAddress implements CartAddressInterface {
@@ -85,6 +85,7 @@ type ShippingCartAddress implements CartAddressInterface {
     items_weight: Float
     cart_items: [CartItemQuantity]
     pickup_location_code: String
+    customer_notes: String
 }
 
 type BillingCartAddress implements CartAddressInterface {
@@ -111,7 +112,6 @@ type SelectedShippingMethod {
     carrier_title: String
     method_title: String
     amount: Money
-    base_amount: Money
 }
 
 type AvailableShippingMethod {
@@ -121,7 +121,6 @@ type AvailableShippingMethod {
     method_title: String
     error_message: String
     amount: Money!
-    base_amount: Money
     price_excl_tax: Money!
     price_incl_tax: Money!
     available: Boolean!
