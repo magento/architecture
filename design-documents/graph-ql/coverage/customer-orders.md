@@ -35,14 +35,15 @@ The proposed type for the customer order might look like:
 
 ```graphql
 # order details
-type CustomerOrder {
+type Order {
     order_date: String! # date when the order was placed.
     status: String! # current status of the order.
     order_number: String! # order number.
-    items: [OrderProductInterface] # collection of all the items purchased
+    items: [OrderItem] # collection of all the items purchased
     order_pricing: OrderPricingInterface! # pricing details for the order.
-    invoice_details: [Invoice] # invoice details for the order.
-    shipping_details: [OrderShipment] # shipping details for the order.
+    invoices: [Invoice] # invoice list for the order.
+    credit_memos: [CreditMemo] # credit memo list for the order.
+    shipments: [OrderShipment] # shipping list for the order.
     payment_method: [PaymentMethod] # payment details for the order.
 }
 ```
@@ -54,53 +55,34 @@ The `grand_total`, `id`, `increment_id`, `created_at` will be marked as deprecat
 The order items will be presented as separate interface which will have multiple implementations for invoice, shipment and credit memo types.
 
 ```graphql
-interface OrderProductInterface {
-    product_name: String # name of the base product.
+interface ProductItemInterface {
+    name: String # name of the base product.
     sku: String! # sku of the base product.
     url: String # url of the base product.
-    child_products: [ChildOrderProductInterface] # child products in case of bundled products.
     final_price: Float! # final price for the base product including all the child products and selected options.
     discounts: [Discount] # final discount information for the base product including discounts on options and child products.
-    selected_options: [KeyValue] # selected options for the base product. for e.g color, size etc.
-    entered_options: [String!] # entered option for the base product. for e.g logo image etc.
-}
-
-# order child product interface
-interface ChildOrderProductInterface {
-    name: String # name of the child product.
-    sku: String # sku of the child product.
-    url: String # url of the child product.
-    final_price: Float! # final price for the child product including all the selected options
-    discounts: [Discount] # final discount information for the child product including discounts on options
-    selected_options: [KeyValue] # selected options for the child product. for e.g color, size etc
-    entered_options: [String!] # "entered option for the child product. for e.g logo image etc.
+    selected_options: [String!] # selected options for the base product. for e.g color, size etc.
+    entered_options: [KeyValue] # entered option for the base product. for e.g logo image etc.
 }
 ```
 
-The `OrderProductInterface` and `ChildOrderProductInterface` will be implemented by the following types:
+The `ProductItemInterface` will be implemented by the following types:
 
 ```graphql
 # Order Product implementation of OrderProductInterface
-type OrderProduct implements OrderProductInterface {
+type OrderItem implements ProductItemInterface {
     ordered: Float! # number of items items
     shipped: Float! # number of shipped items
     refunded: Float! # number of refunded items
     invoiced: Float! # number of invoided items
+    children: [OrderChildItem]
 }
 
-type RefundProduct implements OrderProductInterface{
-    refunded: Float! # number of refunded items
-}
-
-type OrderChildProduct implements ChildOrderProductInterface{
+type OrderChildItem implements ProductItemInterface{
     ordered: Float! # number of items items
     shipped: Float! # number of shipped items
     refunded: Float! # number of refunded items
     invoiced: Float! # number of invoided items
-}
-
-type RefundChildProduct implements ChildOrderProductInterface{
-    refunded: Float! # number of refunded items
 }
 ```
 
@@ -143,14 +125,15 @@ The invoice entity will have the similar to the order schema:
 type Invoice {
     number: String! # user friendly identifier for the invoice
     pricing: OrderPricingInterface! # invoice pricing details
-    products: [OrderProductInterface]! # invoiced product details
+    items: [InvoiceItem]! # invoiced product details
 }
 
-type InvoiceProduct implements OrderProductInterface{
+type InvoiceItem implements ProductItemInterface{
     invoiced: Float! # number of invoided items
+    children: [InvoiceChildItem]
 }
 
-type InvoiceChildProduct implements ChildOrderProductInterface{
+type InvoiceChildItem implements ProductItemInterface{
     invoiced: Float! # number of invoided items
 }
 
@@ -164,18 +147,23 @@ type InvoicePricing implements OrderPricingInterface {
 The credit memo entity will have the similar to the order and invoice schema:
 
 ```graphql
-type Refund {
+type CreditMemo {
     number: String!
-    items: [OrderProductInterface]! # items refunded
+    items: [CreditMemoItem]! # items refunded
     pricing: OrderPricingInterface! # refund pricing details
 }
 
-type RefundProduct implements OrderProductInterface{
+type CreditMemoItem implements ProductItemInterface{
+    refunded: Float! # number of refunded items
+    children: [CreditMemoChildItem]
+}
+type CreditMemoChildItem implements ProductItemInterface{
     refunded: Float! # number of refunded items
 }
 
-type RefundPricing implements OrderPricingInterface {
-    refunded_to_payment_method: Float # amount refunded
+
+type CreditMemoPricing implements OrderPricingInterface {
+
 }
 ```
 
@@ -186,24 +174,25 @@ type OrderShipment {
     shipping_method: String! # shipping method for the order
     shipping_address: CustomerAddress! # shipping address for the order
     tracking_link: String # tracking link for the order
-    shipped_items: [OrderProductInterface] # items included in the shipping
+    shipped_items: [ShipmentItem] # items included in the shipment
 }
  
-type ShipmentProduct implements OrderProductInterface{
+type ShipmentItem implements ProductItemInterface{
     shipped: Float! #number of shipped items
+    children: [ShipmentChildItem]
 }
 
-type ShipmentChildProduct implements ChildOrderProductInterface{
+type ShipmentChildItem implements ProductItemInterface{
     shipped: Float! # umber of shipped items
 }
 ```
 
 ## Additional Types
 
-The `NameValue` type will provide a possibility to use key-value pairs:
+The `KeyValue` type will provide a possibility to use key-value pairs:
 
 ```graphql
-type NameValue {
+type KeyValue {
     name: String # name part of the name/value pair
     value: String # value part of the name/value pair
 }
