@@ -62,6 +62,8 @@ Example 3. Grouped product can be represented as a set of options where each opt
 
 ### 4.1 Product variations examples
 
+### 4.2 Mixing complex product options and simple product options
+* The complex product can not have product customizable options because the complex product is not a real product, so this is uncertain in which way customizable options should be applied.  But the complex product may declare customizable options which will be applied to a simple product which was selected through the complex product if this applicable.  For instance, the configurable product that represents T-Shirt may declare a customizable option - print which will be applied to a particular simple product with colour and size.
 TBD
 
 ## 5. Complex products in operations
