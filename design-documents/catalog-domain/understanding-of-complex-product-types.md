@@ -62,9 +62,48 @@ Example 3. Grouped product can be represented as a set of options where each opt
 
 ### 4.1 Product variations examples
 
+Option
+```json
+{
+  "id": "[UUID]",
+  "title": "Option title",
+  "isRequired": true,
+  "isMulti": false,
+  "values": [
+    {
+      "id": "[UUID]",
+      "title": "Value Title",
+      "price": null,
+      "link": null
+    }  
+  ]
+}
+```
+Variation
+```json
+{
+  "sku": "SimpleProductSku",
+  "price": {
+    "regularPrice": 10.11,
+    "finalPrice": 9.89
+  },
+  "buyable": true,
+  "displayable": false,
+  "inStock": true,
+  "lowStock": false,
+  "quantity": 300,
+  "selections": [
+    {
+      "optionId": "ProductOptionID",
+      "valueId": "ProductOptionValueID"
+    }  
+  ]
+}
+```
+
 ### 4.2 Mixing complex product options and simple product options
 * The complex product can not have product customizable options because the complex product is not a real product, so this is uncertain in which way customizable options should be applied.  But the complex product may declare customizable options which will be applied to a simple product which was selected through the complex product if this applicable.  For instance, the configurable product that represents T-Shirt may declare a customizable option - print which will be applied to a particular simple product with colour and size.
-TBD
+
 
 ## 5. Complex products in operations
 
