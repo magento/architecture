@@ -4,31 +4,32 @@
 
 The GraphQL API should provide a possibility to retrieve orders, shipments, invoices, credit memos for the logged in customer. The current schema allows fetching only simple order details and doesn't provide a possibility to fetch order details by a number.
 
-The proposed queries might look like:
+The proposed solution is deprecation of `customerOrders` query and `orders` field to the `customer` query:
 
 ```graphql
 # query to return a list of all customer orders
-type Query {
-    customerOrders (
+type Customer {
+    orders (
+        filter: CustomerOrderFilterInput
         currentPage: Int = 1 # current page of the customer order list. default is 1.
         pageSize: Int = 20 # page size for the customer orders list. default is 20.
     ): CustomerOrders
 }
 
-# collection of customer orders that contains pagination and individual order details.
-type CustomerOrders {
-    items: [CustomerOrder] # collection of customer orders that contains individual order details.
-    currentPage: Int # current page of the customer order list. default is 1.
-    pageSize: Int # page size for the customer orders list. default is 20.
+input CustomerOrderFilterInput {
+    order_number: String!
 }
 
-# query to return an individual order detail by order number.
-type Query {
-    customerOrder (
-        order_number: String # order number for the query input.
-    ): CustomerOrder   
+# collection of customer orders.
+type CustomerOrders {
+    items: [Order]! # collection of customer orders that contains individual order details.
+    page_info: SearchResultPageInfo
+    total_count: Int
 }
 ```
+
+> Right now, we don't introduce the filter input for such entities like invoice, credit memo, shipment as all these entities are related to the same order and GraphQL resolvers anyway at first resolve the order and after that other child entities. But, in future, such filter input can be introduced as optional argument.
+
 ## Order Type Schema
 
 The proposed type for the customer order might look like:
@@ -48,14 +49,12 @@ type Order {
 }
 ```
 
-The `grand_total`, `id`, `increment_id`, `created_at` will be marked as deprecated.
-
 ### Order Item
 
 The order items will be presented as separate interface which will have multiple implementations for invoice, shipment and credit memo types.
 
 ```graphql
-interface ProductItemInterface {
+interface SalesProductInterface {
     name: String # name of the base product.
     sku: String! # sku of the base product.
     url: String # url of the base product.
@@ -66,23 +65,23 @@ interface ProductItemInterface {
 }
 ```
 
-The `ProductItemInterface` will be implemented by the following types:
+The `SalesProductInterface` will be implemented by the following types:
 
 ```graphql
 # Order Product implementation of OrderProductInterface
-type OrderItem implements ProductItemInterface {
+type OrderItem implements SalesProductInterface {
     ordered: Float! # number of items items
     shipped: Float! # number of shipped items
     refunded: Float! # number of refunded items
-    invoiced: Float! # number of invoided items
+    invoiced: Float! # number of invoiced items
     children: [OrderChildItem]
 }
 
-type OrderChildItem implements ProductItemInterface{
+type OrderChildItem implements SalesProductInterface{
     ordered: Float! # number of items items
     shipped: Float! # number of shipped items
     refunded: Float! # number of refunded items
-    invoiced: Float! # number of invoided items
+    invoiced: Float! # number of invoiced items
 }
 ```
 
@@ -95,7 +94,7 @@ To provide more customization for different payment solutions, the payment metho
 type PaymentMethod {
     name: String! # payment method name for e.g Braintree, Authorize etc
     type: String! # payment method type used to pay for the order for e.g Credit Card, PayPal etc.
-    additonal_data: [KeyValue] # additional data per payment method type
+    additional_data: [KeyValue] # additional data per payment method type
 }
 ```
 
@@ -107,13 +106,12 @@ As entities like order, invoice, credit memo might have complex pricing type:
 interface OrderPricingInterface {
     subtotal: Float! # order subtotal excluding, shipping, discounts and tax
     discounts: [Discount] # all the discounts applied to the order
-    shipping_handling: Float! # shipping and hnadling for the order
     tax: Float! # tax applied to the order
     grand_total: Float! # final order total including shipping and taxes
 }
 ​
 type OrderPricing implements OrderPricingInterface {
-​
+​   shipping_handling: Float! # shipping and handling for the order
 }
 ```
 
@@ -128,13 +126,13 @@ type Invoice {
     items: [InvoiceItem]! # invoiced product details
 }
 
-type InvoiceItem implements ProductItemInterface{
-    invoiced: Float! # number of invoided items
+type InvoiceItem implements SalesProductInterface{
+    invoiced: Float! # number of invoiced items
     children: [InvoiceChildItem]
 }
 
-type InvoiceChildItem implements ProductItemInterface{
-    invoiced: Float! # number of invoided items
+type InvoiceChildItem implements SalesProductInterface{
+    invoiced: Float! # number of invoiced items
 }
 
 type InvoicePricing implements OrderPricingInterface {
@@ -153,14 +151,13 @@ type CreditMemo {
     pricing: OrderPricingInterface! # refund pricing details
 }
 
-type CreditMemoItem implements ProductItemInterface{
+type CreditMemoItem implements SalesProductInterface{
     refunded: Float! # number of refunded items
     children: [CreditMemoChildItem]
 }
-type CreditMemoChildItem implements ProductItemInterface{
+type CreditMemoChildItem implements SalesProductInterface{
     refunded: Float! # number of refunded items
 }
-
 
 type CreditMemoPricing implements OrderPricingInterface {
 
@@ -177,12 +174,12 @@ type OrderShipment {
     shipped_items: [ShipmentItem] # items included in the shipment
 }
  
-type ShipmentItem implements ProductItemInterface{
+type ShipmentItem implements SalesProductInterface{
     shipped: Float! #number of shipped items
     children: [ShipmentChildItem]
 }
 
-type ShipmentChildItem implements ProductItemInterface{
+type ShipmentChildItem implements SalesProductInterface{
     shipped: Float! # umber of shipped items
 }
 ```
