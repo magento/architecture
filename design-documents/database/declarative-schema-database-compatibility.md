@@ -65,7 +65,7 @@ abstract class InformationSchema\Table\Column
     public function getIsNullable(): bool {}
     public function getExtra(): Extra {}
     public function getComment() {}
-    public function getDefaultValue(): string {}
+    public function getDefaultValue(): ?string {}
 }
 ```
 
@@ -198,8 +198,6 @@ It has default value of `mysql4`. I propose to add 2 values: `mysql` and `mariad
 ## Considerations
 
 `\Magento\Framework\DB\Adapter\AdapterInterface` has methods like `describeTable` which return raw values from database engine. This is leaky interface. We should have interfaces that return normalized data and are compatible with all databases. Methods that don't return normalized data need to be deprecated on `\Magento\Framework\DB\Adapter\AdapterInterface`.
-
-`engine` field in declarative schema need to be deprecated.
 
 ## Resources
 
