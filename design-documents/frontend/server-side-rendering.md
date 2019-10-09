@@ -1,5 +1,9 @@
 # Server-Side Rendering (SSR)
 
+_This document refers to SSR in the context of a React web application (e.g., PWA). The concept of SSR does not apply to native apps._
+
+_SSR belongs to the BFF layer of [service isolation](https://github.com/magento/architecture/tree/master/design-documents/service-isolation)._
+
 SSR can be a challenge to implement correctly, but the benefits have the potential to provide the unparalleled performance you seek to decrease bounce rate and drive more business.
 
 ## Pros
@@ -19,37 +23,44 @@ SSR can be a challenge to implement correctly, but the benefits have the potenti
 
 ## How it works
 
-The basic idea is that we don't want the client browser to be responsible for rendering content via JavaScript, because JavaScript is notoriously slow, especially at rendering DOM and especially on older or mobile devices. Unnecessary rendering also consumes more energy, which has the potential to suck a mobile device's battery dry. :battery:
+The basic idea is that we don't want the web browser (client) to be responsible for rendering content via JavaScript, because JavaScript is notoriously slow, especially at rendering DOM and especially on older or mobile devices. Unnecessary rendering also consumes more energy, which has the potential to suck a mobile device's battery dry. :battery:
 
-If we leverage the server to do as much heavy lifting as we can, some of this heavy lifting (non-sensitive pages) can be cached as well, resulting in a faster, better user experience.
+If we leverage the HTTP server to do as much heavy lifting as we can, some of this heavy lifting (non-sensitive pages) can be cached as well, resulting in a faster, better user experience.
 
 ### Without SSR
 
-1. Client (browser) requests a URL for a particular route (e.g., `/`).
-1. The server runs the appropriate code for that route.
-   - HTML is partially generated with empty containers that need to be filled and rendered by JavaScript after initial page load (bad for SEO).
-1. The client receives and processes the HTML.
-   - The user might see some empty content that hasn't been filled in yet.
-   - JavaScript is loaded and processed, filling specified empty containers with content (slow).
-   - Once content is seen, it becomes immediately interactive.
+1. A web browser (client) requests a URL for a particular route (e.g., `/`).
+1. The HTTP server runs the appropriate code for that route.
+   - HTML is partially generated with empty containers that need to be filled and rendered by JavaScript after the initial page load (bad for SEO).
+1. The web browser (client) receives and processes the HTML, but the user may see some empty content that hasn't been filled in yet.
+1. JavaScript is loaded and processed, including the React library.
+1. Ideally, a single GraphQL API request is made to collect the data required to fill in the empty containers with content.
+1. React renders the final HTML into the above-mentioned empty containers by combining the data received with the HTML defined in the React components.
+1. Once content is seen, it becomes immediately interactive.
 
 ### With SSR
 
-1. Client (browser) requests a URL for a particular route (e.g., `/`).
-1. The [Node.js][] server runs the appropriate code for that route.
-   - HTML is fully generated via React libraries with no empty containers. This HTML can be streamed and cached.
-1. The client receives and processes the HTML.
+1. A web browser (client) requests a URL for a particular route (e.g., `/`).
+1. The [JavaScript-capable HTTP server](#requirements) runs the appropriate code for that route.
+   - Ideally, a single GraphQL API request is made from this HTTP server, collecting all the data that's required to render the page.
+   - HTML is fully generated [via React methods](https://reactjs.org/docs/react-dom-server.html) with no empty containers. This HTML can be [streamed](https://reactjs.org/docs/react-dom-server.html#rendertonodestream) and cached.
+1. The web browser (client) receives and processes the HTML.
    - No additional HTML needs to be rendered into containers. As a result, the user perceives faster performance.
    - At this point, some content might appear to be interactive (e.g., buttons), but won't actually work yet.
-   - JavaScript libraries (including React) are loaded along with any application code.
-   - React hydrates the application.
-   - The page is now interactive.
+1. JavaScript is loaded and processed, including the React library.
+1. React [hydrates](https://reactjs.org/docs/react-dom.html#hydrate) any containers whose HTML contents were rendered by [ReactDOMServer](https://reactjs.org/docs/react-dom-server.html) in step 2 (above). Nothing needs to be re-rendered here.
+1. The page is now fully interactive.
+1. Subsequent API requests are made directly to the GraphQL API.
+
+## Requirements
+
+- A JavaScript-capable HTTP server, typically a [Node.js][] server (e.g., [Express][]).
 
 ## Implementation
 
 Some solutions provide out-of-the-box SSR, like [Next.js](https://nextjs.org/) and [Razzle][], but if you want more tight control of your application, you might want to set it up yourself. If you go this route, you would still do well to use these projects as inspiration. In fact, [Razzle][] has [a great development setup](https://github.com/jaredpalmer/razzle#how-razzle-works-the-secret-sauce).
 
-To render a React application on a server, the server needs to understand how to process JavaScript. This means you'll need a ([Node.js][]) [Express][] server. Ideally, you'll serve the HTML by piping to a writable stream. You can do this with React 16's [`renderToNodeStream()`](https://reactjs.org/docs/react-dom-server.html#rendertonodestream).
+To render a React application on a server, the server needs to [understand how to process JavaScript](#requirements). Ideally, you'll serve the HTML by piping to a writable stream. You can do this with React 16's [`renderToNodeStream()`](https://reactjs.org/docs/react-dom-server.html#rendertonodestream).
 
 ```jsx
 import { renderToNodeStream } from 'react-dom/server'
@@ -82,6 +93,12 @@ That's it &ndash; you technically now have SSR! But don't stop here. It's time t
 
 Furthermore, some libraries that you are using might have specific SSR requirements (e.g., [Loadable Components](https://www.smooth-code.com/open-source/loadable-components/docs/server-side-rendering/)). Please consult their documentation to ensure you are adhering to those requirements.
 
+## Extensibility
+
+Market research is required to assess the extent at which extensibility is desired and where the interception points should be.
+
+We have an opportunity here to take a fresh look at the extensibility model of Magento, where it has served us well and where it can be improved.
+
 ## Optimizations
 
 - Above the fold only SSR (e.g., [electrode's implementation](https://github.com/electrode-io/above-the-fold-only-server-render)).
@@ -95,9 +112,9 @@ Furthermore, some libraries that you are using might have specific SSR requireme
 
 ## FAQ
 
-### Why do I need Node.js (Express)?
+### Why do I need a JavaScript-capable web server?
 
-Other server-side languages can render HTML, but are not designed to process JavaScript. Without a JavaScript engine, you won't be able to render the HTML generated by React components; thus, won't get SSR. [Express][] runs on [Node.js][], which runs Google's open source JavaScript engine, [V8](https://chromium.googlesource.com/v8/v8). This makes [Express][] the ideal server for rendering React applications. Technically, there are non-golden paths you can take to render JavaScript on some non-JavaScript servers, but it's not recommended.
+Without a JavaScript engine, you won't be able to render the HTML generated by React components; thus, won't get SSR. [Express][] runs on [Node.js][], which runs Google's open source JavaScript engine, [V8](https://chromium.googlesource.com/v8/v8). This makes [Express][] a typical choice for rendering React applications. Technically, there are non-golden paths you can take to render JavaScript on some non-JavaScript servers, but it's not recommended.
 
 ## References
 
