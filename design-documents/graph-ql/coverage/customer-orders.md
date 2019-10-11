@@ -10,19 +10,19 @@ The proposed solution is deprecation of `customerOrders` query and `orders` fiel
 # query to return a list of all customer orders
 type Customer {
     orders (
-        filter: CustomerOrderFilterInput
+        filter: CustomerOrdersFilterInput
         currentPage: Int = 1 # current page of the customer order list. default is 1.
         pageSize: Int = 20 # page size for the customer orders list. default is 20.
     ): CustomerOrders
 }
 
-input CustomerOrderFilterInput {
+input CustomerOrdersFilterInput {
     order_number: String!
 }
 
 # collection of customer orders.
 type CustomerOrders {
-    items: [Order]! # collection of customer orders that contains individual order details.
+    items: [CustomerOrder]! # collection of customer orders that contains individual order details.
     page_info: SearchResultPageInfo
     total_count: Int
 }
@@ -36,52 +36,65 @@ The proposed type for the customer order might look like:
 
 ```graphql
 # order details
-type Order {
+type CustomerOrder {
     order_date: String! # date when the order was placed.
     status: String! # current status of the order.
     order_number: String! # order number.
     items: [OrderItem] # collection of all the items purchased
-    order_pricing: OrderPricingInterface! # pricing details for the order.
-    invoices: [Invoice] # invoice list for the order.
-    credit_memos: [CreditMemo] # credit memo list for the order.
-    shipments: [OrderShipment] # shipping list for the order.
-    payment_method: [PaymentMethod] # payment details for the order.
+    prices: SalesPricesInterface! # prices details for the order.
+    invoices: [Invoice]! # invoice list for the order.
+    credit_memos: [CreditMemo]! # credit memo list for the order.
+    shipments: [OrderShipment]! # shipping list for the order.
+    payment_methods: [PaymentMethod]! # payment details for the order.
 }
 ```
+
+> The order `status` should be filtered in the same way as for Luma via `Order Status` and `Visible On Storefront` configuration 
 
 ### Order Item
 
 The order items will be presented as separate interface which will have multiple implementations for invoice, shipment and credit memo types.
 
 ```graphql
-interface SalesProductInterface {
+interface SalesItemInterface {
     name: String # name of the base product.
     sku: String! # sku of the base product.
     url: String # url of the base product.
-    final_price: Float! # final price for the base product including all the child products and selected options.
+    sale_price: Float! # sale price for the base product including all the child products and selected options.
     discounts: [Discount] # final discount information for the base product including discounts on options and child products.
     selected_options: [String!] # selected options for the base product. for e.g color, size etc.
-    entered_options: [KeyValue] # entered option for the base product. for e.g logo image etc.
+    entered_options: [SalesItemOption] # entered option for the base product. for e.g logo image etc.
+}
+
+type SalesItemOption {
+    id: String!
+    value: String!
 }
 ```
 
-The `SalesProductInterface` will be implemented by the following types:
+The `SalesItemInterface` will be implemented by the following types:
 
 ```graphql
 # Order Product implementation of OrderProductInterface
-type OrderItem implements SalesProductInterface {
-    ordered: Float! # number of items items
-    shipped: Float! # number of shipped items
-    refunded: Float! # number of refunded items
-    invoiced: Float! # number of invoiced items
+type OrderItem implements SalesItemInterface {
+    qty_ordered: Float! # number of items items
+    qty_shipped: Float! # number of shipped items
+    qty_refunded: Float! # number of refunded items
+    qty_invoiced: Float! # number of invoiced items
+    qty_backordered: Float! # number of back ordered items
+    qty_canceled: Float! # number of cancelled items
+    qty_returned: Float! # number of returned items
     children: [OrderChildItem]
 }
 
-type OrderChildItem implements SalesProductInterface{
-    ordered: Float! # number of items items
-    shipped: Float! # number of shipped items
-    refunded: Float! # number of refunded items
-    invoiced: Float! # number of invoiced items
+type OrderChildItem implements SalesItemInterface{
+    qty_ordered: Float! # number of items items
+    qty_shipped: Float! # number of shipped items
+    qty_refunded: Float! # number of refunded items
+    qty_invoiced: Float! # number of invoiced items
+    qty_backordered: Float! # number of back ordered items
+    qty_canceled: Float! # number of cancelled items
+    qty_returned: Float! # number of returned items
 }
 ```
 
@@ -98,19 +111,21 @@ type PaymentMethod {
 }
 ```
 
-### Pricing Schema
+> The payment `additional_data` should be filtered in the same way as for Luma via `privateInfoKeys` and `paymentInfoKeys` to not expose sensitive information.
 
-As entities like order, invoice, credit memo might have complex pricing type:
+### Prices Schema
+
+As entities like order, invoice, credit memo might have complex prices type:
 
 ```graphql
-interface OrderPricingInterface {
+interface SalesPricesInterface {
     subtotal: Float! # order subtotal excluding, shipping, discounts and tax
     discounts: [Discount] # all the discounts applied to the order
     tax: Float! # tax applied to the order
     grand_total: Float! # final order total including shipping and taxes
 }
 ​
-type OrderPricing implements OrderPricingInterface {
+type OrderPrices implements SalesPricesInterface {
 ​   shipping_handling: Float! # shipping and handling for the order
 }
 ```
@@ -122,20 +137,20 @@ The invoice entity will have the similar to the order schema:
 ```graphql
 type Invoice {
     number: String! # user friendly identifier for the invoice
-    pricing: OrderPricingInterface! # invoice pricing details
+    prices: InvoicePrices! # invoice prices details
     items: [InvoiceItem]! # invoiced product details
 }
 
-type InvoiceItem implements SalesProductInterface{
-    invoiced: Float! # number of invoiced items
+type InvoiceItem implements SalesItemInterface{
+    qty_invoiced: Float! # number of invoiced items
     children: [InvoiceChildItem]
 }
 
-type InvoiceChildItem implements SalesProductInterface{
-    invoiced: Float! # number of invoiced items
+type InvoiceChildItem implements SalesItemInterface{
+    qty_invoiced: Float! # number of invoiced items
 }
 
-type InvoicePricing implements OrderPricingInterface {
+type InvoicePrices implements SalesPricesInterface {
   
 }
 ```
@@ -148,18 +163,18 @@ The credit memo entity will have the similar to the order and invoice schema:
 type CreditMemo {
     number: String!
     items: [CreditMemoItem]! # items refunded
-    pricing: OrderPricingInterface! # refund pricing details
+    prices: CreditMemoPrices! # refund prices details
 }
 
-type CreditMemoItem implements SalesProductInterface{
-    refunded: Float! # number of refunded items
+type CreditMemoItem implements SalesItemInterface{
+    qty_refunded: Float! # number of refunded items
     children: [CreditMemoChildItem]
 }
-type CreditMemoChildItem implements SalesProductInterface{
+type CreditMemoChildItem implements SalesItemInterface{
     refunded: Float! # number of refunded items
 }
 
-type CreditMemoPricing implements OrderPricingInterface {
+type CreditMemoPrices implements SalesPricesInterface {
 
 }
 ```
@@ -171,16 +186,16 @@ type OrderShipment {
     shipping_method: String! # shipping method for the order
     shipping_address: CustomerAddress! # shipping address for the order
     tracking_link: String # tracking link for the order
-    shipped_items: [ShipmentItem] # items included in the shipment
+    shipped_items: [ShipmentItem]! # items included in the shipment
 }
  
-type ShipmentItem implements SalesProductInterface{
-    shipped: Float! #number of shipped items
+type ShipmentItem implements SalesItemInterface{
+    qty_shipped: Float! #number of shipped items
     children: [ShipmentChildItem]
 }
 
-type ShipmentChildItem implements SalesProductInterface{
-    shipped: Float! # umber of shipped items
+type ShipmentChildItem implements SalesItemInterface{
+    qty_shipped: Float! # umber of shipped items
 }
 ```
 
