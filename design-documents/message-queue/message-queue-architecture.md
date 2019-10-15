@@ -236,11 +236,11 @@ Topic and Publish / Subscribe mechanism is at the core of Kafka. Effective for i
 
 Consumer is usually part of Consumer Group, it ensures that each group receives a copy of the message from the topic. Consumer needs to know its offset and partition, although parition can be automatically assigned when you begin consuming data from the topic, but you can also choose to manually assign parition, but these two cannot be mixed up. Consumer first needs to subscribe itself to the list of topics.
 
-After you read the message(s), you can configure auto-commit, and manually commit.
+After you read the message(s), you can either configure auto-commit or allow manual commits for the offsets, in real-life use-cases you probably would want to control manually based on your strategy.
 
 | Method        | Evaluation | Implementation Readiness                                     |
 | ------------- | ---------- | ------------------------------------------------------------ |
-| dequeue()     | Possiblity | Initiate **poll () or consume()**. If there are records available, the poll will immediately returns, otherwise it will wait for specified timeout which can be passed as parameter. |
+| dequeue()     | Possiblity | Initiate **poll () or consume()**. If there are records available, the call will immediately returns, otherwise it will wait for specified timeout which can be passed as parameter. |
 | acknowledge() | Possiblity | There are several ways to commit the offset, which indicates that a particular consumer has consumed those messages. The way you call commit API controls the delivery semantics. |
 | subscribe()   | Possiblity | There are multiple ways in which the subscribtion mechanism can be implemented, the default Kafka subscribtion is telling Kafka which topics a consumer is interested in. But we can also subscribe a callback function; and we can use Kafka Stream API to receive messages in near realtime. |
 | reject()      | Possiblity | If we don't auto-commit or manually commit the offset, then we are not moving the needle. |
