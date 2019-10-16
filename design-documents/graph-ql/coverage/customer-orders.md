@@ -1,30 +1,31 @@
 # Customer Orders API
 
-## Overview
+# Overview
 
 The GraphQL API should provide a possibility to retrieve orders, shipments, invoices, credit memos for the logged in customer. The current schema allows fetching only simple order details and doesn't provide a possibility to fetch order details by a number.
 
 The proposed solution is deprecation of `customerOrders` query and `orders` field to the `customer` query:
 
 ```graphql
-# query to return a list of all customer orders
+@doc("Query to return a list of all customer orders")
 type Customer {
     orders (
         filter: CustomerOrdersFilterInput
-        currentPage: Int = 1 # current page of the customer order list. default is 1.
-        pageSize: Int = 20 # page size for the customer orders list. default is 20.
+        currentPage: Int = 1 @doc("current page of the customer order list. default is 1")
+        pageSize: Int = 20 @doc("page size for the customer orders list. default is 20")
     ): CustomerOrders
 }
 
+@doc("Allows to extend the list of search criteria for customer orders")
 input CustomerOrdersFilterInput {
     order_number: String!
 }
 
-# collection of customer orders.
+@doc("Collection of customer orders")
 type CustomerOrders {
-    items: [CustomerOrder]! # collection of customer orders that contains individual order details.
+    items: [CustomerOrder]! @doc("collection of customer orders that contains individual order details.")
     page_info: SearchResultPageInfo
-    total_count: Int
+    total_count: Int @doc("the total count of customer orders")
 }
 ```
 
@@ -35,17 +36,17 @@ type CustomerOrders {
 The proposed type for the customer order might look like:
 
 ```graphql
-# order details
+@doc("Customer order details")
 type CustomerOrder {
-    order_date: String! # date when the order was placed.
-    status: String! # current status of the order.
-    order_number: String! # order number.
-    items: [OrderItem]! # collection of all the items purchased
-    prices: SalesPricesInterface! # prices details for the order.
-    invoices: [Invoice]! # invoice list for the order.
-    credit_memos: [CreditMemo]! # credit memo list for the order.
-    shipments: [OrderShipment]! # shipping list for the order.
-    payment_methods: [PaymentMethod]! # payment details for the order.
+    order_date: String! @doc("date when the order was placed")
+    status: String! @doc("current status of the order")
+    order_number: String! @doc("order number")
+    items: [OrderItem]! @doc("collection of all the items purchased")
+    prices: SalesPricesInterface! @doc("prices details for the order")
+    invoices: [Invoice]! @doc("invoice list for the order")
+    credit_memos: [CreditMemo]! @doc("credit memo list for the order")
+    shipments: [OrderShipment]! @doc("shipment list for the order")
+    payment_methods: [PaymentMethod]! @doc("payment details for the order")
 }
 ```
 
@@ -56,47 +57,40 @@ type CustomerOrder {
 The order items will be presented as separate interface which will have multiple implementations for invoice, shipment and credit memo types.
 
 ```graphql
+@doc("Interface to reprent order/invoice/shipment/credit memo items")
 interface SalesItemInterface {
-    name: String # name of the base product.
-    sku: String! # sku of the base product.
-    url: String # url of the base product.
-    sale_price: Float! # sale price for the base product including all the child products and selected options.
-    discounts: [Discount] # final discount information for the base product including discounts on options and child products.
-    selected_options: [String!] # selected options for the base product. for e.g color, size etc.
-    entered_options: [SalesItemOption] # entered option for the base product. for e.g logo image etc.
+    name: String @doc("name of the base product")
+    sku: String! @doc("sku of the base product")
+    url: String @doc("url of the base product")
+    sale_price: Float! @doc("sale price for the base product including selected options")
+    discounts: [Discount] @doc("final discount information for the base product including discounts on options")
+    parent_name: String @doc("name of parent product like configurable or bundle")
+    parent_sku: String @doc("SKU of parent product like configurable or bundle")
+    parent_url: String @doc("URL of parent product in the catalog")
+    selected_options: [SalesItemOption] @doc("selected options for the base product. for e.g color, size etc.")
+    entered_options: [SalesItemOption] @doc("entered option for the base product. for e.g logo image etc.")
 }
 
+@doc("Represents sales item options like selected or entered")
 type SalesItemOption {
-    id: String!
-    value: String!
+    id: String! @doc("name of the option")
+    value: String! @doc("value of the option")
 }
 ```
 
 The `SalesItemInterface` will be implemented by the following types:
 
 ```graphql
-# Order Product implementation of OrderProductInterface
+@doc("Order Product implementation of OrderProductInterface")
 type OrderItem implements SalesItemInterface {
-    quantity_ordered: Float! # number of items
-    quantity_shipped: Float! # number of shipped items
-    quantity_refunded: Float! # number of refunded items
-    quantity_invoiced: Float! # number of invoiced items
-    quantity_backordered: Float! # number of back ordered items
-    quantity_canceled: Float! # number of cancelled items
-    quantity_returned: Float! # number of returned items
-    status: String! # the status of order item
-    children: [OrderChildItem]
-}
-
-type OrderChildItem implements SalesItemInterface{
-    quantity_ordered: Float! # number of items items
-    quantity_shipped: Float! # number of shipped items
-    quantity_refunded: Float! # number of refunded items
-    quantity_invoiced: Float! # number of invoiced items
-    quantity_backordered: Float! # number of back ordered items
-    quantity_canceled: Float! # number of cancelled items
-    quantity_returned: Float! # number of returned items
-    status: String! # the status of order item
+    quantity_ordered: Float! @doc("number of items")
+    quantity_shipped: Float! @doc("number of shipped items")
+    quantity_refunded: Float! @doc("number of refunded items")
+    quantity_invoiced: Float! @doc("number of invoiced items")
+    quantity_backordered: Float! @doc("number of back ordered items")
+    quantity_canceled: Float! @doc("number of cancelled items")
+    quantity_returned: Float! @doc("number of returned items")
+    status: String! @doc("the status of order item")
 }
 ```
 
@@ -105,11 +99,11 @@ type OrderChildItem implements SalesItemInterface{
 To provide more customization for different payment solutions, the payment method will be represented by own type instead of simple string:
 
 ```graphql
-#  payment method used to pay for the order
+@doc("Payment method used to pay for the order")
 type PaymentMethod {
-    name: String! # payment method name for e.g Braintree, Authorize etc
-    type: String! # payment method type used to pay for the order for e.g Credit Card, PayPal etc.
-    additional_data: [KeyValue] # additional data per payment method type
+    name: String! @doc("payment method name for e.g Braintree, Authorize etc.")
+    type: String! @doc("payment method type used to pay for the order for e.g Credit Card, PayPal etc.")
+    additional_data: [KeyValue] @doc("additional data per payment method type")
 }
 ```
 
@@ -120,16 +114,18 @@ type PaymentMethod {
 As entities like order, invoice, credit memo might have complex prices type:
 
 ```graphql
+@doc("Interface to provide sales prices")
 interface SalesPricesInterface {
-    subtotal: Float! # subtotal amount excluding, shipping, discounts and tax
-    discounts: [Discount] # applied discounts
-    tax: Float! # applied taxes
-    grand_total: Float! # final total amount including shipping and taxes
-    base_grand_total: Float! # final total amount in base currency
+    subtotal: Float! @doc("subtotal amount excluding, shipping, discounts and tax")
+    discounts: [Discount] @doc("applied discounts")
+    tax: Float! @doc("applied taxes")
+    grand_total: Float! @doc("final total amount including shipping and taxes")
+    base_grand_total: Float! @doc("final total amount in base currency")
 }
 ​
+@doc("Order prices details")
 type OrderPrices implements SalesPricesInterface {
-​   shipping_handling: Float! # shipping and handling for the order
+​   shipping_handling: Float! @doc("shipping and handling for the order")
 }
 ```
 
@@ -138,21 +134,19 @@ type OrderPrices implements SalesPricesInterface {
 The invoice entity will have the similar to the order schema:
 
 ```graphql
+@doc("Invoice details")
 type Invoice {
-    number: String! # user friendly identifier for the invoice
-    prices: InvoicePrices! # invoice prices details
-    items: [InvoiceItem]! # invoiced product details
+    number: String! @doc("user friendly identifier for the invoice")
+    prices: InvoicePrices! @doc("invoice prices details")
+    items: [InvoiceItem]! @doc("invoiced product details")
 }
 
+@doc("Invoice item details")
 type InvoiceItem implements SalesItemInterface{
-    quantity_invoiced: Float! # number of invoiced items
-    children: [InvoiceChildItem]
+    quantity_invoiced: Float! @doc("number of invoiced items")
 }
 
-type InvoiceChildItem implements SalesItemInterface{
-    quantity_invoiced: Float! # number of invoiced items
-}
-
+@doc("Invoice prices details")
 type InvoicePrices implements SalesPricesInterface {
   
 }
@@ -163,20 +157,19 @@ type InvoicePrices implements SalesPricesInterface {
 The credit memo entity will have the similar to the order and invoice schema:
 
 ```graphql
+@doc("Credit memo details")
 type CreditMemo {
     number: String!
-    items: [CreditMemoItem]! # items refunded
-    prices: CreditMemoPrices! # refund prices details
+    items: [CreditMemoItem]! @doc("items refunded")
+    prices: CreditMemoPrices! @doc("refund prices details")
 }
 
+@doc("Credit memo item details")
 type CreditMemoItem implements SalesItemInterface{
-    quantity_refunded: Float! # number of refunded items
-    children: [CreditMemoChildItem]
-}
-type CreditMemoChildItem implements SalesItemInterface{
-    refunded: Float! # number of refunded items
+    quantity_refunded: Float! @doc("number of refunded items")
 }
 
+@doc("Credit memo price details")
 type CreditMemoPrices implements SalesPricesInterface {
 
 }
@@ -185,21 +178,19 @@ type CreditMemoPrices implements SalesPricesInterface {
 ## Shipment Type Schema
 
 ```graphql
+@doc("Order shipment details")
 type OrderShipment {
-    shipping_method: String! # shipping method for the order
-    shipping_address: CustomerAddress! # shipping address for the order
-    tracking_link: String # tracking link for the order
-    shipped_items: [ShipmentItem]! # items included in the shipment
-}
- 
-type ShipmentItem implements SalesItemInterface{
-    quantity_shipped: Float! #number of shipped items
-    children: [ShipmentChildItem]
+    shipping_method: String! @doc("shipping method for the order")
+    shipping_address: CustomerAddress! @doc("shipping address for the order")
+    tracking_link: String @doc("tracking link for the order")
+    shipped_items: [ShipmentItem]! @doc("items included in the shipment")
 }
 
-type ShipmentChildItem implements SalesItemInterface{
-    quantity_shipped: Float! # umber of shipped items
+@doc("Order shipment item details")
+type ShipmentItem implements SalesItemInterface{
+    quantity_shipped: Float! @doc("number of shipped items")
 }
+
 ```
 
 ## Additional Types
@@ -207,8 +198,9 @@ type ShipmentChildItem implements SalesItemInterface{
 The `KeyValue` type will provide a possibility to use key-value pairs:
 
 ```graphql
+@doc("The key-value type")
 type KeyValue {
-    name: String # name part of the name/value pair
-    value: String # value part of the name/value pair
+    name: String @doc("name part of the name/value pair")
+    value: String @doc("value part of the name/value pair")
 }
 ```
