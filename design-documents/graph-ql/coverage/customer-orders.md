@@ -40,7 +40,7 @@ type CustomerOrder {
     order_date: String! # date when the order was placed.
     status: String! # current status of the order.
     order_number: String! # order number.
-    items: [OrderItem] # collection of all the items purchased
+    items: [OrderItem]! # collection of all the items purchased
     prices: SalesPricesInterface! # prices details for the order.
     invoices: [Invoice]! # invoice list for the order.
     credit_memos: [CreditMemo]! # credit memo list for the order.
@@ -77,24 +77,26 @@ The `SalesItemInterface` will be implemented by the following types:
 ```graphql
 # Order Product implementation of OrderProductInterface
 type OrderItem implements SalesItemInterface {
-    qty_ordered: Float! # number of items items
-    qty_shipped: Float! # number of shipped items
-    qty_refunded: Float! # number of refunded items
-    qty_invoiced: Float! # number of invoiced items
-    qty_backordered: Float! # number of back ordered items
-    qty_canceled: Float! # number of cancelled items
-    qty_returned: Float! # number of returned items
+    quantity_ordered: Float! # number of items
+    quantity_shipped: Float! # number of shipped items
+    quantity_refunded: Float! # number of refunded items
+    quantity_invoiced: Float! # number of invoiced items
+    quantity_backordered: Float! # number of back ordered items
+    quantity_canceled: Float! # number of cancelled items
+    quantity_returned: Float! # number of returned items
+    status: String! # the status of order item
     children: [OrderChildItem]
 }
 
 type OrderChildItem implements SalesItemInterface{
-    qty_ordered: Float! # number of items items
-    qty_shipped: Float! # number of shipped items
-    qty_refunded: Float! # number of refunded items
-    qty_invoiced: Float! # number of invoiced items
-    qty_backordered: Float! # number of back ordered items
-    qty_canceled: Float! # number of cancelled items
-    qty_returned: Float! # number of returned items
+    quantity_ordered: Float! # number of items items
+    quantity_shipped: Float! # number of shipped items
+    quantity_refunded: Float! # number of refunded items
+    quantity_invoiced: Float! # number of invoiced items
+    quantity_backordered: Float! # number of back ordered items
+    quantity_canceled: Float! # number of cancelled items
+    quantity_returned: Float! # number of returned items
+    status: String! # the status of order item
 }
 ```
 
@@ -119,10 +121,11 @@ As entities like order, invoice, credit memo might have complex prices type:
 
 ```graphql
 interface SalesPricesInterface {
-    subtotal: Float! # order subtotal excluding, shipping, discounts and tax
-    discounts: [Discount] # all the discounts applied to the order
-    tax: Float! # tax applied to the order
-    grand_total: Float! # final order total including shipping and taxes
+    subtotal: Float! # subtotal amount excluding, shipping, discounts and tax
+    discounts: [Discount] # applied discounts
+    tax: Float! # applied taxes
+    grand_total: Float! # final total amount including shipping and taxes
+    base_grand_total: Float! # final total amount in base currency
 }
 ​
 type OrderPrices implements SalesPricesInterface {
@@ -142,12 +145,12 @@ type Invoice {
 }
 
 type InvoiceItem implements SalesItemInterface{
-    qty_invoiced: Float! # number of invoiced items
+    quantity_invoiced: Float! # number of invoiced items
     children: [InvoiceChildItem]
 }
 
 type InvoiceChildItem implements SalesItemInterface{
-    qty_invoiced: Float! # number of invoiced items
+    quantity_invoiced: Float! # number of invoiced items
 }
 
 type InvoicePrices implements SalesPricesInterface {
@@ -167,7 +170,7 @@ type CreditMemo {
 }
 
 type CreditMemoItem implements SalesItemInterface{
-    qty_refunded: Float! # number of refunded items
+    quantity_refunded: Float! # number of refunded items
     children: [CreditMemoChildItem]
 }
 type CreditMemoChildItem implements SalesItemInterface{
@@ -190,12 +193,12 @@ type OrderShipment {
 }
  
 type ShipmentItem implements SalesItemInterface{
-    qty_shipped: Float! #number of shipped items
+    quantity_shipped: Float! #number of shipped items
     children: [ShipmentChildItem]
 }
 
 type ShipmentChildItem implements SalesItemInterface{
-    qty_shipped: Float! # umber of shipped items
+    quantity_shipped: Float! # umber of shipped items
 }
 ```
 
