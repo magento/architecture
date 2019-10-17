@@ -1,4 +1,4 @@
-## Problem statement
+# Problem statement
 
 Storefront applications built on top of Magento GraphQL web APIs need to support the following scenarios:
  - Render advanced catalog search form, which can be configured by the merchant
@@ -8,7 +8,17 @@ Storefront applications built on top of Magento GraphQL web APIs need to support
 All these scenarios require specific EAV attribute metadata to be accessible from the storefront application.
 
 
-## Proposed solution
+# Proposed solution
+
+Extend existing `customAttributeMetadata` query which allows to retrieve metadata for the specified attributes.
+The argument of this query must be made optional to allow retrieval of all attribute metadata at once and then cache it on the client.
+Additional fields must be added to the attribute metadata response, including `is_dynamic`, `use_in_compare_products`, `display_in_product_listing`, `use_in_advanced_search`, `advanced_search_input_type` and array of possible option values for select/multiselect attributes.
+
+### Future extension
+
+It is also possible to introduce new queries which will allow to get a list of attributes to be used in product compare, product listing etc. This should be done only if `customerAttributeMetadata` is not enough.
+
+# Alternative solutions
 
 GraphQL schema supports [directives](https://graphql.github.io/graphql-spec/June2018/#sec-Language.Directives) which can be used to describe additional information for types, fields, fragments and operations. Since all EAV attributes are automatically added to GraphQL schema in flat structure as fields of the respective types, it is possible to use directives to expose necessary attribute metadata for the client application.
 Client is able to fetch all necessary attribute metadata using an introspection query and cache it for future use.
@@ -34,6 +44,6 @@ interface ProductInterface {
 }
 ```
 
-## Alternative solutions
+### Blocker
 
- - Extend existing `customAttributeMetadata` query which allows to retrieve metadata for the specified attributes, and introduce new queries which will allow to get a list of attributes to be used in product compare, product listing etc. Most likely different GraphQL queries will be required for each of the scenarios.  
+It is problematic to support attribute options via schema metadata, while it is possible with `customAttributeMetadata` query.
