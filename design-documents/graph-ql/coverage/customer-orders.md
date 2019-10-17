@@ -121,6 +121,8 @@ interface SalesPricesInterface {
     tax: Float! @doc("applied taxes")
     grand_total: Float! @doc("final total amount including shipping and taxes")
     base_grand_total: Float! @doc("final total amount in base currency")
+    currency: CurrencyEnum @doc("the store display currency")
+    base_currency: CurrencyEnum @doc("the base currency")
 }
 ​
 @doc("Order prices details")
