@@ -1,15 +1,15 @@
 type Mutation {
-    addProductsToCompareList(compare_list_id: String!, skus: [String!]!): AddProductToCompareListOutput!
-    removeProductsFromCompareList(compare_list_id: String!, skus: [String!]!): RemoveProductsFromCompareListOutput!
+    addProductsToCompareList(compare_list_id: ID!, skus: [String!]!): AddProductToCompareListOutput!
+    removeProductsFromCompareList(compare_list_id: ID!, skus: [String!]!): RemoveProductsFromCompareListOutput!
 }
 
 type Query {
-    productCompareListId(): String! # ALways new ID for guests. A new or an existing ID for customers
-    productCompareList(compare_list_id: String!): ProductCompareList!
+    productCompareListId(): ID! # ALways new ID for guests. A new or an existing ID for customers
+    productCompareList(compare_list_id: ID!): ProductCompareList!
 }
 
-input ProductCompareList {
-    compare_list_id: String!
+type ProductCompareList {
+    compare_list_id: ID!
     products: [ProductInterface]!
 }
 
