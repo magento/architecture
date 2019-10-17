@@ -47,7 +47,7 @@ Such __bundle price__ will be accounted during option final price calculation.
 If this price will lowest from the list it would be treated as the option final price.
 
 ## 4. ProductVariations and ProductOptions
-See [Product options](product-options.md)
+See [Product options](products-options.md)
 
 * Complex product has options and variations.
 * The complex product contains variations which explain the relationship between the product and included SKUs.
@@ -65,13 +65,13 @@ Example 3. Grouped product can be represented as a set of options where each opt
 Option
 ```json
 {
-  "id": "[UUID]",
+  "id": "ab97df98-a940-4f9f-834d-c0b9d065bfe6",
   "title": "Option title",
   "isRequired": true,
   "isMulti": false,
   "values": [
     {
-      "id": "[UUID]",
+      "id": "8b59dd5a-4f5a-48db-bfbc-04ff51fe620f",
       "title": "Value Title",
       "price": null,
       "link": null
@@ -94,8 +94,8 @@ Variation
   "quantity": 300,
   "selections": [
     {
-      "optionId": "ProductOptionID",
-      "valueId": "ProductOptionValueID"
+      "optionId": "ab97df98-a940-4f9f-834d-c0b9d065bfe6",
+      "valueId": "8b59dd5a-4f5a-48db-bfbc-04ff51fe620f"
     }  
   ]
 }
