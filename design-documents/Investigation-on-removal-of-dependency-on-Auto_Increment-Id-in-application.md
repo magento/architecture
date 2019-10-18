@@ -15,7 +15,7 @@ Currently the `AUTO_INCREMENT` is read from database in the following two method
     from table status and returns it so that it can be used for predictive purposes.
 * `\Magento\Framework\Mview\View\Changelog::getVersion()`: Attempts to extract the `AUTO_INCREMENT` from table status,
     decreases it by 1 and returns that. Actually returns the maximal version number that is currently in use.
-    This can probably be replaced by a query of the likes of `SELECT MAX(id) FROM table`.
+    This can be replaced by an identity generator (e.g. a sequence).
 
 Places that make use of `\Magento\ImportExport\Model\ResourceModel\Helper::getNextAutoincrement()` were identified as:
 
