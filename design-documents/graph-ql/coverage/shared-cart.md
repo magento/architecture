@@ -31,6 +31,7 @@ customerCart(): Cart! // where Cart! is the customer cart
 | 4    | Smartphone | cart("CustomerCart123e4567") {cart_items {sku, quantity}}                        | customer-token | {cart_items: [{"sku": "productA", "quantity": 2]} |
 
 *Note 1*: customerCart will always return the same cart_id representing the same query, until an order is completed. If an active customer cart wasn't created, then one will be instantly created. So this could qualify as a mutation not a query.
+
 *Note 2*: This operation will only work for registered customers (valid customer token must be provided in headers).
 
 
@@ -48,9 +49,10 @@ In the following scenario a guest cart already exists, and the user already adde
 | 1    | Not Logged In| cart(cart_id: "GuestCart456e8901") { cart_items {sku, quantity} }                                                         |  | { cart_items: [{"sku": "productA", "quantity": 2] }    |
 | 2    | Logged In    | customerCart() { cart_id , cart_items {sku, quantity} }                                                         | customer-token | { cart_id: "CustomerCart123e4567", cart_items:[] }               |
 | 3    | Logged In    | mergeGuestIntoCustomerCart(guest_cart_id: "GuestCart456e8901") { cart_id, cart_items {sku, quantity} }                                                         | customer-token | { cart_id: "CustomerCart123e4567", cart_items: [{"sku": "productA", "quantity": 2] }|
-| 4    | Not/Logged In| cart(cart_id: "GuestCart456e8901") { cart_items {sku, quantity} }                         | customer-token | {"errors": [{"message": "Could not find a cart with ID"}]} |
+| 4    | Not/Logged In| cart(cart_id: "GuestCart456e8901") { cart_items {sku, quantity} }                         |  | {"errors": [{"message": "Could not find a cart with ID"}]} |
 
 *Note 1*: This operation will only work for registered customers and existing guest carts (valid customer token must be provided in headers). Also, this way se segregate operations as `customerCart()` as query and `mergeGuestIntoCustomerCart()` as mutation and their intent is very clear. A developer can choose 1st or the 2nd operation depending if the user had products in the cart or not. In both situations you will get the Customer Cart . Also see alternative for #2.
+
 *Note 2*: Destroying the guest cart actually creates a problem with the guest same guest on multiple devices.
 
  ## Alternatives
@@ -66,4 +68,4 @@ In the following scenario a guest cart already exists, and the user already adde
  | 1    | Not Logged In| cart(cart_id: "GuestCart456e8901") { cart_items {sku, quantity} }                                                         |  | { cart_items: [{"sku": "productA", "quantity": 2] }    |
  | 2    | Logged In    | customerCart() { cart_id , cart_items {sku, quantity} }                                                         | customer-token | { cart_id: "CustomerCart123e4567", cart_items:[] }               |
  | 3    | Logged In    | customerCart(guest_cart_id_to_merge: "GuestCart456e8901") { cart_id, cart_items {sku, quantity} }                     | customer-token | { cart_id: "CustomerCart123e4567", cart_items: [{"sku": "productA", "quantity": 2] }|
- | 4    | Not/Logged In| cart(cart_id: "GuestCart456e8901") { cart_items {sku, quantity} }                         | customer-token | {"errors": [{"message": "Could not find a cart with ID"}]} |
+ | 4    | Not/Logged In| cart(cart_id: "GuestCart456e8901") { cart_items {sku, quantity} }                         |  | {"errors": [{"message": "Could not find a cart with ID"}]} |
