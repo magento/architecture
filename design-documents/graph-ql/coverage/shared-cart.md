@@ -21,25 +21,44 @@ Note: This operation will only work for registered customers (valid customer tok
  
 | Step | Device     | Operation                                                                        | Headers        | Response                                          |
 |------|------------|----------------------------------------------------------------------------------|----------------|---------------------------------------------------|
-| 1    | Laptop     | customerCartId()                                                                 | customer-token | CustomerCart123e4567              |
-| 2    | Laptop     | addProductsToCart("CustomerCart123e4567", [{"sku": "productA", "quantity": 2}]) {cart_id}    | customer-token | CustomerCart123e4567              |
-| 3    | Smartphone | customerCartId()                                                                 | customer-token | CustomerCart123e4567              |
-| 4    | Smartphone | getCart("CustomerCart123e4567") {cart_items {sku, quantity}}                                 | customer-token | {cart_items: [{"sku": "productA", "quantity": 2]} |
+| 1    | Laptop     | customerCart() { cart_id }                                                         | customer-token | { cart_id: "CustomerCart123e4567" }               |
+| 2    | Laptop     | addProductsToCart("CustomerCart123e4567", [{"sku": "productA", "quantity": 2}]) {cart_id, cart_items {sku, quantity} }    | customer-token | { cart_id: "CustomerCart123e4567", cart_items: [{"sku": "productA", "quantity": 2]}|
+| 3    | Smartphone | customerCart() { cart_id, cart_items {sku, quantity} }                                                         | customer-token | { cart_id: "CustomerCart123e4567", cart_items: [{"sku": "productA", "quantity": 2] }|
+| 4    | Smartphone | cart("CustomerCart123e4567") {cart_items {sku, quantity}}                        | customer-token | {cart_items: [{"sku": "productA", "quantity": 2]} |
+
+Note: customerCart will always return the same cart_id representing the same query, until an order is completed. If an active customer cart wasn't created, then one will be instantly created. So this could qualify as a mutation not a query.
 
 
  2. **Merge guest cart:** There should be a way to transfer/merge products from a guest cart to a the customer cart. To achieve this we choose to add a mutation that accepts an active guest cart Id, and reflected merged products will be shown directly in the cart response object.
  Proposal for this scenario reflected in schema is the following query:
 ```graphql
-mergeGuestIntoCustomerCart(guestCartId: String): Cart! // where Cart! is the customer cart
+mergeGuestIntoCustomerCart(guest_cart_id: String): Cart! // where Cart! is the customer cart
 ```
-Note: This operation will only work for registered customers and existing guest carts (valid customer token must be provided in headers). Also, this way se segregate operations as `customerCartId()` as query and `importGuestCart()` as mutation and their intent is very clear. A developer can choose 1st or the 2nd operation depending if the user had products in the cart or not. In both situations you will get the Customer Cart . Also see alternative for #2.
-  
+
+In the following scenario a guest cart already exists, and the user already added products to the cart. After logging in to his account from any device the cart needs to import/merge the gust cart and then destroy to guest cart (actual GraphQL queries are replaced with pseudocode for simplicity): 
+
+
+| Step | Logged status| Operation                                                                        | Headers        | Response                                          |
+|------|--------------|----------------------------------------------------------------------------------|----------------|---------------------------------------------------|
+| 1    | Not Logged In| cart(cart_id: "GuestCart456e8901") { cart_items {sku, quantity} }                                                         |  | { cart_items: [{"sku": "productA", "quantity": 2] }    |
+| 2    | Logged In    | customerCart() { cart_id , cart_items {sku, quantity} }                                                         | customer-token | { cart_id: "CustomerCart123e4567", cart_items:[] }               |
+| 3    | Logged In    | mergeGuestIntoCustomerCart(guest_cart_id: "GuestCart456e8901") { cart_id, cart_items {sku, quantity} }                                                         | customer-token | { cart_id: "CustomerCart123e4567", cart_items: [{"sku": "productA", "quantity": 2] }|
+| 4    | Not/Logged In| cart(cart_id: "GuestCart456e8901") { cart_items {sku, quantity} }                         | customer-token | {"errors": [{"message": "Could not find a cart with ID"}]} |
+
+Note 1: This operation will only work for registered customers and existing guest carts (valid customer token must be provided in headers). Also, this way se segregate operations as `customerCart()` as query and `mergeGuestIntoCustomerCart()` as mutation and their intent is very clear. A developer can choose 1st or the 2nd operation depending if the user had products in the cart or not. In both situations you will get the Customer Cart . Also see alternative for #2.
+Note 2: Destroying the guest cart actually creates a problem with the guest same guest on multiple devices.
 
  ## Alternatives
  
- 1. It is possible to make `cartId` optional argument and rely on `getCart {cart_id}` query for fetching customer cart ID. When used by customer, ID is not required. When used by guest - ID is required.
+ 1. It is possible to make `cart_id` optional argument and rely on `cart(cart_id: "{cart_id}")` query for fetching customer cart ID. When used by customer, ID is not required. When used by guest - ID is required.
     - guest still need to use `createEmptyCart` to obtain cart ID
     - `optional` argument makes semantics less clear
     
- 2. It is possible to achieve the merging of guest cart by adding an optional argument to `customerCart`, called `guestCartToMerge`. When used it will merge the guest cart into the Customer Cart. This makes the API not very clear, joins a query and a mutation together and could confuse the developer to understand it's intent. The benefit it adds is that we only need 1 call for both operations as converting guest cart into customer cart is a common operation but executed just one time per login.
+ 2. It is possible to achieve the merging of guest cart by adding an optional argument to `customerCart`, called `guest_cart_id_to_merge`. When used it will merge the guest cart into the Customer Cart. This makes an unclear API, also doesn't respect responsibilities, joins a query and a mutation together and could confuse the developer to understand it's intent. The benefit it adds is that we only need 1 call for both operations as converting guest cart into customer cart is a common operation but executed just one time per login.
  
+ | Step | Logged status| Operation                                                                        | Headers        | Response                                          |
+ |------|--------------|----------------------------------------------------------------------------------|----------------|---------------------------------------------------|
+ | 1    | Not Logged In| cart(cart_id: "GuestCart456e8901") { cart_items {sku, quantity} }                                                         |  | { cart_items: [{"sku": "productA", "quantity": 2] }    |
+ | 2    | Logged In    | customerCart() { cart_id , cart_items {sku, quantity} }                                                         | customer-token | { cart_id: "CustomerCart123e4567", cart_items:[] }               |
+ | 3    | Logged In    | customerCart(guest_cart_id_to_merge: "GuestCart456e8901") { cart_id, cart_items {sku, quantity} }                     | customer-token | { cart_id: "CustomerCart123e4567", cart_items: [{"sku": "productA", "quantity": 2] }|
+ | 4    | Not/Logged In| cart(cart_id: "GuestCart456e8901") { cart_items {sku, quantity} }                         | customer-token | {"errors": [{"message": "Could not find a cart with ID"}]} |
