@@ -22,6 +22,8 @@
 
 [(5) Apache Kafka](#5--Apache-Kafka)
 
+[(6) Azure Service Bus](#6--Azure-Service-Bus)
+
 ------
 
 # Messaging Architecture and Options
@@ -78,13 +80,13 @@ There are many messaging technologies available in the market, we are specially 
 
 ### Interface based Comparison Summary
 
-| Method        | [(1) AWS EventBridge](#1--AWS-EventBridge) | [(2) AWS MQ](#2--AWS-MQ) | [(3) AWS SQS](#3--AWS-SQS) | [(4) AWS Kinesis](#4--AWS-Kinesis) | [(5) Apache Kafka](#5--Apache-Kafka) |
-| ------------- | ------------------------------------------ | ------------------------ | -------------------------- | ---------------------------------- | ------------------------------------ |
-| dequeue()     | Not Possible or N/A                        | Available                | Available                  | Possiblity                         | Possiblity                           |
-| acknowledge() | Not Possible or N/A                        | Available                | Possiblity                 | Possiblity                         | Possiblity                           |
-| subscribe()   | Not Possible or N/A                        | Available                | Workaround                 | Workaround                         | Possiblity                           |
-| reject()      | Not Possible or N/A                        | Available                | Possiblity                 | Possiblity                         | Possiblity                           |
-| push()        | Available                                  | Available                | Available                  | Possiblity                         | Possiblity                           |
+| Method        | [(1) AWS EventBridge](#1--AWS-EventBridge) | [(2) AWS MQ](#2--AWS-MQ) | [(3) AWS SQS](#3--AWS-SQS) | [(4) AWS Kinesis](#4--AWS-Kinesis) | [(5) Apache Kafka](#5--Apache-Kafka) | [(6) Azure Service Bus](#5--Azure-Service-Bus) |
+| ------------- | ------------------------------------------ | ------------------------ | -------------------------- | ---------------------------------- | ------------------------------------ | ---------------------------------------------- |
+| dequeue()     | Not Possible or N/A                        | Possiblity               | Available                  | Possiblity                         | Possiblity                           | Possiblity                                     |
+| acknowledge() | Not Possible or N/A                        | Possiblity               | Possiblity                 | Possiblity                         | Possiblity                           | Possiblity                                     |
+| subscribe()   | Not Possible or N/A                        | Workaround               | Workaround                 | Workaround                         | Possiblity                           | Workaround                                     |
+| reject()      | Not Possible or N/A                        | Possiblity               | Possiblity                 | Possiblity                         | Possiblity                           | Possiblity                                     |
+| push()        | Available                                  | Possiblity               | Available                  | Possiblity                         | Possiblity                           | Possiblity                                     |
 
 
 
@@ -144,17 +146,21 @@ Since its a managed service, it provides multi zone fault tolreance and resilian
 
 ##### AWS MQ Evaluation Table - Details
 
-Most of the features are available since Magento is also using AMQP protocol with RabbitMQ, there is a possiblity of using much of the same codebase, [AMQP Protocol Functions](http://docs.php.net/manual/da/book.amqp.php)
+Most of the features are available since Magento is also using AMQP protocol with RabbitMQ, but the protocol version is different, RabbitMQ uses 0.9 and Amazon MQ is using AMQP 1.0; so any migration would require porting of Queues from RabbitMQ to AWS MQ. There might be some changes and adjustments to the QueueInterface implementation code to accomodate the new protocol differences. AMQP 1.0 is a completely different protocol.
 
-| Method        | Evaluation | Implementation Readiness |
-| ------------- | ---------- | ------------------------ |
-| dequeue()     | Available  | AMQPQueue::get()         |
-| acknowledge() | Available  | AMQPQueue::ack()         |
-| subscribe()   | Available  | AMQPQueue::consume()     |
-| reject()      | Available  | AMQPQueue::nack()        |
-| push()        | Available  | AMQPExchange::publish()  |
+Another challenge is that we have lack of any good implementation of AMQP 1.0 protocol for PHP. There is port of C library that is been recommended for Azure Message Bus, but technically it should work with AWS MQ as well.
 
+[azure-uaqmp-c PHP Bindings](https://github.com/norzechowicz/php-uamqp)
 
+[Exported PHP Modules](https://github.com/norzechowicz/php-uamqp/tree/master/ext/src/php)
+
+| Method        | Evaluation | Implementation Readiness                                     |
+| ------------- | ---------- | ------------------------------------------------------------ |
+| dequeue()     | Possiblity | receive()                                                    |
+| acknowledge() | Possiblity | accept() / release()                                         |
+| subscribe()   | Workaround | Long Polling might need to be implemented, unless we find a good library that supports AMQP 1.0 |
+| reject()      | Possiblity | reject()                                                     |
+| push()        | Possiblity | sendMessage(Message, Destination)                            |
 
 <img src="legend_img.png" alt="Legend" width="70%" height="70%" />
 
@@ -247,5 +253,43 @@ After you read the message(s), you can either configure auto-commit or allow man
 | push()        | Possiblity | Since you will have to provide topic, data & partition; we need to have some strategy to for partition selection; and need to maintain these values for Consumers. |
 
 
+
+<img src="legend_img.png" alt="Legend" width="70%" height="70%" />
+
+
+
+#### 6- Azure Service Bus
+
+Microsoft Azure Service Bus is a fully managed enterprise integration message broker. It support familiar concepts like Queues, Topics, Rules/Filters and much more.
+
+##### High Level Architecture of Azure Service Bus
+
+
+
+<img src="AzureServiceBusQueue.png" alt="Legend" width="70%" height="70%" />
+
+
+
+<img src="AzureServiceBusTopic.png" alt="Legend" width="70%" height="70%" />
+
+
+
+##### Azure Service Bus Evaluation Table - Details
+
+Azure Service Bus supports AMQP 1.0,  and couple of languages, PHP support is again limited for the protocol
+
+[AMQP Azure Service Bus Overview](https://docs.microsoft.com/en-us/azure/service-bus-messaging/service-bus-amqp-overview)
+
+[azure-uaqmp-c PHP Bindings](https://github.com/norzechowicz/php-uamqp)
+
+[Exported PHP Modules](https://github.com/norzechowicz/php-uamqp/tree/master/ext/src/php)
+
+| Method        | Evaluation | Implementation Readiness                                     |
+| ------------- | ---------- | ------------------------------------------------------------ |
+| dequeue()     | Possiblity | receive()                                                    |
+| acknowledge() | Possiblity | accept() / release()                                         |
+| subscribe()   | Workaround | Long Polling might need to be implemented, unless we find a good library that supports AMQP 1.0 for PHP |
+| reject()      | Possiblity | reject(errorCondition, errorDescription)                     |
+| push()        | Possiblity | sendMessage(message, destination)                            |
 
 <img src="legend_img.png" alt="Legend" width="70%" height="70%" />
