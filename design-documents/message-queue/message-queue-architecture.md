@@ -94,6 +94,19 @@ There are many messaging technologies available in the market, we are specially 
 
 
 
+### Language Support
+
+| Platform                     | PHP                        | Java                      | Notes                                                        |
+| ---------------------------- | -------------------------- | ------------------------- | ------------------------------------------------------------ |
+| AWS EventBridge              | Supported                  | Supported                 |                                                              |
+| AWS/Amazon MQ                | Workaround                 | Supported                 | Evaluated AMQP 1.0, but other protocols are also available. <br />No Direct Library for PHP but C wrapper available |
+| AWS SQS                      | Supported, **PHP:Enqueue** | Supported                 |                                                              |
+| AWS Kinesis                  | Supported                  | Supported                 |                                                              |
+| Apache Kafka                 | Supported, **PHP:Enqueue** | Supported, Native Support |                                                              |
+| Azure Service Bus (AMQP 1.0) | Workaround                 | Supported                 | AMQP 1.0 support available only <br />No Direct Library for PHP but C wrapper available |
+
+
+
 #### 1- AWS EventBridge
 
 AWS EventBridge is a serverless event bus, it facilitates receving data from your application & third parties to AWS Services. Currently it seems like the Targets are specifically AWS Services. These targets are set using specialized rules.  Following targets can be specified as of now 
