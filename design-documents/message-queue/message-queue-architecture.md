@@ -80,13 +80,13 @@ There are many messaging technologies available in the market, we are specially 
 
 ### Interface based Comparison Summary
 
-| Method        | [(1) AWS EventBridge](#1--AWS-EventBridge) | [(2) AWS MQ](#2--AWS-MQ) | [(3) AWS SQS](#3--AWS-SQS) | [(4) AWS Kinesis](#4--AWS-Kinesis) | [(5) Apache Kafka](#5--Apache-Kafka) | [(6) Azure Service Bus](#5--Azure-Service-Bus) |
+| Method        | [(1) AWS EventBridge](#1--AWS-EventBridge) | [(2) AWS MQ](#2--AWS-MQ) | [(3) AWS SQS](#3--AWS-SQS) | [(4) AWS Kinesis](#4--AWS-Kinesis) | [(5) Apache Kafka](#5--Apache-Kafka) | [(6) Azure Service Bus](#6--Azure-Service-Bus) |
 | ------------- | ------------------------------------------ | ------------------------ | -------------------------- | ---------------------------------- | ------------------------------------ | ---------------------------------------------- |
-| dequeue()     | Not Possible or N/A                        | Possiblity               | Available                  | Possiblity                         | Possiblity                           | Possiblity                                     |
-| acknowledge() | Not Possible or N/A                        | Possiblity               | Possiblity                 | Possiblity                         | Possiblity                           | Possiblity                                     |
+| dequeue()     | Not Possible or N/A                        | Available                | Available                  | Possiblity                         | Possiblity                           | Available                                      |
+| acknowledge() | Not Possible or N/A                        | Possiblity               | Possiblity                 | Possiblity                         | Possiblity                           | Available                                      |
 | subscribe()   | Not Possible or N/A                        | Workaround               | Workaround                 | Workaround                         | Possiblity                           | Workaround                                     |
-| reject()      | Not Possible or N/A                        | Possiblity               | Possiblity                 | Possiblity                         | Possiblity                           | Possiblity                                     |
-| push()        | Available                                  | Possiblity               | Available                  | Possiblity                         | Possiblity                           | Possiblity                                     |
+| reject()      | Not Possible or N/A                        | Available                | Possiblity                 | Possiblity                         | Possiblity                           | Available                                      |
+| push()        | Available                                  | Available                | Available                  | Possiblity                         | Possiblity                           | Available                                      |
 
 
 
@@ -156,11 +156,11 @@ Another challenge is that we have lack of any good implementation of AMQP 1.0 pr
 
 | Method        | Evaluation | Implementation Readiness                                     |
 | ------------- | ---------- | ------------------------------------------------------------ |
-| dequeue()     | Possiblity | receive()                                                    |
-| acknowledge() | Possiblity | accept() / release()                                         |
+| dequeue()     | Available  | receive()                                                    |
+| acknowledge() | Available  | accept() / release()                                         |
 | subscribe()   | Workaround | Long Polling might need to be implemented, unless we find a good library that supports AMQP 1.0 |
-| reject()      | Possiblity | reject()                                                     |
-| push()        | Possiblity | sendMessage(Message, Destination)                            |
+| reject()      | Available  | reject()                                                     |
+| push()        | Available  | sendMessage(Message, Destination)                            |
 
 <img src="legend_img.png" alt="Legend" width="70%" height="70%" />
 
@@ -286,10 +286,10 @@ Azure Service Bus supports AMQP 1.0,  and couple of languages, PHP support is ag
 
 | Method        | Evaluation | Implementation Readiness                                     |
 | ------------- | ---------- | ------------------------------------------------------------ |
-| dequeue()     | Possiblity | receive()                                                    |
-| acknowledge() | Possiblity | accept() / release()                                         |
+| dequeue()     | Available  | receive()                                                    |
+| acknowledge() | Available  | accept() / release()                                         |
 | subscribe()   | Workaround | Long Polling might need to be implemented, unless we find a good library that supports AMQP 1.0 for PHP |
-| reject()      | Possiblity | reject(errorCondition, errorDescription)                     |
-| push()        | Possiblity | sendMessage(message, destination)                            |
+| reject()      | Available  | reject(errorCondition, errorDescription)                     |
+| push()        | Available  | sendMessage(message, destination)                            |
 
 <img src="legend_img.png" alt="Legend" width="70%" height="70%" />
