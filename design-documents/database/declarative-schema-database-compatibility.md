@@ -76,9 +76,9 @@ class InformationSchema\Table
      *
      * Note that not all RDBMS support this, returning `null` indicates whether this is supported.
      *
-     * @return string|null
+     * @return EngineEnum
      */
-    public function getEngine(): ?string;
+    public function getEngine(): EngineEnum;
 
     /**
      * Returns the comment used when creating the table.
@@ -110,6 +110,19 @@ class InformationSchema\Table
 ```
 Note: `AUTO_INCREMENT` is omitted intentionally. Auto increment must not be used for the application logic.
 
+```
+class InformationSchema\EngineEnum extends \SplEnum
+{
+    const __default = self::TRANSACTIONAL;
+
+    const IN_MEMORY = 'in memory'
+    const NON_TRANSACTIONAL = 'non tranactional';
+    const TRANSACTIONAL = 'transactional'
+}
+```
+Note: `SplEnum` is part of the SPLTypes PECL package, it might not be available on all systems, thus we may have to 
+create a userland enum class!
+
 #### Columns
 
 ```
@@ -127,15 +140,6 @@ class InformationSchema\Extra
 ```
 abstract class InformationSchema\Table\Column
 {
-    /**
-     * Defines the ANSI-SQL column type that is reflected by current class.
-     *
-     * Note that this does not neccessarily reflect the data type name of all RDBMS (e.g. PostgreSQL uses `text` instead
-     * of `CLOB`).
-     * Thus the value stored herein should be used to map ANSI-SQL data types to RDBMS specific datatypes. 
-     */
-    public const TYPE = '';
-
     /**
      * Retuns the name of the table to which colum belongs.
      *
@@ -189,8 +193,6 @@ abstract class InformationSchema\Table\Column
 ```
 class InformationSchema\Table\BoolColumn extends Column
 {
-    public const TYPE = 'BOOLEAN';
-
     /**
      * Returns the default value of the column.
      *
@@ -204,77 +206,8 @@ Note that MySQL / MariaDB maps this type to `tinyint(1)` thus resulting in an in
 ##### Numeric types
 
 ```
-class InformationSchema\Table\BitColumn extends Column
-{
-    public const TYPE = 'BIT';
-
-    /**
-     * Returns the amount of bits the column can store.
-     *
-     * @return int
-     */
-    public function getBitLength(): int {}
-
-    /**
-     * Returns the default value of the column.
-     *
-     * @return int|null
-     */
-    public function getDefaultValue(): ?int {}
-}
-```
-
-```
-class InformationSchema\Table\VarBitColumn extends Column
-{
-    public const TYPE = 'BIT VARYING';
-
-    /**
-     * Returns the amount of bits the column can store.
-     *
-     * @return int
-     */
-    public function getBitLength(): int {}
-
-    /**
-     * Returns the default value of the column.
-     *
-     * @return int|null
-     */
-    public function getDefaultValue(): ?int {}
-}
-```
-
-```
 class InformationSchema\Table\IntColumn extends Column
 {
-    public const TYPE = 'INTEGER';
-
-    /**
-     * Returns whether the column contains signed or unsigned integers.
-     *
-     * Note that not all RDBMS support this, thus `false` should be returned for RDBMS that do not support this.
-     *
-     * @return bool
-     */
-    public function isUnsigned(): bool {}
-
-    /**
-     * Returns the (left) padding for the integer.
-     *
-     * Note that not all RDBMS support this, returning `null` indicates whether this is supported.
-     *
-     * @return int
-     */
-    public function getPadding(): ?int {}
-
-    /**
-     * Returns the precision (amount of digits) the column can store.
-     *
-     * @return int
-     */
-    public function getPrecision(): int {}
-
     /**
      * Returns the default value of the column.
      *
@@ -287,33 +220,6 @@ class InformationSchema\Table\IntColumn extends Column
 ```
 class InformationSchema\Table\SmallIntColumn extends Column
 {
-    public const TYPE = 'SMALLINT';
-
-    /**
-     * Returns whether the column contains signed or unsigned integers.
-     *
-     * Note that not all RDBMS support this, thus `false` should be returned for RDBMS that do not support this.
-     *
-     * @return bool
-     */
-    public function isUnsigned(): bool {}
-
-    /**
-     * Returns the (left) padding for the integer.
-     *
-     * Note that not all RDBMS support this, returning `null` indicates whether this is supported.
-     *
-     * @return int
-     */
-    public function getPadding(): ?int {}
-
-    /**
-     * Returns the precision (amount of digits) the column can store.
-     *
-     * @return int
-     */
-    public function getPrecision(): int {}
-
     /**
      * Returns the default value of the column.
      *
@@ -326,33 +232,6 @@ class InformationSchema\Table\SmallIntColumn extends Column
 ```
 class InformationSchema\Table\BigIntColumn extends Column
 {
-    public const TYPE = 'BIGINT';
-
-    /**
-     * Returns whether the column contains signed or unsigned integers.
-     *
-     * Note that not all RDBMS support this, thus `false` should be returned for RDBMS that do not support this.
-     *
-     * @return bool
-     */
-    public function isUnsigned(): bool {}
-
-    /**
-     * Returns the (left) padding for the integer.
-     *
-     * Note that not all RDBMS support this, returning `null` indicates whether this is supported.
-     *
-     * @return int
-     */
-    public function getPadding(): ?int {}
-
-    /**
-     * Returns the precision (amount of digits) the column can store.
-     *
-     * @return int
-     */
-    public function getPrecision(): int {}
-
     /**
      * Returns the default value of the column.
      *
@@ -365,8 +244,6 @@ class InformationSchema\Table\BigIntColumn extends Column
 ```
 class InformationSchema\Table\DecimalColumn extends Column
 {
-    public const TYPE = 'DECIMAL';
-
     /**
      * Returns the precision (amount of digits) the column can store.
      *
@@ -398,23 +275,12 @@ to `NUMERIC`. This needs to be kept in mind should support for other RDBMS becom
 ```
 class InformationSchema\Table\RealColumn extends Column
 {
-    public const TYPE = 'REAL';
-
     /**
      * Returns the precision (amount of digits) the column can store.
      *
      * @return int
      */
     public function getPrecision(): int {}
-
-    /**
-     * Returns the scale (amount of digits right of the decimal point) the column can store.
-     *
-     * Note that not all RDBMS support this, returning `null` indicates whether this is supported.
-     *
-     * @return int|null
-     */
-    public function getScale(): ?int {}
 
     /**
      * Returns the default value of the column.
@@ -430,23 +296,12 @@ by setting the [REAL_AS_FLOAT](https://dev.mysql.com/doc/refman/5.7/en/sql-mode.
 ```
 class InformationSchema\Table\DoublePrecisionColumn extends Column
 {
-    public const TYPE = 'DOUBLE PRECISION';
-
     /**
      * Returns the precision (amount of digits) the column can store.
      *
      * @return int
      */
     public function getPrecision(): int {}
-
-    /**
-     * Returns the scale (amount of digits right of the decimal point) the column can store.
-     *
-     * Note that not all RDBMS support this, returning `null` indicates whether this is supported.
-     *
-     * @return int|null
-     */
-    public function getScale(): ?int {}
 
     /**
      * Returns the default value of the column.
@@ -460,23 +315,12 @@ class InformationSchema\Table\DoublePrecisionColumn extends Column
 ```
 class InformationSchema\Table\FloatColumn extends Column
 {
-    public const TYPE = 'FLOAT';
-
     /**
      * Returns the precision (amount of digits) the column can store.
      *
      * @return int
      */
     public function getPrecision(): int {}
-
-    /**
-     * Returns the scale (amount of digits right of the decimal point) the column can store.
-     *
-     * Note that not all RDBMS support this, returning `null` indicates whether this is supported.
-     *
-     * @return int|null
-     */
-    public function getScale(): ?int {}
 
     /**
      * Returns the default value of the column.
@@ -492,30 +336,10 @@ class InformationSchema\Table\FloatColumn extends Column
 ```
 class InformationSchema\Table\CharColumn extends Column
 {
-    public const TYPE = 'CHARACTER';
-
     /**
      * Retturns the maximum length in characters.
      */
     public function getCharLength(): int {}
-
-    /**
-     * Returns the character set name.
-     *
-     * Note that not all RDBMS support this, returning `null` indicates whether this is supported.
-     *
-     * @return string|null
-     */
-    public function getCharsetName(): ?string {}
-
-    /**
-     * Returns the collation name.
-     *
-     * Note that not all RDBMS support this, returning `null` indicates whether this is supported.
-     *
-     * @return string|null
-     */
-    public function getCollationName(): ?string {}
 
     /**
      * Returns the default value of the column.
@@ -528,30 +352,10 @@ class InformationSchema\Table\CharColumn extends Column
 ```
 class InformationSchema\Table\NationalCharColumn extends Column
 {
-    public const TYPE = 'NATIONAL CHARACTER';
-
     /**
      * Retturns the maximum length in characters.
      */
     public function getCharLength(): int {}
-
-    /**
-     * Returns the character set name.
-     *
-     * Note that not all RDBMS support this, returning `null` indicates whether this is supported.
-     *
-     * @return string|null
-     */
-    public function getCharsetName(): ?string {}
-
-    /**
-     * Returns the collation name.
-     *
-     * Note that not all RDBMS support this, returning `null` indicates whether this is supported.
-     *
-     * @return string|null
-     */
-    public function getCollationName(): ?string {}
 
     /**
      * Returns the default value of the column.
@@ -566,32 +370,12 @@ Note that MySQL / MariaDB maps this type to `char`.
 ```
 class InformationSchema\Table\VarcharColumn extends Column
 {
-    public const TYPE = 'VARCHAR';
-
     /**
      * Returns the maximum length in characters.
      *
      * @return int
      */
     public function getCharLength(): int {}
-
-    /**
-     * Returns the character set name.
-     *
-     * Note that not all RDBMS support this, returning `null` indicates whether this is supported.
-     *
-     * @return string|null
-     */
-    public function getCharsetName(): ?string {}
-
-    /**
-     * Returns the collation name.
-     *
-     * Note that not all RDBMS support this, returning `null` indicates whether this is supported.
-     *
-     * @return string|null
-     */
-    public function getCollationName(): ?string {}
 
     /**
      * Returns the default value of the column.
@@ -605,32 +389,12 @@ class InformationSchema\Table\VarcharColumn extends Column
 ```
 class InformationSchema\Table\NationalVarcharColumn extends Column
 {
-    public const TYPE = 'NATIONAL VARCHAR';
-
     /**
      * Returns the maximum length in characters.
      *
      * @return int
      */
     public function getCharLength(): int {}
-
-    /**
-     * Returns the character set name.
-     *
-     * Note that not all RDBMS support this, returning `null` indicates whether this is supported.
-     *
-     * @return string|null
-     */
-    public function getCharsetName(): ?string {}
-
-    /**
-     * Returns the collation name.
-     *
-     * Note that not all RDBMS support this, returning `null` indicates whether this is supported.
-     *
-     * @return string|null
-     */
-    public function getCollationName(): ?string {}
 
     /**
      * Returns the default value of the column.
@@ -645,26 +409,6 @@ Note that MySQL / MariaDB maps this type to `varchar`.
 ```
 class InformationSchema\Table\ClobColumn extends Column
 {
-    public const TYPE = 'CLOB';
-
-    /**
-     * Returns the character set name.
-     *
-     * Note that not all RDBMS support this, returning `null` indicates whether this is supported.
-     *
-     * @return string|null
-     */
-    public function getCharsetName(): ?string {}
-
-    /**
-     * Returns the collation name.
-     *
-     * Note that not all RDBMS support this, returning `null` indicates whether this is supported.
-     *
-     * @return string|null
-     */
-    public function getCollationName(): ?string {}
-
     /**
      * Returns the default value of the column.
      *
@@ -678,26 +422,6 @@ Note that MySQL / MariaDB and PostgreSQL use the type `text` for this purpose.
 ```
 class InformationSchema\Table\NationalClobColumn extends Column
 {
-    public const TYPE = 'NCLOB';
-
-    /**
-     * Returns the character set name.
-     *
-     * Note that not all RDBMS support this, returning `null` indicates whether this is supported.
-     *
-     * @return string|null
-     */
-    public function getCharsetName(): ?string {}
-
-    /**
-     * Returns the collation name.
-     *
-     * Note that not all RDBMS support this, returning `null` indicates whether this is supported.
-     *
-     * @return string|null
-     */
-    public function getCollationName(): ?string {}
-
     /**
      * Returns the default value of the column.
      *
@@ -713,8 +437,6 @@ Note that MySQL / MariaDB does not have support for a national type of character
 ```
 class InformationSchema\Table\DateColumn extends Column
 {
-    public const TYPE = 'DATE';
-
     /**
      * Returns the default value of the column.
      *
@@ -727,8 +449,6 @@ class InformationSchema\Table\DateColumn extends Column
 ```
 class InformationSchema\Table\TimeColumn extends Column
 {
-    public const TYPE = 'TIME';
-
     /**
      * Returns the fractional seconds precision (the amount of digits maitained after the decimal dot of the seconds 
      * value).
@@ -749,8 +469,6 @@ class InformationSchema\Table\TimeColumn extends Column
 ```
 class InformationSchema\Table\TimeWithTimezoneColumn extends Column
 {
-    public const TYPE = 'TIME WITH TIMEZONE';
-
     /**
      * Returns the fractional seconds precision (the amount of digits maitained after the decimal dot of the seconds 
      * value).
@@ -771,8 +489,6 @@ class InformationSchema\Table\TimeWithTimezoneColumn extends Column
 ```
 class InformationSchema\Table\TimestampColumn extends Column
 {
-    public const TYPE = 'TIMESTAMP';
-
     /**
      * Returns the fractional seconds precision (the amount of digits maitained after the decimal dot of the seconds 
      * value).
@@ -793,8 +509,6 @@ class InformationSchema\Table\TimestampColumn extends Column
 ```
 class InformationSchema\Table\TimestampWithTimezoneColumn extends Column
 {
-    public const TYPE = 'TIMESTAMP WITH TIMEZONE';
-
     /**
      * Returns the fractional seconds precision (the amount of digits maitained after the decimal dot of the seconds 
      * value).
@@ -815,8 +529,6 @@ class InformationSchema\Table\TimestampWithTimezoneColumn extends Column
 ```
 class InformationSchema\Table\IntervalColumn extends Column
 {
-    public const TYPE = 'INTERVAL';
-
     /**
      * Returns the fractional seconds precision (the amount of digits maitained after the decimal dot of the seconds 
      * value).
@@ -847,8 +559,6 @@ equivalent to `interval MONTH`).
 ```
 class InformationSchema\Table\BinaryColumn extends Column
 {
-    public const TYPE = 'BINARY';
-
     /**
      * Returns the maximum length in bytes.
      *
@@ -868,8 +578,6 @@ class InformationSchema\Table\BinaryColumn extends Column
 ```
 class InformationSchema\Table\VarbinaryColumn extends Column
 {
-    public const TYPE = 'VARBINARY';
-
     /**
      * Returns the maximum length in bytes.
      *
@@ -889,8 +597,6 @@ class InformationSchema\Table\VarbinaryColumn extends Column
 ```
 class InformationSchema\Table\BlobColumn extends Column
 {
-    public const TYPE = 'BLOB';
-
     /**
      * Returns the default value of the column as binary string.
      *
@@ -905,8 +611,6 @@ class InformationSchema\Table\BlobColumn extends Column
 ```
 class InformationSchema\Table\EnumColumn extends Column
 {
-    public const TYPE = 'ENUM';
-
     /**
      * Returns the values defined by the enumeration.
      */
@@ -956,6 +660,9 @@ could be made to store such types).
 Such RDBMS specific types need not be taken into account at the time being.
 
 #### Providers
+
+Providers are responsible for mapping RDBMS specific types to the ANSI-SQL column types (e.g. `text` in MySQL is mapped 
+to `InformationSchema\Table\ClobColumn`). 
 
 ```
 interface InformationSchema\Table\ColumnProviderInterface
