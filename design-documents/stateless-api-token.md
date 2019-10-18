@@ -23,60 +23,76 @@ until they expire and run an extra cron job to remove expired ones.
  
 ### Overview of new stateless tokens implementation
 * `TokenUserContext` to be updated to decode new tokens and use old logic for existing tokens
-* [Create and implement](#spi-for-token-data-manager) SPIs for providing user data to be encoded in tokens and reading it
-* Create and [implement](#encoding-and-signing-tokens) SPI for singing and encoding token data
+* [Create and implement](#spi-for-token-data-authenticator) SPIs for providing user data to be encoded in tokens and reading it
+* [Create and implement](#stateless-tokens-api) API for stateless tokens generation and reading
 * Update token revoke functionality to use cache storage to store revoke request instead of DB for customer/admin tokens
   [details](#how-to-handle-manual-expiration)
  
  
-### Encoding and signing tokens
-Tokens must have enough data encoded in order to authenticate a user. At minimum it would contain:
-* user type
-* user ID
-* issued timestamp
-* expires timestamp (in order to be able to validate token without knowing token lifespan)
+### Stateless Tokens API
+&nbsp;&nbsp;&nbsp;&nbsp;There can be many applications possible for stateless tokens in Magento: user authentication,
+webhooks, integrations, we need provide an API for developers to establish a mechanism for all future cases.
  
-3rd-party developers will be able to extend this list via [the SPI](#spi-for-token-data-manager).
- 
-After serialization this data must be signed to confirm origin. Magento instance(es) will have the same secret used
-to decode the tokens without having to validate them via DB.
- 
-Magento will have _SPI_ that will handle encoding/decoding tokens and allow 3rd-party developers to change
-how tokens are handled:
+_API:_
  
 ```php
-interface AuthData
+interface KeyStorageInterface
 {
-    public function getIssued(): int;
-
-    public function getExpires(): int;
-
-    public function getUserData(): array;
+    /**
+     * Different implementations of TokenEncoderInterface may utilize additional data, for instance - key version.
+     *
+     * @return string
+     */
+    public function getKey(): string;
 }
 
+class TokenDecodingException extends \RuntimeException {}
+
+class TokenAuthenticationException extends \InvalidArgumentException {}
 
 interface TokenEncoderInterface
 {
-    public function encode(AuthData $data): string;
+    /**
+     * Create token with encoded authentication data.
+     *
+     * @param array $data Array of scalars, authentication data to be encoded.
+     * @param KeyStorageInterface $key Key to use for encryption.
+     * @return string Token.
+     */
+    public function encode(array $data, KeyStorageInterface $key): string;
 
-    public function decode(string $token): AuthData;
+    /**
+     * Decode token, extract authentication data.
+     *
+     * @param string $token
+     * @param KeyStorageInterface $key Key to use for decryption.
+     * @return array Authentication data.
+     * @throws TokenDecodingException If it's impossible to decrypt/decode token.
+     * @throws TokenAuthenticationException If token can be read but cannot be authenticated.
+     */
+    public function decode(string $token, KeyStorageInterface $key): array;
 }
-``` 
+```
  
 There are 2 ways we can go about implementing this:
  
 #### Own implementation using EncyptorInterface
-User data returned from [the SPI](#spi-for-token-data-manager) in form of array of scalars will be serialized into string, paired with
-signature, base64 encoded for obfuscation after.
+Authentication data will be serialized into json, signed using hash with secret key provided by KeyStorageInterface,
+serialized data and hash paired and obfuscated.
+ 
+Magento's _Encryptor_ can be updated to allow using custom key or it's instance can be created with key provided to the
+constructor.
  
 Example in pseudo-code:
 ```php
 $userData = ['user_data' => ['user_id' => 1, 'user_type' => 3], 'issued' => time(), 'expires' => time() + (60*60)];
 $encodedData = json_encode($userData);
-$signature = $encryptor->hash($encodedData, true);
+$signature = $encryptor->hash($encodedData);
 
-return $token = 'token:' .base64_encode($encodedData) .'.' .base64_encode($signature);
+return $token = base64_encode($encodedData) .'.' .base64_encode($signature);
 ```
+ 
+When decoding tokens signatures will be recreated and compared to provided ones to validate tokens' origin.
  
 __Pros__:
 * Easy to implement
@@ -85,39 +101,49 @@ __Pros__:
  
 __Cons__:
 * Custom solution
+* May suffer from problems that an established standard solutions would have already solved
  
 #### Using JWT
 JWT is an established standard for authentication tokens that contain user data and are signed as origin verification.
 A number of [PHP libraries](https://jwt.io) existing implementing it.
+ 
+Child interface of `TokenEncoderInterface` will be created - `JWTTokenEncoderInterface`, that will contain JWT specific
+methods in addition to the default one that will allow, for instance, pick algorithms, use public and private claims etc.
  
 __Pros__:
 * Established standard
 * Existing libraries
 * Wide variety of supported encryption algorithms
 * Security concerns resolved by standard and libraries themselves
+* Easy to use for integrations
  
 __Cons__:
 * Will have to add new project dependency for a library and it's dependencies
 * Some libraries have [known security vulnerabilities](https://auth0.com/blog/critical-vulnerabilities-in-json-web-token-libraries/)
-* Standard requires to encode specific information into tokens which may be redundant for Magento
 * Classes responsible for token creation will have to be updated alongside `EncryptorInterface` in order to utilize the
   most secure and up-to-date algorithms
-* Effort to integrate it into Magento
  
  
-### SPI for token data manager
+### SPI for token data authenticator
 Magento will provide _SPI_ for 3rd-party developers to extend data encoded into tokens required to authenticate a user.
  
 ```php
-interface TokenDataManagerInterface
+interface TokenDataAuthenticatorInterface
 {
     public function extractData(UserContextInterface $userContext): array;
 
-    public function readData(array $data): UserContextInterface;
+    /**
+     * @throws AuthenticationException
+     */
+    public function authenticateData(array $data): UserContextInterface;
 }
 ```
  
-Magento will have default implementation that will store user ID and type for admin/customer users
+Magento will have default implementation that will store user ID, user type for admin/customer users, issues timestamp,
+and expiration timestamp in tokens.
+ 
+This authenticator will be responsible of extracting enough data to perform authentication and then doing the authentication
+with provided data.
  
  
 ### Backward compatibility
@@ -145,3 +171,8 @@ need to mark issued tokens as expired in another way. Here's what we can do:
  
 This approach will work for admin/customer tokens while integration tokens logic should remain as is due to it's
 functional requirements.
+ 
+#### Alternative
+Relying on cache storage may prove to be risky. We can store token reset timestamp in a new field added to custom and
+admin user table. Customer and admin records are likely to be loaded from DB anyway even when _UserContext_ exists so
+it wouldn't be match of performance hit to read the data from them.
