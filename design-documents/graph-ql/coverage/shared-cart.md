@@ -9,11 +9,15 @@ We used the term 'login' in quotes, because there's really no state/session in g
 To achieve desired behavior we need two operations: 
 
  1. **Get customer cart ID:** There should be a way to retrieve active customer cart ID from the server without using the actual cart Id as a parameter when we use a customer. This only works if we have only one active cart per customer at any given moment.
- Once we get this id it can be used on the rest of the cart mutations/queries. The proposal for this scenario reflected in schema is the following query:
+ Once we get this id it can be used on the rest of the cart mutations/queries. 
+ 
+ We have to add `cart_id` part of the Cart object, because we need to return the cart id in case of `customerCart()` and avoid a round trip call to `cart(cart_id)` if we were just to return a string from `customerCart()`
+ 
+ 
+ The proposal for this scenario reflected in schema is the following query:
 ```graphql
 customerCart(): Cart! // where Cart! is the customer cart
 ```
-Note: This operation will only work for registered customers (valid customer token must be provided in headers).
 
 ### Scenario for point 1.
  
@@ -26,7 +30,8 @@ Note: This operation will only work for registered customers (valid customer tok
 | 3    | Smartphone | customerCart() { cart_id, cart_items {sku, quantity} }                                                         | customer-token | { cart_id: "CustomerCart123e4567", cart_items: [{"sku": "productA", "quantity": 2] }|
 | 4    | Smartphone | cart("CustomerCart123e4567") {cart_items {sku, quantity}}                        | customer-token | {cart_items: [{"sku": "productA", "quantity": 2]} |
 
-Note: customerCart will always return the same cart_id representing the same query, until an order is completed. If an active customer cart wasn't created, then one will be instantly created. So this could qualify as a mutation not a query.
+*Note 1*: customerCart will always return the same cart_id representing the same query, until an order is completed. If an active customer cart wasn't created, then one will be instantly created. So this could qualify as a mutation not a query.
+*Note 2*: This operation will only work for registered customers (valid customer token must be provided in headers).
 
 
  2. **Merge guest cart:** There should be a way to transfer/merge products from a guest cart to a the customer cart. To achieve this we choose to add a mutation that accepts an active guest cart Id, and reflected merged products will be shown directly in the cart response object.
@@ -45,8 +50,8 @@ In the following scenario a guest cart already exists, and the user already adde
 | 3    | Logged In    | mergeGuestIntoCustomerCart(guest_cart_id: "GuestCart456e8901") { cart_id, cart_items {sku, quantity} }                                                         | customer-token | { cart_id: "CustomerCart123e4567", cart_items: [{"sku": "productA", "quantity": 2] }|
 | 4    | Not/Logged In| cart(cart_id: "GuestCart456e8901") { cart_items {sku, quantity} }                         | customer-token | {"errors": [{"message": "Could not find a cart with ID"}]} |
 
-Note 1: This operation will only work for registered customers and existing guest carts (valid customer token must be provided in headers). Also, this way se segregate operations as `customerCart()` as query and `mergeGuestIntoCustomerCart()` as mutation and their intent is very clear. A developer can choose 1st or the 2nd operation depending if the user had products in the cart or not. In both situations you will get the Customer Cart . Also see alternative for #2.
-Note 2: Destroying the guest cart actually creates a problem with the guest same guest on multiple devices.
+*Note 1*: This operation will only work for registered customers and existing guest carts (valid customer token must be provided in headers). Also, this way se segregate operations as `customerCart()` as query and `mergeGuestIntoCustomerCart()` as mutation and their intent is very clear. A developer can choose 1st or the 2nd operation depending if the user had products in the cart or not. In both situations you will get the Customer Cart . Also see alternative for #2.
+*Note 2*: Destroying the guest cart actually creates a problem with the guest same guest on multiple devices.
 
  ## Alternatives
  
