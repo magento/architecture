@@ -349,23 +349,6 @@ class InformationSchema\Table\CharColumn extends Column
     public function getDefaultValue(): ?string {}
 }
 ```
-```
-class InformationSchema\Table\NationalCharColumn extends Column
-{
-    /**
-     * Retturns the maximum length in characters.
-     */
-    public function getCharLength(): int {}
-
-    /**
-     * Returns the default value of the column.
-     *
-     * @return string|null
-     */
-    public function getDefaultValue(): ?string {}
-}
-```
-Note that MySQL / MariaDB maps this type to `char`.
 
 ```
 class InformationSchema\Table\VarcharColumn extends Column
@@ -387,26 +370,6 @@ class InformationSchema\Table\VarcharColumn extends Column
 ```
 
 ```
-class InformationSchema\Table\NationalVarcharColumn extends Column
-{
-    /**
-     * Returns the maximum length in characters.
-     *
-     * @return int
-     */
-    public function getCharLength(): int {}
-
-    /**
-     * Returns the default value of the column.
-     *
-     * @return string|null
-     */
-    public function getDefaultValue(): ?string {}
-}
-```
-Note that MySQL / MariaDB maps this type to `varchar`.
-
-```
 class InformationSchema\Table\ClobColumn extends Column
 {
     /**
@@ -419,64 +382,11 @@ class InformationSchema\Table\ClobColumn extends Column
 ```
 Note that MySQL / MariaDB and PostgreSQL use the type `text` for this purpose.
 
-```
-class InformationSchema\Table\NationalClobColumn extends Column
-{
-    /**
-     * Returns the default value of the column.
-     *
-     * @return string|null
-     */
-    public function getDefaultValue(): ?string {}
-}
-```
-Note that MySQL / MariaDB does not have support for a national type of character large object.
-
 ##### Date/Time types
 
 ```
 class InformationSchema\Table\DateColumn extends Column
 {
-    /**
-     * Returns the default value of the column.
-     *
-     * @return string|null
-     */
-    public function getDefaultValue(): ?string {}
-}
-```
-
-```
-class InformationSchema\Table\TimeColumn extends Column
-{
-    /**
-     * Returns the fractional seconds precision (the amount of digits maitained after the decimal dot of the seconds 
-     * value).
-     *
-     * @return int|null 
-     */
-    public function getPrecision(): ?int {}
-
-    /**
-     * Returns the default value of the column.
-     *
-     * @return string|null
-     */
-    public function getDefaultValue(): ?string {}
-}
-```
-
-```
-class InformationSchema\Table\TimeWithTimezoneColumn extends Column
-{
-    /**
-     * Returns the fractional seconds precision (the amount of digits maitained after the decimal dot of the seconds 
-     * value).
-     *
-     * @return int|null 
-     */
-    public function getPrecision(): ?int {}
-
     /**
      * Returns the default value of the column.
      *
@@ -506,77 +416,10 @@ class InformationSchema\Table\TimestampColumn extends Column
 }
 ```
 
-```
-class InformationSchema\Table\TimestampWithTimezoneColumn extends Column
-{
-    /**
-     * Returns the fractional seconds precision (the amount of digits maitained after the decimal dot of the seconds 
-     * value).
-     *
-     * @return int|null 
-     */
-    public function getPrecision(): ?int {}
-
-    /**
-     * Returns the default value of the column.
-     *
-     * @return string|null
-     */
-    public function getDefaultValue(): ?string {}
-}
-```
-
-```
-class InformationSchema\Table\IntervalColumn extends Column
-{
-    /**
-     * Returns the fractional seconds precision (the amount of digits maitained after the decimal dot of the seconds 
-     * value).
-     *
-     * @return int|null 
-     */
-    public function getPrecision(): ?int {}
-
-    /**
-     * Returns the timestamp fields that are stored by interval.
-     */
-    public function getIntervalFields(): string {}
-
-    /**
-     * Returns the default value of the column.
-     *
-     * @return string|null
-     */
-    public function getDefaultValue(): ?string {}
-}
-```
-Note that MySQL / MariaDB does not support the `interval` type but rather suggests to use the `time` type which is 
-limited compared to `interval` as it can only store the range '-838:59:59.000000' to '838:59:59.000000' (roughly 
-equivalent to `interval MONTH`).
-
 ##### Binary types
 
 ```
 class InformationSchema\Table\BinaryColumn extends Column
-{
-    /**
-     * Returns the maximum length in bytes.
-     *
-     * @return int
-     */
-    public function getByteLength(): int {}
-
-    /**
-     * Returns the default value of the column as binary string.
-     *
-     * @return string|null
-     */
-    public function getDefaultValue(): ?string {}
-}
-```
-
-```
-class InformationSchema\Table\VarbinaryColumn extends Column
 {
     /**
      * Returns the maximum length in bytes.
@@ -605,59 +448,6 @@ class InformationSchema\Table\BlobColumn extends Column
     public function getDefaultValue(): ?string {}
 }
 ```
-
-##### Enum types
-
-```
-class InformationSchema\Table\EnumColumn extends Column
-{
-    /**
-     * Returns the values defined by the enumeration.
-     */
-    public function getEnumValues(): array {}
-
-    /**
-     * Returns the default value of the column as binary string.
-     *
-     * @return string|null
-     */
-    public function getDefaultValue(): ?string {}
-}
-```
-Note that this is not an ANSI-SQL datatype but can be achieved in most RDBMS. MySQL / MariaDB do support this at column
-creation time:
-```
-CREATE TABLE myTest (
-    myEnum enum('foo', 'bar', 'baz')
-);
-```
-In PostgreSQL the same can be accomplished by creating a type: 
-```
-CREATE TYPE myEnumType AS enum ('foo', 'bar', 'baz');
-CREATE TABLE myTest (
-    myEnum myEnumType
-);
-```
-In case an RDBMS neither has support for `enum` data types nor allows to create custom types, the same can be 
-accomplished by introducing a check constraint:
-```
-CREATE TABLE myTest (
-    myEnum VARCHAR(10) CHECK (myEnum IN ('foo', 'bar', 'baz'))
-);
-``` 
-
-##### Collection types
-
-SQL2003 defines the type `array` and `multiset` which are rarely used and not supported by many RDBMS. Since there are 
-other means to store such data (e.g. serialized, relational) no classes for these types are provided.
-
-##### RDBMS specific types
-
-Every RDMBS comes with their custom set of data types that are not standard. While MySQL and PostgreSQL allow to store 
-spatial (aka geometric) types, this is not common with Oracle or MSSQL (although both allow to define custom types and
-could be made to store such types).
-
-Such RDBMS specific types need not be taken into account at the time being.
 
 #### Providers
 
