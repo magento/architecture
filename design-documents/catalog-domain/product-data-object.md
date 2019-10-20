@@ -1,4 +1,4 @@
-#Product schema 
+# Product schema 
 
 Product entity described with a pseudo schema.
 The purpose of this schema to determine the bare minimum set of data required for rendering all storefront operations.
