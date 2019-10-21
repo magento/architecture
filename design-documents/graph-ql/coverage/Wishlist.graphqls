@@ -1,0 +1,73 @@
+type Mutation {
+    wishlist: WishlistOutput #already implemented
+    createWishlist: ID @doc(description:"If not exists - creates new wishlist. If exists - returns wishlist ID for customer.")
+    addProductsToWishlist(input: AddProductsToWishlistInput): AddProductsToWishlistOutput
+    removeProductsFromWishlist(input: RemoveProductsFromWishlistInput): RemoveProductsFromWishlistOutput
+    updateProductsInWishlist(input: UpdatePriductsInWishlistInput): UpdateProductsInWishlistOutput
+}
+
+type Wishlist {
+    id: ID
+    items: [WishlistItem]
+    items_count: Int
+    sharing_code: String
+    updated_at: String
+}
+
+input AddProductsToWishlistInput {
+    wishlist_id: ID!
+    wishlist_items: [WishlistItemInput!]!
+}
+
+input RemoveProductsFromWishlistInput {
+    wishlist_id: ID!
+    wishlist_items_ids: [ID!]!
+}
+
+input UpdateProductsInWishlist {
+    wishlist_id: ID!
+    wishlist_items: [WishlistItemUpdateInput!]!
+}
+
+input WishlistItemUpdateInput {
+    wishlist_item_id: ID
+    quantity: Float
+    selected_options: [String!]
+    entered_options: [EnteredOptionInput!]
+}
+
+type AddProductsToWishlistOutput {
+    wishlist: Wishlist!
+}
+
+type RemoveProductsFromWishlistOutput {
+    wishlist: Wishlist!
+}
+
+type UpdateProductsInWishlistOutput {
+    wishlist: Wishlist!
+}
+
+input WishlistItemInput {
+    sku: String
+    quantity: Float
+    parent_sku: String,
+    selected_options: [String!]
+    entered_options: [EnteredOptionInput!]
+}
+
+type WishlistOutput { #already implemented
+    items: [WishlistItem]
+    items_count: Int
+    name: String
+    sharing_code: String
+    updated_at: String
+}
+
+type WishlistItem { #already implemented
+    id: ID #BC change, was `Int`
+    qty: Float
+    description: String
+    added_at: String
+    product: ProductInterface
+}
