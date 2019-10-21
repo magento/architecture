@@ -288,6 +288,9 @@ only data that we need to render product.
 
 ## Dynamic Attributes
 
+Product may have user-defined custom attributes.
+Set of attributes may vary and depends on an `attributeSet` assigned to a product.
+
 ```json
 {
   "type": "Product",
@@ -306,7 +309,14 @@ only data that we need to render product.
 }
 ```
 
+* `attributeCode` - attribute code.
+* `value` - array of values that assigned to the attribute.
+
+
 ## Product Variations
+
+Variations represent how complex product options could be associated with simple products.
+Variation are good to represent relationship between
 
 ```json
 {
@@ -322,16 +332,15 @@ only data that we need to render product.
   "fields": [
     {"name": "id", "type": "string"},
     {"name": "sku", "type": "string"},
+    {"name": "productId", "type": "string"},
     {"name": "minimalPrice", "type": "Price"},
     {"name": "buyable", "type": "bool"},
     {"name": "inStock", "type": "bool"},
     {"name": "lowStock", "type": "bool"},
+    {"name": "defaultQty", "type": "float"},
     {"name": "selections", "type": "uuid", "repeated": "true"}
   ]
 }
 ```
-
-
-
 
 @@@@ where is store //    ?{"name": "storeViewCode", "type": "string"}
