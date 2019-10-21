@@ -4,6 +4,7 @@ type Query {
 
 type Mutation {
     createWishlist: ID @doc(description:"If not exists - creates new wishlist. If exists - returns wishlist ID for customer.")
+    removeWishlist(id: ID!): Boolean
     addProductsToWishlist(input: AddProductsToWishlistInput): AddProductsToWishlistOutput
     removeProductsFromWishlist(input: RemoveProductsFromWishlistInput): RemoveProductsFromWishlistOutput
     updateProductsInWishlist(input: UpdatePriductsInWishlistInput): UpdateProductsInWishlistOutput
