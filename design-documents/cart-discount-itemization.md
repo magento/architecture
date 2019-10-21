@@ -18,6 +18,26 @@ The existing discount related metadata are being stored in quote_address, quote_
 and is decided it is not wise to alter heavyweight tables. So new tables have to be created to hold discounts data.
 
 Also have to be congizant about avoiding referencing between sales and quote tables.
+
+The data will be stored as serialized json to support extensibility.
+
+*quote_address_totals* 
+```
+ <table name="quote_address_totals" resource="checkout" engine="innodb" comment="Quote Address Totals">
+        <column xsi:type="int" name="address_id" padding="10" unsigned="true" nullable="false" identity="false"
+                comment="Address ID"/>
+        <column xsi:type="text" name="totals" nullable="true" comment="Collected item totals"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="address_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="QUOTE_ADDRESS_TOTALS_ADDRESS_ID_QUOTE_ADDRESS_ADDRESS_ID    table="quote_item_totals" column="address_id" referenceTable="quote_address" referenceColumn="address_id" onDelete="CASCADE"/>
+        <index referenceId="QUOTE_ADDRESS_TOTALS_ADDRESS_ID" indexType="btree">
+            <column name="item_id"/>
+        </index>
+ </table>
+```
+
+*quote_item_totals* 
 ```
  <table name="quote_item_totals" resource="checkout" engine="innodb" comment="Quote Item Totals">
         <column xsi:type="int" name="item_id" padding="10" unsigned="true" nullable="false" identity="false"
@@ -28,8 +48,10 @@ Also have to be congizant about avoiding referencing between sales and quote tab
         </constraint>
         <constraint xsi:type="foreign" referenceId="QUOTE_ITEM_TOTALS_ITEM_ID_QUOTE_ITEM_ITEM_ID" table="quote_item_totals"
                     column="item_id" referenceTable="quote_item" referenceColumn="item_id" onDelete="CASCADE"/>
-        <index referenceId="QUOTE_ITEM_OPTION_ITEM_ID" indexType="btree">
+        <index referenceId="QUOTE_ITEM_TOTALS_ITEM_ID" indexType="btree">
             <column name="item_id"/>
         </index>
  </table>
 ```
+
+
