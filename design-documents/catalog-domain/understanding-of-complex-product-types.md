@@ -4,10 +4,7 @@
 See [Simple Products](simple-products.md)
 * Complex product is a virtual representation of multiple real SKUs at the storefront.
 * To simplicity and data consistency, Magento gives such product ability to obtain virtual SKU.
-There is a trick.
-Configurable product creation wizard creates SKUs of Simple products as a concatenation of Configurable SKU and attributes values which were used its creation.
-In fact, real purchases will use these generated SKUs because they are material products.
-* Complex product may have similar attributes like name or URL to a simple product except for price and quantity.
+* Complex product may have similar attributes like name or URL to a simple product except for price, weight and quantity.
 * Complex product may have images or inherit images from the included products. 
 * Currently, Magento does support three complex product types - Bundle, Grouped and Configurable.
 
@@ -83,6 +80,7 @@ Variation
 ```json
 {
   "sku": "SimpleProductSku",
+  "p"
   "price": {
     "regularPrice": 10.11,
     "finalPrice": 9.89
@@ -94,8 +92,7 @@ Variation
   "quantity": 300,
   "selections": [
     {
-      "optionId": "ab97df98-a940-4f9f-834d-c0b9d065bfe6",
-      "valueId": "8b59dd5a-4f5a-48db-bfbc-04ff51fe620f"
+      "8b59dd5a-4f5a-48db-bfbc-04ff51fe620f"
     }  
   ]
 }
