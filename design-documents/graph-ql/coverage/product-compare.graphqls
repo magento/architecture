@@ -1,0 +1,22 @@
+type Mutation {
+    addProductsToCompareList(compare_list_id: ID!, skus: [String!]!): AddProductToCompareListOutput!
+    removeProductsFromCompareList(compare_list_id: ID!, skus: [String!]!): RemoveProductsFromCompareListOutput!
+}
+
+type Query {
+    productCompareListId(): ID! # ALways new ID for guests. A new or an existing ID for customers
+    productCompareList(compare_list_id: ID!): ProductCompareList!
+}
+
+type ProductCompareList {
+    compare_list_id: ID!
+    products: [ProductInterface]!
+}
+
+type AddProductToCompareListOutput {
+    compare_list: ProductCompareList!
+}
+
+type RemoveProductsFromCompareListOutput {
+    compare_list: ProductCompareList!
+}
