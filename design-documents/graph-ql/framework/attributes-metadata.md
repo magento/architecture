@@ -7,16 +7,25 @@ Storefront applications built on top of Magento GraphQL web APIs need to support
  
 All these scenarios require specific EAV attribute metadata to be accessible from the storefront application.
 
+Additionally, there should be a way to retrieve metadata for all storefront custom attributes in the system. This information should be cached on the server and on the client. 
 
 # Proposed solution
 
-Extend existing `customAttributeMetadata` query which allows to retrieve metadata for the specified attributes.
-The argument of this query must be made optional to allow retrieval of all attribute metadata at once and then cache it on the client.
-Additional fields must be added to the attribute metadata response, including `is_dynamic`, `use_in_compare_products`, `display_in_product_listing`, `use_in_advanced_search`, `advanced_search_input_type` and array of possible option values for select/multiselect attributes.
+Relaxing signature of existing `customAttributeMetadata` query by making its `attriubtes` argument optional will allow to fetch all storefront attributes metadata.
+Additional fields should be added to the metadata response (`Attribute`  type), for example `is_dynamic`, `use_in_compare_products`, `display_in_product_listing`, `use_in_advanced_search`, `advanced_search_input_type`. The exact list of fields must be discussed and approved separately.
 
-### Future extension
+Introduction of the following query will allow fetching lists of attributes applicable to specific pages:
+```graphql
+pageSpecificCustomAttributes(
+    page_type: CustomAttributesPageEnum
+): CustomAttributeMetadata
 
-It is also possible to introduce new queries which will allow to get a list of attributes to be used in product compare, product listing etc. This should be done only if `customerAttributeMetadata` is not enough.
+enum CustomAttributesPageEnum {
+    PRODUCTS_COMPARE
+    PRODUCTS_LISTING
+    ADVANCED_CATALOG_SEARCH
+}
+```
 
 # Alternative solutions
 
