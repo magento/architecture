@@ -1,5 +1,8 @@
-type Mutation {
+type Query {
     wishlist: WishlistOutput #already implemented
+}
+
+type Mutation {
     createWishlist: ID @doc(description:"If not exists - creates new wishlist. If exists - returns wishlist ID for customer.")
     addProductsToWishlist(input: AddProductsToWishlistInput): AddProductsToWishlistOutput
     removeProductsFromWishlist(input: RemoveProductsFromWishlistInput): RemoveProductsFromWishlistOutput
