@@ -30,7 +30,7 @@ The data will be stored as serialized json to support extensibility.
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="address_id"/>
         </constraint>
-        <constraint xsi:type="foreign" referenceId="QUOTE_ADDRESS_TOTALS_ADDRESS_ID_QUOTE_ADDRESS_ADDRESS_ID    table="quote_item_totals" column="address_id" referenceTable="quote_address" referenceColumn="address_id" onDelete="CASCADE"/>
+        <constraint xsi:type="foreign" referenceId="QUOTE_ADDRESS_TOTALS_ADDRESS_ID_QUOTE_ADDRESS_ADDRESS_ID"    table="quote_item_totals" column="address_id" referenceTable="quote_address" referenceColumn="address_id" onDelete="CASCADE"/>
         <index referenceId="QUOTE_ADDRESS_TOTALS_ADDRESS_ID" indexType="btree">
             <column name="address_id"/>
         </index>
@@ -65,7 +65,7 @@ The data will be stored as serialized json to support extensibility.
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="address_id"/>
         </constraint>
-        <constraint xsi:type="foreign" referenceId="SALES_ORDER_ADDRESS_TOTALS_ORDER_ID_SALES_ORDER_ENTITY_ID   table="sales_order_address_totals" column="order_id" referenceTable="sales_order" referenceColumn="entity_id" onDelete="CASCADE"/>
+        <constraint xsi:type="foreign" referenceId="SALES_ORDER_ADDRESS_TOTALS_ORDER_ID_SALES_ORDER_ENTITY_ID"   table="sales_order_address_totals" column="order_id" referenceTable="sales_order" referenceColumn="entity_id" onDelete="CASCADE"/>
         <index referenceId="SALES_ORDER_ADDRESS_TOTALS_ID" indexType="btree">
             <column name="address_id"/>
         </index>
@@ -83,7 +83,7 @@ The data will be stored as serialized json to support extensibility.
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="item_id"/>
         </constraint>
-        <constraint xsi:type="foreign" referenceId="SALES_ORDER_ITEM_TOTALS_ORDER_ID_SALES_ORDER_ENTITY_ID   table="sales_order_item_totals" column="order_id" referenceTable="sales_order" referenceColumn="entity_id" onDelete="CASCADE"/>
+        <constraint xsi:type="foreign" referenceId="SALES_ORDER_ITEM_TOTALS_ORDER_ID_SALES_ORDER_ENTITY_ID"   table="sales_order_item_totals" column="order_id" referenceTable="sales_order" referenceColumn="entity_id" onDelete="CASCADE"/>
         <index referenceId="SALES_ORDER_ITEM_TOTALS_ID" indexType="btree">
             <column name="item_id"/>
         </index>
