@@ -26,13 +26,13 @@ The data will be stored as serialized json to support extensibility.
  <table name="quote_address_totals" resource="checkout" engine="innodb" comment="Quote Address Totals">
         <column xsi:type="int" name="address_id" padding="10" unsigned="true" nullable="false" identity="false"
                 comment="Address ID"/>
-        <column xsi:type="text" name="totals" nullable="true" comment="Collected item totals"/>
+        <column xsi:type="text" name="totals" nullable="true" comment="Serialized address totals"/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="address_id"/>
         </constraint>
         <constraint xsi:type="foreign" referenceId="QUOTE_ADDRESS_TOTALS_ADDRESS_ID_QUOTE_ADDRESS_ADDRESS_ID    table="quote_item_totals" column="address_id" referenceTable="quote_address" referenceColumn="address_id" onDelete="CASCADE"/>
         <index referenceId="QUOTE_ADDRESS_TOTALS_ADDRESS_ID" indexType="btree">
-            <column name="item_id"/>
+            <column name="address_id"/>
         </index>
  </table>
 ```
@@ -42,7 +42,7 @@ The data will be stored as serialized json to support extensibility.
  <table name="quote_item_totals" resource="checkout" engine="innodb" comment="Quote Item Totals">
         <column xsi:type="int" name="item_id" padding="10" unsigned="true" nullable="false" identity="false"
                 comment="Item ID"/>
-        <column xsi:type="text" name="totals" nullable="true" comment="Collected item totals"/>
+        <column xsi:type="text" name="totals" nullable="true" comment="Serialized item totals"/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="item_id"/>
         </constraint>
@@ -50,6 +50,24 @@ The data will be stored as serialized json to support extensibility.
                     column="item_id" referenceTable="quote_item" referenceColumn="item_id" onDelete="CASCADE"/>
         <index referenceId="QUOTE_ITEM_TOTALS_ITEM_ID" indexType="btree">
             <column name="item_id"/>
+        </index>
+ </table>
+```
+
+*sales_order_address_totals* 
+```
+ <table name="sales_address_totals" resource="checkout" engine="innodb" comment="Sales Address Totals">
+        <column xsi:type="int" name="address_id" padding="10" unsigned="true" nullable="false" identity="false"
+                comment="Address ID"/>
+        <column xsi:type="int" name="order_id" padding="10" unsigned="true" nullable="false" identity="false"
+                default="0" comment="Order ID"/>
+        <column xsi:type="text" name="totals" nullable="true" comment="Serialized address totals"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="address_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="SALES_ADDRESS_TOTALS_ORDER_ID_SALES_ORDER_ENTITY_ID   table="sales_address_totals" column="order_id" referenceTable="sales_order" referenceColumn="entity_id" onDelete="CASCADE"/>
+        <index referenceId="QUOTE_ADDRESS_TOTALS_ADDRESS_ID" indexType="btree">
+            <column name="address_id"/>
         </index>
  </table>
 ```
