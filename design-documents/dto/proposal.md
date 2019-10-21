@@ -5,7 +5,7 @@ The current proposal is working and implemented in a WIP branch: https://github.
 ## Current situation
 DTOs in Magento2 must be manually created as PHP classes and immutables are not currently supported by `\Magento\Framework\Api\DataObjectHelper::populateWithArray` method which is widely used in the core.
 
-Most of the time, DTOs are simply used to transport immutable information, such as an API request or an API resonse. In this case and because of implementation limitatsion, each DTO must also declare setter methods even if it supposed to not change. This requirement can lead to unexpected conditions and can introduce mutations where they should not be allowed.
+Most of the time, DTOs are simply used to transport immutable information, such as an API request or an API response. In this case and because of implementation limitation, each DTO must also declare setter methods even if it supposed to not change. This requirement can lead to unexpected conditions and can introduce mutations where they should not be allowed.
 
 Another problem with the manual DTO creation is represented by the possibility for a non experienced developer to add side effects to getter methods.
 
@@ -73,7 +73,7 @@ In this last case, **only a new instance** is created instead of 2.
 **NOTE:**
 Developers shold be aware that mutating several properties of an immutable can mean that the object should be considered as a mutable. Maybe a warning in static testing should be considered.
 
-### Implementation consequences introdcuing immutables
+### Implementation consequences introducing immutables
 The current core implementation deeply relies on `\Magento\Framework\Api\DataObjectHelper::populateWithArray` that requires an empty object to be created before hydrating it.
 
 Example:
