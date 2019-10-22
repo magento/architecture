@@ -50,6 +50,43 @@ The data will be stored as serialized json to support extensibility.
         </index>
  </table>
 ```
+
+```
+interface RuleDiscountInterface
+{
+    /**
+     * Get Discount Data
+     *
+     * @return \Magento\SalesRule\Api\Data\DiscountDataInterface
+     */
+    public function getDiscountData();
+
+    /**
+     * Get Rule Label
+     *
+     * @return string
+     */
+    public function getRuleLabel();
+
+    /**
+     * Get Rule ID
+     *
+     * @return int
+     */
+    public function getRuleID();
+}
+```
+```
+value: {
+    items: [
+        discounts: RuleDiscountInterface[]
+    ]
+    addresses: [
+        discounts: RuleDiscountInterface[]
+    ]
+}
+```
+
 **Benefits**
 
 Need to modify current table structure to incorporate this feature.
