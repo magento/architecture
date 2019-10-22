@@ -50,16 +50,6 @@ The data will be stored as serialized json to support extensibility.
         </index>
  </table>
 ```
-```
-value: {
-    items: [
-        discounts: RuleDiscountInterface[]
-    ]
-    addresses: [
-        discounts: RuleDiscountInterface[]
-    ]
-}
-```
 
 **Benefits**
 
