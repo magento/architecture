@@ -74,3 +74,10 @@ Most of the components need to be extensible, including:
  - Access control list (ACL) 
  
 Storefront Gateway may not need to be extensible.
+
+It is important to note that services have to be redeployed after installation of extensions. It should be possible to manage ACL via admin API gateway to avoid the need of redeployment.
+
+## Open questions
+
+ 1. Should PWA be deployed in multi-service mode? Probably not because it will hurt performance and increase complexity. 
+ 1. Should SF services require customer and store scope arguments explicitly and rely on query enrichment on GraphQL Server side? Alternatively they can perform enrichment themselves, this will simplify implementation of the GraphQL Server, but may introduce additional inter-dependencies between services.
