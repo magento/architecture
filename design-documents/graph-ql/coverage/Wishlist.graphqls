@@ -34,6 +34,7 @@ input UpdateProductsInWishlistInput {
 }
 
 input WishlistItemUpdateInput {
+    wishlist_id: ID!
     wishlist_item_id: ID
     quantity: Float
     selected_options: [String!]
