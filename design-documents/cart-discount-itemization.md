@@ -12,7 +12,6 @@ Magento\Quote\Api\Data\AddressInterface.
 These are served via GraphQL cart query. The eventual end goal is to persist this data on every order.
 
 **Schema changes**
-#The following is a draft for the schema changes #
 
 The existing discount related metadata are being stored in quote_address, quote_item, sales_order, sales_order_item. But these tables tend to get large and have millions of records,
 and is decided it is not wise to alter heavyweight tables. So new tables have to be created to hold discounts data.
