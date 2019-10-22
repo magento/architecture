@@ -1,7 +1,5 @@
 # Detailed architecture of multi-service Magento
 
-:warning: This document is under discussion and is incomplete.
-
 ## Overview
 
 The goal of this document is to gather requirements, understand data flow and propose architecture for multi-service Magento application.
@@ -15,6 +13,12 @@ The client (e.g. browser) is interacting with the system using GraphQL. The only
 Storefront Gateway routes incoming queries between PWA, GraphQL Engine and Storefront Authentication Gateway.
 
 PWA's main responsibility is to [render React application on the server-side](../frontend/server-side-rendering.md). Resulting HTML page with React application becomes cacheable on the server.
+
+GraphQL server parses GraphQL query, enriches the request (explained later) and proxies calls to the Storefront services. It also manages Customer context JWT. GraphQL schema is defined here and is extensible, query resolution is based on generic resolvers and configuration for field mapping to Storefront APIs.
+
+Storefront services are responsible for authorizing requests based on the Auth JWT and the list of required permissions. Actual ACL check is delegated to the the Authorization service.
+
+GraphQL authentication gateway is an independent service for improved security purposes, although it can be merged with GraphQL server.
 
 The storefront services are communicating with each other using REST or Protobuf protocol. Storefront APIs are implemented as service contracts exposed via REST/Protobuf.
 
