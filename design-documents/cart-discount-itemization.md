@@ -53,5 +53,5 @@ The data will be stored as serialized json to support extensibility.
 **Benefits**
 
 Need to modify current table structure to incorporate this feature.
-Will support extensibility to store additional data pertaining to totals, without modifying the table.
+Will support extensibility in the future to store additional data pertaining to totals, without modifying the table.
 
