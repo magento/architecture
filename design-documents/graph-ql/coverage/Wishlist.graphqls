@@ -7,7 +7,7 @@ type Mutation {
     removeWishlist(id: ID!): Boolean
     addProductsToWishlist(input: AddProductsToWishlistInput): AddProductsToWishlistOutput
     removeProductsFromWishlist(input: RemoveProductsFromWishlistInput): RemoveProductsFromWishlistOutput
-    updateProductsInWishlist(input: UpdatePriductsInWishlistInput): UpdateProductsInWishlistOutput
+    updateProductsInWishlist(input: UpdateProductsInWishlistInput): UpdateProductsInWishlistOutput
 }
 
 type Wishlist {
@@ -28,7 +28,7 @@ input RemoveProductsFromWishlistInput {
     wishlist_items_ids: [ID!]!
 }
 
-input UpdateProductsInWishlist {
+input UpdateProductsInWishlistInput {
     wishlist_id: ID!
     wishlist_items: [WishlistItemUpdateInput!]!
 }
