@@ -1,4 +1,4 @@
-# Introduce new BatchResolverInterface as default resolver interface
+# Introduce new BatchResolverInterface
 ## Problem
 Current resolver interface is used to resolve one field at a time,
 enabling batching by returning a Deferred result and GraphQL engine delaying it's execution for as long as possible.
