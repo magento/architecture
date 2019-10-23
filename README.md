@@ -69,7 +69,7 @@ Architectural Discussions are public meetings open to anyone and taking place on
 
 Meeting notes and topics are available as [meeting notes issues](https://github.com/magento/architecture/issues?q=is%3Aissue+is%3Aopen+label%3A%22meeting+notes%22).
 
-Prior to November 14th, 2018, meeting minotes are available at sidebar of the [wiki](https://github.com/magento/architecture/wiki)
+Prior to November 14th, 2018, meeting minutes are available at sidebar of the [wiki](https://github.com/magento/architecture/wiki)
 
 ### How to propose a topic?
 

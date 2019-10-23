@@ -1,0 +1,15 @@
+
+ # added Category List Query.
+
+type Query CategoryList(
+filters: CategoryFilterInput @doc(description: "Identifies which Category filter inputs to search for and return.")
+): [CategoryTree] @doc(description: "Categories tree.") @resolver(class: "Magento\\CatalogGraphQl\\Model\\Resolver\\CategoryTree")
+
+# added CategoryFilterInput with id, url_key and name as input filters.
+
+input CategoryFilterInput  @doc(description: "CategoryFilterInput defines the filters to be used in the search. A filter contains at least one attribute, a comparison operator, and the value that is being searched for.")
+{
+    ids: FilterEqualTypeInput @doc(description: "Filter by category ID that uniquely identifies and filters the category."),
+    url_key: FilterEqualTypeInput @doc(description: "Filter by the part of the URL that identifies the category"),
+    name: FilterMatchTypeInput @doc(description: "Filter by the display name of the category.")
+}
