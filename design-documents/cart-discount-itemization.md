@@ -14,7 +14,7 @@ These are served via GraphQL cart query. The eventual end goal is to persist thi
 **Schema changes**
 
 The existing discount related metadata are being stored in quote_address, quote_item, sales_order, sales_order_item. But these tables tend to get large and have millions of records,
-and is decided it is not wise to alter heavyweight tables. So new tables have to be created to hold discounts data.
+and is decided its not ideal to alter heavyweight tables. So new tables have to be created to hold discounts data.
 
 Also have to be congizant about avoiding referencing between sales and quote tables.
 
