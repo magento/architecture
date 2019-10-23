@@ -83,12 +83,12 @@ There are many messaging technologies available in the market, we are specially 
 | Method        | [(1) AWS EventBridge](#1--AWS-EventBridge) | [(2) AWS MQ](#2--AWS-MQ) | [(3) AWS SQS](#3--AWS-SQS) | [(4) AWS Kinesis](#4--AWS-Kinesis) | [(5) Apache Kafka](#5--Apache-Kafka) | [(6) Azure Service Bus](#6--Azure-Service-Bus) |
 | ------------- | ------------------------------------------ | ------------------------ | -------------------------- | ---------------------------------- | ------------------------------------ | ---------------------------------------------- |
 | dequeue()     | Not Possible or N/A                        | Available                | Available                  | Possiblity                         | Possiblity                           | Available                                      |
-| acknowledge() | Not Possible or N/A                        | Possiblity               | Possiblity                 | Possiblity                         | Possiblity                           | Available                                      |
-| subscribe()   | Not Possible or N/A                        | Workaround               | Workaround                 | Workaround                         | Possiblity                           | Workaround                                     |
+| acknowledge() | Not Possible or N/A                        | Available                | Possiblity                 | Possiblity                         | Possiblity                           | Available                                      |
+| subscribe()   | Not Possible or N/A                        | *Workaround              | *Workaround                | Workaround                         | Possiblity                           | *Workaround                                    |
 | reject()      | Not Possible or N/A                        | Available                | Possiblity                 | Possiblity                         | Possiblity                           | Available                                      |
 | push()        | Available                                  | Available                | Available                  | Possiblity                         | Possiblity                           | Available                                      |
 
-
+*Workaround - Feature maybe available but full support for PHP (library) is not available.
 
 <img src="legend_img.png" alt="Legend" width="70%" height="70%" />
 
@@ -96,14 +96,16 @@ There are many messaging technologies available in the market, we are specially 
 
 ### Language Support
 
-| Platform                     | PHP                        | Java                      | Notes                                                        |
-| ---------------------------- | -------------------------- | ------------------------- | ------------------------------------------------------------ |
-| AWS EventBridge              | Supported                  | Supported                 |                                                              |
-| AWS/Amazon MQ                | Workaround                 | Supported                 | Evaluated AMQP 1.0, but other protocols are also available. <br />No Direct Library for PHP but C wrapper available |
-| AWS SQS                      | Supported, **PHP:Enqueue** | Supported                 |                                                              |
-| AWS Kinesis                  | Supported                  | Supported                 |                                                              |
-| Apache Kafka                 | Supported, **PHP:Enqueue** | Supported, Native Support |                                                              |
-| Azure Service Bus (AMQP 1.0) | Workaround                 | Supported                 | AMQP 1.0 support available only <br />No Direct Library for PHP but C wrapper available |
+For PHP, AMQP 1.0 is not fully supported, indirect C wrapper API is available, which will incur bit of setup overhead for the Magento customers. Unlike RabbitMQ which works with AMQP 0.9, Amazon MQ and Azure Service Bus supports AMQP version 1.0; although Amazon MQ supports more protocols.
+
+| Platform          | PHP                        | Java                      | Notes                                                        |
+| ----------------- | -------------------------- | ------------------------- | ------------------------------------------------------------ |
+| AWS EventBridge   | Supported                  | Supported                 |                                                              |
+| AWS/Amazon MQ     | Workaround                 | Supported                 | Java has support for many protocols unlike PHP, in which subscribe() can be implemented using listener or channel based callback for asynchronous message consumption. |
+| AWS SQS           | Supported, **PHP:Enqueue** | Supported                 | JMS support for SQS is also available,                       |
+| AWS Kinesis       | Supported                  | Supported                 |                                                              |
+| Apache Kafka      | Supported, **PHP:Enqueue** | Supported, Native Support |                                                              |
+| Azure Service Bus | Workaround                 | Supported                 | AMQP 1.0  and limited Java JMS support available; most of the functionality can be fully supported in Java because of broader libraries and support |
 
 
 
@@ -163,17 +165,17 @@ Most of the features are available since Magento is also using AMQP protocol wit
 
 Another challenge is that we have lack of any good implementation of AMQP 1.0 protocol for PHP. There is port of C library that is been recommended for Azure Message Bus, but technically it should work with AWS MQ as well.
 
-[azure-uaqmp-c PHP Bindings](https://github.com/norzechowicz/php-uamqp)
+[azure-uaqmp-c PHP Bindings for AMQP 1.0](https://github.com/norzechowicz/php-uamqp)
 
-[Exported PHP Modules](https://github.com/norzechowicz/php-uamqp/tree/master/ext/src/php)
+[Exported PHP Modules from native C Library](https://github.com/norzechowicz/php-uamqp/tree/master/ext/src/php)
 
-| Method        | Evaluation | Implementation Readiness                                     |
-| ------------- | ---------- | ------------------------------------------------------------ |
-| dequeue()     | Available  | receive()                                                    |
-| acknowledge() | Available  | accept() / release()                                         |
-| subscribe()   | Workaround | Long Polling might need to be implemented, unless we find a good library that supports AMQP 1.0 |
-| reject()      | Available  | reject()                                                     |
-| push()        | Available  | sendMessage(Message, Destination)                            |
+| Method        | Evaluation  | Implementation Readiness                                     |
+| ------------- | ----------- | ------------------------------------------------------------ |
+| dequeue()     | Available   | receive()                                                    |
+| acknowledge() | Available   | accept() / release()                                         |
+| subscribe()   | *Workaround | Long Polling might need to be implemented, unless we find a good library that supports AMQP 1.0 in PHP; Java has full support though. |
+| reject()      | Available   | reject()                                                     |
+| push()        | Available   | sendMessage(Message, Destination)                            |
 
 <img src="legend_img.png" alt="Legend" width="70%" height="70%" />
 
@@ -293,16 +295,16 @@ Azure Service Bus supports AMQP 1.0,  and couple of languages, PHP support is ag
 
 [AMQP Azure Service Bus Overview](https://docs.microsoft.com/en-us/azure/service-bus-messaging/service-bus-amqp-overview)
 
-[azure-uaqmp-c PHP Bindings](https://github.com/norzechowicz/php-uamqp)
+[azure-uaqmp-c PHP Bindings for AMQP 1.0](https://github.com/norzechowicz/php-uamqp)
 
-[Exported PHP Modules](https://github.com/norzechowicz/php-uamqp/tree/master/ext/src/php)
+[Exported PHP Modules from C Native Library](https://github.com/norzechowicz/php-uamqp/tree/master/ext/src/php)
 
-| Method        | Evaluation | Implementation Readiness                                     |
-| ------------- | ---------- | ------------------------------------------------------------ |
-| dequeue()     | Available  | receive()                                                    |
-| acknowledge() | Available  | accept() / release()                                         |
-| subscribe()   | Workaround | Long Polling might need to be implemented, unless we find a good library that supports AMQP 1.0 for PHP |
-| reject()      | Available  | reject(errorCondition, errorDescription)                     |
-| push()        | Available  | sendMessage(message, destination)                            |
+| Method        | Evaluation  | Implementation Readiness                                     |
+| ------------- | ----------- | ------------------------------------------------------------ |
+| dequeue()     | Available   | receive()                                                    |
+| acknowledge() | Available   | accept() / release()                                         |
+| subscribe()   | *Workaround | Long Polling might need to be implemented, unless we find a good library that supports AMQP 1.0 for PHP; Java has full support for required features. |
+| reject()      | Available   | reject(errorCondition, errorDescription)                     |
+| push()        | Available   | sendMessage(message, destination)                            |
 
 <img src="legend_img.png" alt="Legend" width="70%" height="70%" />
