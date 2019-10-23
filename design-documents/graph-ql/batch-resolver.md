@@ -93,11 +93,103 @@ class BatchResponse
 }
 ```
  
+ 
+## Proposed SPI for resolvers utilizing new batch service contracts
+* BatchContractResolverInterface
+   
+  This interface is for graphql resolvers that delegate batch query/operation to a
+  [batch service contract](../batch-query-services.md). Simple interface allows developers to gather criteria/argument items
+  from GraphQL requests and convert service contract result to GraphQL acceptable format.
+   
+  Only service contracts following batch services specification can be used with these resolvers since the mechanism
+  relies on results being returned in the same exact order as requests from a service contract.
+   
+```php
+/**
+ * Resolve multiple brunches/leaves by executing a batch service contract.
+ */
+interface BatchContractResolverInterface
+{
+    /**
+     * Service contract to use, 1st element - class, 2nd - method.
+     *
+     * @return array
+     */
+    public function getServiceContract(): array;
+
+    /**
+     * Convert GraphQL arguments into a batch service contract argument item.
+     *
+     * @param ResolveRequestInterface $request
+     * @return object
+     * @throws GraphQlInputException
+     */
+    public function convertToArgument(ResolveRequestInterface $request);
+
+    /**
+     * Convert service contract result item into resolved brunch/leaf.
+     *
+     * @param object $result Result item returned from service contract.
+     * @param ResolveRequestInterface $request Initial GraphQL request.
+     * @return mixed|Value Resolved GraphQL response.
+     * @throws GraphQlInputException
+     */
+    public function prepareResponse($result, ResolveRequestInterface $request);
+}
+```
+ 
+* ResolveRequestInterface
+   
+  Interface containing all GraphQL request data (for a single branch/leaf)
+   
+```php
+/**
+ * Request for a resolver.
+ */
+interface ResolveRequestInterface
+{
+    /**
+     * Field metadata.
+     *
+     * @return Field
+     */
+    public function getField(): Field;
+
+    /**
+     * GraphQL context.
+     *
+     * @return ContextInterface
+     */
+    public function getContext(): ContextInterface;
+
+    /**
+     * Information associated with the request.
+     *
+     * @return ResolveInfo
+     */
+    public function getInfo(): ResolveInfo;
+
+    /**
+     * Value passed from upper resolvers.
+     *
+     * @return array|null
+     */
+    public function getValue(): ?array;
+
+    /**
+     * Arguments from GraphQL request.
+     *
+     * @return array|null
+     */
+    public function getArgs(): ?array;
+}
+```
+ 
 ## How to introduce this interface
-I propose to deprecate existing single-field ResolverInterface and treat the new interface as the default for Query
-resolvers. Right now Query and Mutation resolvers are not differentiated but that can be changed - since Mutation
-resolvers will never have _$values_ we could introduce new interface for Mutations and have BatchResolverInterface
-dedicated to Queries. Hopefully this move will steer developer into the performance considering approach to resolvers.
+Existing `ResolverInterface` is still good for mutations so it cannot be deprecated in favour of these new interfaces.
+But we have to nudge developers into writing more performance considerate resolvers by utilizing batch resolver interfaces
+so we will create a static test that will propose to use either `BatchResolverInterface` or `BatchContractResolverInterface`
+instead of regular `ResolverInterface`.
  
 ## POC
 I have created POC by replacing Related/CrossSell/UpSell resolvers by batch resolvers and testing them against
