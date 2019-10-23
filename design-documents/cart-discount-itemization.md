@@ -23,29 +23,29 @@ The data will be stored as serialized json to support extensibility.
 *quote_totals* 
 ```
  <table name="quote_totals" resource="checkout" engine="innodb" comment="Quote Totals">
-        <column xsi:type="int" name="quote_id" padding="10" unsigned="true" nullable="false" identity="false"
+        <column xsi:type="int" name="entity_id" padding="10" unsigned="true" nullable="false" identity="false"
                 comment="Quote ID"/>
         <column xsi:type="text" name="value" nullable="true" comment="Serialized quote totals"/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
-            <column name="quote_id"/>
+            <column name="entity_id"/>
         </constraint>
-        <constraint xsi:type="foreign" referenceId="QUOTE_TOTALS_QUOTE_ID_QUOTE_QUOTE_ID"    table="quote_totals" column="quote_id" referenceTable="quote" referenceColumn="quote_id" onDelete="CASCADE"/>
-        <index referenceId="QUOTE_TOTALS_QUOTE_ID" indexType="btree">
-            <column name="quote_id"/>
+        <constraint xsi:type="foreign" referenceId="QUOTE_TOTALS_ENITITY_ID_QUOTE_ENTITY_ID"    table="quote_totals" column="entity_id" referenceTable="quote" referenceColumn="entity_id" onDelete="CASCADE"/>
+        <index referenceId="QUOTE_TOTALS_ENTITY_ID" indexType="btree">
+            <column name="entity_id"/>
         </index>
  </table>
 ```
 *sales_order_totals* 
 ```
  <table name="sales_order_totals" resource="checkout" engine="innodb" comment="Sales Order Totals">
-        <column xsi:type="int" name="order_id" padding="10" unsigned="true" nullable="false" identity="false"
+        <column xsi:type="int" name="entity_id" padding="10" unsigned="true" nullable="false" identity="false"
                 comment="Order ID"/>
         <column xsi:type="text" name="value" nullable="true" comment="Serialized order totals"/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
-            <column name="order_id"/>
+            <column name="entity_id"/>
         </constraint>
-        <constraint xsi:type="foreign" referenceId="SALES_ORDER_TOTALS_ORDER_ID_SALES_ORDER_ENTITY_ID"   table="sales_order_totals" column="order_id" referenceTable="sales_order" referenceColumn="entity_id" onDelete="CASCADE"/>
-        <index referenceId="SALES_ORDER_ADDRESS_TOTALS_ID" indexType="btree">
+        <constraint xsi:type="foreign" referenceId="SALES_ORDER_TOTALS_ENTITY_ID_SALES_ORDER_ENTITY_ID"   table="sales_order_totals" column="order_id" referenceTable="sales_order" referenceColumn="entity_id" onDelete="CASCADE"/>
+        <index referenceId="SALES_ORDER_TOTALS_ENTITY_ID" indexType="btree">
             <column name="order_id"/>
         </index>
  </table>
