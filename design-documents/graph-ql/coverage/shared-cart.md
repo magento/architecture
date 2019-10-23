@@ -16,7 +16,9 @@ To achieve desired behavior we need two operations:
  
  The proposal for this scenario reflected in schema is the following query:
 ```graphql
-customerCart(): Cart! // where Cart! is the customer cart
+query {
+  customerCart(): Cart! // where Cart! is the customer cart
+}
 ```
 
 ### Scenario for point 1.
@@ -25,10 +27,10 @@ customerCart(): Cart! // where Cart! is the customer cart
  
 | Step | Device     | Operation                                                                        | Headers        | Response                                          |
 |------|------------|----------------------------------------------------------------------------------|----------------|---------------------------------------------------|
-| 1    | Laptop     | customerCart() { cart_id }                                                         | customer-token | { cart_id: "CustomerCart123e4567" }               |
-| 2    | Laptop     | addProductsToCart("CustomerCart123e4567", [{"sku": "productA", "quantity": 2}]) {cart_id, cart_items {sku, quantity} }    | customer-token | { cart_id: "CustomerCart123e4567", cart_items: [{"sku": "productA", "quantity": 2]}|
-| 3    | Smartphone | customerCart() { cart_id, cart_items {sku, quantity} }                                                         | customer-token | { cart_id: "CustomerCart123e4567", cart_items: [{"sku": "productA", "quantity": 2] }|
-| 4    | Smartphone | cart("CustomerCart123e4567") {cart_items {sku, quantity}}                        | customer-token | {cart_items: [{"sku": "productA", "quantity": 2]} |
+| 1    | Laptop     | cart(cart_id: "GuestCart456e8901") { cart_items {sku, quantity} }                                                         | Not Logged In | { cart_items: [] }    |
+| 2    | Laptop     | customerCart() { cart_id }                                                         | customer-token | { cart_id: "CustomerCart123e4567" }               |
+| 3    | Laptop     | addProductsToCart("CustomerCart123e4567", [{"sku": "productA", "quantity": 2}]) {cart_id, cart_items {sku, quantity} }    | customer-token | { cart_id: "CustomerCart123e4567", cart_items: [{"sku": "productA", "quantity": 2]}|
+| 4    | Smartphone | customerCart() { cart_id, cart_items {sku, quantity} }                                                         | customer-token | { cart_id: "CustomerCart123e4567", cart_items: [{"sku": "productA", "quantity": 2] }|
 
 *Note 1*: customerCart will always return the same cart_id representing the same query, until an order is completed. If an active customer cart wasn't created, then one will be instantly created. So this could qualify as a mutation not a query.
 
@@ -38,7 +40,9 @@ customerCart(): Cart! // where Cart! is the customer cart
  2. **Merge guest cart:** There should be a way to transfer/merge products from a guest cart to a the customer cart. To achieve this we choose to add a mutation that accepts an active guest cart Id, and reflected merged products will be shown directly in the cart response object.
  Proposal for this scenario reflected in schema is the following query:
 ```graphql
-mergeGuestIntoCustomerCart(guest_cart_id: String): Cart! // where Cart! is the customer cart
+mutation {
+  mergeGuestIntoCustomerCart(guest_cart_id: String): Cart! // where Cart! is the customer cart
+}
 ```
 
 In the following scenario a guest cart already exists, and the user already added products to the cart. After logging in to his account from any device the cart needs to import/merge the gust cart and then destroy to guest cart (actual GraphQL queries are replaced with pseudocode for simplicity): 
@@ -47,12 +51,10 @@ In the following scenario a guest cart already exists, and the user already adde
 | Step | Logged status| Operation                                                                        | Headers        | Response                                          |
 |------|--------------|----------------------------------------------------------------------------------|----------------|---------------------------------------------------|
 | 1    | Not Logged In| cart(cart_id: "GuestCart456e8901") { cart_items {sku, quantity} }                                                         |  | { cart_items: [{"sku": "productA", "quantity": 2] }    |
-| 2    | Logged In    | customerCart() { cart_id , cart_items {sku, quantity} }                                                         | customer-token | { cart_id: "CustomerCart123e4567", cart_items:[] }               |
-| 3    | Logged In    | mergeGuestIntoCustomerCart(guest_cart_id: "GuestCart456e8901") { cart_id, cart_items {sku, quantity} }                                                         | customer-token | { cart_id: "CustomerCart123e4567", cart_items: [{"sku": "productA", "quantity": 2] }|
-| 4    | Not/Logged In| cart(cart_id: "GuestCart456e8901") { cart_items {sku, quantity} }                         |  | {"errors": [{"message": "Could not find a cart with ID"}]} |
+| 2    | Logged In    | mergeGuestIntoCustomerCart(guest_cart_id: "GuestCart456e8901") { cart_id, cart_items {sku, quantity} }                                                         | customer-token | { cart_id: "CustomerCart123e4567", cart_items: [{"sku": "productA", "quantity": 2] }|
+| 3    | Not Logged In| cart(cart_id: "GuestCart456e8901") { cart_items {sku, quantity} }                         |  | {"errors": [{"message": "Could not find a cart with ID"}]} |
 
-*Note 1*: This operation will only work for registered customers and existing guest carts (valid customer token must be provided in headers). Also, this way se segregate operations as `customerCart()` as query and `mergeGuestIntoCustomerCart()` as mutation and their intent is very clear. A developer can choose 1st or the 2nd operation depending if the user had products in the cart or not. In both situations you will get the Customer Cart . Also see alternative for #2.
-
+*Note 1*: This operation will only work for registered customers and existing guest carts (valid customer token must be provided in headers). Also, this way we segregate operations as `customerCart()` as query and `mergeGuestIntoCustomerCart()` as mutation and their intent is very clear. A developer can choose 1st or the 2nd operation depending if the user had products in the cart or not. In both situations you will get the Customer Cart . Also see alternative for #2.
 *Note 2*: Destroying the guest cart actually creates a problem with the guest same guest on multiple devices.
 
  ## Alternatives
@@ -68,4 +70,4 @@ In the following scenario a guest cart already exists, and the user already adde
  | 1    | Not Logged In| cart(cart_id: "GuestCart456e8901") { cart_items {sku, quantity} }                                                         |  | { cart_items: [{"sku": "productA", "quantity": 2] }    |
  | 2    | Logged In    | customerCart() { cart_id , cart_items {sku, quantity} }                                                         | customer-token | { cart_id: "CustomerCart123e4567", cart_items:[] }               |
  | 3    | Logged In    | customerCart(guest_cart_id_to_merge: "GuestCart456e8901") { cart_id, cart_items {sku, quantity} }                     | customer-token | { cart_id: "CustomerCart123e4567", cart_items: [{"sku": "productA", "quantity": 2] }|
- | 4    | Not/Logged In| cart(cart_id: "GuestCart456e8901") { cart_items {sku, quantity} }                         |  | {"errors": [{"message": "Could not find a cart with ID"}]} |
+ | 4    | Not Logged In| cart(cart_id: "GuestCart456e8901") { cart_items {sku, quantity} }                         |  | {"errors": [{"message": "Could not find a cart with ID"}]} |
