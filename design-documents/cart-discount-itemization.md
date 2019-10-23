@@ -46,7 +46,7 @@ The data will be stored as serialized json to support extensibility.
         </constraint>
         <constraint xsi:type="foreign" referenceId="SALES_ORDER_TOTALS_ENTITY_ID_SALES_ORDER_ENTITY_ID"   table="sales_order_totals" column="order_id" referenceTable="sales_order" referenceColumn="entity_id" onDelete="CASCADE"/>
         <index referenceId="SALES_ORDER_TOTALS_ENTITY_ID" indexType="btree">
-            <column name="order_id"/>
+            <column name="entity_id"/>
         </index>
  </table>
 ```
