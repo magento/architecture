@@ -52,16 +52,22 @@ use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
 class BatchRequestItem
 {
     /**
+     * Information associated with a single GraphQL request.
+     *
      * @return ResolveInfo
      */
     public function getInfo(): ResolveInfo;
 
     /**
+     * Data passed from upper resolvers.
+     *
      * @return array|null
      */
     public function getValue(): ?array;
 
     /**
+     * Arguments from a single GraphQL request.
+     *
      * @return array|null
      */
     public function getArgs(): ?array;
@@ -95,7 +101,7 @@ class BatchResponse
  
  
 ## Proposed SPI for resolvers utilizing new batch service contracts
-* BatchContractResolverInterface
+* BatchServiceContractResolverInterface
    
   This interface is for graphql resolvers that delegate batch query/operation to a
   [batch service contract](../batch-query-services.md). Simple interface allows developers to gather criteria/argument items
@@ -108,7 +114,7 @@ class BatchResponse
 /**
  * Resolve multiple brunches/leaves by executing a batch service contract.
  */
-interface BatchContractResolverInterface
+interface BatchServiceContractResolverInterface
 {
     /**
      * Service contract to use, 1st element - class, 2nd - method.
@@ -124,7 +130,7 @@ interface BatchContractResolverInterface
      * @return object
      * @throws GraphQlInputException
      */
-    public function convertToArgument(ResolveRequestInterface $request);
+    public function prepareArgument(ResolveRequestInterface $request);
 
     /**
      * Convert service contract result item into resolved brunch/leaf.
@@ -188,7 +194,7 @@ interface ResolveRequestInterface
 ## How to introduce this interface
 Existing `ResolverInterface` is still good for mutations so it cannot be deprecated in favour of these new interfaces.
 But we have to nudge developers into writing more performance considerate resolvers by utilizing batch resolver interfaces
-so we will create a static test that will propose to use either `BatchResolverInterface` or `BatchContractResolverInterface`
+so we will create a static test that will propose to use either `BatchResolverInterface` or `BatchServiceContractResolverInterface`
 instead of regular `ResolverInterface`.
  
 ## POC
