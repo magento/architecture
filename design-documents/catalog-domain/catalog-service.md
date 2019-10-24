@@ -28,7 +28,6 @@ Category page, search results, layered navigation.
 ![Routing](images/catalog-usage-01-03.png)
 
 
-
 ## API interface
 
 ## Catalog service 
