@@ -102,7 +102,7 @@ There are many messaging technologies available in the market, we are specially 
 
 Recent poll from #magento community shows huge interest in Apache Kafka and AWS SQS; there was also some interest in using Redis in this regard.
 
-![image-20191024150610686](/Users/jawed/sources/magento/architecture/design-documents/message-queue/TwitterPollResults.png)
+![Twitter Poll](TwitterPollResults.png)
 
 ### Programming Language Support
 
