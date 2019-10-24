@@ -10,7 +10,7 @@ be grouped before resolving takes place will make batch field resolving easier a
 * BatchResolverInterface
    
   The new resolver interface for developers to implement. _Resolve_ method receives context and field DTO (they would
-  the same for every value,args pair), value and args pairs requested. Value and arguments pairs would be gathered from
+  be the same for every value,args pair), value and args pairs requested. Value and arguments pairs would be gathered from
   all _field_ occurrences that need resolving until the very last moment when actual results needed to fill
   leaves/branches. Developers will have the ability to group requested entity IDs/search parameters/entity properties
   requested from different branches and retrieve them all at once.
