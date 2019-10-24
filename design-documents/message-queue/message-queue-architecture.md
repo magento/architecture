@@ -137,8 +137,8 @@ As discussed above there is not a good support available for AMQP 1.0 in PHP; bu
 
 |                               | Supported Brokers / Protocols                                | Notes                                                        |
 | ----------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| Enqueue                       | Apcahe Kafka, AWS SQS/SNS, AMQP 0.9, Database, MongoDB, Redis etc. | Enqueue tries to follow JMS specification as close as possible; although this library does not have very good documentation (received direct feedback from Magento Engineer who contibuted to the project). <br />Theoritically this library can enable multiple brokers for Magento;  with only few deviations in terms of configurations. |
-| Symfony                       | AMQP 0.9, Doctorine, Redis, In Memory, Serializing Messages  | This is more mature framework and active community, has better documentation |
+| Enqueue                       | Apcahe Kafka, AWS SQS/SNS, AMQP 0.9, Database, MongoDB, Redis etc. | Enqueue tries to follow JMS specification as close as possible; although this library does not have very good documentation. <br />Theoretically this library can enable multiple brokers for Magento;  with only few deviations in terms of configurations.<br />[Checkout PHP Enqueue Library Evaluation Table](#7--PHP-Enqueue-Library) |
+| Symfony                       | AMQP 0.9, Doctorine, Redis, In Memory, Serializing Messages  | This is more mature framework with active community, also has better documentation |
 | Symfony via Enqueue Transport | Add support for Enqueue Brokers with Symfony                 | https://github.com/sroze/messenger-enqueue-transport         |
 
 
@@ -152,6 +152,8 @@ AWS EventBridge is a serverless event bus, it facilitates receving data from you
 ##### High Level Architecture of AWS EventBridge
 
 ![product-page-diagram-EventBridge_How-it-works_V2@2x](AWSEventBridgeArchitecture.png)
+
+
 
 ##### AWS EventBridge Evaluation Table - Details
 
