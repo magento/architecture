@@ -14,7 +14,7 @@
 
 [Programming Language Support](#Programming-Language-Support)
 
-[PHP Queue Abstraction - Libraries](#PHP-Queue-Abstraction--Libraries)
+[PHP Queue Abstraction - Libraries](#PHP-Queue-Abstraction---Libraries)
 
 [(1) AWS EventBridge](#1--AWS-EventBridge) 
 
@@ -337,7 +337,7 @@ Azure Service Bus supports AMQP 1.0,  and couple of languages, PHP support is ag
 
 PHP Enqueue provides JMS style abstraction layer over many brokers as discussed here
 
-[PHP Queue Abstraction - Libraries](#PHP-Queue-Abstraction--Libraries)
+[PHP Queue Abstraction - Libraries](#PHP-Queue-Abstraction---Libraries)
 
 [Quick Tour](https://github.com/php-enqueue/enqueue-dev/blob/master/docs/quick_tour.md)
 
