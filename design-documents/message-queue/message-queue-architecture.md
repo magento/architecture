@@ -86,13 +86,21 @@ There are many messaging technologies available in the market, we are specially 
 
 ### Interface based Comparison Summary
 
-| Method        | [(1) AWS EventBridge](#1--AWS-EventBridge) | [(2) AWS MQ](#2--AWS-MQ) | [(3) AWS SQS](#3--AWS-SQS) | [(4) AWS Kinesis](#4--AWS-Kinesis) | [(5) Apache Kafka](#5--Apache-Kafka) | [(6) Azure Service Bus](#6--Azure-Service-Bus) | [(7) PHP Enqueue Library](#7--PHP-Enqueue-Library) |
-| ------------- | ------------------------------------------ | ------------------------ | -------------------------- | ---------------------------------- | ------------------------------------ | ---------------------------------------------- | -------------------------------------------------- |
-| dequeue()     | Not Possible or N/A                        | Available                | Available                  | Possiblity                         | Possiblity                           | Available                                      | Available                                          |
-| acknowledge() | Not Possible or N/A                        | Available                | Possiblity                 | Possiblity                         | Possiblity                           | Available                                      | Available                                          |
-| subscribe()   | Not Possible or N/A                        | *Workaround              | *Workaround                | Workaround                         | Possiblity                           | *Workaround                                    | Available                                          |
-| reject()      | Not Possible or N/A                        | Available                | Possiblity                 | Possiblity                         | Possiblity                           | Available                                      | Available                                          |
-| push()        | Available                                  | Available                | Available                  | Possiblity                         | Possiblity                           | Available                                      | Available                                          |
+| Method        | [(1) AWS EventBridge](#1--AWS-EventBridge) | [(2) AWS MQ](#2--AWS-MQ) | [(3) AWS SQS](#3--AWS-SQS) | [(4) AWS Kinesis](#4--AWS-Kinesis) |
+| ------------- | ------------------------------------------ | ------------------------ | -------------------------- | ---------------------------------- |
+| dequeue()     | Not Possible or N/A                        | Available                | Available                  | Possiblity                         |
+| acknowledge() | Not Possible or N/A                        | Available                | Possiblity                 | Possiblity                         |
+| subscribe()   | Not Possible or N/A                        | *Workaround              | *Workaround                | Workaround                         |
+| reject()      | Not Possible or N/A                        | Available                | Possiblity                 | Possiblity                         |
+| push()        | Available                                  | Available                | Available                  | Possiblity                         |
+
+| Method        | [(5) Apache Kafka](#5--Apache-Kafka) | [(6) Azure Service Bus](#6--Azure-Service-Bus) | [(7) PHP Enqueue Library](#7--PHP-Enqueue-Library) |
+| ------------- | ------------------------------------ | ---------------------------------------------- | -------------------------------------------------- |
+| dequeue()     | Possiblity                           | Available                                      | Available                                          |
+| acknowledge() | Possiblity                           | Available                                      | Available                                          |
+| subscribe()   | Possiblity                           | *Workaround                                    | Available                                          |
+| reject()      | Possiblity                           | Available                                      | Available                                          |
+| push()        | Possiblity                           | Available                                      | Available                                          |
 
 *Workaround - Feature maybe available but full support for PHP (library) is not available.
 
@@ -100,9 +108,13 @@ There are many messaging technologies available in the market, we are specially 
 
 
 
-Recent poll from #magento community shows huge interest in Apache Kafka and AWS SQS; there was also some interest in using Redis in this regard.
+### Twitter Poll Results
 
-![Twitter Poll](TwitterPollResults.png)
+Recent Twitter poll from #magento community shows huge interest in Apache Kafka and AWS SQS; there was also some interest in using Redis in this regard as well.
+
+<img src="TwitterPollResults.png" alt="Legend" width="60%" height="60%" />
+
+
 
 ### Programming Language Support
 
