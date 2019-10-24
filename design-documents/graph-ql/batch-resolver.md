@@ -59,7 +59,7 @@ class BatchRequestItem
     public function getInfo(): ResolveInfo;
 
     /**
-     * Data passed from upper resolvers.
+     * Data passed from parent resolvers.
      *
      * @return array|null
      */
@@ -176,7 +176,7 @@ interface ResolveRequestInterface
     public function getInfo(): ResolveInfo;
 
     /**
-     * Value passed from upper resolvers.
+     * Value passed from parent resolvers.
      *
      * @return array|null
      */
