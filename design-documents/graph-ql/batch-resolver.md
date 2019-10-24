@@ -130,7 +130,7 @@ interface BatchServiceContractResolverInterface
      * @return object
      * @throws GraphQlInputException
      */
-    public function prepareArgument(ResolveRequestInterface $request);
+    public function convertToServiceArgument(ResolveRequestInterface $request);
 
     /**
      * Convert service contract result item into resolved brunch/leaf.
@@ -140,7 +140,7 @@ interface BatchServiceContractResolverInterface
      * @return mixed|Value Resolved GraphQL response.
      * @throws GraphQlInputException
      */
-    public function prepareResponse($result, ResolveRequestInterface $request);
+    public function convertFromServiceResult($result, ResolveRequestInterface $request);
 }
 ```
  
