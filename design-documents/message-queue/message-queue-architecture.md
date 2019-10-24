@@ -12,6 +12,10 @@
 
 [Evaluation of Technologies](#evaluation-of-technologies)
 
+[Programming Language Support](#Programming-Language-Support)
+
+[PHP Queue Abstraction - Libraries](#PHP-Queue-Abstraction--Libraries)
+
 [(1) AWS EventBridge](#1--AWS-EventBridge) 
 
 [(2) AWS MQ](#2--AWS-MQ)
@@ -23,6 +27,8 @@
 [(5) Apache Kafka](#5--Apache-Kafka)
 
 [(6) Azure Service Bus](#6--Azure-Service-Bus)
+
+[(7) PHP Enqueue Library](#7--PHP-Enqueue-Library)
 
 ------
 
@@ -80,13 +86,13 @@ There are many messaging technologies available in the market, we are specially 
 
 ### Interface based Comparison Summary
 
-| Method        | [(1) AWS EventBridge](#1--AWS-EventBridge) | [(2) AWS MQ](#2--AWS-MQ) | [(3) AWS SQS](#3--AWS-SQS) | [(4) AWS Kinesis](#4--AWS-Kinesis) | [(5) Apache Kafka](#5--Apache-Kafka) | [(6) Azure Service Bus](#6--Azure-Service-Bus) |
-| ------------- | ------------------------------------------ | ------------------------ | -------------------------- | ---------------------------------- | ------------------------------------ | ---------------------------------------------- |
-| dequeue()     | Not Possible or N/A                        | Available                | Available                  | Possiblity                         | Possiblity                           | Available                                      |
-| acknowledge() | Not Possible or N/A                        | Available                | Possiblity                 | Possiblity                         | Possiblity                           | Available                                      |
-| subscribe()   | Not Possible or N/A                        | *Workaround              | *Workaround                | Workaround                         | Possiblity                           | *Workaround                                    |
-| reject()      | Not Possible or N/A                        | Available                | Possiblity                 | Possiblity                         | Possiblity                           | Available                                      |
-| push()        | Available                                  | Available                | Available                  | Possiblity                         | Possiblity                           | Available                                      |
+| Method        | [(1) AWS EventBridge](#1--AWS-EventBridge) | [(2) AWS MQ](#2--AWS-MQ) | [(3) AWS SQS](#3--AWS-SQS) | [(4) AWS Kinesis](#4--AWS-Kinesis) | [(5) Apache Kafka](#5--Apache-Kafka) | [(6) Azure Service Bus](#6--Azure-Service-Bus) | [(7) PHP Enqueue Library](#7--PHP-Enqueue-Library) |
+| ------------- | ------------------------------------------ | ------------------------ | -------------------------- | ---------------------------------- | ------------------------------------ | ---------------------------------------------- | -------------------------------------------------- |
+| dequeue()     | Not Possible or N/A                        | Available                | Available                  | Possiblity                         | Possiblity                           | Available                                      | Available                                          |
+| acknowledge() | Not Possible or N/A                        | Available                | Possiblity                 | Possiblity                         | Possiblity                           | Available                                      | Available                                          |
+| subscribe()   | Not Possible or N/A                        | *Workaround              | *Workaround                | Workaround                         | Possiblity                           | *Workaround                                    | Available                                          |
+| reject()      | Not Possible or N/A                        | Available                | Possiblity                 | Possiblity                         | Possiblity                           | Available                                      | Available                                          |
+| push()        | Available                                  | Available                | Available                  | Possiblity                         | Possiblity                           | Available                                      | Available                                          |
 
 *Workaround - Feature maybe available but full support for PHP (library) is not available.
 
@@ -94,18 +100,34 @@ There are many messaging technologies available in the market, we are specially 
 
 
 
-### Language Support
+Recent poll from #magento community shows huge interest in Apache Kafka and AWS SQS; there was also some interest in using Redis in this regard.
+
+![image-20191024150610686](/Users/jawed/sources/magento/architecture/design-documents/message-queue/TwitterPollResults.png)
+
+### Programming Language Support
 
 For PHP, AMQP 1.0 is not fully supported, indirect C wrapper API is available, which will incur bit of setup overhead for the Magento customers. Unlike RabbitMQ which works with AMQP 0.9, Amazon MQ and Azure Service Bus supports AMQP version 1.0; although Amazon MQ supports more protocols.
 
-| Platform          | PHP                        | Java                      | Notes                                                        |
-| ----------------- | -------------------------- | ------------------------- | ------------------------------------------------------------ |
-| AWS EventBridge   | Supported                  | Supported                 |                                                              |
-| AWS/Amazon MQ     | Workaround                 | Supported                 | Java has support for many protocols unlike PHP, in which subscribe() can be implemented using listener or channel based callback for asynchronous message consumption. |
-| AWS SQS           | Supported, **PHP:Enqueue** | Supported                 | JMS support for SQS is also available,                       |
-| AWS Kinesis       | Supported                  | Supported                 |                                                              |
-| Apache Kafka      | Supported, **PHP:Enqueue** | Supported, Native Support |                                                              |
-| Azure Service Bus | Workaround                 | Supported                 | AMQP 1.0  and limited Java JMS support available; most of the functionality can be fully supported in Java because of broader libraries and support |
+| Platform          | PHP        | Java                      | Notes                                                        |
+| ----------------- | ---------- | ------------------------- | ------------------------------------------------------------ |
+| AWS EventBridge   | Supported  | Supported                 |                                                              |
+| AWS/Amazon MQ     | Workaround | Supported                 | Java has support for many protocols unlike PHP, in which subscribe() can be implemented using listener or channel based callback for asynchronous message consumption. |
+| AWS SQS           | Supported  | Supported                 | JMS support for SQS is also available,                       |
+| AWS Kinesis       | Supported  | Supported                 |                                                              |
+| Apache Kafka      | Supported  | Supported, Native Support |                                                              |
+| Azure Service Bus | Workaround | Supported                 | AMQP 1.0  and limited Java JMS support available; most of the functionality can be fully supported in Java because of broader libraries and support |
+
+
+
+### PHP Queue Abstraction - Libraries
+
+As discussed above there is not a good support available for AMQP 1.0 in PHP; but we have PHP Enqueue and Symfony libraries available which provides an abstration layer over multiple brokers.
+
+|                               | Supported Brokers / Protocols                                | Notes                                                        |
+| ----------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| Enqueue                       | Apcahe Kafka, AWS SQS/SNS, AMQP 0.9, Database, MongoDB, Redis etc. | Enqueue tries to follow JMS specification as close as possible; although this library does not have very good documentation (received direct feedback from Magento Engineer who contibuted to the project). <br />Theoritically this library can enable multiple brokers for Magento;  with only few deviations in terms of configurations. |
+| Symfony                       | AMQP 0.9, Doctorine, Redis, In Memory, Serializing Messages  | This is more mature framework and active community, has better documentation |
+| Symfony via Enqueue Transport | Add support for Enqueue Brokers with Symfony                 | https://github.com/sroze/messenger-enqueue-transport         |
 
 
 
@@ -308,3 +330,28 @@ Azure Service Bus supports AMQP 1.0,  and couple of languages, PHP support is ag
 | push()        | Available   | sendMessage(message, destination)                            |
 
 <img src="legend_img.png" alt="Legend" width="70%" height="70%" />
+
+
+
+#### 7- PHP Enqueue Library 
+
+PHP Enqueue provides JMS style abstraction layer over many brokers as discussed here
+
+[PHP Queue Abstraction - Libraries](#PHP-Queue-Abstraction--Libraries)
+
+[Quick Tour](https://github.com/php-enqueue/enqueue-dev/blob/master/docs/quick_tour.md)
+
+[Extentions for additional functionality](https://github.com/php-enqueue/enqueue-dev/blob/master/docs/consumption/extensions.md)
+
+##### PHP Enqueue Library Evaluation Table - Details
+
+| Method        | Evaluation | Implementation Readiness                                     |
+| ------------- | ---------- | ------------------------------------------------------------ |
+| dequeue()     | Available  | Consumer > receive()                                         |
+| acknowledge() | Available  | Consumer > acknowledge(message)<br />Callback function / processor can return ACK |
+| subscribe()   | Available  | bindCallback(topic, callback function)                       |
+| reject()      | Available  | Consumer > reject(message)<br />callback function / processor can return REJECT or REQUEUE |
+| push()        | Available  | sendMessage(message, destination)                            |
+
+<img src="legend_img.png" alt="Legend" width="70%" height="70%" />
+
