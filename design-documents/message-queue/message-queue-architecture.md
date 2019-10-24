@@ -351,7 +351,7 @@ PHP Enqueue provides JMS style abstraction layer over many brokers as discussed 
 | acknowledge() | Available  | Consumer > acknowledge(message)<br />Callback function / processor can return ACK |
 | subscribe()   | Available  | bindCallback(topic, callback function)                       |
 | reject()      | Available  | Consumer > reject(message)<br />callback function / processor can return REJECT or REQUEUE |
-| push()        | Available  | sendMessage(message, destination)                            |
+| push()        | Available  | sendEvent(topic, message)                                    |
 
 <img src="legend_img.png" alt="Legend" width="70%" height="70%" />
 
