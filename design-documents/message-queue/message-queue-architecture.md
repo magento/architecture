@@ -30,7 +30,7 @@
 
 [(7) PHP Enqueue Library](#7--PHP-Enqueue-Library)
 
-[(8) Adobe I/O](#8--Adobe-I-O)
+[(8) Adobe I/O](#8--Adobe-IO)
 
 
 
@@ -96,13 +96,13 @@ There are many messaging technologies available in the market, we are specially 
 | reject()      | Not Possible or N/A                        | Available                | Possiblity                 | Possiblity                         |
 | push()        | Available                                  | Available                | Available                  | Possiblity                         |
 
-| Method        | [(5) Apache Kafka](#5--Apache-Kafka) | [(6) Azure Service Bus](#6--Azure-Service-Bus) | [(7) PHP Enqueue Library](#7--PHP-Enqueue-Library) | [(8) Adobe I/O](#8--Adobe-I-O) |
-| ------------- | ------------------------------------ | ---------------------------------------------- | -------------------------------------------------- | ------------------------------ |
-| dequeue()     | Possiblity                           | Available                                      | Available                                          | Not Possible or N/A            |
-| acknowledge() | Possiblity                           | Available                                      | Available                                          | Not Possible or N/A            |
-| subscribe()   | Possiblity                           | *Workaround                                    | Available                                          | Not Possible or N/A            |
-| reject()      | Possiblity                           | Available                                      | Available                                          | Not Possible or N/A            |
-| push()        | Possiblity                           | Available                                      | Available                                          | Not Possible or N/A            |
+| Method        | [(5) Apache Kafka](#5--Apache-Kafka) | [(6) Azure Service Bus](#6--Azure-Service-Bus) | [(7) PHP Enqueue Library](#7--PHP-Enqueue-Library) | [(8) Adobe I/O](#8--Adobe-IO) |
+| ------------- | ------------------------------------ | ---------------------------------------------- | -------------------------------------------------- | ----------------------------- |
+| dequeue()     | Possiblity                           | Available                                      | Available                                          | Not Possible or N/A           |
+| acknowledge() | Possiblity                           | Available                                      | Available                                          | Not Possible or N/A           |
+| subscribe()   | Possiblity                           | *Workaround                                    | Available                                          | Not Possible or N/A           |
+| reject()      | Possiblity                           | Available                                      | Available                                          | Not Possible or N/A           |
+| push()        | Possiblity                           | Available                                      | Available                                          | Not Possible or N/A           |
 
 *Workaround - Feature maybe available but full support for PHP (library) is not available.
 
