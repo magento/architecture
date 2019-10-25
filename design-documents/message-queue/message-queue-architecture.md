@@ -1,8 +1,10 @@
+#Messaging Architecture and Options
 
 
-# Table of Contents
 
-[Messaging Architecture and Options](#messaging-architecture-and-options)
+##Contents
+
+[Overview and Introduction](#Overview-and-Introduction)
 
 [Message Queue Processing Design](#message-queue-processing-design)
 
@@ -30,15 +32,17 @@
 
 [(7) PHP Enqueue Library](#7--PHP-Enqueue-Library)
 
-------
+[(8) Adobe I/O](#8--Adobe-I/O)
 
-# Messaging Architecture and Options
+
+
+##Overview and Introduction
 
 Magento uses message queue architecture for all asynchronous communication, where message sender and receiver are loosely coupled and doesn't talk to each other directly. For more information go through the following document 
 
 [Magento Message Queue Overview](https://devdocs.magento.com/guides/v2.3/extension-dev-guide/message-queues/message-queues.html)
 
-This document is looking into the current Queue Interface, its implementations, important interconnected modules like Queue Consumers & ConsumersRunner process; then finally looking into the different potential candidates for alternative Cloud Queueing technologies that can be used within Magento as potential candidate; which can serve as an alternative choice for the Magento customers in addition to currently supported technologies.
+This document is looking into the current Queue Interface, its implementations, important interconnected modules like Queue Consumers & ConsumersRunner process; then finally looking into the different potential candidates for alternative Cloud Queueing technologies that can be used within Magento; which can serve as an alternative choice for the Magento customers in addition to currently supported technologies; the Queue technology should also support modern autonomous architecture for their communication needs for instance Event Sourcing and CQRS mechanism.
 
 ## Message Queue Processing Design
 
@@ -63,7 +67,7 @@ This QueueInterface is been utilized by Consumer classes, there are currently th
 
 |      | Class Name    | Purpose / Description                                        |
 | ---- | ------------- | ------------------------------------------------------------ |
-| 1    | Consumer      | This class is for both synchronous and asynchronous style message processing |
+| 1    | Consumer      | This class is for both synchronous and asynchronous style message processing; in synchronous style topics, **reply_to** queue is used for execution results |
 | 2    | MassConsumer  | This is mainly designed for asynchronous style message processing; primarily used for Async APIs and Async Bulk APIs |
 | 3    | BatchConsumer | This class supports batch processing of messages, helps in picking & merging the messages to a specified batch size, and then process them together, before querying another batch |
 
@@ -71,7 +75,7 @@ This QueueInterface is been utilized by Consumer classes, there are currently th
 
 ## Queue Interface
 
-The table below describes all the method expected to be implemented by the specific Queue provider, and the intention of what functionality is expected from these methods?
+The table below describes all the method expected to be implemented by the specific Queue provider, and the intention of what functionality is expected from these methods.
 
 | #    | Method        | Purpose / Description                                        | Related RabbitMQ Method |
 | ---- | ------------- | ------------------------------------------------------------ | ----------------------- |
@@ -94,13 +98,13 @@ There are many messaging technologies available in the market, we are specially 
 | reject()      | Not Possible or N/A                        | Available                | Possiblity                 | Possiblity                         |
 | push()        | Available                                  | Available                | Available                  | Possiblity                         |
 
-| Method        | [(5) Apache Kafka](#5--Apache-Kafka) | [(6) Azure Service Bus](#6--Azure-Service-Bus) | [(7) PHP Enqueue Library](#7--PHP-Enqueue-Library) |
-| ------------- | ------------------------------------ | ---------------------------------------------- | -------------------------------------------------- |
-| dequeue()     | Possiblity                           | Available                                      | Available                                          |
-| acknowledge() | Possiblity                           | Available                                      | Available                                          |
-| subscribe()   | Possiblity                           | *Workaround                                    | Available                                          |
-| reject()      | Possiblity                           | Available                                      | Available                                          |
-| push()        | Possiblity                           | Available                                      | Available                                          |
+| Method        | [(5) Apache Kafka](#5--Apache-Kafka) | [(6) Azure Service Bus](#6--Azure-Service-Bus) | [(7) PHP Enqueue Library](#7--PHP-Enqueue-Library) | [(8) Adobe I/O](#8--Adobe-I/O) |
+| ------------- | ------------------------------------ | ---------------------------------------------- | -------------------------------------------------- | ------------------------------ |
+| dequeue()     | Possiblity                           | Available                                      | Available                                          | Not Possible or N/A            |
+| acknowledge() | Possiblity                           | Available                                      | Available                                          | Not Possible or N/A            |
+| subscribe()   | Possiblity                           | *Workaround                                    | Available                                          | Not Possible or N/A            |
+| reject()      | Possiblity                           | Available                                      | Available                                          | Not Possible or N/A            |
+| push()        | Possiblity                           | Available                                      | Available                                          | Not Possible or N/A            |
 
 *Workaround - Feature maybe available but full support for PHP (library) is not available.
 
@@ -118,7 +122,7 @@ Recent Twitter poll from #magento community shows huge interest in Apache Kafka 
 
 ### Programming Language Support
 
-For PHP, AMQP 1.0 is not fully supported, indirect C wrapper API is available, which will incur bit of setup overhead for the Magento customers. Unlike RabbitMQ which works with AMQP 0.9, Amazon MQ and Azure Service Bus supports AMQP version 1.0; although Amazon MQ supports more protocols.
+AMQP 1.0 is not fully supported within any PHP library currently available (at the time of writing this document), although indirect C wrapper API is available, which will incur bit of setup overhead for the Magento customers, and it also provides subset of functionality. Unlike RabbitMQ which works with AMQP 0.9, Amazon MQ and Azure Service Bus supports AMQP version 1.0; although Amazon MQ supports more protocols.
 
 | Platform          | PHP        | Java                      | Notes                                                        |
 | ----------------- | ---------- | ------------------------- | ------------------------------------------------------------ |
@@ -149,13 +153,13 @@ AWS EventBridge is a serverless event bus, it facilitates receving data from you
 
 [EventBridge Targets](https://docs.aws.amazon.com/eventbridge/latest/APIReference/API_PutTargets.html)
 
-##### High Level Architecture of AWS EventBridge
+##### High Level Architecture 
 
 ![product-page-diagram-EventBridge_How-it-works_V2@2x](AWSEventBridgeArchitecture.png)
 
 
 
-##### AWS EventBridge Evaluation Table - Details
+##### Evaluation Table - Details
 
 | Method        | Evaluation          | Implementation Readiness                                     |
 | ------------- | ------------------- | ------------------------------------------------------------ |
@@ -187,7 +191,7 @@ AWS MQ is a Message Broker based on popular Apache ActiveMQ; it supports multipl
 
 
 
-##### High Level Architecture of AWS MQ
+##### High Level Architecture
 
 Since its a managed service, it provides multi zone fault tolreance and resiliancy out of the box.
 
@@ -195,7 +199,7 @@ Since its a managed service, it provides multi zone fault tolreance and resilian
 
 
 
-##### AWS MQ Evaluation Table - Details
+##### Evaluation Table - Details
 
 Most of the features are available since Magento is also using AMQP protocol with RabbitMQ, but the protocol version is different, RabbitMQ uses 0.9 and Amazon MQ is using AMQP 1.0; so any migration would require porting of Queues from RabbitMQ to AWS MQ. There might be some changes and adjustments to the QueueInterface implementation code to accomodate the new protocol differences. AMQP 1.0 is a completely different protocol.
 
@@ -221,7 +225,7 @@ Another challenge is that we have lack of any good implementation of AMQP 1.0 pr
 
 AWS SQS is a distributed & fault tolerant Queuing Technology; it provides point to point connectivity. It can be used with SNS to add publish / subscribe mechanism as well. Single message gets replicated across different SQS Servers.
 
-##### High Level Architecture of AWS SQS
+##### High Level Architecture 
 
 
 
@@ -235,7 +239,7 @@ SQS uses Visibility Timeout to prevent other consumers to receive the same messa
 
 
 
-##### AWS SQS Evaluation Table - Details
+##### Evaluation Table - Details
 
 | Method        | Evaluation | Implementation Readiness                                     |
 | ------------- | ---------- | ------------------------------------------------------------ |
@@ -255,13 +259,13 @@ SQS uses Visibility Timeout to prevent other consumers to receive the same messa
 
 AWS Kinesis is a streaming based distributed messaging technology; it uses publish/subscribe mechanism for loose coupling between senders and receivers. It is designed for extremely high throughput for realtime applications. 
 
-##### High Level Architecture of AWS Kinesis
+##### High Level Architecture 
 
 Streaming and the concept of **Stream** itself is the central idea behind Kinesis. It is pretty similar to Apache Kafka with some differences. It is also suitable for implementing Event Sourcing and CQRS pattern, which is commonly used in Microservices Architecture because of the out-of-the-box support for high throughput messaging and publish/subscribe mechanism.
 
 ![product-page-diagram_Amazon-Kinesis-Data-Streams](AWSKinesisArchitecture.png)
 
-##### AWS Kinesis Evaluation Table - Details
+##### Evaluation Table - Details
 
 | Method        | Evaluation | Implementation Readiness                                     |
 | ------------- | ---------- | ------------------------------------------------------------ |
@@ -281,7 +285,7 @@ Streaming and the concept of **Stream** itself is the central idea behind Kinesi
 
 Apache Kafka is a popular open-source stream-processing / messaging platform; its by design distributed, replicated & resilient (or fault tolerent) which can acheive very high throughput.   
 
-##### High Level Architecture of AWS Kinesis
+##### High Level Architecture
 
 Topic and Publish / Subscribe mechanism is at the core of Kafka. Effective for implementing Event Sourcing and CQRS pattern, which is commonly used in Microservices Architecture. It is also used for variety of streaming use cases, which requires near real-time processing of records.
 
@@ -289,7 +293,7 @@ Topic and Publish / Subscribe mechanism is at the core of Kafka. Effective for i
 
 
 
-##### Apache Kafka Evaluation Table - Details
+##### Evaluation Table - Details
 
 Consumer is usually part of Consumer Group, it ensures that each group receives a copy of the message from the topic. Consumer needs to know its offset and partition, although parition can be automatically assigned when you begin consuming data from the topic, but you can also choose to manually assign parition, but these two cannot be mixed up. Consumer first needs to subscribe itself to the list of topics.
 
@@ -313,7 +317,7 @@ After you read the message(s), you can either configure auto-commit or allow man
 
 Microsoft Azure Service Bus is a fully managed enterprise integration message broker. It support familiar concepts like Queues, Topics, Rules/Filters and much more.
 
-##### High Level Architecture of Azure Service Bus
+##### High Level Architecture
 
 
 
@@ -325,7 +329,7 @@ Microsoft Azure Service Bus is a fully managed enterprise integration message br
 
 
 
-##### Azure Service Bus Evaluation Table - Details
+##### Evaluation Table - Details
 
 Azure Service Bus supports AMQP 1.0,  and couple of languages, PHP support is again limited for the protocol
 
@@ -366,6 +370,44 @@ PHP Enqueue provides JMS style abstraction layer over many brokers as discussed 
 | subscribe()   | Available  | bindCallback(topic, callback function)                       |
 | reject()      | Available  | Consumer > reject(message)<br />callback function / processor can return REJECT or REQUEUE |
 | push()        | Available  | sendEvent(topic, message)                                    |
+
+<img src="legend_img.png" alt="Legend" width="70%" height="70%" />
+
+
+
+#### 8- Adobe I/O 
+
+Adobe I/O is a serverless event driven platform that allows you to quickly deploy custom functions/code in the cloud without any server setup. These functions executes via HTTP requests or Adobe I/O Events. These Events can be orchestrated with Sequences & Compositions. It is built on top of Apache OpenWhisk framework. 
+
+Events are triggered by Event Providers with Adobe Services for instance Creative Clous Assets, Adobe Experience Manager & Adobe Analytics. To start listening to events for your application, you need to register a Webhook (URL endpoint) specifying which Event Types from which Event Providers it wants to receive; Adobe pushes events to your webhook via HTTP POST messages.
+
+*"Magento SaaS based next generation platform can push it's Events on Adobe I/O Events like other Adobe Services, to be consumed by Developers through Adobe I/O Runtime for custom functionality and integrations. But it is not a right candidate for Magento Event Bus"*
+
+[Adobe I/O Runtime Docs](https://www.adobe.io/apis/experienceplatform/runtime/docs.html)
+
+[Apache OpenWhisk](https://openwhisk.apache.org/)
+
+[Adobe I/O Events](https://www.adobe.io/apis/experienceplatform/events.html)
+
+##### Example Architecture
+
+Here is a nice example of Slack integration with Adobe Experience Manager (AEM) for asset change notification,
+
+<img src="https://miro.medium.com/max/1920/1*ajkz4p7Q8Dc0BbrcOo6TpQ.jpeg" alt="Adobe I/O Events" width="80%" height="80%" />
+
+[For more details follow the link](https://medium.com/adobetech/monitoring-aem-asset-updates-with-adobe-i-o-events-9c2a8395880d)
+
+
+
+##### Evaluation Table - Details
+
+| Method        | Evaluation          | Implementation Readiness                                     |
+| ------------- | ------------------- | ------------------------------------------------------------ |
+| dequeue()     | Not Possible or N/A | There is not a concept of explicit fetching of event, rather you define a trigger/event and the actions associated with it. |
+| acknowledge() | Not Possible or N/A | This concept is not used, the architecture is funadementally different |
+| subscribe()   | Not Possible or N/A | A PHP callback function is not possible, although a custom webhook (http endpoint) can be configured to be triggered for a particular Event. |
+| reject()      | Not Possible or N/A | This concept is not used, the architecture is funadementally different |
+| push()        | Not Possible or N/A | Events are triggered by Adobe SaaS Services in the Adobe Cloud. |
 
 <img src="legend_img.png" alt="Legend" width="70%" height="70%" />
 
