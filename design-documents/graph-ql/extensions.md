@@ -4,20 +4,17 @@ Extension developers need a way to extend our GraphQL API. This document is a pr
 
 ## Package registry
 
-First, we need a place to publish both public and private JavaScript extensions and in a secure way. At the time of this writing, [npm][] is the de facto package registry for JavaScript; however, the [GitHub Package Registry][] is currently in beta and offers the following features:
+First, we need a place to publish both free and paid-for JavaScript extensions and in a secure way. Currently, [npm][] is the de facto registry and the [GitHub Package Registry][] is in beta, but we need more tight control over how extensions are published and consumed.
 
-- Safely publish and consume packages within your organization or with the entire world.
-- Publish privately for your team or publicly for the open source community.
-- Discover and publish public and private packages in one place.
-- Seamlessly use and reuse any package as a dependency in a project by downloading it straight from GitHub.
+### Magento package registry
 
 As merchants currently have the ability to install public extensions or purchase private ones, having them both published all in one place is extremely beneficial for our needs.
 
-_This topic needs further investigation after the official release, which is expected to be during the [GitHub Universe](https://githubuniverse.com/) event, November 13-14, 2019._
+We have an internal prototype of a working package registry. Stay tuned for more information.
 
 ## Configuration
 
-Once the merchant has installed any number of extensions, this list needs to be provided to the GraphQL API server, preferrably merged with the existing [`package.json`](https://docs.npmjs.com/files/package.json):
+Once the merchant has installed (just as they do today) any number of extensions, we need to narrow down that list to the ones that extend the GraphQL API. These extension names and versions shall be merged with the API's [`package.json`](https://docs.npmjs.com/files/package.json) such that the final version looks something like the following:
 
 ```json
   "dependencies": {
@@ -29,6 +26,8 @@ Once the merchant has installed any number of extensions, this list needs to be 
 ```
 
 This way, the list of extensions will be installable and discoverable to the Node.js application.
+
+_Note that this all happens transparently to the merchant and requires no additional steps._
 
 ## Extending Apollo Server
 
