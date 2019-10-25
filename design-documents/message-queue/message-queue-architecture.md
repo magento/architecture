@@ -1,8 +1,6 @@
-#Messaging Architecture and Options
+# Messaging Architecture and Options
 
-
-
-##Contents
+# Contents
 
 [Overview and Introduction](#Overview-and-Introduction)
 
@@ -32,11 +30,11 @@
 
 [(7) PHP Enqueue Library](#7--PHP-Enqueue-Library)
 
-[(8) Adobe I/O](#8--Adobe-I/O)
+[(8) Adobe I/O](#8--Adobe-I-O)
 
 
 
-##Overview and Introduction
+## Overview and Introduction
 
 Magento uses message queue architecture for all asynchronous communication, where message sender and receiver are loosely coupled and doesn't talk to each other directly. For more information go through the following document 
 
@@ -98,7 +96,7 @@ There are many messaging technologies available in the market, we are specially 
 | reject()      | Not Possible or N/A                        | Available                | Possiblity                 | Possiblity                         |
 | push()        | Available                                  | Available                | Available                  | Possiblity                         |
 
-| Method        | [(5) Apache Kafka](#5--Apache-Kafka) | [(6) Azure Service Bus](#6--Azure-Service-Bus) | [(7) PHP Enqueue Library](#7--PHP-Enqueue-Library) | [(8) Adobe I/O](#8--Adobe-I/O) |
+| Method        | [(5) Apache Kafka](#5--Apache-Kafka) | [(6) Azure Service Bus](#6--Azure-Service-Bus) | [(7) PHP Enqueue Library](#7--PHP-Enqueue-Library) | [(8) Adobe I/O](#8--Adobe-I-O) |
 | ------------- | ------------------------------------ | ---------------------------------------------- | -------------------------------------------------- | ------------------------------ |
 | dequeue()     | Possiblity                           | Available                                      | Available                                          | Not Possible or N/A            |
 | acknowledge() | Possiblity                           | Available                                      | Available                                          | Not Possible or N/A            |
