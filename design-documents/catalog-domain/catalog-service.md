@@ -85,8 +85,49 @@ See [Product Data Object](product-data-object.md)
   ]
 }
 ```
-
-
+alternative formats
+```xml
+<query name="products">
+    <field name="id" />
+    <filter name="id">
+        <filter>1652b2fe-f758-11e9-8f0b-362b9e155667</filter>
+        <filter>1652b2fe-f758-11e9-8f0b-362b9e155667</filter>
+        <filter>1652b2fe-f758-11e9-8f0b-362b9e155667</filter>
+        <filter>1652b2fe-f758-11e9-8f0b-362b9e155667</filter>
+        <filter>1652b2fe-f758-11e9-8f0b-362b9e155667</filter>
+    </filter>
+    <field name="name" />
+    <field name="sku" />
+    <document name="priceRange" >
+        <document name="minimumPrice">
+            <field name="finalPrice" />
+        </document>
+    </document>
+    <document name="attributes">
+        <filter name="attributeCode">
+            <filter>attributeCode1</filter>
+            <filter>attributeCode2</filter>
+            <filter>attributeCode2</filter>
+        </filter>
+    </document>
+</query>
+```
+or
+```graphql
+query(name: product, filter: { id: [1,2,3], name: 'sfd' }) {
+    id,
+    name,
+    sku,
+    priceRange: {
+        minimumPrice: {
+                finalPrice
+         }
+        },
+        attributes(attributeCode: [attributeCode1, attributeCode2, attributeCode2])
+        {
+        }
+}
+```
 ## Example DSL to code transformation
 
 ```php
