@@ -116,5 +116,6 @@ Guest cart is merged into customer cart immediately after login by calling the s
 
 #### Postcondition
 Guest cart is destroyed
-
+| Step | Logged status| Operation                                                                        | Headers        | Response                                          |
+|------|--------------|----------------------------------------------------------------------------------|----------------|---------------------------------------------------|
 | 1    | Not Logged In| cart(cart_id: "GuestCart456e8901") { cart_items {sku, quantity} }                         |  | {"errors": [{"message": "Could not find a cart with ID"}]} |
