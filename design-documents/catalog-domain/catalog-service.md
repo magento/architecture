@@ -33,8 +33,9 @@ Category page, search results, layered navigation.
 Different scenarios may require different sets of attributes.
 
 
-## We need DSL
+## Catalog Service DSL
 
+See [Product Data Object](product-data-object.md)
 ```json
 {
   "query": "products",
@@ -79,6 +80,9 @@ Different scenarios may require different sets of attributes.
 }
 ```
 
+
+## Example DSL to code transformation
+
 ```php
 <?php
 
@@ -118,9 +122,51 @@ class Field
         $this->fields = $fields;
         $this->filter = $filter;
     }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFields(): array
+    {
+        return $this->fields;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFilter(): array
+    {
+        return $this->filter;
+    }
 }
 
-$field = new \Field(
+/**
+ * Class ProductDataObject
+ */
+class ProductDataObject {}
+/**
+ * CatalogInterface
+ */
+interface CatalogInterface
+{
+    public function getProducts(\Field $field) : \ProductDataObject;
+}
+
+class Catalog implements CatalogInterface {}
+```
+
+
+```php
+<?php
+$query = new \Field(
     'products',
     [
         new \Field(
@@ -163,6 +209,6 @@ $field = new \Field(
     ]
 );
 
-
-
+$catalog = new \Catalog();
+$products = $catalog->getProducts($query);
 ```
