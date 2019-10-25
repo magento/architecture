@@ -10,4 +10,4 @@ Some of the backend terminology and definitions may appear in the text to explai
 * [Simple Products](catalog-domain/simple-products.md)
 * [Complex Products](catalog-domain/understanding-of-complex-product-types.md)
 * [Product schema for Catalog](catalog-domain/product-data-object.md)
-* [Catalog service & Catalog/Searches segregation](catalog-domain/catalog-service.md)
+* [Catalog service](catalog-domain/catalog-service.md)

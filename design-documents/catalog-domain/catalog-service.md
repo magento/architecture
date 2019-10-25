@@ -69,10 +69,16 @@ See [Product Data Object](product-data-object.md)
     },
     {
       "field": "attributes",
-      "filter": [
-        "attributeCode1",
-        "attributeCode2",
-        "attributeCode3"
+      "fields": [
+        {
+          "field": "attributeCode",
+          "filter": [
+            "attributeCode1",
+            "attributeCode2",
+            "attributeCode3"
+          ]
+        },
+        {"field": "values"}
       ]
     },
     {"field": "options"}
@@ -198,11 +204,16 @@ $query = new \Field(
         new \Field('sku'),
         new \Field(
             'attributes',
-            [],
             [
-                "attributeCode1",
-                "attributeCode2",
-                "attributeCode3"
+                new \Field(
+                    'attributeCode',
+                    [
+                        "attributeCode1",
+                        "attributeCode2",
+                        "attributeCode3"
+                    ]
+                ),
+                new \Field('values')
             ]
         ),
         new \Field('options')
@@ -210,5 +221,5 @@ $query = new \Field(
 );
 
 $catalog = new \Catalog();
-$products = $catalog->getProducts($query);
+$products = $catalog->getProducts($currency, $locale, $store, $query);
 ```
