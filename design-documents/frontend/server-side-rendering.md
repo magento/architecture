@@ -11,7 +11,6 @@ SSR can be a challenge to implement correctly, but the benefits have the potenti
 - Faster, first meaningful paint.
 - No need to render initial content via JavaScript on the client.
 - SEO/bot support.
-- Better SEO performance.
 - JavaScript code can be shared universally (full-stack).
 
 ## Cons
@@ -23,7 +22,7 @@ SSR can be a challenge to implement correctly, but the benefits have the potenti
 
 ## How it works
 
-The basic idea is that we don't want the web browser (client) to be responsible for rendering content via JavaScript, because JavaScript is notoriously slow, especially at rendering DOM and especially on older or mobile devices. Unnecessary rendering also consumes more energy, which has the potential to suck a mobile device's battery dry. :battery:
+The basic idea is that we don't want the web browser (client) to be responsible for rendering initial page content via JavaScript, because JavaScript is notoriously slow, especially at rendering DOM and especially on older or mobile devices. Unnecessary rendering also consumes more energy, which has the potential to suck a mobile device's battery dry. :battery:
 
 If we leverage the HTTP server to do as much heavy lifting as we can, some of this heavy lifting (non-sensitive pages) can be cached as well, resulting in a faster, better user experience.
 
@@ -34,7 +33,7 @@ If we leverage the HTTP server to do as much heavy lifting as we can, some of th
    - HTML is partially generated with empty containers that need to be filled and rendered by JavaScript after the initial page load (bad for SEO).
 1. The web browser (client) receives and processes the HTML, but the user may see some empty content that hasn't been filled in yet.
 1. JavaScript is loaded and processed, including the React library.
-1. Ideally, a single GraphQL API request is made to collect the data required to fill in the empty containers with content.
+1. Client-side JavaScript makes any number of requests to various APIs for the initial data needed to render the page; thus, filling in the empty containers with content.
 1. React renders the final HTML into the above-mentioned empty containers by combining the data received with the HTML defined in the React components.
 1. Once content is seen, it becomes immediately interactive.
 
@@ -42,7 +41,7 @@ If we leverage the HTTP server to do as much heavy lifting as we can, some of th
 
 1. A web browser (client) requests a URL for a particular route (e.g., `/`).
 1. The [JavaScript-capable HTTP server](#requirements) runs the appropriate code for that route.
-   - Ideally, a single GraphQL API request is made from this HTTP server, collecting all the data that's required to render the page.
+   - Ideally, a single GraphQL API request is made for from this HTTP server, collecting all the data that's required to render [critical content](https://www.abtasty.com/blog/above-the-fold/) on page.
    - HTML is fully generated [via React methods](https://reactjs.org/docs/react-dom-server.html) with no empty containers. This HTML can be [streamed](https://reactjs.org/docs/react-dom-server.html#rendertonodestream) and cached.
 1. The web browser (client) receives and processes the HTML.
    - No additional HTML needs to be rendered into containers. As a result, the user perceives faster performance.
@@ -54,13 +53,25 @@ If we leverage the HTTP server to do as much heavy lifting as we can, some of th
 
 ## Requirements
 
-- A JavaScript-capable HTTP server, typically a [Node.js][] server (e.g., [Express][]).
+- A server with access to _something_ that can execute JavaScript, typically a [Node.js][] server (e.g., [Express][]).
 
 ## Implementation
 
-Some solutions provide out-of-the-box SSR, like [Next.js](https://nextjs.org/), [Razzle][] and the light-weight [Preact](https://preactjs.com/guide/v10/server-side-rendering); however, if you want more tight control of your application, you might want to set it up yourself. If you go the latter route, you would still do well to use these projects as inspiration. In fact, [Razzle][] has [a great development setup](https://github.com/jaredpalmer/razzle#how-razzle-works-the-secret-sauce).
+Some solutions provide out-of-the-box SSR, like [Next.js][] (comprehensive), [Razzle][] (lacks [data fetching](#data-fetching)) or the light-weight [Preact](https://preactjs.com/guide/v10/server-side-rendering). You don't have to use any of these, but they might serve as inspiration for your custom implementation.
 
-To render a React application on a server, the server needs to [understand how to process JavaScript](#requirements). Ideally, you'll serve the HTML by piping to a writable stream. You can do this with React 16's [`renderToNodeStream()`](https://reactjs.org/docs/react-dom-server.html#rendertonodestream).
+### Data fetching
+
+A comprehensive SSR strategy requires data fetching on the server.
+
+- If you go the [Next.js][] route, read [GraphQL with Next.js and Apollo](https://nec.is/writing/graphql-with-next-js-and-apollo/).
+- If not, you might want to make a choice between [Apollo Client](https://www.apollographql.com/docs/react/) and Facebook's [Relay](https://graphql-code-generator.com).
+- [GraphQL Code Generator](https://graphql-code-generator.com) can generate code from your GraphQL schema with a single function call and [integrates with Apollo](https://graphql-code-generator.com/docs/plugins/typescript-react-apollo) as well as [with Relay](https://graphql-code-generator.com/docs/plugins/relay-operation-optimizer).
+
+Whatever you decide, the most important thing is that [critical content](https://www.abtasty.com/blog/above-the-fold/) is rendered with all of its data on the server before it's served to the client. Note that this might require a 2-pass rendering strategy.
+
+### Rendering
+
+To render a React application on a server, the server needs access to [_something_ that processes JavaScript](#requirements). Ideally, you'll serve the HTML by piping to a writable stream. You can do this with React 16's [`renderToNodeStream()`](https://reactjs.org/docs/react-dom-server.html#rendertonodestream).
 
 ```jsx
 import { renderToNodeStream } from 'react-dom/server'
@@ -112,9 +123,9 @@ We have an opportunity here to take a fresh look at the extensibility model of M
 
 ## FAQ
 
-### Why do I need a JavaScript-capable web server?
+### Why do I need a JavaScript engine?
 
-Without a JavaScript engine, you won't be able to render the HTML generated by React components; thus, won't get SSR. [Express][] runs on [Node.js][], which runs Google's open source JavaScript engine, [V8](https://chromium.googlesource.com/v8/v8). This makes [Express][] a typical choice for rendering React applications. Technically, there are non-golden paths you can take to render JavaScript on some non-JavaScript servers, but it's not recommended.
+React components are written or transpiled into JavaScript. In order to execute JavaScript code, you need a JavaScript engine. Without one, you won't be able to render the HTML generated by React components; thus, won't get SSR. [Express][] runs on [Node.js][], which runs Google's open source JavaScript engine, [V8](https://chromium.googlesource.com/v8/v8). This makes [Express][] a typical choice for rendering React applications. Technically, there are non-golden paths you can take to render JavaScript on some non-JavaScript servers, but it's not recommended.
 
 ## References
 
@@ -125,5 +136,6 @@ Without a JavaScript engine, you won't be able to render the HTML generated by R
 - [Best PWA Framework, UI kit and starter? React Preferred](https://www.reddit.com/r/PWA/comments/dcsdys/best_pwa_framework_ui_kit_and_starter_react/f378bko/)
 
 [express]: http://expressjs.com/
+[next.js]: https://nextjs.org/
 [node.js]: https://nodejs.org/
 [razzle]: https://www.npmjs.com/package/razzle
