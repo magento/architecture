@@ -54,7 +54,7 @@ In order to perform operations with wishlist and wishlist items ID is required, 
  - wishlist `name` is available only for Commerce Edition
  - product `sku` in `WishlistItem` can be duplicated with different set of options
 
-Since UUID for entities is not implemented yet, it is proposed  to use `base64_encode` of `entity_id` for now in order to use `ID` type.
+Since UUID for entities is not implemented yet, it is proposed to use casted to string `entity_id` for now in order to use `ID` type.
 Need to make BC change to WishlistItem.
 ``` graphql
 type WishlistItem {
