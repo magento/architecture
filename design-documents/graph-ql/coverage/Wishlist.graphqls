@@ -1,13 +1,17 @@
 type Query {
-    wishlist: WishlistOutput #already implemented
+    wishlist: WishlistOutput @deprecated(reason: "Moved under `Customer` `wishlists`")
 }
 
 type Mutation {
-    createWishlist: ID @doc(description:"If not exists - creates new wishlist. If exists - returns wishlist ID for customer.")
+    createWishlist(name: String!): ID #multiple wishlists Commerce functionality
     removeWishlist(id: ID!): Boolean
     addProductsToWishlist(input: AddProductsToWishlistInput): AddProductsToWishlistOutput
     removeProductsFromWishlist(input: RemoveProductsFromWishlistInput): RemoveProductsFromWishlistOutput
     updateProductsInWishlist(input: UpdateProductsInWishlistInput): UpdateProductsInWishlistOutput
+}
+
+type Customer {
+    wishlists: [Wishlist!]! @doc(description: "Customer wishlists, multiple possible in Commerce edition")
 }
 
 type Wishlist {
@@ -34,7 +38,6 @@ input UpdateProductsInWishlistInput {
 }
 
 input WishlistItemUpdateInput {
-    wishlist_id: ID!
     wishlist_item_id: ID
     quantity: Float
     selected_options: [String!]
@@ -61,16 +64,16 @@ input WishlistItemInput {
     entered_options: [EnteredOptionInput!]
 }
 
-type WishlistOutput { #already implemented
-    items: [WishlistItem]
-    items_count: Int
-    name: String
-    sharing_code: String
-    updated_at: String
+type WishlistOutput @deprecated(reason: "Deprecated: `Wishlist` type should be used instead") {
+    items: [WishlistItem] @deprecated
+    items_count: Int @deprecated
+    name: String @deprecated
+    sharing_code: String @deprecated
+    updated_at: String @deprecated
 }
 
-type WishlistItem { #already implemented
-    id: ID #BC change, was `Int`
+type WishlistItem {
+    id: ID
     qty: Float
     description: String
     added_at: String
