@@ -3,9 +3,8 @@
 # Definitions
 
 * Simple products should have a price.
-* Complex products does not have a price but they know about prices of included simple products.
+* Complex products do not have a price but they know about prices of included simple products.
 * All products have a range that represents borders of prices in which this product can be purchased.
-* 
  
 ```json
 {
@@ -15,7 +14,6 @@
   ]
 }
 ```
-
 ```json
 {
   "type": "PriceRange",
@@ -34,3 +32,14 @@
   ]
 }
 ```
+
+* `regularPrice` - original product price.
+* `finalPruce` - price after discounts.
+
+## Simple product
+* `minimumPricice` - the lowest price a simple product can be purchased including required options.
+* `maximumPrice` - the most expensive price including all options.
+
+## Complex product
+* `minimumPricice` - price of the cheapest product in group or products combination. 
+* `minimumPricice` - price of the most expensive product in group or products combination. 
