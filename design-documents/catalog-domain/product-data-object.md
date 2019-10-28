@@ -349,6 +349,7 @@ Product options explain how product can be configured before adding a product to
 
 Some products may have attributes specific to type.
 
+
 ### Downloadable Product
 
 ```json
@@ -373,3 +374,4 @@ Some products may have attributes specific to type.
 
 ### GiftCart
 
+TBD

@@ -24,25 +24,31 @@ Literally any application.
 ### Listings and search
 
 Category page, search results, layered navigation.
-
 ![Routing](images/catalog-usage-01-03.png)
 
-
-## Performance requirements
-
-Different scenarios may require different sets of attributes.
-
-
-## Catalog Service DSL
+## Defining the request
 
 See [Product Data Object](product-data-object.md)
+
+* Different scenarios require different data of the same product.
+* Catalog service is responsible for returning the most accurate product representation. 
+* Catalog service does not perform searching but has to perform a basic data filtering.
+* The purpose of filtering is reducing data before sending it to a client.
+Example of such data reduction are 
+    * On Listing Page, we need only attributes applicable for the listing.
+    * On Product Details Page we need to return variations only for the selected options.
+
+
+
+### JSON
+
 ```json
 {
   "query": "products",
-  "fields": [
+  "filters": [
     {
-      "field": "id",
-      "filter": [
+      "field":  "id",
+      "values": [
         "1652b2fe-f758-11e9-8f0b-362b9e155667",
         "1652b588-f758-11e9-8f0b-362b9e155667",
         "1652b7c2-f758-11e9-8f0b-362b9e155667",
@@ -53,14 +59,16 @@ See [Product Data Object](product-data-object.md)
         "1652bf88-f758-11e9-8f0b-362b9e155667",
         "1652c186-f758-11e9-8f0b-362b9e155667"
       ]
-    },
+    }
+  ],
+  "fields": [
     {"field": "name"},
     {"field": "sku"},
     {
-      "field": "priceRange",
+      "document": "priceRange",
       "fields": [
         {
-          "field": "minimumPrice",
+          "document": "minimumPrice",
           "fields": [
             {"field": "finalPrice"}
           ]
@@ -68,34 +76,52 @@ See [Product Data Object](product-data-object.md)
       ]
     },
     {
-      "field": "attributes",
-      "fields": [
+      "document": "attributes",
+      "filters": [
         {
           "field": "attributeCode",
-          "filter": [
+          "values": [
             "attributeCode1",
             "attributeCode2",
             "attributeCode3"
           ]
-        },
+        }
+      ],
+      "fields": [
+        {"field": "attributeCode"},
         {"field": "values"}
       ]
     },
-    {"field": "options"}
+    {
+      "document": "options",
+      "fields": [
+        {"field":  "*"}
+      ]
+    }
   ]
 }
 ```
-alternative formats
+### XML
+
 ```xml
 <query name="products">
-    <field name="id" />
-    <filter name="id">
-        <filter>1652b2fe-f758-11e9-8f0b-362b9e155667</filter>
-        <filter>1652b2fe-f758-11e9-8f0b-362b9e155667</filter>
-        <filter>1652b2fe-f758-11e9-8f0b-362b9e155667</filter>
-        <filter>1652b2fe-f758-11e9-8f0b-362b9e155667</filter>
-        <filter>1652b2fe-f758-11e9-8f0b-362b9e155667</filter>
-    </filter>
+    <filters>
+        <field name="id">
+            <value>1652b2fe-f758-11e9-8f0b-362b9e155667</value>
+            <value>1652b588-f758-11e9-8f0b-362b9e155667</value>
+            <value>1652b7c2-f758-11e9-8f0b-362b9e155667</value>
+            <value>1652b8f8-f758-11e9-8f0b-362b9e155667</value>
+            <value>1652bb00-f758-11e9-8f0b-362b9e155667</value>
+            <value>1652bc40-f758-11e9-8f0b-362b9e155667</value>
+            <value>1652be5c-f758-11e9-8f0b-362b9e155667</value>
+            <value>1652bf88-f758-11e9-8f0b-362b9e155667</value>
+            <value>1652c186-f758-11e9-8f0b-362b9e155667</value>
+            </value>
+        </field>
+    </filters>
+    <fields>
+    
+    </fields>
     <field name="name" />
     <field name="sku" />
     <document name="priceRange" >
@@ -112,155 +138,62 @@ alternative formats
     </document>
 </query>
 ```
-or
+### GraphQL
+
 ```graphql
-query(name: product, filter: { id: [1,2,3], name: 'sfd' }) {
-    id,
-    name,
-    sku,
-    priceRange: {
-        minimumPrice: {
-                finalPrice
-         }
-        },
-        attributes(attributeCode: [attributeCode1, attributeCode2, attributeCode2])
-        {
+{
+  products(id: {in: [
+    "1652b2fe-f758-11e9-8f0b-362b9e155667",
+    "1652b588-f758-11e9-8f0b-362b9e155667",
+    "1652b7c2-f758-11e9-8f0b-362b9e155667",
+    "1652b8f8-f758-11e9-8f0b-362b9e155667",
+    "1652bb00-f758-11e9-8f0b-362b9e155667",
+    "1652bc40-f758-11e9-8f0b-362b9e155667",
+    "1652be5c-f758-11e9-8f0b-362b9e155667",
+    "1652bf88-f758-11e9-8f0b-362b9e155667",
+    "1652c186-f758-11e9-8f0b-362b9e155667"
+  ]}) {
+    fields {
+      name
+      sku
+      priceRange {
+        minimumPrice {
+          finalPrice
         }
+      }
+    }
+  }
 }
 ```
-## Example DSL to code transformation
 
-```php
-<?php
+# Query and scope
 
-/**
- * Class Field
- */
-class Field
+Catalog service should support 
+
+```json
 {
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var array
-     */
-    private $fields;
-
-    /**
-     * @var array
-     */
-    private $filter;
-
-    /**
-     * Field constructor.
-     *
-     * @param string $name
-     * @param array $fields
-     * @param array $filter
-     */
-    public function __construct(
-        string $name,
-        array $fields = [],
-        array $filter = []
-    ) {
-        $this->name = $name;
-        $this->fields = $fields;
-        $this->filter = $filter;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    /**
-     * @return array
-     */
-    public function getFields(): array
-    {
-        return $this->fields;
-    }
-
-    /**
-     * @return array
-     */
-    public function getFilter(): array
-    {
-        return $this->filter;
-    }
+  "query": "products",
+  "filters": [
+    {"field":  "id", "values": ["1652b2fe-f758-11e9-8f0b-362b9e155667"]}
+  ],
+  "fields": [
+    {"field": "name"},
+    {"field": "sku"}
+  ],
+  "scope" : [
+    {"argument":  "currency", "value":  "USD"},
+    {"argument":  "locale", "value":  "en_US"},
+    {"argument":  "store", "value":  "default"},
+    {"argument":  "group", "value":  "NOT_LOGGED_IN"},
+    {"argument":  "version", "value":  "1572297883"}
+  ]
 }
-
-/**
- * Class ProductDataObject
- */
-class ProductDataObject {}
-/**
- * CatalogInterface
- */
-interface CatalogInterface
-{
-    public function getProducts(\Field $field) : \ProductDataObject;
-}
-
-class Catalog implements CatalogInterface {}
 ```
 
+* `currency`: currency for price values.
+* `locale`: instruction for applying language translation.
+* `store`: target store. 
+* `group`: customer group identifier.
 
-```php
-<?php
-$query = new \Field(
-    'products',
-    [
-        new \Field(
-            'id',
-            [],
-            [
-                "1652b2fe-f758-11e9-8f0b-362b9e155667",
-                "1652b588-f758-11e9-8f0b-362b9e155667",
-                "1652b7c2-f758-11e9-8f0b-362b9e155667",
-                "1652b8f8-f758-11e9-8f0b-362b9e155667",
-                "1652bb00-f758-11e9-8f0b-362b9e155667",
-                "1652bc40-f758-11e9-8f0b-362b9e155667",
-                "1652be5c-f758-11e9-8f0b-362b9e155667",
-                "1652bf88-f758-11e9-8f0b-362b9e155667",
-                "1652c186-f758-11e9-8f0b-362b9e155667"
-            ]
-        ),
-        new \Field(
-            'priceRange',
-            [
-                new \Field(
-                    'minimumPrice',
-                    [
-                        new \Field('finalPrice')
-                    ]
-                )
-            ]
-        ),
-        new \Field('sku'),
-        new \Field(
-            'attributes',
-            [
-                new \Field(
-                    'attributeCode',
-                    [
-                        "attributeCode1",
-                        "attributeCode2",
-                        "attributeCode3"
-                    ]
-                ),
-                new \Field('values')
-            ]
-        ),
-        new \Field('options')
-    ]
-);
-
-$catalog = new \Catalog();
-$products = $catalog->getProducts($currency, $locale, $store, $query);
-```
+Scope has to be defined for each call.
+Defaults can be retrieved from the catalog service.
