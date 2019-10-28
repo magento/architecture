@@ -65,7 +65,7 @@ query {
 
 ## Solutions comparison
 
-|  | Proposed | Option 1 | Option 2 |
+|  | Proposed | Alternative 1 | Alternative 2 |
 | ------------- | ------------- | -------------| -------------|
 | Open Source  | `wishlist` | `wishlists` | `wishlists`|
 | Commerce  | `wishlists` and `wishlist(id: ID!)` | `wishlists(ids: [ID])` | `wishlists`|
@@ -76,7 +76,8 @@ query {
 - Semantically correct - in Open Source one wishlist will be returned, in Commerce - array of wishlist.
 - It is possible to get info for the single wishlist by `ID` in Commerce edition.
 #### Cons
-- Client couldn't work with both - Open Source and Commerce editions. Missing `id` in Commerce will cause an error.
+- Client code has to be different for Open Source and Commerce editions. Missing `id` in Commerce will cause an error.
+It is not a big problem because client has to know about Wishlist Name in Commerce edition anyway and has to adjust respectively.
 
 ### Option 1
 `wishlists` field located under `Customer` type. In Commerce edition will be extended with `ids` argument in order to not to over-fetch and be able to retrieve info only for needed wishlists.
