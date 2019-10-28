@@ -168,7 +168,10 @@ Example of such data reduction are
 
 # Query and scope
 
-Catalog service should support 
+Catalog service should support execution scope.
+The primary purpose of the scope is defining the data context.
+This context may lead to data transformation before returning data to a client.
+A good example of the scope usage is values localization.
 
 ```json
 {
@@ -189,6 +192,8 @@ Catalog service should support
   ]
 }
 ```
+
+Examples of scopes:
 
 * `currency`: currency for price values.
 * `locale`: instruction for applying language translation.
