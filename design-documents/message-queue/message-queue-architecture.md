@@ -90,7 +90,7 @@ There are many messaging technologies available in the market, we are specially 
 
 | Method        | [(1) AWS EventBridge](#1--AWS-EventBridge) | [(2) AWS MQ](#2--AWS-MQ) | [(3) AWS SQS](#3--AWS-SQS) | [(4) AWS Kinesis](#4--AWS-Kinesis) |
 | ------------- | ------------------------------------------ | ------------------------ | -------------------------- | ---------------------------------- |
-| dequeue()     | Not Possible or N/A                        | Available                | Available                  | Possiblity                         |
+| dequeue()     | Not Possible or N/A                        | Available                | Available                  | Possibility                         |
 | acknowledge() | Not Possible or N/A                        | Available                | Possiblity                 | Possiblity                         |
 | subscribe()   | Not Possible or N/A                        | *Workaround              | *Workaround                | Workaround                         |
 | reject()      | Not Possible or N/A                        | Available                | Possiblity                 | Possiblity                         |
