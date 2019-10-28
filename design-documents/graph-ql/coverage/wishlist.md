@@ -6,7 +6,7 @@ In order to get customer wishlist data need to call `customer` query.
 ``` graphql
 query {
   customer {
-    wishlists {
+    wishlist {
       id
       items {
         id
@@ -35,7 +35,7 @@ Use `removeWishlist` mutation in order to remove wishlist by `id`.
 ## Commerce edition
 Use `createWishlist(name: String!):` in order to create named wishlist.
 
-### Get customer wishlist ids
+### Get multiple customer wishlists
 ``` graphql
 query {
   customer {
@@ -47,6 +47,54 @@ query {
 }
 ```
 `customer` query will return array of all available customer wishlists.
+
+### Get customer wishlist items by `id`
+``` graphql
+query {
+  customer {
+    wishlist(id: '42') {
+      items {
+        id
+        product {
+          sku
+      }
+    }
+  }
+}
+```
+
+## Solutions comparison
+
+|  | Proposed | Option 1 | Option 2 |
+| ------------- | ------------- | -------------| -------------|
+| Open Source  | `wishlist` | `wishlists` | `wishlists`|
+| Commerce  | `wishlists` and `wishlist(id: ID!)` | `wishlists(ids: [ID])` | `wishlists`|
+
+### Proposed
+`wishlist` field located under `Customer` type. Commerce edition will introduce new field `wishlists` to get an array of customer wishlists. `wishlist` field will be extended with `id` argument in order to able to retrieve info for single wishlist by ID.
+#### Pros
+- Semantically correct - in Open Source one wishlist will be returned, in Commerce - array of wishlist.
+- It is possible to get info for the single wishlist by `ID` in Commerce edition.
+#### Cons
+- Client couldn't work with both - Open Source and Commerce editions. Missing `id` in Commerce will cause an error.
+
+### Option 1
+`wishlists` field located under `Customer` type. In Commerce edition will be extended with `ids` argument in order to not to over-fetch and be able to retrieve info only for needed wishlists.
+
+#### Pros
+- Solves over-fetching problem.
+- Client could work with both - Open Source and Commerce editions without changing the code.
+#### Cons
+- In Open Source edition array with one element will be returned instead of single item.
+- Need to call `wishlists` at least once to get available wishlists `ids`.
+
+### Option 2
+`wishlists` field located under `Customer` type. In Open Source will be array with one element, in Commerce - multiple elements.
+#### Proc
+- Client could work with both - Open Source and Commerce editions without changing the code.
+#### Cons
+- In Commerce edition all wishlists will be returned, not just needed (over-fetching).
+- In Open Source edition array with one element will be returned instead of single item.
 
 ## Manipulation with IDs
 

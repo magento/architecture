@@ -3,15 +3,16 @@ type Query {
 }
 
 type Mutation {
-    createWishlist(name: String!): ID #multiple wishlists Commerce functionality
-    removeWishlist(id: ID!): Boolean
+    createWishlist(name: String!): ID # Multiple wishlists Commerce functionality
+    removeWishlist(id: ID!): Boolean # Commerce fucntionality - in Opens Source we assume customer always has one wishlist
     addProductsToWishlist(input: AddProductsToWishlistInput): AddProductsToWishlistOutput
     removeProductsFromWishlist(input: RemoveProductsFromWishlistInput): RemoveProductsFromWishlistOutput
     updateProductsInWishlist(input: UpdateProductsInWishlistInput): UpdateProductsInWishlistOutput
 }
 
 type Customer {
-    wishlists: [Wishlist!]! @doc(description: "Customer wishlists, multiple possible in Commerce edition")
+    wishlist: Wishlist! @doc(description: "Customer wishlist") # Commerce will extend filed with required `id` argument `wishlists(ids: ID!)`
+    wishlists: [Wishlist!]! @doc(description: "Customer multiple wishlists") # Multiple wishlists Commerce functionality
 }
 
 type Wishlist {
@@ -20,6 +21,7 @@ type Wishlist {
     items_count: Int
     sharing_code: String
     updated_at: String
+    #name: String should be added in Commerce edition
 }
 
 input AddProductsToWishlistInput {
