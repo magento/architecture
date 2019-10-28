@@ -100,13 +100,36 @@ interface QuoteAttributeInterface
     /**
      * Get Value
      *
-     * @return string
+     * @return QuoteAttributeValueInterface
      */
     public function getValue();
 }
 ```
+```
+/**
+ * Quote Attribute Value Interface
+ */
+interface QuoteAttributeValueInterface
+{
+    /**
+     * Get Quote Item Attributes
+     * A key value pair array referenced with quote item ids as keys
+     *
+     * @return array 
+     */
+    public function getQuoteItemAttributes();
+
+    /**
+     * Get Quote Address Attributes
+     * A key value pair array referenced with quote address ids as keys
+     *
+     * @return array
+     */
+    public function getQuoteAddressAttributes();
+}
+```
 **Benefits**
 
-Need to modify current table structure to incorporate this feature. Will support extensibility in the future to store additional data pertaining to totals, without modifying the table.
+No need to modify current table structure to incorporate this feature. Will support extensibility in the future to store additional data pertaining to totals, without modifying the table.
 
 
