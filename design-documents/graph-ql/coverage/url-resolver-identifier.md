@@ -56,6 +56,8 @@ Where `identifier` represents:
  ## Alternatives
  
  We can directly return the entity instead of returning the identifier from UrlResolver.
+ There's a different proposal fot this in [storefront-route.md](https://github.com/magento/architecture/blob/master/design-documents/graph-ql/coverage/storefront-route.md)
+ 
  We can introduce an interface called ResolvedEntityInterface that returns the actual object.
  That means that we either wrap all supported entities into an object and use fragments or all existing objects will have to implement this empty interface.
  
@@ -63,6 +65,7 @@ Where `identifier` represents:
  interface ResolvedEntityInterface {
  
  }
- 
- 
   ```
+  
+  We may need to keep urlResolverV2 and it's field `id` and introduce `urlResolverV2` as type for client-side caching. This might require a closer look to expose affected areas.
+  
