@@ -42,4 +42,4 @@
 
 ## Complex product
 * `minimumPricice` - price of the cheapest product in group or products combination. 
-* `minimumPricice` - price of the most expensive product in group or products combination. 
+* `maximumPrice ` - price of the most expensive product in group or products combination. 
