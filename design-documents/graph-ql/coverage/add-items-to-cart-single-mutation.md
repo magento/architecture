@@ -3,7 +3,7 @@ In order to simplify the flow of adding different type of products to wishlist a
 
 *Proposed schema for adding products to cart* - [AddProductsToCart](AddProductsToCart.graphqls)
 
-*Proposed schema for adding products to wish list* - [AddProductsToWishlist](AddProductsToWishlist.graphqls)
+*Proposed schema for adding products to wish list* - [Wishlist](Wishlist.graphqls)
 
 ## Definition
 
