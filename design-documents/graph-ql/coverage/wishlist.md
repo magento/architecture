@@ -79,7 +79,7 @@ query {
 - Client code has to be different for Open Source and Commerce editions. Missing `id` in Commerce will cause an error.
 It is not a big problem because client has to know about Wishlist Name in Commerce edition anyway and has to adjust respectively.
 
-### Option 1
+### Alternative 1
 `wishlists` field located under `Customer` type. In Commerce edition will be extended with `ids` argument in order to not to over-fetch and be able to retrieve info only for needed wishlists.
 
 #### Pros
@@ -89,7 +89,7 @@ It is not a big problem because client has to know about Wishlist Name in Commer
 - In Open Source edition array with one element will be returned instead of single item.
 - Need to call `wishlists` at least once to get available wishlists `ids`.
 
-### Option 2
+### Alternative 2
 `wishlists` field located under `Customer` type. In Open Source will be array with one element, in Commerce - multiple elements.
 #### Proc
 - Client could work with both - Open Source and Commerce editions without changing the code.
