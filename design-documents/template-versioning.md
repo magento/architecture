@@ -17,13 +17,21 @@ To make this problem even worse there have no rules surrounding backwards compat
 
 These are very common scenarios and they have large security implications as well. Let's say there are some security fixes that spans across many templates. This could be the simple addition of a new hidden field, or something else like a new escapement policy. Whether it affects one or all of our template files, only a select few will actually ever be updated on merchant websites due to overrides and the difficulty of upgrading the templates.
 
-### Design
+#### Example
 
+Product gallery template for 2.3.1 was large and contained all sorts of HTML and JS and JS config. https://github.com/magento/magento2/blob/2.3.1/app/code/Magento/Catalog/view/frontend/templates/product/view/gallery.phtml
+Product gallery template for 2.3.2 was dramatically changed and hardly contains anything. https://github.com/magento/magento2/blob/2.3.2/app/code/Magento/Catalog/view/frontend/templates/product/view/gallery.phtml
+
+If I have a template override based on 2.3.1 for gallery.phtml and upgrade Magento to 2.3.2 how do I know my override is compatible? How do I update the template? How would I even know this change was made or needs to be made? Maybe everything looks fine but it was a security fix, how do I know if my override needs to be patched or if the changes were cosmetic?  
+
+### Design
 
 At a very high level this proposal aims to introduce several new things:
 
 - A template versioning system with backwards compatibility rules for version changes
 - Merchant visibility into theme compatibility
+
+In an attempt to keep the scope of this design feasible, only the file fallback mechanism is being addressed at this time. Any other template overrides through manually calling block methods or other forms of overrides are out of scope.
 
 #### Template versioning
 
@@ -33,9 +41,8 @@ A system of rules for html and phtml files using a new `@version x.x.x` annotati
 
 When a merchant installs a theme or upgrades their magento instances it would be helpful for them and for the theme developers to know that what they are using may not be compatible with the version of Magento installed. This will alert the merchant that their theme may not have the latest security fixes and that the theme needs to be updated. Not just for security fixes but other issues as well. They may be notified through some admin notification upon them install or magento upgrade and a new theme dashboard could be created to show which theme files are incompatible.
 
-Maybe this can also include a simple tool that allows theme developers to easily view what changes have been made since the last version upgrade of the templates so they can patch their templates. Seeing the difference between their template and the Magento template isn't helpful in most cases since other unrelated customizations will have been made. 
+Maybe this can also include a simple tool that allows theme developers to easily view what changes have been made since the last version upgrade of the templates so they can patch their templates. Seeing the difference between their template and the Magento template isn't helpful in most cases since other unrelated customizations will have been made. This is a stretch goal and is already available in 3rd party tools. 
   
-
 <!-- In this section provide relevant details at a high level, including the introduction of any new technologies being utilized for the design. 
 
 Hints:
