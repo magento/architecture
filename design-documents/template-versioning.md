@@ -22,7 +22,7 @@ These are very common scenarios and they have large security implications as wel
 Product gallery template for 2.3.1 was large and contained all sorts of HTML and JS and JS config. https://github.com/magento/magento2/blob/2.3.1/app/code/Magento/Catalog/view/frontend/templates/product/view/gallery.phtml
 Product gallery template for 2.3.2 was dramatically changed and hardly contains anything. https://github.com/magento/magento2/blob/2.3.2/app/code/Magento/Catalog/view/frontend/templates/product/view/gallery.phtml
 
-If I have a template override based on 2.3.1 for gallery.phtml and upgrade Magento to 2.3.2 how do I know my override is compatible? How do I update the template? How would I even know this change was made or needs to be made? Maybe everything looks fine but it was a security fix, how do I know if my override needs to be patched or if the changes were cosmetic?  
+If I have a template override based on 2.3.1 for gallery.phtml and upgrade Magento to 2.3.2 how do I know my override is compatible? How do I update the template? How would I even know this change was made to the template I'm overriding? Maybe everything looks fine in my template override but it was a security fix, how do I know if my override needs to be patched or if the changes were cosmetic? Essentially, how can I answer the basic question of "are my overridden templates up-to-date regardless of how customized they are?"
 
 ### Design
 
