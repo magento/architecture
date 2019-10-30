@@ -40,7 +40,7 @@ Magento uses message queue architecture for all asynchronous communication, wher
 
 [Magento Message Queue Overview](https://devdocs.magento.com/guides/v2.3/extension-dev-guide/message-queues/message-queues.html)
 
-This document is looking into the current Queue Interface, its implementations, important interconnected modules like Queue Consumers & ConsumersRunner process; then finally looking into the different potential candidates for alternative Cloud Queueing technologies that can be used within Magento; which can serve as an alternative choice for the Magento customers in addition to currently supported technologies; the Queue technology should also support modern autonomous architecture for their communication needs for instance Event Sourcing and CQRS mechanism.
+This document is looking into the current Queue Interface, its implementations, important interconnected modules like Queue Consumers & ConsumersRunner process; then finally looking into the different potential candidates for alternative Queueing technologies that can be used within Magento; which can serve as an alternative choice for the Magento customers in addition to currently supported technologies; the Queue technology should also support modern autonomous architecture for their communication needs for instance Event Sourcing and CQRS mechanism.
 
 ## Message Queue Processing Design
 
