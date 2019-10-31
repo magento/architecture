@@ -68,6 +68,7 @@ To summarize different technologies, and how they stack up together, the diagram
 ![Technology Segmentation](SegmentationTechnologies.png)
 
 
+
 | Platform          | Pub/Sub Mechanism                                  | Connectivity                                                 | Messge Ordering / FIFO | High Throughput Data Streaming | Rule Based Filter / Routing |
 | ----------------- | -------------------------------------------------- | ------------------------------------------------------------ | ---------------------- | ------------------------------ | --------------------------- |
 | AWS EventBridge   | *Available<br />(limited to AWS Targets)           | *HTTPS (for publishers only)                                 |                        |                                | Available                   |
