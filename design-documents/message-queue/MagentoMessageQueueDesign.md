@@ -7,13 +7,13 @@ Currently we have two types of implementations of QueueInterface.
 | MySQL          | This is based on MySQL database, currently it doesn't support the Bulk APIs; this doesn't scale well and designed for out of the box experience; for practical purposes RabbitMQ should be utilized to handle large scale requirements |
 | RabbitMQ       | RabbitMQ implementations is based on AMQP protocol, which supports callback mechanism and polling based approach as its supported by underlying channel implementation & specification |
 
-![Queue Interface UML Diagram](/Users/jawed/sources/magento/architecture/design-documents/message-queue/QueueInterfaceUML.png)
+![Queue Interface UML Diagram](QueueInterfaceUML.png)
 
 ### Consumers Runner Process
 
 ConsumersRunner is the main class, which facilitates the processing of Queued Messages, and based on the configuration in **queue_consumer.xml**, it calls the appropriate ConsumerInterface implementation. 
 
-![Queue Interface UML Diagram](/Users/jawed/sources/magento/architecture/design-documents/message-queue/ConsumersRunnerProcessUML.png)
+![Queue Interface UML Diagram](ConsumersRunnerProcessUML.png)
 
 ### Different Types of Consumers
 
@@ -25,7 +25,7 @@ This QueueInterface is been utilized by Consumer classes, there are currently th
 | 2    | MassConsumer  | This is mainly designed for asynchronous style message processing; primarily used for Async APIs and Async Bulk APIs |
 | 3    | BatchConsumer | This class supports batch processing of messages, helps in picking & merging the messages to a specified batch size, and then process them together, before querying another batch |
 
-![Queue Interface UML Diagram](/Users/jawed/sources/magento/architecture/design-documents/message-queue/ConsumerInterfaceUML.png)
+![Queue Interface UML Diagram](ConsumerInterfaceUML.png)
 
 ## Queue Interface
 

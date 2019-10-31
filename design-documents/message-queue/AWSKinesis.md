@@ -6,7 +6,7 @@ AWS Kinesis is a streaming based distributed messaging technology; it uses publi
 
 Streaming and the concept of **Stream** itself is the central idea behind Kinesis. It is pretty similar to Apache Kafka with some differences. It is also suitable for implementing Event Sourcing and CQRS pattern, which is commonly used in Microservices Architecture because of the out-of-the-box support for high throughput messaging and publish/subscribe mechanism.
 
-![product-page-diagram_Amazon-Kinesis-Data-Streams](/Users/jawed/sources/magento/architecture/design-documents/message-queue/AWSKinesisArchitecture.png)
+![product-page-diagram_Amazon-Kinesis-Data-Streams](AWSKinesisArchitecture.png)
 
 ##### Evaluation Table - Details
 
@@ -20,5 +20,5 @@ Streaming and the concept of **Stream** itself is the central idea behind Kinesi
 
 
 
-<img src="/Users/jawed/sources/magento/architecture/design-documents/message-queue/legend_img.png" alt="Legend" width="70%" height="70%" />
+<img src="legend_img.png" alt="Legend" width="70%" height="70%" />
 

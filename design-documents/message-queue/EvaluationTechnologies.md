@@ -22,7 +22,7 @@ There are many messaging technologies available in the market, we are specially 
 
 *Workaround - Feature maybe available but full support for PHP (library) is not available.
 
-<img src="/Users/jawed/sources/magento/architecture/design-documents/message-queue/legend_img.png" alt="Legend" width="70%" height="70%" />
+<img src="legend_img.png" alt="Legend" width="70%" height="70%" />
 
 
 
@@ -30,7 +30,7 @@ There are many messaging technologies available in the market, we are specially 
 
 Recent Twitter poll from #magento community shows huge interest in Apache Kafka and AWS SQS; there was also some interest in using Redis in this regard as well.
 
-<img src="/Users/jawed/sources/magento/architecture/design-documents/message-queue/TwitterPollResults.png" alt="Legend" width="60%" height="60%" />
+<img src="TwitterPollResults.png" alt="Legend" width="60%" height="60%" />
 
 
 

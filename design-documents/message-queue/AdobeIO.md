@@ -32,5 +32,5 @@ Here is a nice example of Slack integration with Adobe Experience Manager (AEM) 
 | reject()      | Not Possible or N/A | This concept is not used, the architecture is funadementally different |
 | push()        | Not Possible or N/A | Events are triggered by Adobe SaaS Services in the Adobe Cloud as discussed above. |
 
-<img src="/Users/jawed/sources/magento/architecture/design-documents/message-queue/legend_img.png" alt="Legend" width="70%" height="70%" />
+<img src="legend_img.png" alt="Legend" width="70%" height="70%" />
 

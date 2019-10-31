@@ -18,5 +18,5 @@ PHP Enqueue provides JMS style abstraction layer over many brokers as discussed 
 | reject()      | Available  | Consumer > reject(message)<br />callback function / processor can return REJECT or REQUEUE |
 | push()        | Available  | sendEvent(topic, message)                                    |
 
-<img src="/Users/jawed/sources/magento/architecture/design-documents/message-queue/legend_img.png" alt="Legend" width="70%" height="70%" />
+<img src="legend_img.png" alt="Legend" width="70%" height="70%" />
 

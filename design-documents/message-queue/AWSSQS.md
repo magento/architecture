@@ -6,13 +6,13 @@ AWS SQS is a distributed & fault tolerant Queuing Technology; it provides point 
 
 
 
-![image-20190927145647952](/Users/jawed/sources/magento/architecture/design-documents/message-queue/AWS_SQSArchitecture1.png)
+![image-20190927145647952](AWS_SQSArchitecture1.png)
 
 
 
 SQS uses Visibility Timeout to prevent other consumers to receive the same message, during which a consumer has to Delete the message explicitly afrer processing it or the message will be available for others for reuse.
 
-![image-20190927150306008](/Users/jawed/sources/magento/architecture/design-documents/message-queue/AWS_SQSArchitecture2.png)
+![image-20190927150306008](AWS_SQSArchitecture2.png)
 
 
 
@@ -28,5 +28,5 @@ SQS uses Visibility Timeout to prevent other consumers to receive the same messa
 
 
 
-<img src="/Users/jawed/sources/magento/architecture/design-documents/message-queue/legend_img.png" alt="Legend" width="70%" height="70%" />
+<img src="legend_img.png" alt="Legend" width="70%" height="70%" />
 

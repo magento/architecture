@@ -6,7 +6,7 @@ Apache Kafka is a popular open-source stream-processing / messaging platform; it
 
 Topic and Publish / Subscribe mechanism is at the core of Kafka. Effective for implementing Event Sourcing and CQRS pattern, which is commonly used in Microservices Architecture. It is also used for variety of streaming use cases, which requires near real-time processing of records.
 
-<img src="/Users/jawed/sources/magento/architecture/design-documents/message-queue/Apache_Kafka_HLD.png" alt="image-20190927212814114" width="60%" />
+<img src="Apache_Kafka_HLD.png" alt="image-20190927212814114" width="60%" />
 
 
 
@@ -26,5 +26,5 @@ After you read the message(s), you can either configure auto-commit or allow man
 
 
 
-<img src="/Users/jawed/sources/magento/architecture/design-documents/message-queue/legend_img.png" alt="Legend" width="70%" height="70%" />
+<img src="legend_img.png" alt="Legend" width="70%" height="70%" />
 

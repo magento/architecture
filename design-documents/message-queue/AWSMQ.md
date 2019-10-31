@@ -18,7 +18,7 @@ AWS MQ is a Message Broker based on popular Apache ActiveMQ; it supports multipl
 
 Since its a managed service, it provides multi zone fault tolreance and resiliancy out of the box.
 
-<img src="/Users/jawed/sources/magento/architecture/design-documents/message-queue/AWSMQArchitectureNew.png" alt="image-20190927212814114" width="50%" />
+<img src="AWSMQArchitectureNew.png" alt="image-20190927212814114" width="50%" />
 
 
 
@@ -40,5 +40,5 @@ Another challenge is that we have lack of any good implementation of AMQP 1.0 pr
 | reject()      | Available   | reject()                                                     |
 | push()        | Available   | sendMessage(Message, Destination)                            |
 
-<img src="/Users/jawed/sources/magento/architecture/design-documents/message-queue/legend_img.png" alt="Legend" width="70%" height="70%" />
+<img src="legend_img.png" alt="Legend" width="70%" height="70%" />
 

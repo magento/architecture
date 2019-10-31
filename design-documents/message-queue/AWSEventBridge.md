@@ -6,7 +6,7 @@ AWS EventBridge is a serverless event bus, it facilitates receving data from you
 
 ##### High Level Architecture 
 
-![product-page-diagram-EventBridge_How-it-works_V2@2x](/Users/jawed/sources/magento/architecture/design-documents/message-queue/AWSEventBridgeArchitecture.png)
+![product-page-diagram-EventBridge_How-it-works_V2@2x](AWSEventBridgeArchitecture.png)
 
 
 
@@ -22,5 +22,5 @@ AWS EventBridge is a serverless event bus, it facilitates receving data from you
 
 
 
-<img src="/Users/jawed/sources/magento/architecture/design-documents/message-queue/legend_img.png" alt="Legend" width="70%" height="70%" />
+<img src="legend_img.png" alt="Legend" width="70%" height="70%" />
 

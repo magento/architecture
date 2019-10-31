@@ -6,11 +6,11 @@ Microsoft Azure Service Bus is a fully managed enterprise integration message br
 
 
 
-<img src="/Users/jawed/sources/magento/architecture/design-documents/message-queue/AzureServiceBusQueue.png" alt="Legend" width="70%" height="70%" />
+<img src="AzureServiceBusQueue.png" alt="Legend" width="70%" height="70%" />
 
 
 
-<img src="/Users/jawed/sources/magento/architecture/design-documents/message-queue/AzureServiceBusTopic.png" alt="Legend" width="70%" height="70%" />
+<img src="AzureServiceBusTopic.png" alt="Legend" width="70%" height="70%" />
 
 
 
@@ -32,5 +32,5 @@ Azure Service Bus supports AMQP 1.0,  and couple of languages, PHP support is ag
 | reject()      | Available   | reject(errorCondition, errorDescription)                     |
 | push()        | Available   | sendMessage(message, destination)                            |
 
-<img src="/Users/jawed/sources/magento/architecture/design-documents/message-queue/legend_img.png" alt="Legend" width="70%" height="70%" />
+<img src="legend_img.png" alt="Legend" width="70%" height="70%" />
 
