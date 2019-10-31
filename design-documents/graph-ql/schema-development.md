@@ -6,7 +6,6 @@ Before developing a [GraphQL schema](https://graphql.org/learn/schema/), we need
 - [GraphQL Server](#graphql-server)
 - [Code-First vs. SDL](#code-first-vs-sdl)
 - [Code-First Frameworks](#code-first-frameworks)
-   - [TypeGraphQL](#typegraphql)
    - [Nexus](#nexus)
 
 ## GraphQL Ecosystem
@@ -49,31 +48,9 @@ In this document, we will explore the code-first approach.
 
 ## Code-First Frameworks
 
-Both [TypeGraphQL](#typegraphql) and [Nexus](#nexus) are the key players that provide a code-first solution, but they go about it in entirely different ways. One thing they have in common, however, is that they are designed to use [TypeScript][].
+There are not many choices in this territory, but [Prisma][]'s [Nexus](#nexus) seems to be on the right course to provide a modern, code-first solution. [Prisma][] is focused on the developer experience, which is why their first-class [TypeScript][] support should come as no surprise.
 
 _At this point, we're talking about developing a [GraphQL][] API in [Node.js][] with [TypeScript][]._
-
-### [TypeGraphQL][]
-
-> [TypeGraphQL][] is a library that makes this process enjoyable by defining the schema using only classes and a bit of decorator magic.
-
-```ts
-@ObjectType()
-class Recipe {
-  @Field()
-  title: string;
-
-  @Field(type => [Rate])
-  ratings: Rate[];
-
-  @Field({ nullable: true })
-  averageRating?: number;
-}
-```
-
-As you can see, the implementation is quite human-readable!
-
-_[TypeGraphQL][] is [compatible](https://www.reddit.com/r/graphql/comments/ap32fv/typegraphql_prisma/) with [Prisma][]._
 
 ### [Nexus][]
 
@@ -85,7 +62,7 @@ Unfortunately, [Nexus][] is still very new and subject to change before its supp
 
 ## Conclusion
 
-The [GraphQL][] ecosystem has evolved quite a bit, but it has much farther to go. If you need something in production before Q2 2020, you might consider [TypeGraphQL][], but if you can afford to wait? Or if you can at least accept that the API will change? Give [Nexus][] a shot!
+The [GraphQL][] ecosystem has evolved quite a bit, but it has much farther to go. If you need something in production before Q2 2020, you might consider a non-code-first strategy, but if you can afford to wait? Or if you can at least accept that the API will change? Give [Nexus][] a shot today!
 
 > At Novvum, we have been using [Nexus][] pretty extensively... After also trying [TypeGraphQL][], we feel that [Nexus][] has been much friendlier to work with, given us more flexibility, and enabled us to move more quickly ([source](https://dev.to/novvum/typegraphql-and-graphql-nexus-a-look-at-code-first-apis-6k0#which-one-we-prefer)).
 
