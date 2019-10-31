@@ -12,6 +12,31 @@ Additionally, there should be a way to retrieve metadata for all storefront cust
 # Proposed solution
 
 Relaxing signature of existing `customAttributeMetadata` query by making its `attriubtes` argument optional will allow to fetch all storefront attributes metadata.
+
+Existing schema:
+```graphql
+Query.customAttributeMetadata(
+    attributes: [AttributeInput!]!
+): CustomAttributeMetadata
+
+type CustomAttributeMetadata {
+    items: [Attribute]
+}
+
+type Attribute {
+    attribute_code: String
+    attribute_options: [AttributeOption]
+    attribute_type: String
+    entity_type: String
+    input_type: String
+}
+
+type AttributeOption {
+    label: String
+    value: String
+}
+```
+
 Additional fields should be added to the metadata response (`Attribute`  type), for example `is_dynamic`, `use_in_compare_products`, `display_in_product_listing`, `use_in_advanced_search`, `advanced_search_input_type`. The exact list of fields must be discussed and approved separately.
 
 Introduction of the following query will allow fetching lists of attributes applicable to specific pages:
