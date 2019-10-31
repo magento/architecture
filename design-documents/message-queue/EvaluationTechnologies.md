@@ -1,6 +1,6 @@
 ## Evaluation of Technologies 
 
-There are many messaging technologies available in the market, we are specially focusing on AWS cloud and its provided managed services, for this exercise. Please note that this evaluation is based on the current interface/contract and evaluating the possiblity of having another implementation of QueueInterface without breaking related functionality. 
+There are many messaging technologies available in the market, we are specially focusing on Cloud Managed services, for this exercise. Please note that this evaluation is based on the current interface/contract and evaluating the possiblity of having another implementation of QueueInterface without breaking related functionality. 
 
 ### Interface based Comparison Summary
 
@@ -63,15 +63,22 @@ As discussed above there is not a good support available for AMQP 1.0 in PHP; bu
 
 ### Use Case Summary of Technologies
 
-| Platform          | Pub/Sub Mechanism                                  | Connectivity                                                 | Messge Ordering / FIFO                           | High Throughput Data Streaming | Rule Based Filter / Routing |
-| ----------------- | -------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------ | ------------------------------ | --------------------------- |
-| AWS EventBridge   | *Available<br />(limited to AWS Targets)           | *HTTPS (for publishers only)                                 |                                                  |                                | Available                   |
-| AWS MQ            | Available                                          | JMS, NMS, AMQP 1.0, STOMP, MQTT, WebSocket                   | *Available<br />(limited to single producer)     |                                |                             |
-| AWS SQS           |                                                    | HTTPS                                                        | Available                                        |                                |                             |
-| AWS Kinesis       | Available                                          | HTTP/2 Persistent and HTTP REST                              | *Available<br />  (limited to topic's partition) | Available                      |                             |
-| Apache Kafka      | Available                                          | TCP Socket, Kafka Connect, Kafka Streams Apps                | *Available<br />  (limited to topic's partition) | Available                      |                             |
-| Azure Service Bus | Available                                          | AMQP 1.0 and REST                                            | *Available <br />(limited to single producer)    |                                |                             |
-| Adobe I/O         | *Available<br />(limited to Adobe Event Providers) | *HTTP Webhooks (for subscribers only, designed for integration with Adobe SaaS solutions) |                                                  |                                | Available                   |
+To summarize different technologies, and how they stack up together, the diagram and table below will help you visualize 
 
-*Other Aspects to consider (consumer groups, batching, multi-tenant seggregation, message encryption/security, aggregation, counting, scheduling, dead-letter queue)
+![Technology Segmentation](SegmentationTechnologies.png)
+
+
+| Platform          | Pub/Sub Mechanism                                  | Connectivity                                                 | Messge Ordering / FIFO | High Throughput Data Streaming | Rule Based Filter / Routing |
+| ----------------- | -------------------------------------------------- | ------------------------------------------------------------ | ---------------------- | ------------------------------ | --------------------------- |
+| AWS EventBridge   | *Available<br />(limited to AWS Targets)           | *HTTPS (for publishers only)                                 |                        |                                | Available                   |
+| AWS MQ            | Available                                          | JMS, NMS, AMQP 1.0, STOMP, MQTT, WebSocket                   | *Available             |                                |                             |
+| AWS SQS           |                                                    | HTTPS                                                        | *Available             |                                |                             |
+| AWS Kinesis       | Available                                          | HTTP/2 Persistent and HTTP REST                              | *Available             | Available                      |                             |
+| Apache Kafka      | Available                                          | TCP Socket, Kafka Connect, Kafka Streams Apps                | *Available             | Available                      |                             |
+| Azure Service Bus | Available                                          | AMQP 1.0 and REST                                            | *Available             |                                |                             |
+| Adobe I/O         | *Available<br />(limited to Adobe Event Providers) | *HTTP Webhooks (for subscribers only, designed for integration with Adobe SaaS solutions) |                        |                                | Available                   |
+
+*Available with some limitations
+
+**Other Aspects to consider (consumer groups, batching, multi-tenant seggregation, message encryption/security, aggregation, counting, scheduling, dead-letter queue)
 
