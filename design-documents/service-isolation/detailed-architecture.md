@@ -10,7 +10,7 @@ Please make sure to get familiar with [high-level service isolation vision](../s
 
 The client (e.g. browser) is interacting with the system using GraphQL. The only component of the system exposed publicly is Storefront Gateway, which is responsible for routing, full response caching and perimeter-level authorization.
 
-Storefront Gateway routes incoming queries between PWA, GraphQL Engine and Storefront Authentication Gateway.
+Storefront Gateway routes incoming queries between PWA, GraphQL Engine and Storefront Authentication Gateway. To simplify implementation we can also route admin calls through the same gateway.
 
 PWA's main responsibility is to [render React application on the server-side](../frontend/server-side-rendering.md). Resulting HTML page with React application becomes cacheable on the server.
 
@@ -21,6 +21,13 @@ Storefront services are responsible for authorizing requests based on the Auth J
 GraphQL authentication gateway is an independent service for improved security purposes, although it can be merged with GraphQL server.
 
 The storefront services are communicating with each other using REST or Protobuf protocol. Storefront APIs are implemented as service contracts exposed via REST/Protobuf.
+
+Integration with third-party systems can be implemented in one of the following ways depending on use case:
+ 1. Storefront Gateway may route query to third-party system
+ 1. Storefront Gateway may provide service discovery for third-party systems, in this case the client will call third-party system directly 
+ 1. Third-party system can be placed behind GraphQL engine and exposed via unified GraphQL schema
+ 
+Observability of the incoming/outgoing traffic is an important aspect of SaaS applications and corresponding design should be created in the future iterations of this proposal.
 
 ## Authentication, Store and Customer contexts
 
