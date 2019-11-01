@@ -1,0 +1,83 @@
+type Query {
+    wishlist: WishlistOutput @deprecated(reason: "Moved under `Customer` `wishlists`")
+}
+
+type Mutation {
+    createWishlist(name: String!): ID # Multiple wishlists Commerce functionality
+    removeWishlist(id: ID!): Boolean # Commerce fucntionality - in Opens Source we assume customer always has one wishlist
+    addProductsToWishlist(input: AddProductsToWishlistInput): AddProductsToWishlistOutput
+    removeProductsFromWishlist(input: RemoveProductsFromWishlistInput): RemoveProductsFromWishlistOutput
+    updateProductsInWishlist(input: UpdateProductsInWishlistInput): UpdateProductsInWishlistOutput
+}
+
+type Customer {
+    wishlist: Wishlist! @doc(description: "Customer wishlist") # Commerce will extend filed with required `id` argument `wishlists(ids: ID!)`
+    wishlists: [Wishlist!]! @doc(description: "Customer multiple wishlists") # Multiple wishlists Commerce functionality
+}
+
+type Wishlist {
+    id: ID
+    items: [WishlistItem]
+    items_count: Int
+    sharing_code: String
+    updated_at: String
+    #name: String should be added in Commerce edition
+}
+
+input AddProductsToWishlistInput {
+    wishlist_id: ID!
+    wishlist_items: [WishlistItemInput!]!
+}
+
+input RemoveProductsFromWishlistInput {
+    wishlist_id: ID!
+    wishlist_items_ids: [ID!]!
+}
+
+input UpdateProductsInWishlistInput {
+    wishlist_id: ID!
+    wishlist_items: [WishlistItemUpdateInput!]!
+}
+
+input WishlistItemUpdateInput {
+    wishlist_item_id: ID
+    quantity: Float
+    selected_options: [String!]
+    entered_options: [EnteredOptionInput!]
+}
+
+type AddProductsToWishlistOutput {
+    wishlist: Wishlist!
+}
+
+type RemoveProductsFromWishlistOutput {
+    wishlist: Wishlist!
+}
+
+type UpdateProductsInWishlistOutput {
+    wishlist: Wishlist!
+}
+
+input WishlistItemInput {
+    sku: String
+    quantity: Float
+    parent_sku: String,
+    selected_options: [String!]
+    entered_options: [EnteredOptionInput!]
+}
+
+type WishlistOutput @deprecated(reason: "Deprecated: `Wishlist` type should be used instead") {
+    items: [WishlistItem] @deprecated
+    items_count: Int @deprecated
+    name: String @deprecated
+    sharing_code: String @deprecated
+    updated_at: String @deprecated
+}
+
+type WishlistItem {
+    id: ID
+    qty: Float
+    description: String
+    added_at: String
+    product: ProductInterface
+}
