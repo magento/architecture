@@ -28,18 +28,19 @@ Also we want not to expose database autoincrement ID in graphql in the future be
 
  ## Proposed solution
 
+Introduction of `urlResolverV2` and deprecation of `urlResolver`. We want to keep the same id name, but change the type, and do this in a backward compatible way. So a new query is needed.
 
 ```graphql
 urlResolverV2(url: String) {
   id: ID!
-  ....
+  ...
 }
 ```
 
 This ID has to be filterable in all entities, even in product
 
  ```graphql
- products(filter: { id: { eq: []"$valueOfIdentifierFromUrlResolver"}}) {
+ products(filter: { id: { eq: "$valueOfIdentifierFromUrlResolver"}}) {
      items {
        id
        name
@@ -47,6 +48,7 @@ This ID has to be filterable in all entities, even in product
    }
  ```
 As of now this feature is not possible, but it has to be introduced to unlock this flow.
+A separate proposal for product will be requested.
 
  ## Alternatives
  
