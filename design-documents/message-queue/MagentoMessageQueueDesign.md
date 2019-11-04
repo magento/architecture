@@ -21,7 +21,7 @@ This QueueInterface is been utilized by Consumer classes, there are currently th
 
 |      | Class Name    | Purpose / Description                                        |
 | ---- | ------------- | ------------------------------------------------------------ |
-| 1    | Consumer      | This class is for both synchronous and asynchronous style message processing; in synchronous style topics, **reply_to** queue is used for execution results |
+| 1    | Consumer      | This class is for both synchronous and asynchronous style message processing; in synchronous style topics, **response** is defined along with **request** in communication.xml; reponse queue name is made from original topic name by appending prefix. |
 | 2    | MassConsumer  | This is mainly designed for asynchronous style message processing; primarily used for Async APIs and Async Bulk APIs |
 | 3    | BatchConsumer | This class supports batch processing of messages, helps in picking & merging the messages to a specified batch size, and then process them together, before querying another batch |
 
