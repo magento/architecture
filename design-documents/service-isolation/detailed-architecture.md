@@ -25,7 +25,7 @@ The storefront services are communicating with each other using REST or Protobuf
 Integration with third-party systems can be implemented in one of the following ways depending on use case:
  1. Storefront Gateway may route query to third-party system
  1. Storefront Gateway may provide service discovery for third-party systems, in this case the client will call third-party system directly 
- 1. Third-party system can be placed behind GraphQL engine and exposed via unified GraphQL schema
+ 1. Third-party system can be placed behind GraphQL engine and exposed via unified GraphQL schema. For example when Magento storefront services are replaced with services from Commerce SaaS
  
 Observability of the incoming/outgoing traffic is an important aspect of SaaS applications and corresponding design should be created in the future iterations of this proposal.
 
