@@ -2,11 +2,13 @@
 
 ## Overview
 
-The goal of this document is to gather requirements, understand data flow and propose architecture for multi-service Magento application.
+The goal of this document is to gather requirements, understand data flow and propose architecture for multi-service storefront Magento application. Admin use cases are intentionally out of scope.
 
 Please make sure to get familiar with [high-level service isolation vision](../service-isolation.md) before proceeding.
 
-![Gateway](img/GraphQL%20BFF.png)
+![Gateway](img/multi-service-structure.png)
+
+To avoid cluttering the above diagram, response arrows are omitted. Most queries in reality are synchronous.
 
 The client (e.g. browser) is interacting with the system using GraphQL. The only component of the system exposed publicly is Storefront Gateway, which is responsible for routing, full response caching and perimeter-level authorization.
 
@@ -47,7 +49,11 @@ Auth JWT, Customer Context JWT and Store Context are all optional, however, when
  
 The following sequence diagram demonstrates the process of client application obtaining authentication and customer context JWTs.
 
-![Customer authentication](img/BFF%20-%20Customer%20Authentication%20Sequence.png)
+![Customer authentication](img/multi-service-customer-authentication-sequence.png)
+
+Individual storefront services are responsible for verifying that user is authorized to perform specific action.
+
+![Customer authentication](img/multi-service-customer-authorization-sequence.png)
  
 ## Query enrichment
 
@@ -67,11 +73,17 @@ Data lookup for storefront API query enrichment will be done using the following
  
 The following diagram explains a sequence of actions needed to render a product page with PWA. After the initial call caches on server, gateway and client side will make this sequence shorter.
 
-![Product details page](img/PWA%20BFF%20-%20Product%20Page%20Sequence.png)
+![Product details page rendering with PWA](img/multi-service-pwa-sequence.png)
+
+#### Alternative evaluation
+
+Storefront services may be responsible for query enrichment instead of relying on GraphQL Server for this. This will simplify implementation of the GraphQL Server, but will introduce additional inter-dependencies between services, which in turn will increase complexity and negatively affect performance.
 
 ## Scalability
 
 All components must support scalability.
+
+PWA SHOULD NOT be deployed in multi-service mode due to inability to achieve ultimate performance optimization in this case. See details on micro frontends [here](https://martinfowler.com/articles/micro-frontends.html).
 
 ## Extensibility
 
@@ -87,8 +99,3 @@ Most of the components need to be extensible, including:
 Storefront Gateway may not need to be extensible.
 
 It is important to note that services have to be redeployed after installation of extensions. It should be possible to manage ACL via admin API gateway to avoid the need of redeployment.
-
-## Open questions
-
- 1. Should PWA be deployed in multi-service mode? Probably not because it will hurt performance and increase complexity. 
- 1. Should SF services require customer and store scope arguments explicitly and rely on query enrichment on GraphQL Server side? Alternatively they can perform enrichment themselves, this will simplify implementation of the GraphQL Server, but may introduce additional inter-dependencies between services.
