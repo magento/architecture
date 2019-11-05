@@ -229,7 +229,7 @@ only data that we need to render product.
   ]
 }
 ```
-* `isStock` - is product in stock.
+* `inStock` - is product in stock.
 * `lowStock` - is product in low stock.
 
 
