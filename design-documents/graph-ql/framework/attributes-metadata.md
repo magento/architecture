@@ -19,6 +19,11 @@ Query.customAttributeMetadata(
     attributes: [AttributeInput!]!
 ): CustomAttributeMetadata
 
+type AttributeInput {
+    attribute_code: String
+    entity_type: String
+}
+
 type CustomAttributeMetadata {
     items: [Attribute]
 }
