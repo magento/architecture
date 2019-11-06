@@ -24,15 +24,15 @@ PHP Enqueue provides JMS style abstraction layer over many brokers as discussed 
 
 ## Magento to PHP Enqueue Queue Configuration
 
-There is a Magento2 module available for Enqueue library, [Magento 2 Enqueue Quick Tour](https://github.com/php-enqueue/enqueue-dev/blob/master/docs/magento2/quick_tour.md), this extension provides easy to configure Magento Admin screen, to configure any supported Queue technology within Enqueue (behind the scenes it configures config file [Magento 2 Enqueue Config Example](https://github.com/php-enqueue/magento2-enqueue/blob/master/etc/config.xml)). In the end, it makes it straightforward to publish and consume messages in your PHP application.
+There is a Magento2 module available for Enqueue library, [Magento 2 Enqueue Quick Tour](https://github.com/php-enqueue/enqueue-dev/blob/master/docs/magento2/quick_tour.md), this extension provides easy to configure Magento Admin screen, which setup any supported Queue technology within Enqueue (behind the scenes it add configuration here [Magento 2 Enqueue Config Example](https://github.com/php-enqueue/magento2-enqueue/blob/master/etc/config.xml)). In the end, it makes it straightforward to publish and consume messages in your PHP application.
 
 Magento already implements lot of functionality by itself (for instance keeping track of Connection, Queues and their callbacks, consumer types etc.). We can potentially use only the subset of Enqueue library to interface with the undelying Messaging System in a uniform manner; by providing another QueueInterface implemention for **Enqueue** module.
 
 Here is the [EnqueueManager.php](https://github.com/php-enqueue/magento2-enqueue/blob/master/Model/EnqueueManager.php), that already abstracts much of the complexity to enable Enqueue integration with Magento 2; it provides [SimpleClient](https://github.com/php-enqueue/enqueue-dev/blob/master/docs/client/quick_tour.md) library access to Magento application, which provides easy to use interface by hiding complexity. 
 
-Instead of using a polling based approach, an interrupt based approach can be used if we want to stop consumer process, there are multiple extensions available [Extentions for additional functionality](https://github.com/php-enqueue/enqueue-dev/blob/master/docs/consumption/extensions.md), for instance **LimitConsumedMessageExtention** and **SignalExtension** (it can catch signals from outside and interrupt consumption of messages); the channel based consume() process will also improve persformance as compared to polling mechanism.
+Instead of using a polling based approach, an interrupt based approach can be used if we want to stop consumer process, there are multiple extensions available [Extentions for additional functionality](https://github.com/php-enqueue/enqueue-dev/blob/master/docs/consumption/extensions.md), for instance **LimitConsumedMessageExtention** and **SignalExtension** (it can catch signals from outside and interrupt consumption of messages); the channel based consume() process will also improve performance as compared to polling mechanism.
 
-[SimpleClient Code](https://github.com/php-enqueue/simple-client/blob/master/SimpleClient.php)
+[SimpleClient Implementation Code](https://github.com/php-enqueue/simple-client/blob/master/SimpleClient.php)
 
 
 
