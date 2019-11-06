@@ -12,17 +12,17 @@ PHP Enqueue provides JMS style abstraction layer over many brokers as discussed 
 
 | Method        | Evaluation | Implementation Readiness                                     |
 | ------------- | ---------- | ------------------------------------------------------------ |
-| dequeue()     | Available  | consumer.receive() <br />or client.consume(new LimitConsumedMessagesExtension($messageLimit)) |
+| dequeue()     | Available  | consumer.receive() <br />or simpleclient.consume(new LimitConsumedMessagesExtension($messageLimit)) |
 | acknowledge() | Available  | consumer.acknowledge(message)<br />or Callback function / processor can return ACK |
-| subscribe()   | Available  | consumer.bindCallback(topic, callback function)<br />client.bindTopic(topic, callback function)<br />consumer.consume() -- blocking call, runs until interrupted<br />client.consume() -- blocking call, runs until interrupted |
+| subscribe()   | Available  | consumer.bindCallback(topic, callback function)<br />simpleclient.bindTopic(topic, callback function)<br />consumer.consume() -- blocking call, runs until interrupted<br />simpleclient.consume() -- blocking call, runs until interrupted |
 | reject()      | Available  | consumer.reject(message)<br />or callback function / processor can return REJECT or REQUEUE |
-| push()        | Available  | client.sendEvent(topic, message)                             |
+| push()        | Available  | simpleclient.sendEvent(topic, message)                       |
 
 <img src="legend_img.png" alt="Legend" width="70%" height="70%" />
 
 
 
-## Magento to PHP Enqueue Queue Configuration
+## SimpleClient & Queue Interoperablity
 
 There is a Magento2 module available for Enqueue library, [Magento 2 Enqueue Quick Tour](https://github.com/php-enqueue/enqueue-dev/blob/master/docs/magento2/quick_tour.md), this extension provides easy to configure Magento Admin screen, which setup any supported Queue technology within Enqueue (behind the scenes it add configuration here [Magento 2 Enqueue Config Example](https://github.com/php-enqueue/magento2-enqueue/blob/master/etc/config.xml)). In the end, it makes it straightforward to publish and consume messages in your PHP application.
 
@@ -34,7 +34,9 @@ Instead of using a polling based approach, an interrupt based approach can be us
 
 [SimpleClient Implementation Code](https://github.com/php-enqueue/simple-client/blob/master/SimpleClient.php)
 
+Another option is [Queue Interoperablity Library](https://github.com/queue-interop/queue-interop) which also supports Enqueue and provide different level of controls like calling receive, reject & acknowledge functions, see [Interop\Queue\Consumer.php](https://github.com/queue-interop/queue-interop/blob/master/src/Consumer.php) (both options are discussed in the evaluation table).
 
+## Magento to PHP Enqueue Queue Configuration
 
 | Config File Name (Magento) | Description                                                  | Config File Name (PHP Enqueue) | Description                                                  |
 | -------------------------- | ------------------------------------------------------------ | ------------------------------ | ------------------------------------------------------------ |
