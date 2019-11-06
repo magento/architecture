@@ -34,7 +34,7 @@ Instead of using a polling based approach, an interrupt based approach can be us
 
 [SimpleClient Implementation Code](https://github.com/php-enqueue/simple-client/blob/master/SimpleClient.php)
 
-Another option is [Queue Interoperablity Library](https://github.com/queue-interop/queue-interop) which also supports Enqueue and provide different level of controls like calling receive, reject & acknowledge functions, see [Interop\Queue\Consumer.php](https://github.com/queue-interop/queue-interop/blob/master/src/Consumer.php) (both options are discussed in the evaluation table).
+Another option is [Queue Interoperablity Library](https://github.com/queue-interop/queue-interop) which also supports Enqueue and provide different level of controls like calling receive, reject & acknowledge functions, see [Interop\Queue\Consumer.php](https://github.com/queue-interop/queue-interop/blob/master/src/Consumer.php) (both options are discussed in the evaluation table above); but **Queue/Interop** maybe more plausible option with Magento core, since it gives similar controls which we need in QueueInterface implementation.
 
 ## Magento to PHP Enqueue Queue Configuration
 
