@@ -15,11 +15,7 @@ Deprecate `updateCustomer` mutation in favor of `updateCustomerV2`. `CustomerUpd
 
  ```graphql
  mutation {
-    updateCustomerV2(input: CustomerUpdateInput!): CustomerUpdateOutput
- }
- 
- type CustomerUpdateOutput {
-    customer: Customer!
+    updateCustomerV2(input: CustomerUpdateInput!): Customer
  }
  
  type CustomerUpdateInput {
@@ -40,24 +36,16 @@ Deprecate `updateCustomer` mutation in favor of `updateCustomerV2`. `CustomerUpd
  
  ```graphql
   mutation {
-     updateCustomerEmail(email: String!, current_password: String!): UpdateCustomerEmailOutput
+     updateCustomerEmail(email: String!, password: String!): Customer
   }
-  
-   type UpdateCustomerEmailOutput {
-      customer: Customer!
-   }
  ```
  
  **updateCustomerPassword**
  
  ```graphql
   mutation {
-     updateCustomerPassword(password: String!, current_password: String!): UpdateCustomerPasswordOutput
+     updateCustomerPassword(password: String!, old_password: String!): Customer
   }
-  
-   type UpdateCustomerPasswordOutput {
-      customer: Customer!
-   }
  ```
  
  ### Alternative solution
