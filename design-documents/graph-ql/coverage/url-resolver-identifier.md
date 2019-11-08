@@ -47,8 +47,23 @@ This ID has to be filterable in all entities, even in product
      }
    }
  ```
-As of now this feature is not possible, but it has to be introduced to unlock this flow.
+ 
+  ```graphql
+  products(filter: { id: { in: ["ID1", "ID2", "ID3"]}}) {
+      items {
+        id
+        name
+      }
+    }
+  ```
+  
+This is not currently available in current schema, but it has to be introduced to unlock this flow.
 A separate proposal for product will be requested.
+
+ #### Intended functionality
+ 
+- If only id is passed, bypass the current Search API and fetch data directly from DB
+- If id + other filters are passed, consider this an unsupported case. To be implemented later . Throw an exception in case of such query. This case is intended to be implemented as a separate task.
 
  ## Alternatives
  
