@@ -95,10 +95,10 @@ On the other hand native PHP implementation requires us to call `json_last_error
 
 ## Solution
 
-Since we want to protect our platform from any possible security vulnerabilities related to the code we do not control and have expected implementation we propose to add new dedicated contract for JSON.
+Since we want to protect our platform from any possible security vulnerabilities related to the code we do not control and have expected implementation we propose to add new `@api` class for JSON.
 
 ``` php
-interface JsonEncoderInterface
+class JsonEncoder
 {
     /**
      * Encode data into JSON string
@@ -109,7 +109,10 @@ interface JsonEncoderInterface
      * @return string
      * @throws \InvalidArgumentException
      */
-    public function encode($data, int $option, int $depth);
+    public function encode($data, int $options = 0, int $depth = 512) :string
+    {
+        //implementation
+    };
 
     /**
      * Decode the given JSON string
@@ -118,29 +121,49 @@ interface JsonEncoderInterface
      * @param bool $assoc
      * @param int $option
      * @param int $depth
-     * @return string|int|float|bool|array|null
+     * @return array|null
      * @throws \InvalidArgumentException
      */
-    public function decode($string, bool $assoc, int $option, int $depth);
-
-    //it's possible to add some other methods
+    public function decode(string $string, bool $assoc = false, int $options = 0, int $depth = 512): ?array
+    {
+        //implementation
+    };
 }
 ```
 
-Implementation would use low-level PHP `json_encode`/`json_decode` under the hood and will throw `InvalidArgumentException` if encoding/decoding cannot be performed.
-New interface introduction means that we need to refactor all the existing business logic which currently depends on JSON class, and substitute it with this new service `JsonEncoderInterface`, because having two contracts means that it's incorrect to depend directly on JSON object (particular implementation) for JSON encoding purposes, that's a violation of polymorphism.
-
-#### Pros
-- Correct from OOP point of view as we have two independent interfaces for two different business operations.
-- Follows the Interface Segregation Principle (SOLID).
-- Get us closer to the desired state of serializer/encoding design.
-- Proper error handling.
-
-#### Cons
-- Backward incompatible as introduces a lot of refactoring substituting existing direct usages of JSON object with newly introduced contract `JsonEncoderInterface`.
+Methods implementation would use low-level PHP `json_encode`/`json_decode` under the hood and will throw `InvalidArgumentException` if encoding/decoding cannot be performed.
 
 ### Other possible solutions
-1. [Extending JSON class contract](https://github.com/magento-engcom/msi/wiki/Design-Document-for-changing-SerializerInterface#extending-json-class-contract---option-1)
+1. [New interface for JSON encoding-decoding operation](https://github.com/magento/inventory/wiki/Design-Document-for-changing-SerializerInterface#introduce-new-dedicated-contract-for-json-encoding-decoding-operation---option-3)
+    ```
+    interface JsonEncoderInterface
+    {
+        /**
+         * Serialize data into string
+         *
+         * @param string|int|float|bool|array|null $data
+         * @param int
+         * @param int
+         * @return string
+         * @throws \InvalidArgumentException
+         */
+        public function encode($data, int $option, int $depth);
+
+        /**
+         * Unserialize the given string
+         *
+         * @param string $string
+         * @param int
+         * @param int
+         * @return string|int|float|bool|array|null
+         * @throws \InvalidArgumentException
+         */
+        public function decode($string, int $option, int $depth);
+
+        //it's possible there are some other methods inside
+    }
+    ```
+2. [Extending JSON class contract](https://github.com/magento-engcom/msi/wiki/Design-Document-for-changing-SerializerInterface#extending-json-class-contract---option-1)
 
     `Magento\Framework\Serialize\Serializer\Json` class implementation
 
@@ -180,7 +203,7 @@ New interface introduction means that we need to refactor all the existing busin
         }
     }
     ```
-2. [Add Constructor and Use Virtual Types for JSON](https://github.com/magento-engcom/msi/wiki/Design-Document-for-changing-SerializerInterface#add-constructor-and-use-virtual-types-for-json---option-2)
+3. [Add Constructor and Use Virtual Types for JSON](https://github.com/magento-engcom/msi/wiki/Design-Document-for-changing-SerializerInterface#add-constructor-and-use-virtual-types-for-json---option-2)
 
     `Magento\Framework\Serialize\Serializer\Json` class implementation
 
