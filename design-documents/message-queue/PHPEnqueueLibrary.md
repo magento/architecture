@@ -52,3 +52,5 @@ Another option is [Queue Interoperablity Library](https://github.com/queue-inter
 ### Open Questions?
 
 1. There are two places where callback handlers are defined for a Topic/Queue. One in communications.xml; and other in queue_consumer.xml, which one has priority over other? 
+
+   Answer: https://github.com/magento/architecture/pull/300#discussion_r343581040
