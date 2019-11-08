@@ -38,15 +38,6 @@ urlResolverV2(url: String) {
 ```
 
 This ID has to be filterable in all entities, even in product
-
- ```graphql
- products(filter: { id: { eq: "$valueOfIdentifierFromUrlResolver"}}) {
-     items {
-       id
-       name
-     }
-   }
- ```
  
   ```graphql
   products(filter: { id: { in: ["ID1", "ID2", "ID3"]}}) {
@@ -56,9 +47,6 @@ This ID has to be filterable in all entities, even in product
       }
     }
   ```
-  
-This is not currently available in current schema, but it has to be introduced to unlock this flow.
-A separate proposal for product will be requested.
 
  #### Intended functionality
  
