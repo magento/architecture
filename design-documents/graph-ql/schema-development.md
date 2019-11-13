@@ -25,18 +25,16 @@ In this document, we will explore the code-first approach.
 
 ### Pros
 
-- SDL is a generated artifact, not manually maintained.
 - The code-first schema is the single source of truth.
+   - SDL is a generated artifact and not manually maintained.
    - No inconsistencies. Schema definition & resolvers are always in sync.
    - No redundancy (duplication).
    - Easier to maintain.
+   - Scalable.
 - The shape of the API is closer to the data model.
 - Better IDE support & developer experience.
 - Better code reuse and type safety.
-- Can split by features/modules.
 - Terse (less boilerplate).
-- Declarative.
-- Scalable.
 
 ### Cons
 
