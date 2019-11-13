@@ -95,46 +95,92 @@ On the other hand native PHP implementation requires us to call `json_last_error
 
 ## Solution
 
-Since we want to protect our platform from any possible security vulnerabilities related to the code we do not control and have expected implementation we propose to add new `@api` class for JSON.
+- Deprecate the `Magento\Framework\Serialize\SerializerInterface` and add annotation `@see use Magento\Framework\Serialize\Serializer\Json instead`.
+- Add two new methods to the `Magento\Framework\Serialize\Serializer\Json`. Implementation will use low-level PHP `json_encode`/`json_decode` under the hood and will throw `InvalidArgumentException` if encoding/decoding cannot be performed.
 
 ``` php
-class JsonEncoder
+/**
+ * Serialize data to JSON, unserialize JSON encoded data
+ *
+ * @api
+ */
+class Json implements SerializerInterface
 {
-    /**
-     * Encode data into JSON string
-     *
-     * @param string|int|float|bool|array|null $data
-     * @param int $option
-     * @param int $depth
-     * @return string
-     * @throws \InvalidArgumentException
-     */
-    public function encode($data, int $options = 0, int $depth = 512) :string
-    {
-        //implementation
-    };
+    // already existing methods
+    public function serialize($data);
+    public function unserialize($string);
 
     /**
-     * Decode the given JSON string
-     *
-     * @param string $string
-     * @param bool $assoc
-     * @param int $option
+     * @param $value
+     * @param int $options
      * @param int $depth
-     * @return array|null
      * @throws \InvalidArgumentException
+     * @return string
      */
-    public function decode(string $string, bool $assoc = false, int $options = 0, int $depth = 512): ?array
+    public function serializeWithOptions($value, int $options = 0, int $depth = 512) : string
     {
-        //implementation
-    };
+        $result = json_encode($value, $options, $depth);
+        if (false === $result) {
+            throw new \InvalidArgumentException('Unable to serialize value. Error: ' . json_last_error_msg());
+        }
+        return $result;
+    }
+
+    /**
+     * @param $json
+     * @param bool $assoc
+     * @param int $depth
+     * @param int $options
+     * @throws \InvalidArgumentException
+     * @return mixed
+     */
+    public function unserializeWithOptions($json, bool $assoc = true, int $depth = 512, int $options = 0)
+    {
+        $result = json_decode($json, $assoc, $depth, $options);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \InvalidArgumentException('Unable to unserialize value. Error: ' . json_last_error_msg());
+        }
+        return $result;
+    }
 }
 ```
 
-Methods implementation would use low-level PHP `json_encode`/`json_decode` under the hood and will throw `InvalidArgumentException` if encoding/decoding cannot be performed.
-
 ### Other possible solutions
-1. [New interface for JSON encoding-decoding operation](https://github.com/magento/inventory/wiki/Design-Document-for-changing-SerializerInterface#introduce-new-dedicated-contract-for-json-encoding-decoding-operation---option-3)
+1. Add new  `@api` class for JSON encoding-decoding without interface.
+   ``` php
+   class JsonEncoder
+   {
+       /**
+        * Encode data into JSON string
+        *
+        * @param string|int|float|bool|array|null $data
+        * @param int $option
+        * @param int $depth
+        * @return string
+        * @throws \InvalidArgumentException
+        */
+       public function encode($data, int $options = 0, int $depth = 512) :string
+       {
+           //implementation
+       };
+       /**
+        * Decode the given JSON string
+        *
+        * @param string $string
+        * @param bool $assoc
+        * @param int $option
+        * @param int $depth
+        * @return array|null
+        * @throws \InvalidArgumentException
+        */
+       public function decode(string $string, bool $assoc = false, int $options = 0, int $depth = 512): ?array
+       {
+           //implementation
+       };
+   }
+   ```
+
+2. [New interface for JSON encoding/decoding operation](https://github.com/magento/inventory/wiki/Design-Document-for-changing-SerializerInterface#introduce-new-dedicated-contract-for-json-encoding-decoding-operation---option-3)
     ```
     interface JsonEncoderInterface
     {
@@ -163,7 +209,8 @@ Methods implementation would use low-level PHP `json_encode`/`json_decode` under
         //it's possible there are some other methods inside
     }
     ```
-2. [Extending JSON class contract](https://github.com/magento-engcom/msi/wiki/Design-Document-for-changing-SerializerInterface#extending-json-class-contract---option-1)
+
+3. [Extending JSON class contract](https://github.com/magento-engcom/msi/wiki/Design-Document-for-changing-SerializerInterface#extending-json-class-contract---option-1)
 
     `Magento\Framework\Serialize\Serializer\Json` class implementation
 
@@ -203,7 +250,8 @@ Methods implementation would use low-level PHP `json_encode`/`json_decode` under
         }
     }
     ```
-3. [Add Constructor and Use Virtual Types for JSON](https://github.com/magento-engcom/msi/wiki/Design-Document-for-changing-SerializerInterface#add-constructor-and-use-virtual-types-for-json---option-2)
+
+4. [Add Constructor and Use Virtual Types for JSON](https://github.com/magento-engcom/msi/wiki/Design-Document-for-changing-SerializerInterface#add-constructor-and-use-virtual-types-for-json---option-2)
 
     `Magento\Framework\Serialize\Serializer\Json` class implementation
 
@@ -265,4 +313,5 @@ Methods implementation would use low-level PHP `json_encode`/`json_decode` under
         </arguments>
     </virtualType>
     ```
-3. Do not use abstraction at all and use low-level PHP `json_encode`/`json_decode`.
+
+5. Do not use abstraction at all and use low-level PHP `json_encode`/`json_decode`.
