@@ -3,7 +3,6 @@
 Before developing a [GraphQL schema](https://graphql.org/learn/schema/), we need to consider the following:
 
 - [GraphQL Ecosystem](#graphql-ecosystem)
-- [GraphQL Server](#graphql-server)
 - [Code-First vs. SDL](#code-first-vs-sdl)
 - [Code-First Frameworks](#code-first-frameworks)
    - [Nexus](#nexus)
@@ -14,9 +13,7 @@ Before developing a [GraphQL schema](https://graphql.org/learn/schema/), we need
 
 In 2015, the [GraphQL][] spec was [first published](https://graphql.github.io/graphql-spec/July2015/) along with the reference implementation in JavaScript. It should be no surprise then, that today, JavaScript holds the strongest ecosystem of [GraphQL][] libraries, with [4,833 related npm packages](https://www.npmjs.com/search?q=graphql) at the time of this writing (10/2019). As such, the JavaScript ecosystem is a solid and safe choice, moving forward.
 
-## GraphQL Server
-
-Within the JavaScript ecosystem, there are [a few server choices available](https://www.npmtrends.com/apollo-server-vs-koa-graphql-vs-prisma), but the most popular and mature choice is [Apollo Server][]. Optionally, [`graphql-yoga`](https://www.npmjs.com/search?q=graphql-yoga) uses [Apollo Server][] under the hood.
+When considering a GraphQL server, the most popular, safe and mature choice is [Apollo Server][].
 
 ## Code-First vs. SDL
 
