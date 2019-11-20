@@ -36,10 +36,13 @@ webhooks, integrations, we need provide an API for developers to establish a mec
 _API:_
  
 ```php
-interface KeyStorageInterface
+/**
+ * Different implementations may add additional data like algorithm, key version etc.
+ */
+interface EncryptionDataInterface
 {
     /**
-     * Different implementations of TokenEncoderInterface may utilize additional data, for instance - key version.
+     * Key to use when encrypting/signing tokens.
      *
      * @return string
      */
@@ -56,21 +59,21 @@ interface TokenEncoderInterface
      * Create token with encoded authentication data.
      *
      * @param array $data Array of scalars, authentication data to be encoded.
-     * @param KeyStorageInterface $key Key to use for encryption.
+     * @param EncryptionDataInterface $encryption Encryption options.
      * @return string Token.
      */
-    public function encode(array $data, KeyStorageInterface $key): string;
+    public function encode(array $data, EncryptionDataInterface $encryption): string;
 
     /**
      * Decode token, extract authentication data.
      *
      * @param string $token
-     * @param KeyStorageInterface $key Key to use for decryption.
+     * @param EncryptionDataInterface $encryption Decryption options.
      * @return array Authentication data.
      * @throws TokenDecodingException If it's impossible to decrypt/decode token.
      * @throws TokenAuthenticationException If token can be read but cannot be authenticated.
      */
-    public function decode(string $token, KeyStorageInterface $key): array;
+    public function decode(string $token, EncryptionDataInterface $encryption): array;
 }
 ```
  
@@ -107,7 +110,8 @@ __Cons__:
 JWT is an established standard for authentication tokens that contain user data and are signed as origin verification.
 A number of [PHP libraries](https://jwt.io) existing implementing it.
  
-Child interface of `TokenEncoderInterface` will be created - `JWTTokenEncoderInterface`, that will contain JWT specific
+Child interfaces of `TokenEncoderInterface` will be created - `JWSTokenEncoderInterface` and `JWETokenEncoderInterface`
+that will contain JWT specific
 methods in addition to the default one that will allow, for instance, pick algorithms, use public and private claims etc.
  
 __Pros__:
@@ -122,6 +126,79 @@ __Cons__:
 * Some libraries have [known security vulnerabilities](https://auth0.com/blog/critical-vulnerabilities-in-json-web-token-libraries/)
 * Classes responsible for token creation will have to be updated alongside `EncryptorInterface` in order to utilize the
   most secure and up-to-date algorithms
+ 
+[JWT Frameworks](https://github.com/web-token/jwt-framework) looks to be promising candidate to use for Magento implementation.
+ 
+##### API for JWT token encoder
+```php
+interface JwsTokenEncoderInterface extends TokenEncoderInterface
+{
+    /**
+     * JWS specific decoding method that returns more info regarding the token.
+     *
+     * @return JwsToken JWS DTO containing headers, payload and resolved token data.
+     */
+    public function decodeJws(string $token, JwsEncryptionDataInterface $encryption): JwsToken;
+}
+
+interface JwsEncryptionDataInterface extends EncryptionDataInterface
+{
+    public function getAlgorithm(): string;
+
+    /**
+     * Returns `encoded-data => claim name` map to be used to map Magento token data to JWT claims.
+     *
+     * If Magento token data key is not present then it will be used as is.
+     * Mapped claim names should follow public claim criteria if they are intended to be public.
+     *
+     * @return string[]
+     */
+    public function getClaimsMap(): array;
+
+    /**
+     * Returns claims to be added in addition to claim generated from Magento token data.
+     *
+     * @return string[]
+     */
+    public function getAdditionalClaims(): array;
+}
+
+interface JweTokenEncoderInterface extends TokenEncoderInterface
+{
+    /**
+     * JWE specific decoding method that returns more info regarding the token.
+     *
+     * @return JweToken JWE DTO containing headers, payload and resolved token data.
+     */
+    public function decodeJwe(string $token, JweEncryptionDataInterface $encryption): JweToken;
+}
+
+interface JweEncryptionDataInterface extends EncryptionDataInterface
+{
+    public function getKeyAlgorithm(): string;
+
+    public function getContentAlgorithm(): string;
+
+    public function getCompressionMethod(): ?string;
+
+    /**
+     * Returns `encoded-data => claim name` map to be used to map Magento token data to JWT claims.
+     *
+     * If Magento token data key is not present then it will be used as is.
+     * Mapped claim names should follow public claim criteria if they are intended to be public.
+     *
+     * @return string[]
+     */
+    public function getClaimsMap(): array;
+
+    /**
+     * Returns claims to be added in addition to claim generated from Magento token data.
+     *
+     * @return string[]
+     */
+    public function getAdditionalClaims(): array;
+}
+```
  
  
 ### SPI for token data authenticator
