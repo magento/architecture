@@ -103,8 +103,8 @@ Dot.notations is used for retrieve multi-level fields:
                {
                  "level": [
                      {
-						                 "option": "data"
-					                }
+                        "option": "data"
+                     }
                   ]
                }
             ],
@@ -241,30 +241,26 @@ interface ProductResponseContainer extends \Magento\Framework\Api\ExtensionAttri
 ```php
 // Request
 {
-    "searchTerm": "modern car",
+    "searchTerm": "simple product",
     "filters": [
         {
-            "field": "price",
-            "value": "12",
-            "condition_type": "from"
-        },
-        {
-            "field": "color",
-            "value": [
-                "10",
-                "11"
+            "price": [
+                {
+                    "from": 8,
+                    "to": 22
+                }
             ],
-            "condition_type": "in"
+            "category": {
+                "eq": 1
+            }
         }
     ],
     "sort": [
         {
-            "field": "price",
-            "direction": "DESC"
+            "price": "DESC"
         },
         {
-            "field": "name",
-            "direction": "DESC"
+            "name": "ASC"
         }
     ],
     "page": {
@@ -272,7 +268,7 @@ interface ProductResponseContainer extends \Magento\Framework\Api\ExtensionAttri
         "currentPage": 3
     },
     "scopes": {
-        "storeId": "US",
+        "store": 1,
         "customerGroupId": 1
     },
     "attributes": [
