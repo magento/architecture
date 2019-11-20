@@ -1,4 +1,4 @@
-## Introduce stateless web API tokens
+## Do not store API authentication keys
 &nbsp;&nbsp;&nbsp;&nbsp;Authentication tokens used to access web APIs (REST, SOAP, GraphQL) should contain enough
 information to authenticate a user without having to store session data on server side.
  
@@ -21,16 +21,16 @@ and perform (relatively) expensive SQL queries to DB. Te more users Magento has 
 until they expire and run an extra cron job to remove expired ones.
  
  
-### Overview of new stateless tokens implementation
+### Overview of new web API tokens implementation
 * `TokenUserContext` to be updated to decode new tokens and use old logic for existing tokens
 * [Create and implement](#spi-for-token-data-authenticator) SPIs for providing user data to be encoded in tokens and reading it
-* [Create and implement](#stateless-tokens-api) API for stateless tokens generation and reading
+* [Create and implement](#stateless-tokens-api) API for the new tokens generation and reading
 * Update token revoke functionality to use cache storage to store revoke request instead of DB for customer/admin tokens
   [details](#how-to-handle-manual-expiration)
  
  
-### Stateless Tokens API
-&nbsp;&nbsp;&nbsp;&nbsp;There can be many applications possible for stateless tokens in Magento: user authentication,
+### New Authentication Tokens API
+&nbsp;&nbsp;&nbsp;&nbsp;There can be many applications possible for the new tokens in Magento: user authentication,
 webhooks, integrations, we need provide an API for developers to establish a mechanism for all future cases.
  
 _API:_
