@@ -42,9 +42,9 @@ Single entry point for **partial** reading and import of data.
   }
   "format': {
     "escape": "|"
-    "enclosure" : "|"
-    "delimiter" => "|"
-    "multipleValueSeparator" : "|"
+    "enclosure": "|"
+    "delimiter": "|"
+    "multipleValueSeparator": "|"
     "extensionAttributes": []
   }
   "convertingRules": [
@@ -80,6 +80,6 @@ Where is:
 
 ```
 {
-  "UUID": "uuid_string"
+  "uuid": "uuid_string"
 }
 ```

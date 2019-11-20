@@ -79,6 +79,14 @@ interface ConvertingRuleInterface
 }
 ```
 
+Converting rules are transforming incoming data in a way, that Magento API can correctly understand them.
+
+#### Example: 
+Magento default  Advanced Pricing import *.csv file contains Magento Website assignment as a string value: "All Websites [ALL]".
+
+Magento API cannot recognise correct website base on this string representation, so this means we have to create converting rule that will define correct transformation from provided text to Magento Website ID.
+
+
 ### Extension points
 
 ```php

@@ -31,13 +31,18 @@ Main idea of extension is to replace current Import module with new implementati
 - CSV reader;
 - Data Converting Rules;
 - Import Data Exchanging;
-- Import configuration;
+- Import Configuration;
 - Product import;
-- Stock status import;
+- Stock import;
 - Advanced pricing import;
 - Documentation;
 
+## UML
+
+![AsyncImportUML@2x](AsyncImportUML.png)
+
 ## TODO
-- Design of `Import configuration`;
-- Design of `Restart failed operations`;
-- Design of `Get Import status`;
+- Design of Import configuration;
+- Design of Get Import status;
+- Design of Import processing - Sync / Async
+- Design of Restart failed operations
