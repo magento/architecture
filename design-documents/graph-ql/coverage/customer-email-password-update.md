@@ -18,7 +18,7 @@ Deprecate `updateCustomer` mutation in favor of `updateCustomerV2`. `CustomerUpd
     updateCustomerV2(input: CustomerUpdateInput!): CustomerOutput
  }
  
- type CustomerUpdateInput {
+ input CustomerUpdateInput {
      date_of_birth: String
      dob: String
      firstname: String
@@ -39,15 +39,7 @@ Deprecate `updateCustomer` mutation in favor of `updateCustomerV2`. `CustomerUpd
      updateCustomerEmail(email: String!, password: String!): CustomerOutput
   }
  ```
- 
- **updateCustomerPassword**
- 
- ```graphql
-  mutation {
-     updateCustomerPassword(currentPassword: String!, newPassword: String!): CustomerOutput
-  }
- ```
- 
+
  ### Alternative solution
  
  Alternative solution is to use existing field consistently for setting new customer password and introduce additional input argument for current password verification:
