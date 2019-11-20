@@ -38,9 +38,10 @@ The proposed type for the customer order might look like:
 ```graphql
 @doc("Customer order details")
 type CustomerOrder {
+    id: ID! @doc("order unique identifier")
     order_date: String! @doc("date when the order was placed")
     status: String! @doc("current status of the order")
-    order_number: String! @doc("order number")
+    number: String! @doc("document number")
     items: [OrderItem]! @doc("collection of all the items purchased")
     prices: SalesPricesInterface! @doc("prices details for the order")
     invoices: [Invoice]! @doc("invoice list for the order")
@@ -49,6 +50,8 @@ type CustomerOrder {
     payment_methods: [PaymentMethod]! @doc("payment details for the order")
 }
 ```
+
+The `id` will be `base64encode` representation of `increment_id`.
 
 > The order `status` should be filtered in the same way as for Luma via `Order Status` and `Visible On Storefront` configuration 
 
@@ -138,7 +141,8 @@ The invoice entity will have the similar to the order schema:
 ```graphql
 @doc("Invoice details")
 type Invoice {
-    number: String! @doc("user friendly identifier for the invoice")
+    id: ID! @doc("invoice unique identifier")
+    number: String! @doc("document number")
     prices: InvoicePrices! @doc("invoice prices details")
     items: [InvoiceItem]! @doc("invoiced product details")
 }
@@ -154,6 +158,8 @@ type InvoicePrices implements SalesPricesInterface {
 }
 ```
 
+The `id` will be `base64encode` representation of `increment_id`.
+
 ## Refund Type Schema
 
 The credit memo entity will have the similar to the order and invoice schema:
@@ -161,7 +167,8 @@ The credit memo entity will have the similar to the order and invoice schema:
 ```graphql
 @doc("Credit memo details")
 type CreditMemo {
-    number: String!
+    id: ID! @doc("credit memo unique identifier")
+    number: String! @doc("document number")
     items: [CreditMemoItem]! @doc("items refunded")
     prices: CreditMemoPrices! @doc("refund prices details")
 }
@@ -177,11 +184,15 @@ type CreditMemoPrices implements SalesPricesInterface {
 }
 ```
 
+The `id` will be `base64encode` representation of `increment_id`.
+
 ## Shipment Type Schema
 
 ```graphql
 @doc("Order shipment details")
 type OrderShipment {
+    id: ID! @doc("shipment unique identifier")
+    number: String! @doc("document number")
     shipping_method: String! @doc("shipping method for the order")
     shipping_address: CustomerAddress! @doc("shipping address for the order")
     tracking_link: String @doc("tracking link for the order")
@@ -192,8 +203,9 @@ type OrderShipment {
 type ShipmentItem implements SalesItemInterface{
     quantity_shipped: Float! @doc("number of shipped items")
 }
-
 ```
+
+The `id` will be `base64encode` representation of `increment_id`.
 
 ## Additional Types
 
