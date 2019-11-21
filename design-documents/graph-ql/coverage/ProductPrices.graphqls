@@ -1,0 +1,78 @@
+interface ProductInterface{
+    ...
+    price: ProductPrices @deprecated (use price_range)
+    price_range: PriceRange!
+    tier_price: Float @deprecated
+    tier_prices: [ProductTierPrices] @deprecated (use price_tiers)
+    price_tiers: [TierPrice]
+    ...
+}
+
+type ProductPrices { @deprecated (use PriceRange)
+    minimalPrice: @deprecated
+    maximalPrice: @deprecated
+    regularPrice: @deprecated
+}
+
+type ProductTierPrices @deprecated (replaced by TierPrice because it should be singular) {
+    customer_group_id: String @deprecated (not relevant on storefront)
+    qty: Float @deprecated (use TierPrice.quantity)
+    value: Float @deprecated (use TierPrice.final_price)
+    percentage_value: Float @deprecated (use TierPrice.discount)
+    website_id: Float @deprecated (not relevant on storefront)
+}
+
+type TierPrice {
+    final_price: Money
+    quantity: Float
+    discount: ProductDiscount
+}
+
+type PriceRange{
+    minimum_price : ProductPrice!
+    maximum_price : ProductPrice
+}
+
+type ProductPrice{
+    regular_price : Money!
+    final_price : Money!
+    discount : ProductDiscount
+    fixed_product_taxes: [FixedProductTax]
+}
+
+type ProductDiscount{
+    percent_off : Float
+    amount_off : Float
+}
+
+type FixedProductTax {
+    amount: Money
+    label: String
+}
+
+type Price @deprecated (replaced by ProductPrice){
+    amount: Money
+    adjustments: [PriceAdjustment]
+}
+
+type PriceAdjustment @deprecated (replaced by FixedProductTax) {
+    amount: Money
+    code: PriceAdjustmentCodesEnum
+    description: PriceAdjustmentDescriptionEnum
+}
+
+enum PriceAdjustmentCodesEnum @deprecated (replaced by FixedProductTax) {
+    # From WeeGraphQl
+    WEE
+    WEETAX
+}
+
+enum PriceAdjustmentDescriptionEnum @deprecated (replaced by FixedProductTax) {
+    INCLUDED
+    EXCLUDED
+}
+
+type Money{
+    value : Float!
+    currency : Currency!
+}
