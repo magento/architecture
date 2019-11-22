@@ -44,4 +44,4 @@ How Storage schema should looks like?
 E.g. For Catalog service. How can we handle staging ?
 ... TBD
 
-![Storage filling diagram](https://github.com/magento-performance/architecture/commit/082c375da067dc5fd15b7fc4e1ef748f50863bfe#diff-0efa94069515558e10661155b88a34b1)
+![Storage filling diagram](https://github.com/magento-performance/architecture/blob/master/design-documents/storefront/storefront-api/fill-sf-storage.png)
