@@ -26,6 +26,9 @@ Cons.
 - Need to mannualy take care about adding message to the Queue
 -- create plugins/event listeners
 -- "parse" default scope to several scopes (E.g. Save product in "Default" scope)
+Cons. Quedstions
+-- How to handler events, that not passed from "product_model_save"? E.g. product import, catalog rule,...
+-- Price for composite product. How to update configuralbe price after simple price changed?
 
 
 3.2. MView mechanism
@@ -36,10 +39,15 @@ Pors.
 
 Cons.
 - Message do not contains scopes. Need to call DataProviders with all scopes in system (just store?)
-
+- How to handler "create new store"
 
 
 4. Open questions
+How to display price? (configuration issue)
+ - we have configuiration "include tax"/"exclude tax"
+Init storage. 
+Do we need full reindex for specific cases?
+
 How Storage schema should looks like?
 E.g. For Catalog service. How can we handle staging ?
 ... TBD
