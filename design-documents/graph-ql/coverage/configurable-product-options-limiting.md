@@ -16,24 +16,84 @@ Introduction of limiting the `configurable_options` from the `ConfigurableProduc
 
 ```graphql
 ... on ConfigurableProduct {
-                configurable_options {
-                    id
-                    attribute_id
-                    label
-                    position
-                    use_default
-                    attribute_code
-                    values(limit: 3) {
-                        value_index # usually value of the dropdown attribute
-                        label
-                        store_label
-                        default_label
-                        use_default_value
-                    }
-                    total_values # new field proposed
-                    product_id # parent id (configrable product id)
-                }
+        configurable_options {
+            id
+            attribute_id
+            label
+            position
+            use_default
+            attribute_code
+            values(limit: 3) {
+                value_index # usually value of the dropdown attribute
+                label
+                store_label
+                default_label
+                use_default_value
+            }
+            total_values # new field proposed
+            product_id # parent id (configrable product id)
+        }
    }
+```
+
+```json
+{
+  // ...
+      "configurable_options": [
+        {
+          "id": 27,
+          "attribute_id": "232",
+          "label": "Color",
+          "position": 0,
+          "use_default": false,
+          "attribute_code": "color",
+          "values": [
+            {
+              "value_index": 278,       // pair 1.1
+              "label": "RED"
+              // ...
+            },
+            {
+              "value_index": 280,       // pair 1.2
+              "label": "GREEN"
+              // ....
+            },
+            {
+              "value_index": 282,       // pair 1.3
+              "label": "BLUE"
+              // ....
+            }
+          ],
+          "product_id": 1851
+        },
+        {
+          "id": 28,
+          "attribute_id": "233",
+          "label": "SIZE",
+          "position": 1,
+          "use_default": false,
+          "attribute_code": "size",
+          "values": [
+            {
+              "value_index": 279,       // pair 2.1
+              "label": "S"
+              // ...
+            },
+            {
+              "value_index": 281,       // pair 2.2
+              "label": "M"
+              // ....
+            },
+            {
+              "value_index": 282,       // pair 2.3
+              "label": "L"
+              // .....
+            }
+          ],
+          "product_id": 1851
+        }
+        // ...
+}
 ```
 
 Note the limit 3, we can pull information as a regular sql limit, or most popular colors, or other data.
@@ -50,14 +110,14 @@ Note the limit 3, we can pull information as a regular sql limit, or most popula
 
 ```graphql
 ... on ConfigurableProduct {
-                variants(value_index: {in: [1,2,3...]}) {
-                    product {
+                variants(value_indexes: {in: [ [278,279], [280,281], [282,283] ... ]}) { #equal to [RED, S] [GREEN, M], [BLUE, L]
+                    product { # single product that coresponds to 1 pair of attributes
                        name
                        image
                        price
-                       ....
+                       # ....
                     }
-                    attributes {
+                    attributes { #array for the pair of the attributes
                         label
                         code
                         value_index
@@ -66,46 +126,71 @@ Note the limit 3, we can pull information as a regular sql limit, or most popula
    }
 ```
 
+```json
+{
+ // ...
+          "variants": [
+            {
+              "product": {
+                // ....
+              },
+              "attributes": [
+                {
+                  "label": "option 1.1",
+                  "code": "attribute1",
+                  "value_index": 278
+                },
+                {
+                  "label": "option 1.2",
+                  "code": "attribute2",
+                  "value_index": 281
+                }
+              ]
+            }
+          ]
+  // ...
+}
+```
  ## Alternatives
 
-# Schema change
+#### Schema change
 Related data is not nested, it is queried separately. If variants would be child of values of options, just limiting would be enough, because the results would be spanned down the chain.
 Also same problem is on the variants product that should be inside the attributes. One value_index maps ones to one to the product.
 
 
 ```graphql
 ... on ConfigurableProduct {
-                configurable_options {
-                    id
-                    attribute_id
-                    label
-                    position
-                    use_default
-                    attribute_code
-                    values(limit: 3) {
-                        value_index # usually value of the dropdown attribute
+        configurable_options {
+            id
+            attribute_id
+            label
+            position
+            use_default
+            attribute_code
+            values(limit: 3) {
+                value_index # usually value of the dropdown attribute
+                label
+                store_label
+                default_label
+                use_default_value
+                attribute_values {
                         label
-                        store_label
-                        default_label
-                        use_default_value
-                        attribute_values {
-                                label
-                                code
-                                value_index
-                                product {
-                                   name
-                                   image
-                                   price
-                                   ....
-                                }
-                          }
-                    }
-                    total_values # new field proposed
-                }
+                        code
+                        value_index
+                        product {
+                           name
+                           image
+                           price
+                           # ....
+                        }
+                  }
+            }
+            total_values # new field proposed
+        }
    }
 ```
 
-# Exposing product id/sku instead of the whole product interface
+#### Exposing product id/sku instead of the whole product interface
 
 The fact that product is exposed as an object adds a lot of extra processing, since we already know the id of the child product, and we have to query all other details about it and map it to the attribute value.
 Exposing just product id and using a second pass query with those ids would be better. The problem here is that they are not visible so we still have to filter them by id on the variatns
@@ -113,27 +198,47 @@ Exposing just product id and using a second pass query with those ids would be b
 1st query
 ```graphql
 ... on ConfigurableProduct {
-                configurable_options {
-                    ...
-                    values(limit: 3) {
-                        value_index # usually value of the dropdown attribute
-                        child_product_uuid
-                    ...
-                }
+        variants {
+            product_id # not querying the whole product will also reduce query time but can still return quite some data.
+            attributes { #array for the pair of the attributes
+                label
+                code
+                value_index
+            }
+        }
    }
 ```
+
+Note: An optimization can probably be made in case we query product { id } instead of adding product_id as a new field.
 
 2nd query
 ```graphql
 ... on ConfigurableProduct {
-                variants {
-                    product(uuid: {in: [1,2,3..]}) {
-                       name
-                       image
-                       price
-                       ....
-                    }
-                }
+        variants(uuid: {in: [1,2,3..]}) {
+            product {
+               name
+               image
+               price
+               # ....
+            }
+            attributes { #array for the pair of the attributes
+                label
+                code
+                value_index
+            }
+        }
    }
 ```
-Probably a combination of this nesting plus filtering 
+# Limiting the variants and options at the same time, so it would return unique combinations and pass those combinations automatically from options to variants
+```graphql
+... on ConfigurableProduct {
+     configurable_options(limit:3) {
+       # ...
+     }
+     variants(limit:3) {
+       # ...
+    }
+}
+```
+
+This last schema only works if limit is set on both configurable_options and variants. Otherwise we won't know what pairs to pass from one to another.
