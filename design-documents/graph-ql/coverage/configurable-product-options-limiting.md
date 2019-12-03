@@ -38,7 +38,7 @@ Introduction of limiting the `configurable_options` from the `ConfigurableProduc
 
 ```json
 {
-  // ...
+  # ...
       "configurable_options": [
         {
           "id": 27,
@@ -49,19 +49,19 @@ Introduction of limiting the `configurable_options` from the `ConfigurableProduc
           "attribute_code": "color",
           "values": [
             {
-              "value_index": 278,       // pair 1.1
+              "value_index": 278,       # pair 1.1
               "label": "RED"
-              // ...
+              # ...
             },
             {
-              "value_index": 280,       // pair 1.2
+              "value_index": 280,       # pair 1.2
               "label": "GREEN"
-              // ....
+              # ....
             },
             {
-              "value_index": 282,       // pair 1.3
+              "value_index": 282,       # pair 1.3
               "label": "BLUE"
-              // ....
+              # ....
             }
           ],
           "product_id": 1851
@@ -75,24 +75,24 @@ Introduction of limiting the `configurable_options` from the `ConfigurableProduc
           "attribute_code": "size",
           "values": [
             {
-              "value_index": 279,       // pair 2.1
+              "value_index": 279,       # pair 2.1
               "label": "S"
-              // ...
+              # ...
             },
             {
-              "value_index": 281,       // pair 2.2
+              "value_index": 281,       # pair 2.2
               "label": "M"
-              // ....
+              # ....
             },
             {
-              "value_index": 282,       // pair 2.3
+              "value_index": 282,       # pair 2.3
               "label": "L"
-              // .....
+              # .....
             }
           ],
           "product_id": 1851
         }
-        // ...
+        # ...
 }
 ```
 
@@ -128,11 +128,11 @@ Note the limit 3, we can pull information as a regular sql limit, or most popula
 
 ```json
 {
- // ...
+ # ...
           "variants": [
             {
               "product": {
-                // ....
+                # ....
               },
               "attributes": [
                 {
@@ -148,7 +148,7 @@ Note the limit 3, we can pull information as a regular sql limit, or most popula
               ]
             }
           ]
-  // ...
+  # ...
 }
 ```
  ## Alternatives
