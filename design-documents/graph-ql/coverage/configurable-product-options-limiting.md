@@ -38,7 +38,7 @@ Introduction of limiting the `configurable_options` from the `ConfigurableProduc
 
 ```json
 {
-  # ...
+  ...
       "configurable_options": [
         {
           "id": 27,
@@ -49,19 +49,19 @@ Introduction of limiting the `configurable_options` from the `ConfigurableProduc
           "attribute_code": "color",
           "values": [
             {
-              "value_index": 278,       # pair 1.1
+              "value_index": 278,     ...  pair 1.1
               "label": "RED"
-              # ...
+              ...
             },
             {
-              "value_index": 280,       # pair 1.2
+              "value_index": 280,     ... pair 1.2
               "label": "GREEN"
-              # ....
+              ....
             },
             {
-              "value_index": 282,       # pair 1.3
+              "value_index": 282,     ...pair 1.3
               "label": "BLUE"
-              # ....
+              ....
             }
           ],
           "product_id": 1851
@@ -75,24 +75,24 @@ Introduction of limiting the `configurable_options` from the `ConfigurableProduc
           "attribute_code": "size",
           "values": [
             {
-              "value_index": 279,       # pair 2.1
+              "value_index": 279,     ... pair 2.1
               "label": "S"
-              # ...
+              ...
             },
             {
-              "value_index": 281,       # pair 2.2
+              "value_index": 281,     ... pair 2.2
               "label": "M"
-              # ....
+              ...
             },
             {
-              "value_index": 282,       # pair 2.3
+              "value_index": 282,     ... pair 2.3
               "label": "L"
-              # .....
+              ...
             }
           ],
           "product_id": 1851
         }
-        # ...
+        ...
 }
 ```
 
@@ -110,12 +110,13 @@ Note the limit 3, we can pull information as a regular sql limit, or most popula
 
 ```graphql
 ... on ConfigurableProduct {
-                variants(value_indexes: {in: [ [278,279], [280,281], [282,283] ... ]}) { #equal to [RED, S] [GREEN, M], [BLUE, L]
+                variants(value_indexes: {in: [ [278,279], [280,281], [282,283] ... ]}) {
+                                         #equal to [RED, S] [GREEN, M], [BLUE, L]
                     product { # single product that coresponds to 1 pair of attributes
                        name
                        image
                        price
-                       # ....
+                       ...
                     }
                     attributes { #array for the pair of the attributes
                         label
@@ -128,11 +129,11 @@ Note the limit 3, we can pull information as a regular sql limit, or most popula
 
 ```json
 {
- # ...
+ ...
           "variants": [
             {
               "product": {
-                # ....
+                ...
               },
               "attributes": [
                 {
@@ -148,7 +149,7 @@ Note the limit 3, we can pull information as a regular sql limit, or most popula
               ]
             }
           ]
-  # ...
+  ...
 }
 ```
  ## Alternatives
@@ -214,7 +215,7 @@ Note: An optimization can probably be made in case we query product { id } inste
 2nd query
 ```graphql
 ... on ConfigurableProduct {
-        variants(uuid: {in: [1,2,3..]}) {
+        variants(uuid: {in: [1,2,3 ... ]}) {
             product {
                name
                image
