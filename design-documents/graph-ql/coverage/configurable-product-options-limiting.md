@@ -137,13 +137,13 @@ Note the limit 3, we can pull information as a regular sql limit, or most popula
               },
               "attributes": [
                 {
-                  "label": "option 1.1",
-                  "code": "attribute1",
+                  "label": "RED",
+                  "code": "color",
                   "value_index": 278
                 },
                 {
-                  "label": "option 1.2",
-                  "code": "attribute2",
+                  "label": "S",
+                  "code": "size",
                   "value_index": 281
                 }
               ]
