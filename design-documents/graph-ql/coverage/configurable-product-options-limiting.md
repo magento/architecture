@@ -230,7 +230,7 @@ Note: An optimization can probably be made in case we query product { id } inste
         }
    }
 ```
-# Limiting the variants and options at the same time, so it would return unique combinations and pass those combinations automatically from options to variants
+#### Limiting the variants and options at the same time, so it would return unique combinations and pass those combinations automatically from options to variants
 ```graphql
 ... on ConfigurableProduct {
      configurable_options(limit:3) {
