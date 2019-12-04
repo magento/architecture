@@ -24,7 +24,7 @@ until they expire and run an extra cron job to remove expired ones.
 ### Overview of new web API tokens implementation
 * `TokenUserContext` to be updated to decode new tokens and use old logic for existing tokens
 * [Create and implement](#spi-for-token-data-authenticator) SPIs for providing user data to be encoded in tokens and reading it
-* [Create and implement](#stateless-tokens-api) API for the new tokens generation and reading
+* [Create and implement](#new-authentication-tokens-api) API for the new tokens generation and reading
 * Update token revoke functionality to use cache storage to store revoke request instead of DB for customer/admin tokens
   [details](#how-to-handle-manual-expiration)
  
