@@ -39,7 +39,7 @@ _API:_
 /**
  * Different implementations may add additional data like algorithm, key version etc.
  */
-interface EncryptionDataInterface
+interface TokenEncodingDataInterface
 {
     /**
      * Key to use when encrypting/signing tokens.
@@ -53,27 +53,27 @@ class TokenDecodingException extends \RuntimeException {}
 
 class TokenAuthenticationException extends \InvalidArgumentException {}
 
-interface TokenEncoderInterface
+interface TokenManagerInterface
 {
     /**
      * Create token with encoded authentication data.
      *
      * @param array $data Array of scalars, authentication data to be encoded.
-     * @param EncryptionDataInterface $encryption Encryption options.
+     * @param TokenEncodingDataInterface $data
      * @return string Token.
      */
-    public function encode(array $data, EncryptionDataInterface $encryption): string;
+    public function encode(array $data, TokenEncodingDataInterface $data): string;
 
     /**
      * Decode token, extract authentication data.
      *
      * @param string $token
-     * @param EncryptionDataInterface $encryption Decryption options.
+     * @param TokenEncodingDataInterface $data
      * @return array Authentication data.
      * @throws TokenDecodingException If it's impossible to decrypt/decode token.
      * @throws TokenAuthenticationException If token can be read but cannot be authenticated.
      */
-    public function decode(string $token, EncryptionDataInterface $encryption): array;
+    public function decode(string $token, TokenEncodingDataInterface $data): array;
 }
 ```
  
@@ -131,17 +131,17 @@ __Cons__:
  
 ##### API for JWT token encoder
 ```php
-interface JwsTokenEncoderInterface extends TokenEncoderInterface
+interface JwsTokenManagerInterface extends TokenManagerInterface
 {
     /**
      * JWS specific decoding method that returns more info regarding the token.
      *
      * @return JwsToken JWS DTO containing headers, payload and resolved token data.
      */
-    public function decodeJws(string $token, JwsEncryptionDataInterface $encryption): JwsToken;
+    public function decodeJws(string $token, JwsSignatureDataInterface $data): JwsToken;
 }
 
-interface JwsEncryptionDataInterface extends EncryptionDataInterface
+interface JwsSignatureDataInterface extends TokenEncodingDataInterface
 {
     public function getAlgorithm(): string;
 
@@ -163,7 +163,7 @@ interface JwsEncryptionDataInterface extends EncryptionDataInterface
     public function getAdditionalClaims(): array;
 }
 
-interface JweTokenEncoderInterface extends TokenEncoderInterface
+interface JweTokenManagerInterface extends TokenManagerInterface
 {
     /**
      * JWE specific decoding method that returns more info regarding the token.
@@ -173,7 +173,7 @@ interface JweTokenEncoderInterface extends TokenEncoderInterface
     public function decodeJwe(string $token, JweEncryptionDataInterface $encryption): JweToken;
 }
 
-interface JweEncryptionDataInterface extends EncryptionDataInterface
+interface JweEncryptionDataInterface extends TokenEncodingDataInterface
 {
     public function getKeyAlgorithm(): string;
 
