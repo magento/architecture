@@ -24,6 +24,10 @@ Responsibility of services:
 
 ![Data flow diagram](storefront-api/push-data-to-storage.png)
 
+Desirable state for Catalog Storefront Application and ETL (Extract, transform, load) process for data retrieval from Store Management application.
+
+![Catalog Desirable State](https://i.imgur.com/nSRIdEi.png)
+
 
 ### Diagram keys
 
