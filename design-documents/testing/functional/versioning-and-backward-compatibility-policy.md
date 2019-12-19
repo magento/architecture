@@ -101,16 +101,28 @@ It MAY include minor and patch level changes. Patch and minor version MUST be re
 | |`<test>` `<action>` sequence changed|MAJOR
 | |`<test>` `<action>` type (`click`, `fillField`, etc) changed|PATCH
 | |`<test>` `<actionGroup>` `ref` changed|MAJOR
-| |`<test>` (before/after) `<action>` added|MINOR
-| |`<test>` (before/after) `<action>` removed|MAJOR
-| |`<test>` (before/after) `<action>` changed|PATCH
-| |`<test>` (before/after) `<action>` `ref` changed|MINOR
-| |`<test>` (before/after) `<action>` sequence changed|MAJOR
-| |`<test>` (before/after) `<action>` type (`click`, `fillField`, etc) changed|PATCH
-| |`<test>` (before/after) `<actionGroup>` `ref` changed|MAJOR
+| |`<test>` `<before/after>` `<action>` added|MINOR
+| |`<test>` `<before/after>` `<action>` removed|MAJOR
+| |`<test>` `<before/after>` `<action>` changed|PATCH
+| |`<test>` `<before/after>` `<action>` `ref` changed|MINOR
+| |`<test>` `<before/after>` `<action>` sequence changed|MAJOR
+| |`<test>` `<before/after>` `<action>` type (`click`, `fillField`, etc) changed|PATCH
+| |`<test>` `<before/after>` `<actionGroup>` `ref` changed|MAJOR
 | |`<test>` `<annotations>` `<annotation>` added|PATCH
 | |`<test>` `<annotations>` `<annotation>` changed|PATCH
 | |`<test>` `<annotations>` `<annotation>` GROUP removed|MAJOR
+|Suite|`<suite>` added|MINOR
+| |`<suite>` removed|MAJOR
+| |`<suite>` `<include/exclude>` `<group/test/module>` added|PATCH
+| |`<suite>` `<include/exclude>` `<group/test/module>` removed|PATCH
+| |`<suite>` `<include/exclude>` `<group/test/module>` changed|PATCH
+| |`<suite>` `<before/after>` `<action>` added|MINOR
+| |`<suite>` `<before/after>` `<action>` removed|MAJOR
+| |`<suite>` `<before/after>` `<action>` changed|PATCH
+| |`<suite>` `<before/after>` `<action>` `ref` changed|MINOR
+| |`<suite>` `<before/after>` `<action>` sequence changed|MAJOR
+| |`<suite>` `<before/after>` `<action>` type (`click`, `fillField`, etc) changed|PATCH
+| |`<suite>` `<before/after>` `<actionGroup>` `ref` changed|MAJOR
 
 ---------------------------
 
