@@ -22,13 +22,13 @@ Over time with the increasing number of `MFTF Tests`, it becomes necessary for d
 
 #### Applicable Scope for Deprecation
 
-Besides deprecations at the entity level,  action group argument and section element are independent themselves and can be deprecated without deprecating the entire entity. The following table shows full scope of where deprecation can occur.
+Besides deprecations at the entity level,  section elements are independent by themselves and can be deprecated without deprecating the entire entity. The following table shows full scope of where deprecation can occur.
 
 |**Entity Types**|**Entity Elements**|**Deprecation Applicable?**|
 |---|---|---|
 |ActionGroup|`<actionGroup>`|**Yes**
 | |`<actionGroup>` `<action>`|No
-| |`<actionGroup>` `<argument>`|**Yes**
+| |`<actionGroup>` `<argument>`|No
 |Data|`<entity>`|**Yes**|
 | |`<entity>` `<array>`|No
 | |`<entity>` `<array>` `<item>`|No
