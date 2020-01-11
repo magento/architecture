@@ -1,7 +1,7 @@
 ## Pre-requisites for split deployment (Monolith and Storefront App).
 
 
-Storeftont application (SF App) has to satisfy two requirements:
+Storefront application (SF App) has to satisfy two requirements:
 - should be performance efficient 
 - should be decoupled from Monolith
 
@@ -37,4 +37,3 @@ Desirable state for Catalog Storefront Application and ETL (Extract, transform, 
 - Message Bus: connects 2 systems; transfer entity data. Any consumer can read data from MB.
 - StoreFront App (GET API): read requested data. Does not contain any logic (changing system configuration on Monolith side will trigger full-reindex and push all data to Storage
 - Storage: store ready-to-use data in the format: {id, store_id, attributes...}
-
