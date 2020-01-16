@@ -164,9 +164,9 @@ MFTF tests deprecation process is the result of applying [MFTF Test Compatibilit
 
 |**Magento Release/Branch**|**Deprecation Process**|
 |---|---|
-|Upcoming Major Release (e.g. 2.4.x)|1. Run Deprecation Script to remove ALL deprecated entities from entire MFTF tests|
-|Upcoming Major Release Dev Branch (e.g. 2.4-develop)|1. All MAJOR, MINOR and PATCH MFTF test changes are allowed, no deprecation annotation required|
-|Upcoming Minor Release (e.g. 2.3.4)|1. Should not run deprecation script|
+|Upcoming Release (e.g. 2.4.0)|1. Run Deprecation Script to remove ALL deprecated entities from entire MFTF tests|
+|Upcoming Release Dev Branch (e.g. 2.4-develop)|1. All MAJOR, MINOR and PATCH MFTF test changes are allowed, no deprecation annotation required|
+|Upcoming Release (e.g. 2.3.4)|1. Should not run deprecation script|
 |Existing Release Dev Branch (e.g. 2.3-develop)|1. MINOR and PATCH MFTF test changes are allowed, no deprecation annotation required|
 | |2. MAJOR MFTF test changes must be committed using deprecation annotation|
 | |3. Besides the targeted changes, backward compatibility should also be evaluated for other affected changes. In case of BIC, deprecation annotation must also be used|
