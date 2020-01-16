@@ -160,14 +160,14 @@ Each deprecation syntax has pros and cons. Which syntax is more preferable?
 
 ### Deprecation Process
 
-MFTF tests deprecation process is the result of applying [MFTF Test Compatibility Policy][] with consideration of Magento Product Versioning. Magento Product Versioning falls behind semantic versioning convention, for example, Magento 2.x+1 is a major release comparing to Magento 2.x. Because of this convention, MINOR and PATCH MFTF Test changes are practically Backward Compatible (BC) changes and are allowed in all Magento releases, e.g. 2.3.x. MAJOR MFTF Test changes, however, are Backward Incompatible (BIC) changes and are only allowed in Magento Major releases. When BIC changes need to be committed to a branch for future release, deprecation annotation must be used. Deprecated entities will be removed as a one time process after code freeze before Magento Major release.
+MFTF tests deprecation process is the result of applying [MFTF Test Compatibility Policy][] with consideration of Magento Product Versioning. Magento Product Versioning falls behind semantic versioning convention, for example, Suppose currently released version is Magento x.y.z, Magento x.y+1.0 is a major release comparing to Magento x.y.z Because of this convention, MINOR and PATCH MFTF Test changes are practically Backward Compatible (BC) changes and are allowed in all Magento releases, e.g. x.y.z+1. MAJOR MFTF Test changes, however, are Backward Incompatible (BIC) changes and are only allowed in Magento Major releases. When BIC changes need to be committed to a branch for future release, deprecation annotation must be used. Deprecated entities will be removed as a one time process after code freeze before Magento Major release.
 
 |**Magento Release/Branch**|**Deprecation Process**|
 |---|---|
-|Upcoming Release (e.g. 2.4.0)|1. Run Deprecation Script to remove ALL deprecated entities from entire MFTF tests|
-|Upcoming Release Dev Branch (e.g. 2.4-develop)|1. All MAJOR, MINOR and PATCH MFTF test changes are allowed, no deprecation annotation required|
-|Upcoming Release (e.g. 2.3.4)|1. Should not run deprecation script|
-|Existing Release Dev Branch (e.g. 2.3-develop)|1. MINOR and PATCH MFTF test changes are allowed, no deprecation annotation required|
+|Upcoming Major Release (e.g. x.y+1.0)|1. Run Deprecation Script to remove ALL deprecated entities from entire MFTF tests|
+|Upcoming Major Release Dev Branch (e.g. x.y+1-develop)|1. All MAJOR, MINOR and PATCH MFTF test changes are allowed, no deprecation annotation required|
+|Upcoming Minor Release (e.g. x.y.z+1)|1. Should not run deprecation script|
+|Existing Release Dev Branch (e.g. x.y-develop)|1. MINOR and PATCH MFTF test changes are allowed, no deprecation annotation required|
 | |2. MAJOR MFTF test changes must be committed using deprecation annotation|
 | |3. Besides the targeted changes, backward compatibility should also be evaluated for other affected changes. In case of BIC, deprecation annotation must also be used|
 | |4. In PR, UR build, MFTF Deprecation Static Check to make sure no reference of deprecated entities within Magento 2 core (CE, EE, B2B, PB)|
