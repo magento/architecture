@@ -42,13 +42,3 @@ This implementation of Magento module declaration leads to some inconveniences:
 POC is implemented in https://github.com/magento-architects/magento2/tree/split-framework (see \Magento\Framework\Component\ComponentInstaller::install) for `di.xml`, `webapi.xml`, `extension_attributes.xml`, and Service Contract metadata.
 
 Use https://github.com/magento-architects/magento-project for easy installation of a "hello world" application.
-
-
-I don't know if you want to include it, but we also talked about how the module name is determined if the module.xml and registration.php are not present.
-What we ended up with where the rules:
-
-
-Regarding the creation and updating of vendor/magento_components.php, in addition to the composer hook, we discussed this also to be hooked into bin/magento module:enable and disable and setup:upgrade. This would makes things a little more convenient and I don't see a reason to keep the step separate.
-
-Maybe you can also add a paragraph why there still is a need for module.xml besides backward compatibility. The scenario we discussed was:
-
