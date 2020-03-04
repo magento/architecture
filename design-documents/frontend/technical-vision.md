@@ -192,6 +192,7 @@ _Note that [the author](https://kentcdodds.com/) of the testing trophy [has enco
 
 Lastly, the final touch at the top of this trophy is known by many names: End-to-end (E2E), functional, automated and UI tests. Refer to the following list for options in this territory.
 
+- [Playwright](https://github.com/microsoft/playwright)
 - [Cypress.io](https://www.cypress.io/)
 - [Nightwatch.js](http://nightwatchjs.org/)
 - [WebdriverIO](https://webdriver.io/)
