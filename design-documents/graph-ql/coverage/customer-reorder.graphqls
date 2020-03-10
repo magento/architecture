@@ -1,0 +1,3 @@
+type Mutation {
+    reorderItems(orderNumber: String!): Cart! @doc(description: "Add all items from the registered customer's order to his shopping cart.")
+}
