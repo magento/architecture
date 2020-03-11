@@ -1,0 +1,18 @@
+
+type FlatProductTax {
+    code: String
+    ammount: String
+}
+
+type ProductPrice {
+    regular: Float
+    final: Float
+    fpt: [FlatProductTax]
+}
+
+type ProductPriceRange {
+    minimum: ProductPrice
+    maximum: ProductPrice
+    conditional: Float
+    base: Float
+}

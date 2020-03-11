@@ -1,0 +1,38 @@
+type ComparableItem {
+    productId: ID!
+    name: String!
+    priceRange: ProductPriceRange!
+    url: ProductUrl
+    images: [ProductImage]
+    values: [ProductAttribute]
+}
+
+type ComparableIndicator {
+    code: String!
+    title: String!
+}
+
+type CompareList {
+    items: [ComparableItem]
+    indicators: [ComparableIndicator]
+}
+
+type Customer{
+    compareList: CompareList
+}
+
+input CompareListInput {
+    id: ID!
+    items: [ID!]
+}
+
+type Mutation {
+    addItemsToCompareList(list: CompareListInput): CompareList
+    removeItemsFromCompareList(list: CompareListInput): CompareList
+    clearList(id: String!): Boolean
+}
+
+schema {
+    query: Query,
+    mutation: Mutation
+}
