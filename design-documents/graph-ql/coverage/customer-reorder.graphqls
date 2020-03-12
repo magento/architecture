@@ -17,9 +17,10 @@ type ReorderItemsOutput {
 
 type CheckoutUserInputError {
     message: String! @doc(description: "Localized error message")
+    # We may skip implementing 'locations' support
     locations: [ErrorLocation]! @doc(description: "Part of the mutation which caused an error. Similar to how GraphQL specification defines locations for errors in query: https://spec.graphql.org/draft/#sec-Errors")
-    path: [String] @doc(description: "Path to the input field which caused an error. Similar to how GraphQL specification defines path for errors in query: http://spec.graphql.org/draft/#sec-Errors")
-    code: CheckoutUserInputErrorCodes @doc(description: "Checkout-specific error code")
+    path: [String]! @doc(description: "Path to the input field which caused an error. Similar to how GraphQL specification defines path for errors in query: http://spec.graphql.org/draft/#sec-Errors")
+    code: CheckoutUserInputErrorCodes! @doc(description: "Checkout-specific error code")
 }
 
 type ErrorLocation {
