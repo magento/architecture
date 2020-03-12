@@ -21,15 +21,21 @@ type Customer{
     compareList: CompareList
 }
 
-input CompareListInput {
-    id: ID!
-    items: [ID!]
+type Query {
+    getCompareListForCustomer(customerId: ID): CompareList
+    getCompareListById(id: ID): CompareList
 }
 
 type Mutation {
-    addItemsToCompareList(list: CompareListInput): CompareList
-    removeItemsFromCompareList(list: CompareListInput): CompareList
-    clearList(id: String!): Boolean
+    addItemsToCompareList(
+        id: ID!
+        items: [ID!]
+    ): CompareList
+    removeItemsFromCompareList(
+        id: ID!
+        items: [ID!]
+    ): CompareList
+    clearList(id: ID!): Boolean
 }
 
 schema {
