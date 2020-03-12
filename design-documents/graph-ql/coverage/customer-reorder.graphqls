@@ -1,0 +1,33 @@
+type Mutation {
+    reorderItems(orderNumber: String!): ReorderItemsOutput! @doc(description: "Add all items from the registered customer's order to his shopping cart.")
+}
+
+# For errors in queries we can rely on the specification and its implementation in Webonyx:
+# - https://spec.graphql.org/June2018/#sec-Errors
+# - https://github.com/webonyx/graphql-php/blob/master/docs/error-handling.md
+#
+# The only caveat is that a single resolver cannot return data and error simultaneously.
+# It means that granularity level of the resolvers may need to be increased based on business requirements.
+
+type ReorderItemsOutput {
+    cart: Cart!
+    # Similar fields can be added to another checkout mutations
+    userInputErrors: [CheckoutUserInputError]!
+}
+
+type CheckoutUserInputError {
+    message: String! @doc(description: "Localized error message")
+    # We may skip implementing 'locations' support
+    locations: [ErrorLocation]! @doc(description: "Part of the mutation which caused an error. Similar to how GraphQL specification defines locations for errors in query: https://spec.graphql.org/draft/#sec-Errors")
+    path: [String]! @doc(description: "Path to the input field which caused an error. Similar to how GraphQL specification defines path for errors in query: http://spec.graphql.org/draft/#sec-Errors")
+    code: CheckoutUserInputErrorCodes! @doc(description: "Checkout-specific error code")
+}
+
+type ErrorLocation {
+    line: String!
+    column: String!
+}
+
+enum CheckoutUserInputErrorCodes {
+    INSUFFICIENT_STOCK
+}
