@@ -1,6 +1,7 @@
 type ComparableItem {
     productId: ID!
     name: String!
+    sku: String!
     priceRange: ProductPriceRange!
     url: ProductUrl
     images: [ProductImage]
