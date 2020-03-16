@@ -37,6 +37,7 @@ type Mutation {
         items: [ID!]
     ): CompareList
     clearList(id: ID!): Boolean
+    assignCompareListToCustomer(customerId: ID!, listId: ID!): Boolean
 }
 
 schema {
