@@ -22,8 +22,11 @@ type Customer{
     compareList: CompareList
 }
 
+type Customer {
+    compare_list: CompareList
+}
+
 type Query {
-    getCompareListForCustomer(customerId: ID): CompareList
     getCompareListById(id: ID): CompareList
 }
 
