@@ -1,23 +1,12 @@
-**Problem statement**
+**Required Extension points**
 
-Current way of declaring queries and mutations limits extensibility and deprecation capabilities. 
-
-```$graphqls
-type Mutation {
-    generateCustomerToken(
-        email: String!,
-        password: String!
-     ): String!
-}
-```
-
-Such declaration has several issues:
-- It is not possible to extend or modify the list of arguments from 3rd party extension. Schema stitching mechanism performs merge on types level only
-- There is no way to add extra data to the output of the mutation in a backward compatible way
-- It is not possible to evolve arguments list and output type of our API in the future. Even if we decide to do breaking changes, there is no way to deprecate existing arguments and output data first
+It should be possible to:
+- Extend or modify the list of arguments from 3rd party extension
+- Add extra data to the output of the mutation in a backward compatible way
+- Evolve arguments list and output type of our API in the future
 
 
-**Proposed solution: Wrappers for output and merger for arguments**
+**Solution: Wrappers for output and merger for arguments**
 
 Wrappers for output type along with merging capabilities for arguments can solve extensibility and deprecation issues.
 
@@ -55,10 +44,3 @@ input GenerateCustomerTokenOutput {
 }
 ```
 The `token_ttl` value can be populated via new resolver for this field or from the plugin on existing `generateCustomerToken` mutation resolver.
-
-
-**Action items**
-
-1. Modify schema for all existing queries and mutations to use wrappers as output types
-1. Make sure that this requirement is documented and followed for the new GraphQL coverage
-1. Implement merging of arguments for the same query/mutation defined in different modules. GraphQL functional tests should be added
