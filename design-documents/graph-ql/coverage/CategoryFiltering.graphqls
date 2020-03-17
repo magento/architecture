@@ -18,6 +18,7 @@ input CategoryFilterInput  @doc(description: "CategoryFilterInput defines the fi
     name: FilterMatchTypeInput @doc(description: "Filter by the display name of the category.")
     url_path: FilterEqualTypeInput @doc(description: "Filter by the URL path for the category.")
     path: FilterMatchTypeInput @doc(description: "Filter by category path.")
+    canonical_url: FilterEqualTypeInput @doc(description: "Filter by canonical URL of the category.")
 }
 
 type CategoryResult @doc(description: "Collection of CategoryTree object and pagination information.") {
