@@ -3,19 +3,47 @@
 ## Data
 
 ```graphql
+
+###### Begin: Extending existing types ######
 type Cart {
     available_gift_wrappings: [GiftWrapping]!
-    selected_gift_wrapping: GiftWrapping
+    gift_wrapping: GiftWrapping
     include_printed_card: Boolean! @doc(description: "Wether customer requested printed card for the order")
     include_gift_receipt: Boolean! @doc(description: "Wether customer requested gift receipt for the order")
 }
 
-# TODO: Which other item types are applicable?
 type SimpleCartItem {
     available_gift_wrapping: [GiftWrapping]!
     gift_wrapping: GiftWrapping
 }
 
+type ConfigurableCartItem {
+    available_gift_wrapping: [GiftWrapping]!
+    gift_wrapping: GiftWrapping
+}
+
+type BundleCartItem {
+    available_gift_wrapping: [GiftWrapping]!
+    gift_wrapping: GiftWrapping
+}
+
+type SalesItemInterface {
+    gift_wrapping: GiftWrapping
+}
+
+type CustomerOrder {
+    gift_wrapping: GiftWrapping
+    include_printed_card: Boolean! @doc(description: "Wether customer requested printed card for the order")
+    include_gift_receipt: Boolean! @doc(description: "Wether customer requested gift receipt for the order")
+}
+
+type CartPrices {
+    gift_options: giftOptionsPrices
+}
+###### End: Extending existing types ######
+
+
+###### Begin: Defining new types ######
 type GiftWrapping {
     id: ID!
     design: String!
@@ -28,15 +56,12 @@ type GiftWrappingImage {
     url: String!
 }
 
-type CartPrices {
-    gift_options: giftOptionsPrices
-}
-
 type giftOptionsPrices {
     gift_wrapping_for_order: Money
     gift_wrapping_for_items: Money
     printed_card: Money
 }
+###### End: Defining new types ######
 
 ```
 
@@ -100,18 +125,22 @@ The following gift options need to be whitelisted in the `storeConfig` query.
 # Mutations
 
 ```graphql
+###### Begin: Extending existing types ######
+type CartItemUpdateInput {
+    gift_wrapping_id: ID
+}
 
 type Mutation {
     setGiftOptionsOnCart(cart_id: String!, gift_wrapping_id: ID, include_gift_receipt: Boolean, include_printed_card: Boolean): setGiftOptionsOnCartOutput
 }
+###### End: Extending existing types ######
 
+
+###### Begin: Defining new types ######
 type setGiftOptionsOnCartOutput {
     cart: Cart!
 }
-
-type CartItemUpdateInput {
-    gift_wrapping_id: ID
-}
+###### End: Defining new types ######
 ```
 
 
