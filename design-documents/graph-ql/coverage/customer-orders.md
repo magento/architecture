@@ -71,7 +71,7 @@ type CustomerOrder {
 }
 ```
 
-The `id` will be a `base64(increment_id)` which in future can be replaced by UUID.
+The `id` will be a `base64_encode(increment_id)` which in future can be replaced by UUID.
 
 > The order `status` should be filtered in the same way as for Luma via `Order Status` and `Visible On Storefront` configuration 
 
@@ -90,16 +90,26 @@ interface SalesItemInterface {
     parent_product_name: String @doc("name of parent product like configurable or bundle")
     parent_product_sku: String @doc("SKU of parent product like configurable or bundle")
     parent_product_url: String @doc("URL of parent product in the catalog")
-    selected_options: [SalesItemOption] @doc("selected options for the base product. for e.g color, size etc.")
-    entered_options: [SalesItemOption] @doc("entered option for the base product. for e.g logo image etc.")
+    selected_options: [SalesItemSelectedOption] @doc("selected options for the base product. for e.g color, size etc.")
+    entered_options: [SalesItemEnteredOption] @doc("entered option for the base product. for e.g logo image etc.")
 }
 
-@doc("Represents sales item options like selected or entered")
-type SalesItemOption {
-    id: String! @doc("name of the option")
+@doc("Represents sales item selected options")
+type SalesItemSelectedOption {
+    id: ID! @doc("ID of the option")
+    label: String! @doc("name of the option")
+    values: [String]! @doc("list of option values")
+}
+
+@doc("Represents sales item entered options")
+type SalesItemEnteredOption {
+    id: ID! @doc("ID of the option")
+    label: String! @doc("name of the option")
     value: String! @doc("value of the option")
 }
 ```
+
+The `id` will be a `base64_encode(option_id)` which in future can be replaced by UUID.
 
 The `SalesItemInterface` will be implemented by the following types:
 
@@ -175,7 +185,7 @@ type InvoiceTotal implements SalesTotalAmountInterface {
 }
 ```
 
-The `id` will be a `base64(increment_id)` which in future can be replaced by UUID.
+The `id` will be a `base64_encode(increment_id)` which in future can be replaced by UUID.
 
 ## Refund Type Schema
 
@@ -201,7 +211,7 @@ type CredtiMemoTotal implements SalesTotalAmountInterface {
 }
 ```
 
-The `id` will be a `base64_encode(increment_id)` which in future can be replaced by UUID.
+The `id` will be a `base64_encode_encode(increment_id)` which in future can be replaced by UUID.
 
 ## Shipment Type Schema
 
@@ -228,7 +238,7 @@ type ShipmentTracking {
 }
 ```
 
-The `id` will be a `base64(increment_id)` which in future can be replaced by UUID.
+The `id` will be a `base64_encode(increment_id)` which in future can be replaced by UUID.
 
 ## Additional Types
 
