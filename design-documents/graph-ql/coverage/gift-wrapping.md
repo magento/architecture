@@ -1,5 +1,8 @@
 # Queries
 
+Gift message is Open source functionality and should be implemented in scope of GiftMessageGraphQl module.
+Gift wrapping is commerce functionality and should be covered in scope of GiftWrappingGraphQl module. 
+
 ## Data
 
 ```graphql
@@ -10,35 +13,45 @@ type Cart {
     gift_wrapping: GiftWrapping
     include_printed_card: Boolean! @doc(description: "Wether customer requested printed card for the order")
     include_gift_receipt: Boolean! @doc(description: "Wether customer requested gift receipt for the order")
+    gift_message: GiftMessage
 }
 
 type SimpleCartItem {
     available_gift_wrapping: [GiftWrapping]!
     gift_wrapping: GiftWrapping
+    gift_message: GiftMessage
 }
 
 type ConfigurableCartItem {
     available_gift_wrapping: [GiftWrapping]!
     gift_wrapping: GiftWrapping
+    gift_message: GiftMessage
 }
 
 type BundleCartItem {
     available_gift_wrapping: [GiftWrapping]!
     gift_wrapping: GiftWrapping
+    gift_message: GiftMessage
+}
+
+type GiftCardCartItem {
+    gift_message: GiftMessage
 }
 
 type SalesItemInterface {
     gift_wrapping: GiftWrapping
+    gift_message: GiftMessage
 }
 
 type CustomerOrder {
     gift_wrapping: GiftWrapping
     include_printed_card: Boolean! @doc(description: "Wether customer requested printed card for the order")
     include_gift_receipt: Boolean! @doc(description: "Wether customer requested gift receipt for the order")
+    gift_message: GiftMessage
 }
 
 type CartPrices {
-    gift_options: giftOptionsPrices
+    gift_options: GiftOptionsPrices
 }
 ###### End: Extending existing types ######
 
@@ -56,10 +69,16 @@ type GiftWrappingImage {
     url: String!
 }
 
-type giftOptionsPrices {
+type GiftOptionsPrices {
     gift_wrapping_for_order: Money
     gift_wrapping_for_items: Money
     printed_card: Money
+}
+
+type GiftMessage {
+    to: String!
+    from: String!
+    message: String!
 }
 ###### End: Defining new types ######
 
@@ -121,24 +140,52 @@ The following gift options need to be whitelisted in the `storeConfig` query.
 </config>
 ```
 
+```xml
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="sales">
+            <group id="gift_options" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1">
+                <label>Gift Options</label>
+                <field id="allow_order" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" canRestore="1">
+                    <label>Allow Gift Messages on Order Level</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="allow_items" translate="label" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" canRestore="1">
+                    <label>Allow Gift Messages for Order Items</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>
+```
 
 # Mutations
+
+Validation errors may be included to `SetGiftOptionsOnCartOutput` based on product requirements, like described [here](./customer-orders.md).
 
 ```graphql
 ###### Begin: Extending existing types ######
 type CartItemUpdateInput {
     gift_wrapping_id: ID
+    gift_message: GiftMessageInput
 }
 
 type Mutation {
-    setGiftOptionsOnCart(cart_id: String!, gift_wrapping_id: ID, include_gift_receipt: Boolean, include_printed_card: Boolean): setGiftOptionsOnCartOutput
+    setGiftOptionsOnCart(cart_id: String!, gift_message: GiftMessageInput, gift_wrapping_id: ID, include_gift_receipt: Boolean, include_printed_card: Boolean): SetGiftOptionsOnCartOutput
 }
 ###### End: Extending existing types ######
 
 
 ###### Begin: Defining new types ######
-type setGiftOptionsOnCartOutput {
+type SetGiftOptionsOnCartOutput {
     cart: Cart!
+}
+
+type GiftMessageInput {
+    to: String!
+    from: String!
+    message: String!
 }
 ###### End: Defining new types ######
 ```
