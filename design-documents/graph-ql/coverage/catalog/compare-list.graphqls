@@ -3,7 +3,7 @@ type ComparableItem {
     name: String!
     sku: String!
     priceRange: ProductPriceRange!
-    url: ProductUrl
+    canonical_url: String
     images: [ProductImage]
     values: [ProductAttribute]
 }
@@ -27,7 +27,7 @@ type Customer {
 }
 
 type Query {
-    getCompareListById(id: ID): CompareList
+    getCompareListById(id: ID!): CompareList
 }
 
 type Mutation {
