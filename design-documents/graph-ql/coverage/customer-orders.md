@@ -34,7 +34,7 @@ input CustomerOrdersFilterInput {
     salesItem: SalesItemFilterInput
 }
 
-@doc("Provides order totals amount search filter")
+@doc("Provides order total amount search filter")
 input CustomerOrdersAmountFilterInput {
     min: Float @doc("Minimum total order amount in store view currency")
     max: Float @doc("Maximum total order amount in store view currency")
@@ -56,12 +56,12 @@ The proposed type for the customer order might look like:
 ```graphql
 @doc("Customer order details")
 type CustomerOrder {
-    id: ID! @doc("order unique identifier")
+    id: ID! @doc("the ID of the order, used for API purposes")
     order_date: String! @doc("date when the order was placed")
     status: String! @doc("current status of the order")
-    number: String! @doc("order number")
+    number: String! @doc("sequential order number")
     items: [OrderItem]! @doc("collection of all the items purchased")
-    totals: OrderTotals! @doc("total amount details for the order")
+    total: OrderTotal! @doc("total amount details for the order")
     invoices: [Invoice]! @doc("invoice list for the order")
     credit_memos: [CreditMemo]! @doc("credit memo list for the order")
     shipments: [OrderShipment]! @doc("shipment list for the order")
@@ -71,7 +71,7 @@ type CustomerOrder {
 }
 ```
 
-The `id` will be `base64encode` representation of `increment_id`.
+The `id` will be a `base64_encode(increment_id)` which in future can be replaced by UUID.
 
 > The order `status` should be filtered in the same way as for Luma via `Order Status` and `Visible On Storefront` configuration 
 
@@ -90,16 +90,26 @@ interface SalesItemInterface {
     parent_product_name: String @doc("name of parent product like configurable or bundle")
     parent_product_sku: String @doc("SKU of parent product like configurable or bundle")
     parent_product_url: String @doc("URL of parent product in the catalog")
-    selected_options: [SalesItemOption] @doc("selected options for the base product. for e.g color, size etc.")
-    entered_options: [SalesItemOption] @doc("entered option for the base product. for e.g logo image etc.")
+    selected_options: [SalesItemSelectedOption] @doc("selected options for the base product. for e.g color, size etc.")
+    entered_options: [SalesItemEnteredOption] @doc("entered option for the base product. for e.g logo image etc.")
 }
 
-@doc("Represents sales item options like selected or entered")
-type SalesItemOption {
-    id: String! @doc("name of the option")
+@doc("Represents sales item selected options")
+type SalesItemSelectedOption {
+    id: ID! @doc("ID of the option")
+    label: String! @doc("name of the option")
+    value_labels: [String]! @doc("list of option value labels")
+}
+
+@doc("Represents sales item entered options")
+type SalesItemEnteredOption {
+    id: ID! @doc("ID of the option")
+    label: String! @doc("name of the option")
     value: String! @doc("value of the option")
 }
 ```
+
+The `id` will be a `base64_encode(option_id)` which in future can be replaced by UUID.
 
 The `SalesItemInterface` will be implemented by the following types:
 
@@ -137,7 +147,7 @@ As entities like order, invoice, credit memo might have complex amounts type:
 
 ```graphql
 @doc("Interface to provide sales amounts")
-interface SalesTotalsInterface {
+interface SalesTotalAmountInterface {
     subtotal: Money! @doc("subtotal amount excluding, shipping, discounts and tax")
     discounts: [Discount] @doc("applied discounts")
     tax: Money! @doc("applied taxes")
@@ -145,8 +155,8 @@ interface SalesTotalsInterface {
     base_grand_total: Money! @doc("final total amount in base currency")
 }
 ​
-@doc("Order totals amounts details")
-type OrderTotals implements SalesTotalsInterface {
+@doc("Order total amounts details")
+type OrderTotal implements SalesTotalAmountInterface {
 ​   shipping_handling: Money! @doc("shipping and handling for the order")
 }
 ```
@@ -158,9 +168,9 @@ The invoice entity will have the similar to the order schema:
 ```graphql
 @doc("Invoice details")
 type Invoice {
-    id: ID! @doc("invoice unique identifier")
-    number: String! @doc("invoice number")
-    totals: InvoiceTotals! @doc("invoice totals details")
+    id: ID! @doc("the ID of the invoice, used for API purposes")
+    number: String! @doc("sequential invoice number")
+    total: InvoiceTotal! @doc("invoice total amount details")
     items: [InvoiceItem]! @doc("invoiced product details")
 }
 
@@ -170,12 +180,12 @@ type InvoiceItem implements SalesItemInterface{
 }
 
 @doc("Invoice total amount details")
-type InvoiceTotals implements SalesTotalsInterface {
+type InvoiceTotal implements SalesTotalAmountInterface {
   
 }
 ```
 
-The `id` will be `base64encode` representation of `increment_id`.
+The `id` will be a `base64_encode(increment_id)` which in future can be replaced by UUID.
 
 ## Refund Type Schema
 
@@ -184,10 +194,10 @@ The credit memo entity will have the similar to the order and invoice schema:
 ```graphql
 @doc("Credit memo details")
 type CreditMemo {
-    id: ID! @doc("credit memo unique identifier")
-    number: String! @doc("credit memo number")
+    id: ID! @doc("the ID of the credit memo, used for API purposes")
+    number: String! @doc("sequential credit memo number")
     items: [CreditMemoItem]! @doc("items refunded")
-    totals: CredtiMemoTotals! @doc("refund total amount details")
+    total: CredtiMemoTotal! @doc("refund total amount details")
 }
 
 @doc("Credit memo item details")
@@ -196,20 +206,20 @@ type CreditMemoItem implements SalesItemInterface{
 }
 
 @doc("Credit memo price details")
-type CredtiMemoTotals implements SalesTotalsInterface {
+type CredtiMemoTotal implements SalesTotalAmountInterface {
 
 }
 ```
 
-The `id` will be `base64encode` representation of `increment_id`.
+The `id` will be a `base64_encode_encode(increment_id)` which in future can be replaced by UUID.
 
 ## Shipment Type Schema
 
 ```graphql
 @doc("Order shipment details")
 type OrderShipment {
-    id: ID! @doc("shipment unique identifier")
-    number: String! @doc("shipment number")
+    id: ID! @doc("the ID of the shipment, used for API purposes")
+    number: String! @doc("sequential credit shipment number")
     tracking: [ShipmentTracking] @doc("shipment tracking details")
     items: [ShipmentItem]! @doc("items included in the shipment")
 }
@@ -228,7 +238,7 @@ type ShipmentTracking {
 }
 ```
 
-The `id` will be `base64encode` representation of `increment_id`.
+The `id` will be a `base64_encode(increment_id)` which in future can be replaced by UUID.
 
 ## Additional Types
 
