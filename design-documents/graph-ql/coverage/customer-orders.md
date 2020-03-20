@@ -98,7 +98,7 @@ interface SalesItemInterface {
 type SalesItemSelectedOption {
     id: ID! @doc("ID of the option")
     label: String! @doc("name of the option")
-    values: [String]! @doc("list of option values")
+    value_labels: [String]! @doc("list of option value labels")
 }
 
 @doc("Represents sales item entered options")
