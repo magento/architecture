@@ -27,7 +27,7 @@ type Customer {
 }
 
 type Query {
-    getCompareListById(id: ID): CompareList
+    сompareList(id: ID): CompareList
 }
 
 type Mutation {
