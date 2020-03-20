@@ -3,82 +3,88 @@
 Gift message is Open source functionality and should be implemented in scope of GiftMessageGraphQl module.
 Gift wrapping is commerce functionality and should be covered in scope of GiftWrappingGraphQl module. 
 
+It is suggested to use base64 encoded DB increment ID as ID in GraphQL.
+
 ## Data
 
 ```graphql
 
 ###### Begin: Extending existing types ######
 type Cart {
-    available_gift_wrappings: [GiftWrapping]!
-    gift_wrapping: GiftWrapping
+    available_gift_wrappings: [GiftWrapping]! @doc(description: "The list of available gift wrapping options for the cart")
+    gift_wrapping: GiftWrapping @doc(description: "The selected gift wrapping for the cart")
     include_printed_card: Boolean! @doc(description: "Wether customer requested printed card for the order")
     include_gift_receipt: Boolean! @doc(description: "Wether customer requested gift receipt for the order")
-    gift_message: GiftMessage
+    gift_message: GiftMessage @doc(description: "The entered gift message for the cart")
 }
 
 type SimpleCartItem {
-    available_gift_wrapping: [GiftWrapping]!
-    gift_wrapping: GiftWrapping
-    gift_message: GiftMessage
+    available_gift_wrapping: [GiftWrapping]! @doc(description: "The list of available gift wrapping options for the cart item")
+    gift_wrapping: GiftWrapping @doc(description: "The selected gift wrapping for the cart item")
+    gift_message: GiftMessage @doc(description: "The entered gift message for the cart item")
 }
 
 type ConfigurableCartItem {
-    available_gift_wrapping: [GiftWrapping]!
-    gift_wrapping: GiftWrapping
-    gift_message: GiftMessage
+    available_gift_wrapping: [GiftWrapping]! @doc(description: "The list of available gift wrapping options for the cart item")
+    gift_wrapping: GiftWrapping @doc(description: "The selected gift wrapping for the cart item")
+    gift_message: GiftMessage @doc(description: "The entered gift message for the cart item")
 }
 
 type BundleCartItem {
-    available_gift_wrapping: [GiftWrapping]!
-    gift_wrapping: GiftWrapping
-    gift_message: GiftMessage
+    available_gift_wrapping: [GiftWrapping]! @doc(description: "The list of available gift wrapping options for the cart item")
+    gift_wrapping: GiftWrapping @doc(description: "The selected gift wrapping for the cart item")
+    gift_message: GiftMessage @doc(description: "The entered gift message for the cart item")
 }
 
 type GiftCardCartItem {
-    gift_message: GiftMessage
+    gift_message: GiftMessage @doc(description: "The entered gift message for the cart item")
 }
 
 type SalesItemInterface {
-    gift_wrapping: GiftWrapping
-    gift_message: GiftMessage
+    gift_wrapping: GiftWrapping @doc(description: "The selected gift wrapping for the order item")
+    gift_message: GiftMessage @doc(description: "The entered gift message for the order item")
 }
 
 type CustomerOrder {
-    gift_wrapping: GiftWrapping
+    gift_wrapping: GiftWrapping @doc(description: "The selected gift wrapping for the order")
     include_printed_card: Boolean! @doc(description: "Wether customer requested printed card for the order")
     include_gift_receipt: Boolean! @doc(description: "Wether customer requested gift receipt for the order")
-    gift_message: GiftMessage
+    gift_message: GiftMessage @doc(description: "The entered gift message for the order")
 }
 
 type CartPrices {
-    gift_options: GiftOptionsPrices
+    gift_options: GiftOptionsPrices @doc(description: "The list of prices for the selected gift options")
+}
+
+type SalesTotalsInterface {
+    gift_options: GiftOptionsPrices @doc(description: "The list of prices for the selected gift options")
 }
 ###### End: Extending existing types ######
 
 
 ###### Begin: Defining new types ######
 type GiftWrapping {
-    id: ID!
-    design: String!
-    price: Money!
-    image: GiftWrappingImage!
+    id: ID! @doc(description: "Gift wrapping unique identifier")
+    design: String! @doc(description: "Gift wrapping design name")
+    price: Money! @doc(description: "Gift wrapping price")
+    image: GiftWrappingImage! @doc(description: "Gift wrapping preview image")
 }
 
 type GiftWrappingImage {
-    label: String!
-    url: String!
+    label: String! @doc(description: "Gift wrapping preview image label")
+    url: String! @doc(description: "Gift wrapping preview image URL")
 }
 
 type GiftOptionsPrices {
-    gift_wrapping_for_order: Money
-    gift_wrapping_for_items: Money
-    printed_card: Money
+    gift_wrapping_for_order: Money @doc(description: "Price of the gift wrapping for the whole order")
+    gift_wrapping_for_items: Money @doc(description: "Price of the gift wrapping for all individual order items")
+    printed_card: Money @doc(description: "Price for the printed card")
 }
 
 type GiftMessage {
-    to: String!
-    from: String!
-    message: String!
+    to: String! @doc(description: "Recepient name")
+    from: String! @doc(description: "Sender name")
+    message: String! @doc(description: "Gift message text")
 }
 ###### End: Defining new types ######
 
@@ -86,7 +92,7 @@ type GiftMessage {
 
 ## Configuration
 
-The following gift options need to be whitelisted in the `storeConfig` query.
+The following gift options need to be whitelisted in the `storeConfig` query. See [example](https://github.com/magento/magento2/blob/52b66acf17e049dc2c5c7d9e12bd6d29d6a1a16d/app/code/Magento/CatalogGraphQl/etc/graphql/di.xml#L96).
 
 ```xml
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
@@ -167,25 +173,25 @@ Validation errors may be included to `SetGiftOptionsOnCartOutput` based on produ
 ```graphql
 ###### Begin: Extending existing types ######
 type CartItemUpdateInput {
-    gift_wrapping_id: ID
-    gift_message: GiftMessageInput
+    gift_wrapping_id: ID @doc(description: "The unique identifier of the gift wrapping to be used for the cart item")
+    gift_message: GiftMessageInput @doc(description: "Gift message details for the cart item")
 }
 
 type Mutation {
-    setGiftOptionsOnCart(cart_id: String!, gift_message: GiftMessageInput, gift_wrapping_id: ID, include_gift_receipt: Boolean, include_printed_card: Boolean): SetGiftOptionsOnCartOutput
+    setGiftOptionsOnCart(cart_id: String!, gift_message: GiftMessageInput, gift_wrapping_id: ID, include_gift_receipt: Boolean, include_printed_card: Boolean): SetGiftOptionsOnCartOutput @doc(description: "Set gift options like gift wrapping or gift message for the entire cart")
 }
 ###### End: Extending existing types ######
 
 
 ###### Begin: Defining new types ######
 type SetGiftOptionsOnCartOutput {
-    cart: Cart!
+    cart: Cart! @doc(description: "The modified cart object")
 }
 
 type GiftMessageInput {
-    to: String!
-    from: String!
-    message: String!
+    to: String! @doc(description: "Recepient name")
+    from: String! @doc(description: "Sender name")
+    message: String! @doc(description: "Gift message text")
 }
 ###### End: Defining new types ######
 ```
