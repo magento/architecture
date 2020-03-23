@@ -17,7 +17,7 @@ The settings defined in the following config files must be honored by the passwo
 - `Magento/Customer/etc/adminhtml/system.xml`
 
 
-The following gift options need to be whitelisted in the `storeConfig` query. See [example](https://github.com/magento/magento2/blob/52b66acf17e049dc2c5c7d9e12bd6d29d6a1a16d/app/code/Magento/CatalogGraphQl/etc/graphql/di.xml#L96).
+The following config settings need to be whitelisted in the `storeConfig` query. See [example](https://github.com/magento/magento2/blob/52b66acf17e049dc2c5c7d9e12bd6d29d6a1a16d/app/code/Magento/CatalogGraphQl/etc/graphql/di.xml#L96).
 
 ```xml
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
