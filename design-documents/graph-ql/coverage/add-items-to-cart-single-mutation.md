@@ -48,15 +48,15 @@ Entered options:
 - Customizable options such as text field, file, etc
 - Gift Card (amount)
   
-### Option implementation
+#### Option implementation
   
 Product schema should be extended in order to provide option UUID.
 
-Option UUID is `base64` encoded string, that pack details for each option and in most cases is can be preseneted as 
+Option UUID is `base64` encoded string, that encodes details for each option and in most cases can be presented as 
 `base64("<option-type>/<option-id>/<option-value-id>")`
-For example, for customizable drop-down option "Color(id = 1), with values Red (id=1, Green=2)" UUID for Color:Red will looks like `"Y3VzdG9tLW9wdGlvbi8xLzE=" => base64("custom-option/1/1")` 
+For example, for customizable drop-down option "Color(id = 1), with values Red(id = 1), Green(id = 2)" UUID for Color:Red will looks like `"Y3VzdG9tLW9wdGlvbi8xLzE=" => base64("custom-option/1/1")` 
 
-Here is a GQL query that shows where need to add new field "uuid: String!" to cover existing cases:
+Here is a GQL query that shows how to add a new field "uuid: String!" to cover existing cases:
 
 
 ``` graphql
