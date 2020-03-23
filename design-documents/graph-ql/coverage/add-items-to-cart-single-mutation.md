@@ -12,7 +12,124 @@ In order to simplify the flow of adding different type of products to wishlist a
 - Options are sets of predefined values that a buyer can add to cart/wishlist in addition to a product.
 - The difference between wish list and cart payloads is that all fields in wishlist are optional.
 
-### Examples
+### Options 
+
+Each product may have options. Option can be of 2 types (see example below):
+  - `selected_options` - predefined and selected by customer option. E.g. it can be customizable option: `color: green` or bundle option: `Memory: 24M, Warranty: 1y`:
+``` 
+    "selected_options" : [
+         "Y3VzdG9tLW9wdGlvbi8yNC80Mg=="
+     ],
+```
+  - `entered_options` - option entered by customer like: text field, image, etc.
+``` 
+    "entered_options": [
+      {
+        id: "Y3VzdG9tLW9wdGlvbi8zMQ==",
+        value: "Vasia's awesome cup"
+      }
+    ]
+```
+
+We can consider "Selected Option" and "ID for Entered Option" as UUID. They meet the criteria:
+- Represent specific option. 
+- Must be unique across different options
+- Returned from server
+- Used by client as is
+
+Selected options can be used for:
+- Customizable options such as dropdwon, radiobutton, checkbox, etc
+- Configugrable product
+- Bundle Product
+- Downloadable product
+- Groupped product
+
+Entered options:
+- Customizable options such as text field, file, etc
+- Gift Card (amount)
+  
+### Option implementation
+  
+Product schema should be extended in order to provide option UUID.
+
+Option UUID is `base64` encoded string, that pack details for each option and in most cases is can be preseneted as 
+`base64("<option-type>/<option-id>/<option-value-id>")`
+For example, for customizable drop-down option "Color(id = 1), with values Red (id=1, Green=2)" UUID for Color:Red will looks like `"Y3VzdG9tLW9wdGlvbi8xLzE=" => base64("custom-option/1/1")` 
+
+Here is a GQL query that shows where need to add new field "uuid: String!" to cover existing cases:
+
+
+``` graphql
+query {
+  products(filter: { price: { from: "0.00001" } }) {
+    items {
+      sku
+      ... on CustomizableProductInterface {
+        options {
+          option_id
+          title
+          ... on CustomizableRadioOption {
+            title
+            value {
+              uuid # introduce new UUID field in CustomizableRadioValue
+              option_type_id
+              title
+            }
+          }
+          ... on CustomizableDropDownOption {
+            title
+            value {
+              uuid # introduce new UUID field in CustomizableDropDownValue
+              # see \Magento\QuoteGraphQl\Model\Cart\BuyRequest\CustomizableOptionsDataProvider
+              option_type_id
+              title
+            }
+          }
+         # ... on all other custom options types
+        }
+      }      ... on ConfigurableProduct {
+        variants {
+          attributes {
+            uuid # introduce new UUID field in ConfigurableAttributeOption  (format: configurable/<attribute-id>/<value_index>)
+            # see \Magento\ConfigurableProductGraphQl\Model\Cart\BuyRequest\SuperAttributeDataProvider
+            code
+            value_index
+          }
+        }
+      }      ... on DownloadableProduct {
+        downloadable_product_links {
+          uuid #  introduce new UUID field in DownloadableProductLinks (format: downloadable/link/<link_id>)
+          #  see \Magento\DownloadableGraphQl\Model\Cart\BuyRequest\DownloadableLinksDataProvider
+          title
+        }
+      }      ... on BundleProduct {
+        items {
+          sku
+          title
+          options {
+            uuid #  introduce new UUID field in BundleItemOption (format: bundle/<option-id>/<option-value-id>/<option-quantity>)
+            # see \Magento\BundleGraphQl\Model\Cart\BuyRequest\BundleDataProvider
+            id
+            label
+          }
+        }
+      }      ... on GiftCardProduct {
+        giftcard_amounts {
+          uuid # introduce new UUID field in GiftCardAmounts (format: giftcard/...TBD)
+          # see \Magento\GiftCard\Model\Quote\Item\CartItemProcessor::convertToBuyRequest
+          value_id
+          website_id
+          value
+          attribute_id
+          website_value
+        }
+      }
+    }
+  }
+}
+```
+
+## Examples
 
 #### Add simple product to cart
 ```
@@ -21,12 +138,12 @@ In order to simplify the flow of adding different type of products to wishlist a
     "sku": "Cup",
     "qty": 1,
     "selected_options" : [
-      "Y29uZmlndXJhYmxlLzI0LzQy" //base64_encode('configurable/24/42')
+      "Y3VzdG9tLW9wdGlvbi8yNC80Mg==" //base64_encode('custom-option/24/42')
     ],
     "entered_options": [
       {
         id: "Y3VzdG9tLW9wdGlvbi8zMQ==", //base64_encode("custom-option/31")
-        value: "VmFzaWEncyBhd2Vzb21lIGN1cA==" // base64_encode("Vasia's awesome cup")
+        value: "Vasia's awesome cup"
       }
     ]
   }
@@ -36,20 +153,13 @@ In order to simplify the flow of adding different type of products to wishlist a
 In this example we want to add _personalized blue cup to cart_ to cart.
 
  - `selected_options` - predefined and selected by customer options. `base64` encoding will help to use UUID in future.
-:warning: The encoded value will be returned from server and should be used by client as is. In order to achieve this:
-
-``` graphql
-interface CustomizableOptionInterface {
-    ...
-    id: ID @doc(description: "Option ID.")
-}
-```
+:warning: The encoded value will be returned from server and should be used by client as is. 
 
 In this example values will be following:
 
 | Name  | Value | Buyer Selection |
 | ------------- | ------------- | ------------- |
-| option-type  | configurable   |
+| option-type  | custom-option   |
 | option-id  | 24 | color |
 | option-value-id  | 42  | blue |
 
