@@ -32,7 +32,7 @@ Each product may have options. Option can be of 2 types (see example below):
 ```
 
 We can consider "Selected Option" and "ID for Entered Option" as UUID. They meet the criteria:
-- Represent specific option. 
+- "Selected Option" represents option value, while "ID for Entered Option" represents option
 - Must be unique across different options
 - Returned from server
 - Used by client as is
