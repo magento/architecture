@@ -31,7 +31,7 @@ Compare list ID is client generated identifier.
 * If the registered customer does not have an active list then null will be returned.
 This means the client has to generate and send a new ID if the compare list functionality requested.
 
-* If the buyer calls addItemsToCompareList with a new ID the previous list will be disabled. 
+* If the buyer calls addItemsToCompareList with a new ID the previous list will be abandoned. 
 For the registered user an active compare list will be replaced with a new one. 
 
 * A buyer can modify the existing list by calling mutation: 
