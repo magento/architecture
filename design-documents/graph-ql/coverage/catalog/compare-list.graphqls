@@ -1,33 +1,30 @@
 type ComparableItem {
-    productId: ID!
-    name: String!
-    sku: String!
-    priceRange: ProductPriceRange!
-    canonical_url: String
-    images: [ProductImage]
-    values: [ProductAttribute]
+    productId: ID! @doc(description: "Product Id")
+    name: String! @doc(description: "Product name")
+    sku: String! @doc(description: "Product SKU")
+    priceRange: ProductPriceRange! @doc(description: "Product prices")
+    canonical_url: String @doc(description: "Product URL")
+    images: [ProductImage]! @doc(description: "Product Images")
+    values: [ProductAttribute]! @doc(description: "Product comparable attributes")
 }
 
-type ComparableIndicator {
-    code: String!
-    title: String!
+type ComparableAttribute {
+    code: String! @doc(description: "Attribute code ")
+    title: String! @doc(description: "Addibute display title")
 }
 
 type CompareList {
-    items: [ComparableItem]
-    indicators: [ComparableIndicator]
-}
-
-type Customer{
-    compareList: CompareList
+    list_id: ID! @doc(description: " Compare list id")
+    items: [ComparableItem] @doc(description: "Comparable products")
+    attributes: [ComparableAttribute] @doc(description: "Comparable attributes, provides codes and titles for the attributes")
 }
 
 type Customer {
-    compare_list: CompareList
+    compare_list: CompareList @doc(description: "Active customers compare list")
 }
 
 type Query {
-    сompareList(id: ID!): CompareList
+    compareList(id: ID!): CompareList @doc(description: "Compare list")
 }
 
 type Mutation {
@@ -39,7 +36,6 @@ type Mutation {
         id: ID!
         items: [ID!]
     ): CompareList
-    clearList(id: ID!): Boolean
     assignCompareListToCustomer(customerId: ID!, listId: ID!): Boolean
 }
 
