@@ -1,4 +1,4 @@
-# Queries
+# Mutations
 
 ```graphql
 type Mutation {
@@ -6,6 +6,8 @@ type Mutation {
     resetPassword(email: String!, resetPasswordToken: String!, newPassword: String!): Boolean @doc(description: "Reset customer password using reset password token received in the email after requesting it using requestPasswordResetEmail")
 }
 ```
+
+The client app will initiate password reset using `requestPasswordResetEmail` mutation. The email sent to a customer will include a link with reset password token. When the customer follows this link, he will be taken to the "Password reset" page served by the client app. This page will have to extract the reset token from the URL, request customer to enter his email and a new password. Then customer password reset will be completed using `resetPassword` mutation.
 
 # Configuration
 
