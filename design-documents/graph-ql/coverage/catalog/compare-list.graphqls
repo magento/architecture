@@ -1,0 +1,45 @@
+type ComparableItem {
+    productId: ID! @doc(description: "Product Id")
+    name: String! @doc(description: "Product name")
+    sku: String! @doc(description: "Product SKU")
+    priceRange: ProductPriceRange! @doc(description: "Product prices")
+    canonical_url: String @doc(description: "Product URL")
+    images: [ProductImage]! @doc(description: "Product Images")
+    values: [ProductAttribute]! @doc(description: "Product comparable attributes")
+}
+
+type ComparableAttribute {
+    code: String! @doc(description: "Attribute code ")
+    title: String! @doc(description: "Addibute display title")
+}
+
+type CompareList {
+    list_id: ID! @doc(description: " Compare list id")
+    items: [ComparableItem] @doc(description: "Comparable products")
+    attributes: [ComparableAttribute] @doc(description: "Comparable attributes, provides codes and titles for the attributes")
+}
+
+type Customer {
+    compare_list: CompareList @doc(description: "Active customers compare list")
+}
+
+type Query {
+    compareList(id: ID!): CompareList @doc(description: "Compare list")
+}
+
+type Mutation {
+    addItemsToCompareList(
+        id: ID!
+        items: [ID!]
+    ): CompareList
+    removeItemsFromCompareList(
+        id: ID!
+        items: [ID!]
+    ): CompareList
+    assignCompareListToCustomer(customerId: ID!, listId: ID!): Boolean
+}
+
+schema {
+    query: Query,
+    mutation: Mutation
+}
