@@ -83,7 +83,7 @@ The order items will be presented as separate interface which will have multiple
 @doc("Interface to reprent order/invoice/shipment/credit memo items")
 interface SalesItemInterface {
     product_name: String @doc("name of the base product")
-    protduct_sku: String! @doc("SKU of the base product")
+    product_sku: String! @doc("SKU of the base product")
     product_url: String @doc("URL of the base product")
     product_sale_price: Money! @doc("sale price for the base product including selected options")
     discounts: [Discount] @doc("final discount information for the base product including discounts on options")
