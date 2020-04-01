@@ -4,8 +4,8 @@
 
 ###### Begin: Extending existing types ######
 type Company {
-    credit: CompanyCredit!
-    credit_history: CompanyCreditHistory!
+    credit: CompanyCredit! @doc(description: "Company credit balance")
+    credit_history: CompanyCreditHistory! @doc(description: "Company credit operations history")
 }
 ###### End: Extending existing types ######
 
@@ -21,7 +21,7 @@ type CompanyCreditOperation {
     # Operation may be of enum type
     operation: String! @doc(description: "The type of the company credit operation")
     amount: Money @doc(description: "The amount fo the company credit operation")
-        balance: CompanyCredit! @doc(description: "Credit balance after the company credit operation")
+    balance: CompanyCredit! @doc(description: "Credit balance after the company credit operation")
     purchase_order: String @doc(description: "Purchase order number associated with the company credit operation")
     updated_by: String! @doc(description: "The name of the person submitting the company credit operation")
 }

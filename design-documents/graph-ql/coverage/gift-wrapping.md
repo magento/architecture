@@ -13,8 +13,8 @@ It is suggested to use base64 encoded DB increment ID as ID in GraphQL.
 type Cart {
     available_gift_wrappings: [GiftWrapping]! @doc(description: "The list of available gift wrapping options for the cart")
     gift_wrapping: GiftWrapping @doc(description: "The selected gift wrapping for the cart")
-    include_printed_card: Boolean! @doc(description: "Wether customer requested printed card for the order")
-    include_gift_receipt: Boolean! @doc(description: "Wether customer requested gift receipt for the order")
+    printed_card_included: Boolean! @doc(description: "Wether customer requested printed card for the order")
+    gift_receipt_included: Boolean! @doc(description: "Wether customer requested gift receipt for the order")
     gift_message: GiftMessage @doc(description: "The entered gift message for the cart")
 }
 
@@ -47,8 +47,8 @@ type SalesItemInterface {
 
 type CustomerOrder {
     gift_wrapping: GiftWrapping @doc(description: "The selected gift wrapping for the order")
-    include_printed_card: Boolean! @doc(description: "Wether customer requested printed card for the order")
-    include_gift_receipt: Boolean! @doc(description: "Wether customer requested gift receipt for the order")
+    printed_card_included: Boolean! @doc(description: "Whether customer requested printed card for the order")
+    gift_receipt_included: Boolean! @doc(description: "Whether customer requested gift receipt for the order")
     gift_message: GiftMessage @doc(description: "The entered gift message for the order")
 }
 
@@ -178,7 +178,7 @@ type CartItemUpdateInput {
 }
 
 type Mutation {
-    setGiftOptionsOnCart(cart_id: String!, gift_message: GiftMessageInput, gift_wrapping_id: ID, include_gift_receipt: Boolean, include_printed_card: Boolean): SetGiftOptionsOnCartOutput @doc(description: "Set gift options like gift wrapping or gift message for the entire cart")
+    setGiftOptionsOnCart(cart_id: String!, gift_message: GiftMessageInput, gift_wrapping_id: ID, gift_receipt_included: Boolean, printed_card_included: Boolean): SetGiftOptionsOnCartOutput @doc(description: "Set gift options like gift wrapping or gift message for the entire cart")
 }
 ###### End: Extending existing types ######
 
