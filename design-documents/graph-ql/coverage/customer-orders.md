@@ -68,6 +68,8 @@ type CustomerOrder {
     payment_methods: [PaymentMethod]! @doc("payment details for the order")
     shipping_address: CustomerAddress! @doc("shipping address for the order")
     billing_address: CustomerAddress! @doc("billing address for the order")
+    carrier: String! @doc("shipping carrier for the order delivery")
+    method: String! @doc("shipping method for the order")
 }
 ```
 
@@ -150,14 +152,31 @@ As entities like order, invoice, credit memo might have complex amounts type:
 interface SalesTotalAmountInterface {
     subtotal: Money! @doc("subtotal amount excluding, shipping, discounts and tax")
     discounts: [Discount] @doc("applied discounts")
-    tax: Money! @doc("applied taxes")
+    total_tax: Money! @doc("total tax amount")
+    taxes: [TaxItem]! @doc("order taxes details")
     grand_total: Money! @doc("final total amount including shipping and taxes")
     base_grand_total: Money! @doc("final total amount in base currency")
 }
 ​
 @doc("Order total amounts details")
 type OrderTotal implements SalesTotalAmountInterface {
-​   shipping_handling: Money! @doc("shipping and handling for the order")
+   total_shipping: Money! @doc("order shipping amount")
+   shipping_handling: ShippingHandling! @doc("shipping and handling for the order")
+}
+
+@doc("Shipping handling details")
+type ShippingHandling {
+    total_amount: Money! @doc("shipping total amount")
+    amount_inc_tax: Money @doc("shipping amount including tax")
+    amount_exc_tax: Money @doc("shipping amount excluding tax")
+    taxes: [TaxItem]! @doc("shipping taxes details")
+}
+
+@doc("Tax item details")
+type TaxItem {
+    amount: Money! @doc("tax amount")
+    title: String! @doc("tax item title")
+    rate: Float @doc("tax item rate")
 }
 ```
 
@@ -181,7 +200,8 @@ type InvoiceItem implements SalesItemInterface{
 
 @doc("Invoice total amount details")
 type InvoiceTotal implements SalesTotalAmountInterface {
-  
+    total_shipping: Money! @doc("order shipping amount")
+    shipping_handling: ShippingHandling! @doc("shipping and handling for the order")
 }
 ```
 
