@@ -23,7 +23,12 @@ type CompanyCreditOperation {
     amount: Money @doc(description: "The amount fo the company credit operation")
     balance: CompanyCredit! @doc(description: "Credit balance after the company credit operation")
     purchase_order: String @doc(description: "Purchase order number associated with the company credit operation")
-    updated_by: String! @doc(description: "The name of the person submitting the company credit operation")
+    updated_by: CompanyCreditOperationUser! @doc(description: "The user submitting the company credit operation")
+}
+
+type CompanyCreditOperationUser {
+    name: String! @doc(description: "The name of the user submitting the company credit operation")
+    type: CompanyCreditOperationUserType! @doc(description: "The type of the user submitting the company credit operation")
 }
 
 type CompanyCredit {
@@ -39,6 +44,11 @@ enum CompanyCreditOperationType {
     REIMBURSEMENT
     REFUND
     REVERT
+}
+
+enum CompanyCreditOperationUserType {
+    CUSTOMER
+    ADMIN
 }
 
 input CompanyCreditHistoryFilterInput {
