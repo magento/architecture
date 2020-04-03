@@ -1,3 +1,94 @@
+# Tricky things
+
+`Sales representative` is an admin user(merchant side) who is assigned to work with the company. Thus we can't use exsting `Customer` type for sales representative 
+
+# B2B customer info integration options
+
+B2B customer needs to have access to the following additional data:
+* Customer role & permissions within the customer's company
+* Team in company hierarchy
+* Job title
+* Telephone (B2C version contains this field in address)
+* User status in company (active & deactivated)
+
+**Option #1 (applied in schema)**
+
+We can simply add those options to existing `Customer` type and make these fields optional, so both B2C and B2B customers may use the same type:
+Also, we may add a company field to this list.
+
+```graphql
+type Customer {
+    job_title: String @doc(description: "Company User job title.")
+    role: CompanyRole @doc(description: "Company User role data (includes permissions).")
+    team: CompanyTeam @doc(description: "Company User team data.")
+    telephone: String @doc(description: "Company User phone number.")
+    status: CompanyUserStatusEnum @doc(description: "Company User status.")
+    company: Company @doc(description: "Customer company.")
+}
+```
+
+Pros: `simple`, `compatible with existing extension mechanism`, `all customer customizations automatically work for company users`
+Cons: `Mandatory fields are not marked as mandatory for read operations`
+
+**Option #2**
+
+We can introduce customer interface and have two different implementations of customer
+
+```graphql
+interface CustomerInterface {
+    id: Int @doc(description: "User id.")
+    email: String @doc(description: "User email address.")
+    firstname: String @doc(description: "User first name.")
+    lastname: String @doc(description: "User last name.")
+    #All other customer fields
+    # ......
+    # ......
+}
+
+type Customer implements CustomerInterface {
+    #empty
+}
+
+type CompanyUser implements CustomerInterface {
+    job_title: String! @doc(description: "Company User job title.")
+    role: CompanyRole! @doc(description: "Company User role data (includes permissions).")
+    team: CompanyTeam! @doc(description: "Company User team data.")
+    telephone: String! @doc(description: "Company User phone number.")
+    status: CompanyUserStatusEnum! @doc(description: "Company User status.")
+    company: Company! @doc(description: "Customer company.")
+}
+```
+
+Pros: `strict way to distinguish B2B users`
+Cons: `all customer fields were moved to interface`, `customer customization are not applied to company users`
+
+**Option #3**
+
+Completely separate implementation. CompanyUser type will be used only for company management use cases.
+
+```graphql
+type Customer{
+    #Old Customer fields
+    company: Company @doc(description: "Customer company.")
+}
+
+type CompanyUser {
+    id: ID! @doc(description: "User id.")
+    email: String! @doc(description: "User email address.")
+    firstname: String! @doc(description: "User first name.")
+    lastname: String! @doc(description: "User last name.")
+    job_title: String! @doc(description: "Company User job title.")
+    role: CompanyRole! @doc(description: "Company User role data (includes permissions).")
+    team: CompanyTeam! @doc(description: "Company User team data.")
+    telephone: String! @doc(description: "Company User phone number.")
+    status: CompanyUserStatusEnum! @doc(description: "Company User status.")
+}
+```
+
+Pros: `strict field types`
+Cons: `Customizations are not applied to company user`, `mixed type for the same data in one query customer->company->companyUser->firstname`
+
+
 # Queries
 
 ```graphql
@@ -25,7 +116,7 @@ type Company @doc(description: "Company entity output data schema.") {
         pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. Defaults to 20."),
         currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
     ): CompanyUsers @doc(description: "Information about the company users.")
-    user(id: ID): CompanyUser @doc(description: "Returns company user for current authenticated Customer or, if id provided, for specific one.")
+    user(id: ID): Customer @doc(description: "Returns company user for current authenticated Customer or, if id provided, for specific one.")
     roles(
         pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. Optional. Defaults to 20."),
         currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
@@ -67,21 +158,9 @@ type CompanySalesRepresentative @doc(description: "Company sales representative 
 }
 
 type CompanyUsers @doc(description: "Output data schema for an object returned by a Company users search query.") {
-    items: [CompanyUser] @doc(description: "An array of 'CompanyUser' objects that match the specified search criteria.")
+    items: [Customer] @doc(description: "An array of 'CompanyUser' objects that match the specified search criteria.")
     total_count: Int @doc(description: "The number of objects returned.")
     page_info: SearchResultPageInfo @doc(description: "Pagination meta data.")
-}
-
-type CompanyUser @doc(description: "Company User (Customer assigned to Company) entity output data schema.") {
-    id: ID! @doc(description: "Company User/Customer id.")
-    email: String! @doc(description: "Company User email address.")
-    firstname: String! @doc(description: "Company User first name.")
-    lastname: String! @doc(description: "Company User last name.")
-    status: CompanyUserStatusEnum! @doc(description: "Company User status.")
-    job_title: String! @doc(description: "Company User job title.")
-    telephone: String! @doc(description: "Company User phone number.")
-    role: CompanyRole! @doc(description: "Company User role data (includes permissions).")
-    team: CompanyTeam @doc(description: "Company User team data.")
 }
 
 type CompanyRoles @doc(description: "Output data schema for an object returned by a Company roles search query.") {
@@ -179,11 +258,11 @@ type UpdateCompanyOutput @doc(description: "Update company output data schema.")
 }
 
 type CreateCompanyUserOutput @doc(description: "Create company user output data schema.") {
-    user: CompanyUser! @doc(description: "New company user instance.")
+    user: Cutomer! @doc(description: "New company user instance.")
 }
 
 type UpdateCompanyUserOutput @doc(description: "Update company user output data schema.") {
-    user: CompanyUser! @doc(description: "Updated company user instance.")
+    user: Customer! @doc(description: "Updated company user instance.")
 }
 
 type DeleteCompanyUserOutput @doc(description: "Delete company user output data schema.") {
@@ -305,5 +384,17 @@ input CompanyTeamUpdateInput @doc(description: "Defines the input data schema fo
     id: ID! @doc(description: "Team ID. Required.")
     name: String @doc(description: "Team name.")
     description: String @doc(description: "Team description.")
+}
+```
+
+# Existing type modifications
+
+```graphql
+type Customer {
+    job_title: String! @doc(description: "Company User job title.")
+    role: CompanyRole! @doc(description: "Company User role data (includes permissions).")
+    team: CompanyTeam! @doc(description: "Company User team data.")
+    telephone: String! @doc(description: "Company User phone number.")
+    status: CompanyUserStatusEnum! @doc(description: "Company User status.")
 }
 ```
