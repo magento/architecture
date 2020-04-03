@@ -58,12 +58,6 @@ type CompanyAdmin @doc(description: "Company Administrator (Customer with corres
     gender: Int @doc(description: "Company Administrator gender.")
 }
 
-type CustomerAddressRegion @doc(description: "Output data schema for a region data in Company address.") {
-    region_id: ID! @doc(description: "Unique region identifier. Required for certain countries.")
-    region: String @doc(description: "State or province name.")
-    region_code: String @doc(description: "Region code.")
-}
-
 type CompanySalesRepresentative @doc(description: "Company sales representative information output data schema.") {
     email: String! @doc(description: "Sales representative email address.")
     firstname: String! @doc(description: "Sales representative first name.")
