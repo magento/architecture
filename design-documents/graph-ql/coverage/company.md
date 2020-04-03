@@ -130,7 +130,7 @@ type Company @doc(description: "Company entity output data schema.") {
 type CompanyLegalAddress @doc(description: "Company legal address output data schema.") {
     street: [String]! @doc(description: "An array of strings that defines the Company's street address.")
     city: String! @doc(description: "City name.")
-    region: CompanyAddressRegion! @doc(description: "An object containing region data for the Company.")
+    region: CustomerAddressRegion! @doc(description: "An object containing region data for the Company.")
     country_code: CountryCodeEnum! @doc(description: "Country code.")
     postcode: String! @doc(description: "ZIP/postal code.")
     telephone: String! @doc(description: "Company's phone number.")
@@ -145,7 +145,7 @@ type CompanyAdmin @doc(description: "Company Administrator (Customer with corres
     gender: Int @doc(description: "Company Administrator gender.")
 }
 
-type CompanyAddressRegion @doc(description: "Output data schema for a region data in Company address.") {
+type CustomerAddressRegion @doc(description: "Output data schema for a region data in Company address.") {
     region_id: ID! @doc(description: "Unique region identifier. Required for certain countries.")
     region: String @doc(description: "State or province name.")
     region_code: String @doc(description: "Region code.")
@@ -308,7 +308,7 @@ input CompanyLegalAddressCreateInput @doc(description: "Defines the Company lega
     street: [String!]! @doc(description: "An array of strings that define the Company street address. Required array value for a field with strings as values of array.")
     city: String! @doc(description: "Company's city name. Required.")
     country_id: CountryCodeEnum! @doc(description: "Company's country ID. Required. See 'countries' query. Required.")
-    region: CompanyAddressRegionInput! @doc(description: "An object containing the region name and/or region ID. Required.")
+    region: CustomerAddressRegionInput! @doc(description: "An object containing the region name and/or region ID. Required.")
     postcode: String! @doc(description: "Company's ZIP/postal code. Required.")
     telephone: String! @doc(description: "Company's phone number. Required.")
 }
@@ -326,14 +326,9 @@ input CompanyLegalAddressUpdateInput @doc(description: "Defines the Company lega
     street: [String!] @doc(description: "An array of strings that define the Company street address.")
     city: String @doc(description: "Company's city name.")
     country_id: CountryCodeEnum @doc(description: "Company's country ID. See 'countries' query.")
-    region: CompanyAddressRegionInput @doc(description: "An object containing the region name and/or region ID. Required.")
+    region: CustomerAddressRegionInput @doc(description: "An object containing the region name and/or region ID. Required.")
     postcode: String @doc(description: "Company's ZIP/postal code.")
     telephone: String @doc(description: "Company's phone number.")
-}
-
-input CompanyAddressRegionInput @doc(description: "Defines the Company's region input data schema.") {
-    region_id: ID @doc(description: "Unique region identifier. Required for certain countries. See 'country(id: ID)' query.")
-    region: String @doc(description: "State or province name.")
 }
 
 input CompanyUserCreateInput @doc(description: "Defines the input data schema for creating a new Customer - Company user.") {
