@@ -2,7 +2,7 @@
 
 ```graphql
 type Query {
-    company: Company  @doc(description: "Returns all information about the Company.")
+    company: Company  @doc(description: "Returns all information about the current Company.")
     checkCompanyEmail(email: String!): Boolean  @doc(description: "Returns boolean value of validation whether provided email address is valid for a new Company registration or not.")
     checkCompanyAdminEmail(email: String!): Boolean  @doc(description: "Returns boolean value of validation whether provided email address is valid for a Company Administrator registration or not.")
     checkCompanyUserEmail(email: String!): CompanyUserEmailCheckResponse  @doc(description: "Returns an object with result of validation whether provided email address is valid for a new Customer - Company User - registration or not.")
@@ -13,7 +13,7 @@ type Company @doc(description: "Company entity output data schema.") {
     id: ID! @doc(description: "Company id.")
     name: String! @doc(description: "Company name.")
     email: String! @doc(description: "Company email address.")
-    legal_name: String! @doc(description: "Company legal name.")
+    legal_name: String @doc(description: "Company legal name.")
     vat_id: String @doc(description: "Company VAT/TAX id.")
     reseller_id: String @doc(description: "Company re-seller id.")
     legal_address: CompanyLegalAddress! @doc(description: "Company legal address.")
@@ -39,17 +39,17 @@ type Company @doc(description: "Company entity output data schema.") {
 type CompanyLegalAddress @doc(description: "Company legal address output data schema.") {
     street: [String]! @doc(description: "An array of strings that defines the Company's street address.")
     city: String! @doc(description: "City name.")
-    region: CompanyAddressRegion @doc(description: "An object containing region data for the Company.")
+    region: CompanyAddressRegion! @doc(description: "An object containing region data for the Company.")
     country_code: CountryCodeEnum! @doc(description: "Country code.")
-    postcode: String @doc(description: "ZIP/postal code.")
-    telephone: String @doc(description: "Company's phone number.")
+    postcode: String! @doc(description: "ZIP/postal code.")
+    telephone: String! @doc(description: "Company's phone number.")
 }
 
 type CompanyAdmin @doc(description: "Company Administrator (Customer with corresponding privileges) output data schema.") {
     id: ID! @doc(description: "Company Administrator's id.")
     email: String! @doc(description: "Company Administrator email address.")
-    firstname: String @doc(description: "Company Administrator first name.")
-    lastname: String @doc(description: "Company Administrator last name.")
+    firstname: String! @doc(description: "Company Administrator first name.")
+    lastname: String! @doc(description: "Company Administrator last name.")
     job_title: String @doc(description: "Company Administrator job title.")
     gender: Int @doc(description: "Company Administrator gender.")
 }
@@ -61,9 +61,9 @@ type CompanyAddressRegion @doc(description: "Output data schema for a region dat
 }
 
 type CompanySalesRepresentative @doc(description: "Company sales representative information output data schema.") {
-    email: String @doc(description: "Sales representative email address.")
-    firstname: String @doc(description: "Sales representative first name.")
-    lastname: String @doc(description: "Sales representative last name.")
+    email: String! @doc(description: "Sales representative email address.")
+    firstname: String! @doc(description: "Sales representative first name.")
+    lastname: String! @doc(description: "Sales representative last name.")
 }
 
 type CompanyUsers @doc(description: "Output data schema for an object returned by a Company users search query.") {
@@ -73,15 +73,14 @@ type CompanyUsers @doc(description: "Output data schema for an object returned b
 }
 
 type CompanyUser @doc(description: "Company User (Customer assigned to Company) entity output data schema.") {
-    id: ID @doc(description: "Company User/Customer id.")
-    email: String @doc(description: "Company User email address.")
-    firstname: String @doc(description: "Company User first name.")
-    lastname: String @doc(description: "Company User last name.")
-    status: Int @doc(description: "Company User status id.")
-    status_name: String @doc(description: "Company User status name.")
-    job_title: String @doc(description: "Company User job title.")
-    telephone: String @doc(description: "Company User phone number.")
-    role: CompanyRole @doc(description: "Company User role data (includes permissions).")
+    id: ID! @doc(description: "Company User/Customer id.")
+    email: String! @doc(description: "Company User email address.")
+    firstname: String! @doc(description: "Company User first name.")
+    lastname: String! @doc(description: "Company User last name.")
+    status: CompanyUserStatusEnum! @doc(description: "Company User status.")
+    job_title: String! @doc(description: "Company User job title.")
+    telephone: String! @doc(description: "Company User phone number.")
+    role: CompanyRole! @doc(description: "Company User role data (includes permissions).")
     team: CompanyTeam @doc(description: "Company User team data.")
 }
 
@@ -92,21 +91,21 @@ type CompanyRoles @doc(description: "Output data schema for an object returned b
 }
 
 type CompanyRole @doc(description: "Company role output data schema returned in response to a query by Role id.") {
-    id: ID @doc(description: "Role id.")
-    name: String @doc(description: "Role name.")
+    id: ID! @doc(description: "Role id.")
+    name: String! @doc(description: "Role name.")
     users_count: Int @doc(description: "Total number of Users with such Role within Company Hierarchy.")
     permissions: [String] @doc(description: "A list of permission resources defined for a Role.")
 }
 
 type CompanyAclResource @doc(description: "Output data schema for an object with Role permission resource information.") {
-    id: String @doc(description: "ACL resource id.")
-    text: String @doc(description: "ACL resource label.")
-    sortOrder: Int @doc(description: "ACL resource sort order.")
+    id: ID! @doc(description: "ACL resource id.")
+    text: String! @doc(description: "ACL resource label.")
+    sortOrder: Int! @doc(description: "ACL resource sort order.")
     children: [CompanyAclResource!] @doc(description: "An array of sub-resources.")
 }
 
 type CompanyUserEmailCheckResponse @doc(description: "Response object schema for a Company User email validation query.") {
-    status: Boolean @doc(description: "True - email is valid, False - email is not valid")
+    status: Boolean! @doc(description: "True - email is valid, False - email is not valid")
 }
 
 type CompanyHierarchyOutput @doc(description: "Response object schema for a Company Hierarchy query.") {
@@ -116,26 +115,26 @@ type CompanyHierarchyOutput @doc(description: "Response object schema for a Comp
 }
 
 type CompanyHierarchyElement @doc(description: "Company Hierarchy element output data schema.") {
-    id: ID @doc(description: "Hierarchy element id.")
-    tree_id: ID @doc(description: "The hierarchical id of the element within a structure. Used for changing element's position in hierarchy.")
-    type: String @doc(description: "Hierarchy element type: 'customer' or a 'team'.")
-    text: String @doc(description: "Hierarchy element name.")
+    id: ID! @doc(description: "Hierarchy element id.")
+    tree_id: ID! @doc(description: "The hierarchical id of the element within a structure. Used for changing element's position in hierarchy.")
+    type: String! @doc(description: "Hierarchy element type: 'customer' or a 'team'.")
+    text: String! @doc(description: "Hierarchy element name.")
     description: String @doc(description: "Hierarchy element description.")
-    opened: Boolean @doc(description: "Flag that defines whether Hierarchy element should be expanded or not.")
+    opened: Boolean! @doc(description: "Flag that defines whether Hierarchy element should be expanded or not.")
     children: [CompanyHierarchyElement!] @doc(description: "An array of child elements.")
 }
 
 type CompanyTeam @doc(description: "Company Team entity output data schema.") {
-    id: ID @doc(description: "Team id.")
-    name: String @doc(description: "Team name.")
+    id: ID! @doc(description: "Team id.")
+    name: String! @doc(description: "Team name.")
     description: String @doc(description: "Team description.")
 }
 
 input CompanyUsersFilterInput @doc(description: "Defines the input filters for a Company Users query") {
-    status: CompanyUserStatusFilterValuesEnum @doc(description: "Filter Customers by their status within a Company structure. Defaults to 'active'. Required.")
+    status: CompanyUserStatusEnum @doc(description: "Filter Customers by their status within a Company structure. Defaults to 'active'. Required.")
 }
 
-enum CompanyUserStatusFilterValuesEnum @doc(description: "List of available Company user statuses.") {
+enum CompanyUserStatusEnum @doc(description: "List of available Company user statuses.") {
     ACTIVE @doc(description: "Only active users")
     INACTIVE @doc(description: "Only inactive users")
 }
@@ -149,14 +148,14 @@ type Mutation {
     updateCompany(input: CompanyUpdateInput!): UpdateCompanyOutput  @doc(description:"Update Company information.")
     createCompanyUser(input: CompanyUserCreateInput!): CreateCompanyUserOutput  @doc(description:"Create new Company User (Customer assigned to Company).")
     updateCompanyUser(input: CompanyUserUpdateInput!): UpdateCompanyUserOutput  @doc(description:"Update Company User information.")
-    deleteCompanyUser(id: Int!): DeleteCompanyUserOutput  @doc(description:"Delete Company User by ID.")
+    deleteCompanyUser(id: ID!): DeleteCompanyUserOutput  @doc(description:"Delete Company User by ID.")
     createCompanyRole(input: CompanyRoleCreateInput!): CreateCompanyRoleOutput  @doc(description:"Create new Company role.")
     updateCompanyRole(input: CompanyRoleUpdateInput!): UpdateCompanyRoleOutput  @doc(description:"Update Company role data.")
-    deleteCompanyRole(id: Int!): DeleteCompanyRoleOutput  @doc(description:"Delete Company Role by ID.")
+    deleteCompanyRole(id: ID!): DeleteCompanyRoleOutput  @doc(description:"Delete Company Role by ID.")
     updateCompanyHierarchy(input: CompanyHierarchyUpdateInput!): UpdateCompanyHierarchyOutput  @doc(description:"Update Company Hierarchy element's parent node assignment.")
     createCompanyTeam(input: CompanyTeamCreateInput!): CreateCompanyTeamOutput  @doc(description:"Create Company Team.")
     updateCompanyTeam(input: CompanyTeamUpdateInput!): UpdateCompanyTeamOutput  @doc(description:"Update Company Team data.")
-    deleteCompanyTeam(id: Int!): DeleteCompanyTeamOutput  @doc(description:"Delete Company Team entity by ID.")
+    deleteCompanyTeam(id: ID!): DeleteCompanyTeamOutput  @doc(description:"Delete Company Team entity by ID.")
 }
 
 type CreateCompanyTeamOutput @doc(description: "Create company team output data schema.") {
@@ -254,24 +253,24 @@ input CompanyLegalAddressUpdateInput @doc(description: "Defines the Company lega
 }
 
 input CompanyAddressRegionInput @doc(description: "Defines the Company's region input data schema.") {
-    region_id: Int @doc(description: "Unique region identifier. Required for certain countries. See 'country(id: ID)' query.")
+    region_id: ID @doc(description: "Unique region identifier. Required for certain countries. See 'country(id: ID)' query.")
     region: String @doc(description: "State or province name.")
 }
 
 input CompanyUserCreateInput @doc(description: "Defines the input data schema for creating a new Customer - Company user.") {
     job_title: String! @doc(description: "Company user's job title. Required.")
-    role_id: Int! @doc(description: "Company user's role ID. Required.")
+    role_id: ID! @doc(description: "Company user's role ID. Required.")
     firstname: String! @doc(description: "Company user's first name. Required.")
     lastname: String! @doc(description: "Company user's last name. Required.")
     email: String! @doc(description: "Company user's email address. Required.")
     telephone: String! @doc(description: "Company user's phone number. Required.")
     status: Int! @doc(description: "Company user's status ID. Required.")
-    target_id: Int @doc(description: "A target structure element ID within a Company's Hierarchy for a user to be assigned to.")
+    target_id: ID @doc(description: "A target structure element ID within a Company's Hierarchy for a user to be assigned to.")
 }
 
 input CompanyUserUpdateInput @doc(description: "Defines the input data schema for updating an existing Customer - Company user.") {
-    id: Int! @doc(description: "Company user's ID (Customer ID). Required.")
-    role_id: Int @doc(description: "Company user's role ID.")
+    id: ID! @doc(description: "Company user's ID (Customer ID). Required.")
+    role_id: ID @doc(description: "Company user's role ID.")
     status: Int @doc(description: "Company user's status ID.")
     job_title: String @doc(description: "Company user's job title.")
     firstname: String @doc(description: "Company user's first name.")
@@ -286,24 +285,24 @@ input CompanyRoleCreateInput @doc(description: "Defines the input data schema fo
 }
 
 input CompanyRoleUpdateInput @doc(description: "Defines the input data schema for updating an existing Company role.") {
-    id: Int! @doc(description: "Role ID. Required.")
+    id: ID! @doc(description: "Role ID. Required.")
     name: String @doc(description: "Role name.")
     permissions: [String!] @doc(description: "A list of Role permission resources. Array value for a field, if provided, should consist only of string values.")
 }
 
 input CompanyHierarchyUpdateInput @doc(description: "Defines the input data schema for updating the Company Hierarchy.") {
-    tree_id: Int! @doc(description: "Company Hierarchy element's hierarchical ID that is being moved to another parent. Required.")
-    parent_tree_id: Int! @doc(description: "A target parent element tree ID within a Company's Hierarchy. Required.")
+    tree_id: ID! @doc(description: "Company Hierarchy element's hierarchical ID that is being moved to another parent. Required.")
+    parent_tree_id: ID! @doc(description: "A target parent element tree ID within a Company's Hierarchy. Required.")
 }
 
 input CompanyTeamCreateInput @doc(description: "Defines the input data schema for creating a new Company team.") {
     name: String! @doc(description: "Team name. Required.")
     description: String @doc(description: "Team description.")
-    target_id: Int @doc(description: "A target structure element ID within a Company's Hierarchy for a team to be assigned to.")
+    target_id: ID @doc(description: "A target structure element ID within a Company's Hierarchy for a team to be assigned to.")
 }
 
 input CompanyTeamUpdateInput @doc(description: "Defines the input data schema for updating an existing Company team.") {
-    id: Int! @doc(description: "Team ID. Required.")
+    id: ID! @doc(description: "Team ID. Required.")
     name: String @doc(description: "Team name.")
     description: String @doc(description: "Team description.")
 }
