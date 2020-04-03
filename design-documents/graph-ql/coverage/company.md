@@ -7,10 +7,10 @@
 ```graphql
 type Query {
     company: Company  @doc(description: "Returns all information about the current Company.")
-    checkCompanyEmail(email: String!): Boolean  @doc(description: "Returns boolean value of validation whether provided email address is valid for a new Company registration or not.")
-    checkCompanyAdminEmail(email: String!): Boolean  @doc(description: "Returns boolean value of validation whether provided email address is valid for a Company Administrator registration or not.")
+    checkCompanyEmail(email: String!): CompanyEmailCheckResponse  @doc(description: "Returns result of validation whether provided email address is valid for a new Company registration or not.")
+    checkCompanyAdminEmail(email: String!): CompanyAdminEmailCheckResponse  @doc(description: "Returns result of validation whether provided email address is valid for a Company Administrator registration or not.")
     checkCompanyUserEmail(email: String!): CompanyUserEmailCheckResponse  @doc(description: "Returns an object with result of validation whether provided email address is valid for a new Customer - Company User - registration or not.")
-    checkCompanyRoleName(name: String!): Boolean  @doc(description: "Returns boolean value of validation whether provided Role name is available.")
+    checkCompanyRoleName(name: String!): CompanyRoleNameCheckResponse  @doc(description: "Returns result of validation whether provided Role name is available.")
 }
 
 type Company @doc(description: "Company entity output data schema.") {
@@ -90,13 +90,25 @@ type CompanyAclResource @doc(description: "Output data schema for an object with
     children: [CompanyAclResource!] @doc(description: "An array of sub-resources.")
 }
 
+type CompanyRoleNameCheckResponse @doc(description: "Response object schema for a role name validation query.") {
+    isNameValid: Boolean! @doc(description: "Role name validation result")
+}
+
 type CompanyUserEmailCheckResponse @doc(description: "Response object schema for a Company User email validation query.") {
-    status: Boolean! @doc(description: "True - email is valid, False - email is not valid")
+    isEmailValid: Boolean! @doc(description: "Email validation result")
+}
+
+type CompanyAdminEmailCheckResponse @doc(description: "Response object schema for a Company Admin email validation query.") {
+    isEmailValid: Boolean! @doc(description: "Email validation result")
+}
+
+type CompanyEmailCheckResponse @doc(description: "Response object schema for a Company email validation query.") {
+    isEmailValid: Boolean! @doc(description: "Email validation result")
 }
 
 type CompanyHierarchyOutput @doc(description: "Response object schema for a Company Hierarchy query.") {
     structure: CompanyHierarchyElement @doc(description: "An array of Company structure elements.")
-    draggable: Boolean @doc(description: "Flag that defines whether Company Hierarchy can be changed by current User or not.")
+    isEditable: Boolean @doc(description: "Flag that defines whether Company Hierarchy can be changed by current User or not.")
     max_nesting: Int @doc(description: "Indicator of maximun nesting of elements within a whole Company Hierarchy.")
 }
 
@@ -106,7 +118,6 @@ type CompanyHierarchyElement @doc(description: "Company Hierarchy element output
     type: String! @doc(description: "Hierarchy element type: 'customer' or a 'team'.")
     text: String! @doc(description: "Hierarchy element name.")
     description: String @doc(description: "Hierarchy element description.")
-    opened: Boolean! @doc(description: "Flag that defines whether Hierarchy element should be expanded or not.")
     children: [CompanyHierarchyElement!] @doc(description: "An array of child elements.")
 }
 
@@ -165,7 +176,7 @@ type UpdateCompanyOutput @doc(description: "Update company output data schema.")
 }
 
 type CreateCompanyUserOutput @doc(description: "Create company user output data schema.") {
-    user: Cutomer! @doc(description: "New company user instance.")
+    user: Customer! @doc(description: "New company user instance.")
 }
 
 type UpdateCompanyUserOutput @doc(description: "Update company user output data schema.") {
