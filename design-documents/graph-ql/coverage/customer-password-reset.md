@@ -2,7 +2,7 @@
 
 ```graphql
 type Mutation {
-    requestPasswordResetEmail(email: String!): Boolean @doc(description: "Request an email with reset password token for the registerspecified customer identified by the provided email")
+    requestPasswordResetEmail(email: String!): Boolean @doc(description: "Request an email with reset password token for the registered customer identified by the provided email")
     resetPassword(email: String!, resetPasswordToken: String!, newPassword: String!): Boolean @doc(description: "Reset customer password using reset password token received in the email after requesting it using requestPasswordResetEmail")
 }
 ```
