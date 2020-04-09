@@ -8,6 +8,7 @@
 * Cache revalidation - process of cache invalidation and writing fresh one in cache storage.
 * Lookup for lock, lookup timeout - time that takes to recheck if new version of cache already written.
 * stale-while-revalidate - mechanism that send old cache while new one is on the generation phase.
+* FPC - full page cache.
 
 ### Overview
 
@@ -38,15 +39,18 @@ To keep efficiency, we still should use locking mechanism when we have  empty ca
 #### Acceptance Criteria Fulfillment
 
 1. New code should be compatible with current DOD https://devdocs.magento.com/guides/v2.3/contributor-guide/contributing_dod.html
-    1. New functionality should be separated from business logic.
+    1. Orchestration of cache manipulation(load/save logic) should be separated from business logic of specific class, i.e. Magento\Config\App\Config\Type\System.
     1. Functional Backward Compatibility.
-    Feature should be optional and disabled by default. Since cache freshness of blocks and config data may be critical for our merchants, we should introduce a new config variable that will enable/disable the feature. It should be off by default.
+    Feature should be optional and disabled by default. Since cache freshness of blocks and config data may be critical for our merchants, we should introduce a new config variable that will enable/disable the feature. 
+    It should be disabled by default.
 1. Stale data should have TTL. 
 Since we don't want to have a constant copy of the stale cache and it is not designed to exist for a long time, I propose to have up to 10 minutes of TTL.
 TTL should be added when we save stale data.
 1. Efficiency - means no parallel cache generating/writing process either with stale cache or a fresh one.
 Basically, only one process should generate or write cache.
-1. We keep only one(last) copy of the stale cache over time. 
+1. We keep only one(last) copy of the stale cache over time.
+1. If customer decide to enable stale cache functionality it should be used for all cache types that uses locking mechanism.
+1. While we send stale data, Block and FPC should disabled to prevent stale data to be cached as main.
 
 ### Prototype or Proof of Concept
 
