@@ -22,7 +22,7 @@ We noticed that in some rare cases merchant can have hundreds keys in Block/Conf
 
 We have couple public issue that shows possible pointed limitations of this approach - https://github.com/magento/magento2/issues/22824 https://github.com/magento/magento2/issues/22504
 
-[IvanChepurnyi](https://github.com/IvanChepurnyi) proposed to use non-locking way of cache generation a.k.a. *stale-while-revalidate*. 
+[IvanChepurnyi](https://github.com/IvanChepurnyi) in his [PR](https://github.com/magento/magento2/pull/22829) - proposed to use non-locking way of cache generation a.k.a. *stale-while-revalidate*. 
 The purpose of this PR is to wrap all things up, determine all A.C., discuss approach with community and deliver solid solution.
 
 ### Design
