@@ -10,7 +10,7 @@ type Query {
 input ProductSearchSortInput
 {
     attribute: String!
-    direction: SortEnum
+    direction: SortEnum!
 }
 
 # If from or to fields are omitted, $gte or $lte filter will be applied
