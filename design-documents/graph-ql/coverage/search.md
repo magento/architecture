@@ -35,6 +35,7 @@ type ProductSearchResponse {
 
 type MultiSearchResponse {
     products: ProductSearchResponse
+    suggestions: [String]
 }
 
 type ProductSearchItem {
