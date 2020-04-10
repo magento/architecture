@@ -4,18 +4,17 @@
 type Query {
     multiSearch(phrase: String!, productSize: Int = 10): MultiSearchResponse!
     #Filter supports multiple clauses which will be wrapped in logical AND operator
-    productSearch(phrase: String!, filter: [SearchClauseInput], sort: ProductSearchSortInput): ProductSearchResponse!
+    productSearch(phrase: String!, filter: [SearchClauseInput], sort: [ProductSearchSortInput]): ProductSearchResponse!
 }
 
 input ProductSearchSortInput
 {
-    relevance: SortEnum
-    position: SortEnum
-    name: SortEnum
+    attribute: String!
+    direction: SortEnum
 }
 
 # If from or to fields are omitted, $gte or $lte filter will be applied
-type SearchRangeInput {
+input SearchRangeInput {
     from: Int
     to: Int
 }
