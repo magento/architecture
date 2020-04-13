@@ -30,7 +30,7 @@ type ProductSearchResponse {
     items: [ProductSearchItem]
     hits: Int!
     facets: [Aggregation]
-    facetsValues: [Aggregation]
+    facets_values: [Aggregation]
 }
 
 type MultiSearchResponse {
@@ -46,7 +46,7 @@ type ProductSearchItem {
 type Highlight {
     attribute: String!
     value: String!
-    matchedWords: [String]!
+    matched_words: [String]!
 }
 
 interface Bucket {
