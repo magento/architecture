@@ -52,16 +52,16 @@ type Highlight {
 interface Bucket {
     #Human readable bucket title
     title: String!
+    attribute: String!
 }
 
 type StatsBucket implements Bucket {
-    #Could be used for filtering and may contain non-human readable data
-    id: ID!
     min: Int!
     max: Int!
 }
 
 type ScalarBucket implements Bucket {
+    #Could be used for filtering and may contain non-human readable data
     id: ID!
     count: Int!
 }
