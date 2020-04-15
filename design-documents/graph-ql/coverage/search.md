@@ -38,6 +38,7 @@ type ProductSearchResponse {
     hits: Int!
     facets: [Aggregation]
     facets_values: [Aggregation]
+    suggestions: [String]
 }
 
 type MultiSearchResponse {
