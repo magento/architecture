@@ -35,10 +35,12 @@ input SearchClauseInput {
 
 type ProductSearchResponse {
     items: [ProductSearchItem]
-    hits: Int!
     facets: [Aggregation]
     facets_values: [Aggregation]
     suggestions: [String]
+    related_terms: [String]
+    page_info: SearchResultPageInfo
+    total_count: Int
 }
 
 type MultiSearchResponse {
@@ -63,8 +65,8 @@ interface Bucket {
 }
 
 type StatsBucket implements Bucket {
-    min: Int!
-    max: Int!
+    min: Float!
+    max: Float!
 }
 
 type ScalarBucket implements Bucket {
