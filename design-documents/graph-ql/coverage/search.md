@@ -4,7 +4,14 @@
 type Query {
     multiSearch(phrase: String!, productSize: Int = 10): MultiSearchResponse!
     #Filter supports multiple clauses which will be wrapped in logical AND operator
-    productSearch(phrase: String!, filter: [SearchClauseInput], sort: [ProductSearchSortInput]): ProductSearchResponse!
+    productSearch(
+        phrase: String!,
+        "Desired size of the search result page"
+        pageSize: Int = 20,
+        currentPage: Int = 1,
+        filter: [SearchClauseInput],
+        sort: [ProductSearchSortInput]
+    ): ProductSearchResponse!
 }
 
 input ProductSearchSortInput
@@ -15,12 +22,12 @@ input ProductSearchSortInput
 
 # If from or to fields are omitted, $gte or $lte filter will be applied
 input SearchRangeInput {
-    from: Int
-    to: Int
+    from: Float
+    to: Float
 }
 
 input SearchClauseInput {
-    attribute: String!
+    attribute_code: String!
     in: [String]
     eq: String
     range: SearchRangeInput
