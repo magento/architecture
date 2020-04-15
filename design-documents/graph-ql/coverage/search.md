@@ -52,7 +52,6 @@ type Highlight {
 interface Bucket {
     #Human readable bucket title
     title: String!
-    attribute: String!
 }
 
 type StatsBucket implements Bucket {
@@ -73,7 +72,7 @@ type RangeBucket implements Bucket {
 }
 
 interface Aggregation {
-    name: String!
+    attribute_code: String!
     buckets: [Bucket]!
 }
 ```
