@@ -2,7 +2,6 @@
 
 ```graphql
 type Query {
-    multiSearch(phrase: String!, productSize: Int = 10): MultiSearchResponse!
     #Filter supports multiple clauses which will be wrapped in logical AND operator
     productSearch(
         phrase: String!,
@@ -41,11 +40,6 @@ type ProductSearchResponse {
     related_terms: [String]
     page_info: SearchResultPageInfo
     total_count: Int
-}
-
-type MultiSearchResponse {
-    products: ProductSearchResponse
-    suggestions: [String]
 }
 
 type ProductSearchItem {
