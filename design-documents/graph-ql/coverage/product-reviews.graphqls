@@ -36,7 +36,7 @@ type ProductReviewRating {
 
 
 type Query {
-    productReviewRatingsMetadata(): ProductReviewRatingsMetadata! @doc(description: "Metadata required by clients to render ratings & reviews section.")
+    productReviewRatingsMetadata: ProductReviewRatingsMetadata! @doc(description: "Metadata required by clients to render ratings & reviews section.")
 }
 
 type ProductReviewRatingsMetadata {
@@ -70,7 +70,7 @@ input CreateProductReviewInput {
     ratings: [ProductReviewRatingInput!]! @doc(description: "Ratings details by category. e.g price: 5, quality: 4 etc")
 }
 
-type ProductReviewRatingInput {
+input ProductReviewRatingInput {
     id: String! @doc(description: "Base 64 encoded rating id.")
     value_id: String! @doc(description: "Base 64 encoded rating value id.")
 }
