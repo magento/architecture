@@ -20,11 +20,11 @@ We could certainly redesign data fixtures to be object oriented. But if we just 
 to support a second parameter which will be injected to the data fixture file as following.
 ```php
 /**
- * @magentoDataFixture Magento/Catalog/_files/product_virtual.php, {"productData":{"stock_data": {"qty":1}}}
+ * @magentoDataFixture Magento/Catalog/_files/product_virtual.php {"productData":{"stock_data": {"qty":1}}}
  */
 
 ```
-The string after comma following the fixture file name is indeed the data that needs to be injected into the fixture file for customization. The format is well known JSON format that gives a flexible way to pass any type of data to the fixture (string, int, float and array).
+The string following the fixture file name is indeed the data that needs to be injected into the fixture file for customization. The format is well known JSON format that gives a flexible way to pass any type of data to the fixture (string, int, float and array).
 
 ```php
 use Magento\TestFramework\Catalog\Model\ProductFixtureFactory;
