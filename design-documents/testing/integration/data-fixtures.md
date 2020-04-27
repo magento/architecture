@@ -27,52 +27,30 @@ to support a second parameter which will be injected to the data fixture file as
 The string after comma following the fixture file name is indeed the data that needs to be injected into the fixture file for customization. The format is well known JSON format that gives a flexible way to pass any type of data to the fixture (string, int, float and array).
 
 ```php
-use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Catalog\Api\Data\ProductInterfaceFactory;
-use Magento\Catalog\Api\ProductRepositoryInterface;
-use Magento\Catalog\Model\Product\Attribute\Source\Status;
-use Magento\Catalog\Model\Product\Visibility;
-use Magento\Framework\DataObject;
+use Magento\TestFramework\Catalog\Model\ProductFixtureFactory;
 use Magento\TestFramework\Helper\Bootstrap;
 
-$productData = $productData ?? [];
-$defaultProductData = [
-    'id' => 21,
-    'sku' => 'virtual-product',
-    'name' => 'Virtual Product',
-    'attribute_set_id' => 'sku',
-    'website_ids' => 'sku',
-    'price' => 'sku',
-    'visibility' => Visibility::VISIBILITY_BOTH,
-    'status' => Status::STATUS_ENABLED,
-    'stock_data' => Status::STATUS_ENABLED,
-];
-
-$productData = array_merge($productData, $defaultProductData);
 $objectManager = Bootstrap::getObjectManager();
-$productFactory = $objectManager->get(ProductInterfaceFactory::class);
-/** @var ProductRepositoryInterface $productResource */
-$productRepository = $objectManager->get(ProductRepositoryInterface::class);
-/** @var ProductInterface $product */
-$product = $productFactory->create();
-$product = data_object_hydrate_from_array($product, $productData);
-$productResource->save($product);
+$productFactory = $objectManager->get(ProductFixtureFactory::class);
+$product = $productFactory->create($productData ?? []);
+```
 
-// this part of the code should be moved to a service.
-// something similar to \Magento\Framework\Webapi\ServiceInputProcessor::convertValue but less strict.
+```php
+namespace Magento\TestFramework;
 
-if (!function_exists('upper_came_case')) {
-    function upper_came_case(string $value): string
-    {
-        return str_replace('_', '', ucwords($value, '_'));
-    }
-}
+use Magento\Framework\DataObject;
 
-if (!function_exists('data_object_hydrate_from_array')) {
-    function data_object_hydrate_from_array(DataObject $object, array $data): DataObject
+class DataObjectHydrator
+{
+    /**
+     * @param DataObject $object
+     * @param array $data
+     * @return DataObject
+     */
+    public function hydrate(DataObject $object, array $data): DataObject
     {
         foreach ($data as $key => $value) {
-            $camelCaseProperty = upper_came_case($key);
+            $camelCaseProperty = str_replace('_', '', ucwords($key, '_'));
             $setterName = 'set' . $camelCaseProperty;
             $boolSetterName = 'setIs' . $camelCaseProperty;
             if (method_exists($object, $setterName)) {
@@ -88,6 +66,86 @@ if (!function_exists('data_object_hydrate_from_array')) {
     }
 }
 ```
+
+```php
+namespace Magento\TestFramework\Catalog\Model;
+
+use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Catalog\Api\Data\ProductInterfaceFactory;
+use Magento\Catalog\Api\ProductRepositoryInterface;
+use Magento\Catalog\Model\Product\Attribute\Source\Status;
+use Magento\Catalog\Model\Product\Type;
+use Magento\Catalog\Model\Product\Visibility;
+use Magento\TestFramework\DataObjectHydrator;
+
+class ProductFixtureFactory
+{
+    /**
+     * @var ProductInterfaceFactory
+     */
+    private $factory;
+    /**
+     * @var ProductRepositoryInterface
+     */
+    private $repository;
+    /**
+     * @var DataObjectHydrator
+     */
+    private $dataObjectHydrator;
+
+    /**
+     * @param ProductInterfaceFactory $factory
+     * @param ProductRepositoryInterface $repository
+     * @param DataObjectHydrator $dataObjectHydrator
+     */
+    public function __construct(
+        ProductInterfaceFactory $factory,
+        ProductRepositoryInterface $repository,
+        DataObjectHydrator $dataObjectHydrator
+    ) {
+        $this->factory = $factory;
+        $this->repository = $repository;
+        $this->dataObjectHydrator = $dataObjectHydrator;
+    }
+
+    /**
+     * @param array $data
+     * @return ProductInterface
+     */
+    public function create(array $data): ProductInterface
+    {
+        $product = $this->factory->create();
+        $product = $this->dataObjectHydrator->hydrate($product, array_merge($this->defaultData(), $data));
+        $this->repository->save($product);
+        return $product;
+    }
+
+    /**
+     * @return array
+     */
+    private function defaultData(): array
+    {
+        return [
+            'id' => 21,
+            'type_id' => Type::TYPE_VIRTUAL,
+            'sku' => 'virtual-product',
+            'name' => 'Virtual Product',
+            'attribute_set_id' => 4,
+            'tax_class_id' => 0,
+            'website_ids' => [1],
+            'price' => 10,
+            'visibility' => Visibility::VISIBILITY_BOTH,
+            'status' => Status::STATUS_ENABLED,
+            'stock_data' => [
+                'qty' => 100,
+                'is_in_stock' => 1,
+                'manage_stock' => 1,
+            ],
+        ];
+    }
+}
+```
+
 **Pros**
 - Reduces duplicate codes in data fixtures files
 - Reduces the number of data fixtures files
