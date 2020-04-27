@@ -16,7 +16,7 @@ So if you need a virtual product with available quantity 1, you will probably ha
  
 ## Solution
 
-We could certainly redesign data fixtures to be object oriented. But if we just want to tackle this issue as simpler as we can, we could consist we could extend the format of data fixture annotation
+We could certainly redesign data fixtures to be object oriented. But if we just want to tackle this issue as simpler as we can, we could extend the format of data fixture annotation
 to support a second parameter which will be injected to the data fixture file as following.
 ```php
 /**
