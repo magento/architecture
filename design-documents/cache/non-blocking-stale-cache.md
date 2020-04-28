@@ -42,7 +42,6 @@ To keep efficiency, we still should use locking mechanism when we have  empty ca
     1. Orchestration of cache manipulation(load/save logic) should be separated from business logic of specific class, i.e. Magento\Config\App\Config\Type\System.
     1. Functional Backward Compatibility.
     Feature should be optional and disabled by default. Since cache freshness of blocks and config data may be critical for our merchants, we should introduce a new config variable that will enable/disable the feature. 
-    It should be disabled by default.
 1. Stale data should have TTL. 
 Since we don't want to have a constant copy of the stale cache and it is not designed to exist for a long time, I propose to have up to 10 minutes of TTL.
 TTL should be added when we save stale data.
@@ -61,3 +60,9 @@ PR needs to be reworked to fulfill the acceptance criteria.
 
 1. At least the same efficiency when we don't have any cache.
 1. Better efficiency with stale cache in comparison to lock waiting.
+
+Performance test is added - [jmeter-test](jmeter-test/clean-cache-test.jmx). 
+To let this work please:
+1. Enable account sharing
+2. Disable secret keys in url
+3. Use web server url rewrite
