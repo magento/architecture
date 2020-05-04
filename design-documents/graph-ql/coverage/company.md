@@ -29,7 +29,7 @@ type Company @doc(description: "Company entity output data schema.") {
         pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. Defaults to 20."),
         currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
     ): CompanyUsers @doc(description: "Information about the company users.")
-    user(id: ID): Customer @doc(description: "Returns company user for current authenticated Customer or, if id provided, for specific one.")
+    user(id: ID!): Customer @doc(description: "Returns company user by id.")
     roles(
         pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. Optional. Defaults to 20."),
         currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
