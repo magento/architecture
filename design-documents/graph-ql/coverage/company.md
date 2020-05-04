@@ -6,11 +6,11 @@
 
 ```graphql
 type Query {
-    company: Company  @doc(description: "Returns all information about the current Company.")
-    checkCompanyEmail(email: String!): CompanyEmailCheckResponse  @doc(description: "Returns result of validation whether provided email address is valid for a new Company registration or not.")
-    checkCompanyAdminEmail(email: String!): CompanyAdminEmailCheckResponse  @doc(description: "Returns result of validation whether provided email address is valid for a Company Administrator registration or not.")
-    checkCompanyUserEmail(email: String!): CompanyUserEmailCheckResponse  @doc(description: "Returns an object with result of validation whether provided email address is valid for a new Customer - Company User - registration or not.")
-    checkCompanyRoleName(name: String!): CompanyRoleNameCheckResponse  @doc(description: "Returns result of validation whether provided Role name is available.")
+    company: Company  @doc(description: "Company assigned to the currently authenticated user")
+    checkCompanyEmail(email: String!): CompanyEmailCheckResponse  @doc(description: "Check if an email is valid for company registration")
+    checkCompanyAdminEmail(email: String!): CompanyAdminEmailCheckResponse  @doc(description: "Check if an email is valid for company admin registration")
+    checkCompanyUserEmail(email: String!): CompanyUserEmailCheckResponse  @doc(description: "Check if an email is valid for company user registration")
+    checkCompanyRoleName(name: String!): CompanyRoleNameCheckResponse  @doc(description: "Check if a role name is valid for company")
 }
 
 type Company @doc(description: "Company entity output data schema.") {
