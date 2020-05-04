@@ -15,13 +15,13 @@ type Query {
 
 type Company @doc(description: "Company entity output data schema.") {
     id: ID! @doc(description: "Company id.")
-    name: String! @doc(description: "Company name.")
-    email: String! @doc(description: "Company email address.")
+    name: String @doc(description: "Company name.")
+    email: String @doc(description: "Company email address.")
     legal_name: String @doc(description: "Company legal name.")
     vat_id: String @doc(description: "Company VAT/TAX id.")
     reseller_id: String @doc(description: "Company re-seller id.")
-    legal_address: CompanyLegalAddress! @doc(description: "Company legal address.")
-    company_admin: Customer! @doc(description: "An object containing information about Company Administrator.")
+    legal_address: CompanyLegalAddress @doc(description: "Company legal address.")
+    company_admin: Customer @doc(description: "An object containing information about Company Administrator.")
     sales_representative: CompanySalesRepresentative @doc(description: "Company sales representative.")
     payment_methods: [String] @doc(description: "List of payment methods available for a Company.")
     users(
@@ -35,33 +35,33 @@ type Company @doc(description: "Company entity output data schema.") {
         currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
     ): CompanyRoles!  @doc(description: "Returns the list of defined roles at Company.")
     role(id: ID!): CompanyRole  @doc(description: "Returns company role by id.")
-    acl_resources: [CompanyAclResource]!  @doc(description: "Returns the list of all permission resources.")
-    hierarchy: CompanyHierarchyOutput!  @doc(description: "Returns the complete data about company structure.")
+    acl_resources: [CompanyAclResource]  @doc(description: "Returns the list of all permission resources.")
+    hierarchy: CompanyHierarchyOutput  @doc(description: "Returns the complete data about company structure.")
     team(id: ID!): CompanyTeam  @doc(description: "Returns company team data by id.")
 }
 
 type CompanyLegalAddress @doc(description: "Company legal address output data schema.") {
-    street: [String]! @doc(description: "An array of strings that defines the Company's street address.")
-    city: String! @doc(description: "City name.")
-    region: CustomerAddressRegion! @doc(description: "An object containing region data for the Company.")
-    country_code: CountryCodeEnum! @doc(description: "Country code.")
-    postcode: String! @doc(description: "ZIP/postal code.")
-    telephone: String! @doc(description: "Company's phone number.")
+    street: [String] @doc(description: "An array of strings that defines the Company's street address.")
+    city: String @doc(description: "City name.")
+    region: CustomerAddressRegion @doc(description: "An object containing region data for the Company.")
+    country_code: CountryCodeEnum @doc(description: "Country code.")
+    postcode: String @doc(description: "ZIP/postal code.")
+    telephone: String @doc(description: "Company's phone number.")
 }
 
 type CompanyAdmin @doc(description: "Company Administrator (Customer with corresponding privileges) output data schema.") {
     id: ID! @doc(description: "Company Administrator's id.")
-    email: String! @doc(description: "Company Administrator email address.")
-    firstname: String! @doc(description: "Company Administrator first name.")
-    lastname: String! @doc(description: "Company Administrator last name.")
+    email: String @doc(description: "Company Administrator email address.")
+    firstname: String @doc(description: "Company Administrator first name.")
+    lastname: String @doc(description: "Company Administrator last name.")
     job_title: String @doc(description: "Company Administrator job title.")
     gender: Int @doc(description: "Company Administrator gender.")
 }
 
 type CompanySalesRepresentative @doc(description: "Company sales representative information output data schema.") {
-    email: String! @doc(description: "Sales representative email address.")
-    firstname: String! @doc(description: "Sales representative first name.")
-    lastname: String! @doc(description: "Sales representative last name.")
+    email: String @doc(description: "Sales representative email address.")
+    firstname: String @doc(description: "Sales representative first name.")
+    lastname: String @doc(description: "Sales representative last name.")
 }
 
 type CompanyUsers @doc(description: "Output data schema for an object returned by a Company users search query.") {
@@ -78,15 +78,15 @@ type CompanyRoles @doc(description: "Output data schema for an object returned b
 
 type CompanyRole @doc(description: "Company role output data schema returned in response to a query by Role id.") {
     id: ID! @doc(description: "Role id.")
-    name: String! @doc(description: "Role name.")
+    name: String @doc(description: "Role name.")
     users_count: Int @doc(description: "Total number of Users with such Role within Company Hierarchy.")
     permissions: [String] @doc(description: "A list of permission resources defined for a Role.")
 }
 
 type CompanyAclResource @doc(description: "Output data schema for an object with Role permission resource information.") {
     id: ID! @doc(description: "ACL resource id.")
-    text: String! @doc(description: "ACL resource label.")
-    sortOrder: Int! @doc(description: "ACL resource sort order.")
+    text: String @doc(description: "ACL resource label.")
+    sortOrder: Int @doc(description: "ACL resource sort order.")
     children: [CompanyAclResource!] @doc(description: "An array of sub-resources.")
 }
 
@@ -114,16 +114,16 @@ type CompanyHierarchyOutput @doc(description: "Response object schema for a Comp
 
 type CompanyHierarchyElement @doc(description: "Company Hierarchy element output data schema.") {
     id: ID! @doc(description: "Hierarchy element id.")
-    tree_id: ID! @doc(description: "The hierarchical id of the element within a structure. Used for changing element's position in hierarchy.")
-    type: String! @doc(description: "Hierarchy element type: 'customer' or a 'team'.")
-    text: String! @doc(description: "Hierarchy element name.")
+    tree_id: ID @doc(description: "The hierarchical id of the element within a structure. Used for changing element's position in hierarchy.")
+    type: String @doc(description: "Hierarchy element type: 'customer' or a 'team'.")
+    text: String @doc(description: "Hierarchy element name.")
     description: String @doc(description: "Hierarchy element description.")
     children: [CompanyHierarchyElement!] @doc(description: "An array of child elements.")
 }
 
 type CompanyTeam @doc(description: "Company Team entity output data schema.") {
     id: ID! @doc(description: "Team id.")
-    name: String! @doc(description: "Team name.")
+    name: String @doc(description: "Team name.")
     description: String @doc(description: "Team description.")
 }
 
@@ -304,10 +304,10 @@ input CompanyTeamUpdateInput @doc(description: "Defines the input data schema fo
 
 ```graphql
 type Customer {
-    job_title: String! @doc(description: "Company User job title.")
-    role: CompanyRole! @doc(description: "Company User role data (includes permissions).")
-    team: CompanyTeam! @doc(description: "Company User team data.")
-    telephone: String! @doc(description: "Company User phone number.")
-    status: CompanyUserStatusEnum! @doc(description: "Company User status.")
+    job_title: String @doc(description: "Company User job title.")
+    role: CompanyRole @doc(description: "Company User role data (includes permissions).")
+    team: CompanyTeam @doc(description: "Company User team data.")
+    telephone: String @doc(description: "Company User phone number.")
+    status: CompanyUserStatusEnum @doc(description: "Company User status.")
 }
 ```
