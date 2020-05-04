@@ -91,19 +91,19 @@ type CompanyAclResource @doc(description: "Output data schema for an object with
 }
 
 type CompanyRoleNameCheckResponse @doc(description: "Response object schema for a role name validation query.") {
-    isNameValid: Boolean! @doc(description: "Role name validation result")
+    isNameValid: Boolean @doc(description: "Role name validation result")
 }
 
 type CompanyUserEmailCheckResponse @doc(description: "Response object schema for a Company User email validation query.") {
-    isEmailValid: Boolean! @doc(description: "Email validation result")
+    isEmailValid: Boolean @doc(description: "Email validation result")
 }
 
 type CompanyAdminEmailCheckResponse @doc(description: "Response object schema for a Company Admin email validation query.") {
-    isEmailValid: Boolean! @doc(description: "Email validation result")
+    isEmailValid: Boolean @doc(description: "Email validation result")
 }
 
 type CompanyEmailCheckResponse @doc(description: "Response object schema for a Company email validation query.") {
-    isEmailValid: Boolean! @doc(description: "Email validation result")
+    isEmailValid: Boolean @doc(description: "Email validation result")
 }
 
 type CompanyHierarchyOutput @doc(description: "Response object schema for a Company Hierarchy query.") {
