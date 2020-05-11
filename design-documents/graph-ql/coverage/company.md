@@ -6,11 +6,11 @@
 
 ```graphql
 type Query {
-    company: Company  @doc(description: "Returns all information about the current Company.")
-    checkCompanyEmail(email: String!): CompanyEmailCheckResponse  @doc(description: "Returns result of validation whether provided email address is valid for a new Company registration or not.")
-    checkCompanyAdminEmail(email: String!): CompanyAdminEmailCheckResponse  @doc(description: "Returns result of validation whether provided email address is valid for a Company Administrator registration or not.")
-    checkCompanyUserEmail(email: String!): CompanyUserEmailCheckResponse  @doc(description: "Returns an object with result of validation whether provided email address is valid for a new Customer - Company User - registration or not.")
-    checkCompanyRoleName(name: String!): CompanyRoleNameCheckResponse  @doc(description: "Returns result of validation whether provided Role name is available.")
+    company: Company  @doc(description: "Company assigned to the currently authenticated user")
+    checkCompanyEmail(email: String!): CompanyEmailCheckResponse  @doc(description: "Check if an email is valid for company registration")
+    checkCompanyAdminEmail(email: String!): CompanyAdminEmailCheckResponse  @doc(description: "Check if an email is valid for company admin registration")
+    checkCompanyUserEmail(email: String!): CompanyUserEmailCheckResponse  @doc(description: "Check if an email is valid for company user registration")
+    checkCompanyRoleName(name: String!): CompanyRoleNameCheckResponse  @doc(description: "Check if a role name is valid for company")
 }
 
 type Company @doc(description: "Company entity output data schema.") {
@@ -29,7 +29,7 @@ type Company @doc(description: "Company entity output data schema.") {
         pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. Defaults to 20."),
         currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
     ): CompanyUsers @doc(description: "Information about the company users.")
-    user(id: ID): Customer @doc(description: "Returns company user for current authenticated Customer or, if id provided, for specific one.")
+    user(id: ID!): Customer @doc(description: "Returns company user by id.")
     roles(
         pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. Optional. Defaults to 20."),
         currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
@@ -91,19 +91,19 @@ type CompanyAclResource @doc(description: "Output data schema for an object with
 }
 
 type CompanyRoleNameCheckResponse @doc(description: "Response object schema for a role name validation query.") {
-    isNameValid: Boolean! @doc(description: "Role name validation result")
+    isNameValid: Boolean @doc(description: "Role name validation result")
 }
 
 type CompanyUserEmailCheckResponse @doc(description: "Response object schema for a Company User email validation query.") {
-    isEmailValid: Boolean! @doc(description: "Email validation result")
+    isEmailValid: Boolean @doc(description: "Email validation result")
 }
 
 type CompanyAdminEmailCheckResponse @doc(description: "Response object schema for a Company Admin email validation query.") {
-    isEmailValid: Boolean! @doc(description: "Email validation result")
+    isEmailValid: Boolean @doc(description: "Email validation result")
 }
 
 type CompanyEmailCheckResponse @doc(description: "Response object schema for a Company email validation query.") {
-    isEmailValid: Boolean! @doc(description: "Email validation result")
+    isEmailValid: Boolean @doc(description: "Email validation result")
 }
 
 type CompanyHierarchyOutput @doc(description: "Response object schema for a Company Hierarchy query.") {
