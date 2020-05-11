@@ -80,7 +80,7 @@ type CompanyRole @doc(description: "Company role output data schema returned in 
     id: ID! @doc(description: "Role id.")
     name: String @doc(description: "Role name.")
     users_count: Int @doc(description: "Total number of Users with such Role within Company Hierarchy.")
-    permissions: [String] @doc(description: "A list of permission resources defined for a Role.")
+    permissions: [CompanyAclResource] @doc(description: "A list of permission resources defined for a Role.")
 }
 
 type CompanyAclResource @doc(description: "Output data schema for an object with Role permission resource information.") {
