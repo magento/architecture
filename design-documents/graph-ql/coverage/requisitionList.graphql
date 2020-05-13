@@ -1,0 +1,248 @@
+## Gift Card product type support will be added after the Product Implementation is developed
+type Query {
+    "The requisitionList query returns the contents of customer's  Requisition List"
+    requisitionList(
+        id: ID!
+    ): RequisitionList
+}
+
+type Customer {
+    "Get Requisition Lists of customer"
+    requisitionLists(
+        pageSize: Int = 20,
+        currentPage:Int = 1
+    ): RequisitionLists
+}
+
+"Provides Requisition Lists of customer"
+type RequisitionLists  {
+    "List of Requisition Lists"
+    items: [RequisitionList]
+    "Page Information for pagination"
+    page_info: PageInfo
+    "Total count of Requisition Lists"
+    total_count: Int
+}
+
+"Requisition List Type"
+type RequisitionList {
+    "Unique Identifier of Requisition List"
+    id: ID!
+    "Name of the list"
+    name: String!
+    "Description of the list"
+    description: String
+    "Items in the list"
+    items: [RequisitionListItemInterface]
+    "Number of items in list"
+    items_count: Int!
+    "Latest Activity"
+    updated_at: String
+}
+
+"Interface type for Requisition List Item"
+interface RequisitionListItemInterface {
+    "Unique Identifier of Requisition List Item"
+    id: ID!
+    "Product"
+    product: ProductInterface!
+    "Quantity added"
+    qty: Float!
+}
+
+type SimpleRequisitionListItem implements RequisitionListItemInterface {
+    "Unique Identifier of Requisition List Item"
+    id: ID!
+    "Product"
+    product: ProductInterface!
+    "Quantity added"
+    qty: Float!
+    "custom Option selected"
+    customizable_options: [SelectedCustomizableOption]
+}
+
+type VirtualRequisitionListItem implements RequisitionListItemInterface {
+    "Unique Identifier of Requisition List Item"
+    id: ID!
+    "Product"
+    product: ProductInterface!
+    "Quantity added"
+    qty: Float!
+    "custom Option selected"
+    customizable_options: [SelectedCustomizableOption]
+}
+
+type DownloadableRequisitionListItem implements RequisitionListItemInterface {
+    "Unique Identifier of Requisition List Item"
+    id: ID!
+    "Product"
+    product: ProductInterface!
+    "Quantity added"
+    qty: Float!
+    "custom Option selected"
+    customizable_options: [SelectedCustomizableOption]
+    "DownloadableProductLinks defines characteristics of a downloadable product"
+    links: [DownloadableProductLinks]
+    "DownloadableProductSamples defines characteristics of a downloadable product"
+    samples: [DownloadableProductSamples]
+}
+
+type BundleRequisitionListItem implements RequisitionListItemInterface {
+    "Unique Identifier of Requisition List Item"
+    id: ID!
+    "Product"
+    product: ProductInterface!
+    "Quantity added"
+    qty: Float!
+    "custom Option selected"
+    customizable_options: [SelectedCustomizableOption]
+    "selected bundle options"
+    bundle_options: [SelectedBundleOption]!
+}
+
+type ConfigurableRequisitionListItem implements RequisitionListItemInterface {
+    "Unique Identifier of Requisition List Item"
+    id: ID!
+    "Product"
+    product: ProductInterface!
+    "Quantity added"
+    qty: Float!
+    "custom Option selected"
+    customizable_options: [SelectedCustomizableOption]
+    "Configurable options selected"
+    configurable_options: [SelectedConfigurableOption]
+}
+
+type Mutation {
+    "Create Empty Requisition List"
+    createRequisitionList(
+        "name for the list"
+        name: String!
+        "description For the list"
+        description: String
+    ): RequisitionList
+
+    "Rename a requisition list"
+    renameRequisitionList(
+        "unique Id of requisition list"
+        id: ID!,
+        "new name for list"
+        name: String,
+        "new description For the List"
+        description: String
+    ): RequisitionList
+
+    "Add items to requisition list"
+    addProductsToRequisitionList(
+        "unique Id of requisition list"
+        id: ID!,
+        "Products to be added to requisition list"
+        items: [RequisitionListItemsInput!]!
+    ): AddProductsToRequisitionListOutput
+
+    "Remove Items in requisition list"
+    removeRequisitionListItems(
+        "unique Id of requisition list"
+        id: ID!,
+        "unique Ids of Items to be removed from requisition list"
+        items: [ID!]!
+    ): RemoveRequisitionListItemsOutput
+
+    "Update Items in requisition list"
+    updateRequisitionListItems(
+        "unique Id of requisition list"
+        id: ID!,
+        "Items to be updated from requisition list"
+        items: [UpdateRequisitionListItemsInput!]!
+    ): UpdateRequisitionListItemsOutput
+
+    "Add Requisition List Items To Cart"
+    addRequisitionListItemToCart(
+        "Cart Id to which requisition list needs to copied"
+        cart_id: String!
+        "unique Id of requisition list"
+        requisition_list_id: ID!
+        "selected requisition list items that are to be added"
+        item_ids: [ID!]!
+    ): AddRequisitionListItemToCartOutput
+
+    "Copy Items from Requisition List"
+    copyItemsFromRequisitionList(
+        "unique Id of source requisition list"
+        source_id: ID!
+        "unique Id of destination requisition list"
+        destination_id: ID # If null new requisition list will be created
+        "selected requisition list items that are to be copied from source"
+        item_ids: [ID!]!
+    ): CopyItemsFromRequisitionListOutput
+
+    "Move Items from Requisition List"
+    moveItemsFromRequisitionList(
+        "unique Id of source requisition list"
+        source_id: ID!
+        "unique Id of destination requisition list"
+        destination_id: ID # If null new requisition list will be created
+        "selected requisition list items that are to be moved from source"
+        item_ids: [ID!]!
+    ): MoveItemsFromRequisitionListOutput
+}
+
+type RemoveRequisitionListItemsOutput {
+    requisition_list : RequisitionList
+}
+
+type UpdateRequisitionListItemsOutput {
+    requisition_list : RequisitionList
+}
+
+type AddProductsToRequisitionListOutput {
+    requisition_list : RequisitionList
+}
+
+input RequisitionListItemsInput {
+    sku: String!
+    quantity: Float
+    parent_sku: String
+    "selected option ID"
+    selected_options: [String!]
+    "entered Options ID"
+    entered_options: [EnteredOptionInput!]
+}
+
+input UpdateRequisitionListItemsInput {
+    "unique ID of Requisition List Item"
+    item_id: ID!
+    customizable_options: [CustomizableOptionInput]
+    quantity: Float
+}
+
+type AddRequisitionListItemToCartOutput {
+    cart: Cart # since requisition list is not mutated it is not part of the output
+}
+
+type CopyItemsFromRequisitionListOutput {
+    "Destination Requisition List"
+    list : RequisitionList # since source requisition list is not mutated it is not part of the output
+}
+
+type MoveItemsFromRequisitionListOutput {
+    "Source Requisition List"
+    source : RequisitionList
+    "Destination Requisition List"
+    destination : RequisitionList
+}
+
+input EnteredOptionInput {
+    id: String!
+    value: String!
+}
+
+"PageInfo provides navigation for the query response"
+type PageInfo {
+    "Specifies which page of results to return"
+    current_page: Int
+    "Specifies the maximum number of items to return"
+    page_size: Int
+    "Total pages"
+    total_pages: Int
+}
