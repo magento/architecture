@@ -10,7 +10,7 @@ type Customer {
     "Get Requisition Lists of customer"
     requisitionLists(
         pageSize: Int = 20,
-        currentPage:Int = 1
+        currentPage: Int = 1
     ): RequisitionLists
 }
 
@@ -117,7 +117,7 @@ type Mutation {
     "Create Empty Requisition List"
     createRequisitionList(
         "name for the list"
-        name: String!
+        name: String!,
         "description For the list"
         description: String
     ): RequisitionList
@@ -159,9 +159,9 @@ type Mutation {
     "Add Requisition List Items To Cart"
     addRequisitionListItemToCart(
         "Cart Id to which requisition list needs to copied"
-        cart_id: String!
+        cart_id: String!,
         "unique Id of requisition list"
-        requisition_list_id: ID!
+        requisition_list_id: ID!,
         "selected requisition list items that are to be added"
         item_ids: [ID!]!
     ): AddRequisitionListItemToCartOutput
@@ -169,9 +169,9 @@ type Mutation {
     "Copy Items from Requisition List"
     copyItemsFromRequisitionList(
         "unique Id of source requisition list"
-        source_id: ID!
+        source_id: ID!,
         "unique Id of destination requisition list"
-        destination_id: ID # If null new requisition list will be created
+        destination_id: ID, # If null new requisition list will be created
         "selected requisition list items that are to be copied from source"
         item_ids: [ID!]!
     ): CopyItemsFromRequisitionListOutput
@@ -179,9 +179,9 @@ type Mutation {
     "Move Items from Requisition List"
     moveItemsFromRequisitionList(
         "unique Id of source requisition list"
-        source_id: ID!
+        source_id: ID!,
         "unique Id of destination requisition list"
-        destination_id: ID # If null new requisition list will be created
+        destination_id: ID, # If null new requisition list will be created
         "selected requisition list items that are to be moved from source"
         item_ids: [ID!]!
     ): MoveItemsFromRequisitionListOutput
