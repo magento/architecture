@@ -1,6 +1,6 @@
 # Overview
 
-In the scope of adding features to the the GraphQL schema, a client like PWA needs to know what queries need authentication.
+In the scope of adding features to the GraphQL schema, a client like PWA needs to know what queries need authentication.
 This is needed to know to refresh a token each time it expires, so this logic or what queries need a token doesn't get hardcoded into the client side.
 It is also useful to implement the "soft" auth mode for cart, when a token expires, and the client would still store some info from the last sesson client side.
 
