@@ -8,17 +8,29 @@ It is also useful to implement the "soft" auth mode for cart, when a token expir
 
 We need add an anotatoin like `@auth` to support metadata that would be needed by the client:
 
+Inspiration came out from this document from apollo: https://www.apollographql.com/docs/graphql-tools/schema-directives/
+
+```java
+directive @auth(
+  requires: UserRole = ANONYMOUS_USER,
+) on OBJECT | FIELD_DEFINITION
+
+enum UserRole {
+  REGISTERED_CUSTOMER
+  ANONYMOUS_USER
+  COMPANY_USER
+  ADMIN_USER
+}
+```
+
 ```graphql
 type Query {
-    customerCart: Cart! @auth(required:true)
-    customer: Customer @auth(required:true)
+    cart: Cart! @auth(requires:ANONYMOUS_USER)
+    customerCart: Cart! @auth(requires:REGISTERED_CUSTOMER)
+    customer: Customer @auth(requires:[REGISTERED_CUSTOMER, COMPANY_USER])
 }
 ```
 This can be hardcoded in the schema, or we could introduce an annotation to resolver level classes that could be read automatically
-
-
-Inspiration came out from this document from apollo: https://www.apollographql.com/docs/graphql-tools/schema-directives/
-
 
 ## Automation on reading annotations
 
@@ -28,7 +40,7 @@ We can do some automation on this annotation reading from the resolvers:
 /**
  * Get cart for the customer
  *
- * @auth required: true
+ * @auth requires:REGISTERED_CUSTOMER
  */
 class CustomerCart implements ResolverInterface
 {
@@ -46,17 +58,12 @@ class CustomerCart implements ResolverInterface
 
 ## ACL possibilities
 
-In B2b or staging preview we do need some kind of ACL for different user types or levels. Next is about token kinds (customer vs integration or admin)
-
-Also the same query might be accessible by different roles/types
+In B2b or staging preview we do need some kind of authorization for different user types or levels. Next is about token kinds (customer vs integration or admin)
+The same query might use different levels of authorization so we can use an array, this way we can even deprecate some of the redundant queries
 
 ```graphql
 type Query {
-    customerCart: Cart! @auth(type:[Guest,Customer])
-    customer: Customer @auth(type:[Customer])
-    product: ProductInterface @auth(type:[Guest,Customer,Integration])
-}
+    cart: Cart! @auth(requires:[ANONYMOUS_USER, REGISTERED_CUSTOMER])
+    customerCart: Cart! @auth(requires:REGISTERED_CUSTOMER) @deprecated
+    customer: Customer @auth(requires:[REGISTERED_CUSTOMER, COMPANY_USER])
 ```
-
-## Proposal
-We suggest starting simple with @auth(required:true) and go from there, when we add roles, we'll stop using required.
