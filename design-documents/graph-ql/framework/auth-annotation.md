@@ -14,8 +14,11 @@ type Query {
     customer: Customer @auth(required:true)
 }
 ```
-
 This can be hardcoded in the schema, or we could introduce an annotation to resolver level classes that could be read automatically
+
+
+Inspiration came out from this document from apollo: https://www.apollographql.com/docs/graphql-tools/schema-directives/
+
 
 ## Automation on reading annotations
 
