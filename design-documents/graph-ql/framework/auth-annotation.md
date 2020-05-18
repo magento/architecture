@@ -27,7 +27,7 @@ enum UserRole {
 type Query {
     cart: Cart! @auth(requires:ANONYMOUS_USER)
     customerCart: Cart! @auth(requires:REGISTERED_CUSTOMER)
-    customer: Customer @auth(requires:[REGISTERED_CUSTOMER, COMPANY_USER])
+    company: Company @auth(requires:COMPANY_USER)
 }
 ```
 This can be hardcoded in the schema, or we could introduce an annotation to resolver level classes that could be read automatically
