@@ -214,7 +214,7 @@ type CsvOutput {
     "file name"
     file_name: String
     "data for csv file with headers and records"
-    data: String
+    csv_data: String!
 }
 
 input RequisitionListItemsInput {
