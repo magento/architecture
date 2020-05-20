@@ -4,6 +4,12 @@ type Query {
     requisitionList(
         id: ID!
     ): RequisitionList
+
+    "Export Requisition list"
+    exportRequisitionList(
+        "unqiue Id of Requisition list"
+        id: ID!
+    ): CsvOutput
 }
 
 type Customer {
@@ -127,9 +133,14 @@ type Mutation {
         "unique Id of requisition list"
         id: ID!,
         "new name for list"
-        name: String,
+        name: String!,
         "new description For the List"
-        description: String
+        description: String!
+    ): RequisitionList
+
+    DeleteRequisitionList(
+        "unique Id of requisition list"
+        id: ID!
     ): RequisitionList
 
     "Add items to requisition list"
@@ -199,6 +210,13 @@ type AddProductsToRequisitionListOutput {
     requisition_list : RequisitionList
 }
 
+type CsvOutput {
+    "file name"
+    file_name: String
+    "data for csv file with headers and records"
+    data: String
+}
+
 input RequisitionListItemsInput {
     sku: String!
     quantity: Float
@@ -230,11 +248,6 @@ type MoveItemsFromRequisitionListOutput {
     source : RequisitionList
     "Destination Requisition List"
     destination : RequisitionList
-}
-
-input EnteredOptionInput {
-    id: String!
-    value: String!
 }
 
 "PageInfo provides navigation for the query response"
