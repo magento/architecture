@@ -91,7 +91,6 @@ Requisition List Item Implementation that for Simple and Virtual Products
 type DefaultRequisitionListItem implements RequisitionListItemInterface {
     "Unique Identifier of Requisition List Item"
     id: ID!
-    "Product"
     product: ProductInterface!
     "Quantity added"
     qty: Float!
@@ -122,7 +121,6 @@ Requisition List Item Implementation that for Bundle Products
 type BundleRequisitionListItem implements RequisitionListItemInterface {
     "Unique Identifier of Requisition List Item"
     id: ID!
-    "Product"
     product: ProductInterface!
     "Quantity added"
     qty: Float!
@@ -138,7 +136,6 @@ Requisition List Item Implementation that for Configurable Products
 type ConfigurableRequisitionListItem implements RequisitionListItemInterface {
     "Unique Identifier of Requisition List Item"
     id: ID!
-    "Product"
     product: ProductInterface!
     "Quantity added"
     qty: Float!
