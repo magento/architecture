@@ -1,11 +1,34 @@
-## Gift Card product type support will be added after the Product Implementation is developed
-type Query {
-    "The requisitionList query returns the contents of customer's  Requisition List"
-    requisitionList(
-        id: ID!
-    ): RequisitionList
+# Requistion List Flow User Flow
+#
+# 1.1. Create a requistion List at Customer's My Account section using `createRequistionList` Mutation
+#
+# 1.2. From catalog pages search for products and add products to already available list with `addProductsToRequisitionList`
+#  mutation or create a list with `createRequistionList` and on success add products with `addProductsToRequisitionList`
+#
+# 1.3. Select a requistion list from My Account and  customer query `requisitionLists` with id filter will fetch requistion
+# list details
+#
+# 1.4 Select a list of items from the requisition List and perform `addRequisitionListItemToCart`, so the items are copied
+# to cart
+#
+# 1.5 perform regular checkout flow
+#
+# 2. In requistion list view, `exportRequisitionList` query will generate a CSV file with particular requistion list data
+#
+# 3. In requistion list view, `renameRequistionList` mutatation can be used to rename the list
+#
+# 4. In requistion list view, one can edit items quantity, options etc or remove items with `removeRequisitionListItems` and
+# `updateRequisitionListItems` mutation
+#
+# 5. In requistion list view, select requistion list items and move them , copy them to different requistion list with
+# `moveItemsFromRequisitionList` and `copyItemsFromRequisitionList` mutations respectively
+#
 
-    "Export Requisition list"
+
+type Query {
+    """
+    Export Requisition list in Csv format
+    """
     exportRequisitionList(
         "unqiue Id of Requisition list"
         id: ID!
@@ -16,21 +39,26 @@ type Customer {
     "Get Requisition Lists of customer"
     requisitionLists(
         pageSize: Int = 20,
-        currentPage: Int = 1
+        currentPage: Int = 1,
+        filter: RequisitionListFilterInput
     ): RequisitionLists
 }
 
-"Provides Requisition Lists of customer"
+"""
+Provides Customer's Requisition Lists
+"""
 type RequisitionLists  {
     "List of Requisition Lists"
     items: [RequisitionList]
     "Page Information for pagination"
-    page_info: PageInfo
+    page_info: SearchResultPageInfo
     "Total count of Requisition Lists"
     total_count: Int
 }
 
-"Requisition List Type"
+"""
+Requisition List Type
+"""
 type RequisitionList {
     "Unique Identifier of Requisition List"
     id: ID!
@@ -46,17 +74,21 @@ type RequisitionList {
     updated_at: String
 }
 
-"Interface type for Requisition List Item"
+"""
+Interface type for Requisition List Item
+"""
 interface RequisitionListItemInterface {
     "Unique Identifier of Requisition List Item"
     id: ID!
-    "Product"
     product: ProductInterface!
     "Quantity added"
     qty: Float!
 }
 
-type SimpleRequisitionListItem implements RequisitionListItemInterface {
+"""
+Requisition List Item Implementation that for Simple and Virtual Products
+"""
+type DefaultRequisitionListItem implements RequisitionListItemInterface {
     "Unique Identifier of Requisition List Item"
     id: ID!
     "Product"
@@ -67,21 +99,12 @@ type SimpleRequisitionListItem implements RequisitionListItemInterface {
     customizable_options: [SelectedCustomizableOption]
 }
 
-type VirtualRequisitionListItem implements RequisitionListItemInterface {
-    "Unique Identifier of Requisition List Item"
-    id: ID!
-    "Product"
-    product: ProductInterface!
-    "Quantity added"
-    qty: Float!
-    "custom Option selected"
-    customizable_options: [SelectedCustomizableOption]
-}
-
+"""
+Requisition List Item Implementation that for Downloadable Products
+"""
 type DownloadableRequisitionListItem implements RequisitionListItemInterface {
     "Unique Identifier of Requisition List Item"
     id: ID!
-    "Product"
     product: ProductInterface!
     "Quantity added"
     qty: Float!
@@ -93,6 +116,9 @@ type DownloadableRequisitionListItem implements RequisitionListItemInterface {
     samples: [DownloadableProductSamples]
 }
 
+"""
+Requisition List Item Implementation that for Bundle Products
+"""
 type BundleRequisitionListItem implements RequisitionListItemInterface {
     "Unique Identifier of Requisition List Item"
     id: ID!
@@ -106,6 +132,9 @@ type BundleRequisitionListItem implements RequisitionListItemInterface {
     bundle_options: [SelectedBundleOption]!
 }
 
+"""
+Requisition List Item Implementation that for Configurable Products
+"""
 type ConfigurableRequisitionListItem implements RequisitionListItemInterface {
     "Unique Identifier of Requisition List Item"
     id: ID!
@@ -120,30 +149,40 @@ type ConfigurableRequisitionListItem implements RequisitionListItemInterface {
 }
 
 type Mutation {
-    "Create Empty Requisition List"
+
+    """
+    Create Empty Requisition List
+    """
     createRequisitionList(
         "name for the list"
         name: String!,
         "description For the list"
         description: String
-    ): RequisitionList
+    ): CreateRequisitionListOutput
 
-    "Rename a requisition list"
+    """
+    Rename a requisition list and change description"
+    """
     renameRequisitionList(
         "unique Id of requisition list"
         id: ID!,
         "new name for list"
         name: String!,
         "new description For the List"
-        description: String!
-    ): RequisitionList
+        description: String
+    ): RenameRequisitionListOutput
 
-    DeleteRequisitionList(
+    """
+    Delete a requisition list with Id
+    """
+    deleteRequisitionList(
         "unique Id of requisition list"
         id: ID!
-    ): RequisitionList
+    ): Boolean
 
-    "Add items to requisition list"
+    """
+    Add items to requisition list
+    """
     addProductsToRequisitionList(
         "unique Id of requisition list"
         id: ID!,
@@ -151,7 +190,9 @@ type Mutation {
         items: [RequisitionListItemsInput!]!
     ): AddProductsToRequisitionListOutput
 
-    "Remove Items in requisition list"
+    """
+    Remove Items in requisition list
+    """
     removeRequisitionListItems(
         "unique Id of requisition list"
         id: ID!,
@@ -159,7 +200,9 @@ type Mutation {
         items: [ID!]!
     ): RemoveRequisitionListItemsOutput
 
-    "Update Items in requisition list"
+    """
+    Update Items in requisition list"
+    """
     updateRequisitionListItems(
         "unique Id of requisition list"
         id: ID!,
@@ -167,17 +210,19 @@ type Mutation {
         items: [UpdateRequisitionListItemsInput!]!
     ): UpdateRequisitionListItemsOutput
 
-    "Add Requisition List Items To Cart"
+    """
+    Add Requisition List Items To Customer Cart"
+    """
     addRequisitionListItemToCart(
-        "Cart Id to which requisition list needs to copied"
-        cart_id: String!,
         "unique Id of requisition list"
         requisition_list_id: ID!,
         "selected requisition list items that are to be added"
         item_ids: [ID!]!
     ): AddRequisitionListItemToCartOutput
 
-    "Copy Items from Requisition List"
+    """
+    Copy Items from Requisition List to another requisition list"
+    """
     copyItemsFromRequisitionList(
         "unique Id of source requisition list"
         source_id: ID!,
@@ -187,7 +232,9 @@ type Mutation {
         item_ids: [ID!]!
     ): CopyItemsFromRequisitionListOutput
 
-    "Move Items from Requisition List"
+    """
+    Move Items from Requisition List to another requisition List
+    """
     moveItemsFromRequisitionList(
         "unique Id of source requisition list"
         source_id: ID!,
@@ -217,6 +264,13 @@ type CsvOutput {
     csv_data: String!
 }
 
+input RequisitionListFilterInput {
+    "Filter Customer Requisition lists with an requisition list ID or list of requisition list IDs"
+    ids: FilterEqualTypeInput,
+    "Filter by display name of the Requisition list"
+    name: FilterMatchTypeInput
+}
+
 input RequisitionListItemsInput {
     sku: String!
     quantity: Float
@@ -234,6 +288,14 @@ input UpdateRequisitionListItemsInput {
     quantity: Float
 }
 
+type CreateRequisitionListOutput {
+    list: RequisitionList
+}
+
+type RenameRequisitionListOutput {
+    list: RequisitionList
+}
+
 type AddRequisitionListItemToCartOutput {
     cart: Cart # since requisition list is not mutated it is not part of the output
 }
@@ -248,14 +310,4 @@ type MoveItemsFromRequisitionListOutput {
     source : RequisitionList
     "Destination Requisition List"
     destination : RequisitionList
-}
-
-"PageInfo provides navigation for the query response"
-type PageInfo {
-    "Specifies which page of results to return"
-    current_page: Int
-    "Specifies the maximum number of items to return"
-    page_size: Int
-    "Total pages"
-    total_pages: Int
 }
