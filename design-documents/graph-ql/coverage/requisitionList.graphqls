@@ -175,7 +175,7 @@ type Mutation {
     deleteRequisitionList(
         "unique Id of requisition list"
         id: ID!
-    ): Boolean
+    ): DeleteRequisitionListOutput
 
     """
     Add items to requisition list
@@ -291,6 +291,10 @@ type CreateRequisitionListOutput {
 
 type RenameRequisitionListOutput {
     list: RequisitionList
+}
+
+type DeleteRequisitionListOutput {
+    result: Boolean
 }
 
 type AddRequisitionListItemToCartOutput {
