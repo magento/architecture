@@ -220,7 +220,7 @@ type Mutation {
     """
     Copy Items from Requisition List to another requisition list"
     """
-    copyItemsFromRequisitionList(
+    copyItemsBetweenRequisitionList(
         "unique Id of source requisition list"
         source_id: ID!,
         "unique Id of destination requisition list"
@@ -232,7 +232,7 @@ type Mutation {
     """
     Move Items from Requisition List to another requisition List
     """
-    moveItemsFromRequisitionList(
+    moveItemsBetweenRequisitionList(
         "unique Id of source requisition list"
         source_id: ID!,
         "unique Id of destination requisition list"
