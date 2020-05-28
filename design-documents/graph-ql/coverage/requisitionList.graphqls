@@ -24,17 +24,6 @@
 # `moveItemsFromRequisitionList` and `copyItemsFromRequisitionList` mutations respectively
 #
 
-
-type Query {
-    """
-    Export Requisition list in Csv format
-    """
-    exportRequisitionList(
-        "unqiue Id of Requisition list"
-        id: ID!
-    ): CsvOutput
-}
-
 type Customer {
     "Get Requisition Lists of customer"
     requisitionLists(
@@ -252,13 +241,6 @@ type UpdateRequisitionListItemsOutput {
 
 type AddProductsToRequisitionListOutput {
     requisition_list : RequisitionList
-}
-
-type CsvOutput {
-    "file name"
-    file_name: String
-    "data for csv file with headers and records"
-    csv_data: String!
 }
 
 input RequisitionListFilterInput {
