@@ -1,86 +1,59 @@
-type Query {
-
-    getNegotiableQuote(
-        id: ID!
-    ): NegotiableQuote @doc(description:"Get negotibale quote")
-
-    getAllNegotiableQuotes: [NegotiableQuote]! @doc(description: "Get all negotiable quotes")
-}
-
 type Mutation {
+    recalculateNegotiableQuotePrices(
+        quote_ids: [String]!
+    ): RecalculateNegotiableQuotePricesOutput! @doc(description:" This call refreshes item prices, taxes, discounts, cart rules in the negotiable quote. Quotes that are locked for the seller will not be updated.")
 
-    updatedPrices(
-        updatedQuotes: UpdatedPricesInput!
-    ): UpdatedPricesOutput! @doc(description:" This call refreshes item prices, taxes, discounts, cart rules in the negotiable quote. Quotes that are locked for the seller will not be updated.")
-
-    requestQuote(
+    requestNegotiableQuote(
         negotiableQuote: NegotiableQuoteRequestInput!
-    ): RequestQuoteOutput! @doc(description:"Generates negotiable quote request")
+    ): RequestNegotiableQuoteOutput! @doc(description:"Generates negotiable quote request")
 
-    assignBillingAddressToNegotiableQuote(
-        billingAddress: NegotiableQuoteBillingAddressInput!
-    ): AssignBillingAddressToNegotiableQuoteOutput @doc(description:"Assigns new billing address to negotiable quote")
-
-    estimateShippingCostForNegotiableQuote(
-        shippingAddress: NegotiableQuoteEstimateShippinAddressInput!
-    ): EstimateShippingCostForNegotiableQuoteOutput @doc(description:"Estimate shipping costs for a negotiable quote")
-
-    estimateShippingCostByAddressId(
-        shippingAddressId: NegotiableQuoteEstimateShippinAddressIdInput!
-    ): EstimateShippingCostByAddressIdOutput @doc(description:"Estimate shipping costs for a negotiable quote by Address ID")
-
-    estimateShippingInformationForNegotiableQuote(
-        addressInformation: NegotiableQuoteShippingInformationInput!
-    ): EstimateShippingInformationForNegotiableQuoteOutput @doc(description:"Get list of payment options and the order totals by address and shipping info")
-
-    setShippingMethodToNegotiableQuote(
+    setShippingMethodsOnNegotiableQuote(
         negotiableQuoteShippingMethod: NegotiableQuoteShippingMethodInput!
-    ): setShippingMethodToNegotiableQuoteOutput @doc(description:"Set negotiable quote shipping method")
-
-    setCouponCodeToNegotiableQuote(
-        negotiableQuoteCouponCode: NegotiableQuoteCouponCodeInput!
-    ): SetCouponCodeToNegotiableQuoteOutput @doc(description:"Set negotiable quote coupon code")
-
-    removeCouponCodeFromNegotiableQuote(
-        cartId: String!
-    ): RemoveCouponCodeFromNegotiableQuoteOutput @doc(description:"Remove negotiable quote coupon code")
-
-    setPaymentInformationForNegotiableQuote(
-        paymentInformation: NegotiableQuotePaymentInformationInput!
-    ): SetPaymentInformationForNegotiableQuoteOutput! @doc(description:"Sets payment information and the billing address for the negotiable quote")
-
-    createOrderWithPaymentInfoNegotiableQuote(
-        paymentInformation: NegotiableQuotePaymentInformationInput!
-    ): CreateOrderWithPaymentInfoNegotiableQuoteOutput! @doc(description:"Assigns payment information and the billing address for the negotiable quote to create order")
-
-    createOrderWithGiftCardForNegotiableQuote(
-        giftCardAccountData: NegotiableQuoteGiftCardAccountDataInput!
-    ): CreateOrderWithGiftCardForNegotiableQuoteOutput! @doc(description:"Assigns GiftCard information and cart ID for the negotiable quote to create order")
-
-    removeGiftCardFromNegotiableQuote(
-        giftCardsData: NegotiableQuotegiftCardsInput!
-    ): RemoveGiftCardFromNegotiableQuoteOutput! @doc(description:"Removes a gift card that has been applied to a negotiable quote")
+    ): setShippingMethodsOnNegotiableQuoteOutput @doc(description:"Set negotiable quote shipping method")
 }
 
 type Customer {
-        negotiable_quotes(
+    negotiable_quote (
+        id: ID!): NegotiableQuote @doc(description: "Get negotiable quote of a customer")
+
+    negotiable_quotes(
         page_size: Int = 20,
         current_page: Int = 1,
         filter: NegotiableQuoteFilterInput
     ): [NegotiableQuote] @doc(description: "Get negotiable quotes of a customer")
+
+    estimateShippingCostForNegotiableQuote(
+        address: NegotiableQuoteShipAddressInput!
+    ): [ShippingMethodsOutput]! @doc(description:"Estimate shipping costs for a negotiable quote")
+
+    estimateShippingCostByAddressIdForNegotiableQuote(
+        address_id: String!
+    ): [ShippingMethodsOutput]! @doc(description:"Estimate shipping costs for a negotiable quote by Address ID")
+
+    estimateShippingInformationForNegotiableQuote(
+        address_info: NegotiableQuoteAddressInformationInput!
+    ): NegotiableQuotePaymentInfo! @doc(description:"Get payment options and the order totals by address and shipping info")
 }
 
 type NegotiableQuote {
-    billing_address: BillingAddress! @doc(description: "Billing address of negotiable quote")
+    items: [NegotiableQuoteItem] @doc(description: "Negotiable quote item")
+    billing_address: BillingAddress @doc(description: "Billing address of negotiable quote")
     attachements: [AttachmentContent] @doc(description: "Negotiable quote Attachements")
     comments: [NegotiableQuoteComment] @doc(description: "Negotiable quote comments")
-    totals: TotalInfo @doc(description: "Negotiable quote totals info.")
+    totals: TotalsOutput! @doc(description: "Negotiable quote totals output")
     payment_info: NegotiableQuotePaymentInfo! @doc(description: "Negotiable quote payment info.")
+    available_payment_methods: [AvailablePaymentMethod] @doc(description: "Available payment methods")
 }
 
 input NegotiableQuoteFilterInput {
-    ids: FilterEqualTypeInput @doc(description: "Filter Customer Negotibale quotes with an negotiable quote ID or list of negotiable quote IDs")
+    ids: FilterEqualTypeInput @doc(description: "Filter Customer Negotiable quotes with an negotiable quote ID or list of negotiable quote IDs")
     name: FilterMatchTypeInput @doc(description: "Filter by display name of the negotiable quote")
+}
+
+type NegotiableQuoteItem {
+    id: String!
+    quantity: Float!
+    product: ProductInterface!
 }
 
 type BillingAddress {
@@ -91,20 +64,20 @@ type BillingAddress {
     email: String @doc(description: "The customer email id")
     company: String @doc(description: "The customer's company")
     telephone: String @doc(description: "The telephone number")
-    street: [String] @doc(description: "An array of strings that define the street number and name")
+    street: [String] @doc(description: "A list of strings that define the street number and name")
     city: String @doc(description: "The city or town")
     region: String @doc(description: "The region name")
     region_id: String @doc(description: "The region ID")
     region_code: String @doc(description: "The region code")
     postcode: String @doc(description: "The customer's ZIP or postal code")
-    country_id: String @doc(description: "Deprecated: use `country_code` instead.")
+    country_code: String @doc(description: "The country code")
     same_as_billing: Int @doc(description: "Billing address confirmation")
     save_in_address_book: Int @doc(description: "Save billing address in address book")
 }
 
 type AttachmentContent @doc(description: "Negotiable quote attachment file") {
-    base64_encoded_data: String
-    type: String
+    base64_encoded_data: String!
+    mime_type: String!
     name: String!
 }
 
@@ -133,67 +106,33 @@ type NegotiableQuotePaymentInfo {
     totals: TotalsOutput! @doc(description: "List of totals")
 }
 
+type AvailablePaymentMethod {
+    code: String! @doc(description: "The payment method code")
+    title: String! @doc(description: "The payment method title.")
+}
+
 type PaymentMethodsOutput {
     code: String @doc(description: "Payment method code")
     title: String @doc(description: "Payment method title")
 }
 
 type TotalsOutput {
-    grand_total: Float @doc(description: "Grand total")
-    base_grand_total: Float @doc(description: "Base grand total")
-    subtotal: Float @doc(description: "Sub total")
-    base_subtotal: Float @doc(description: "Base sub total")
-    discount_amount: Float @doc(description: "Discount amount")
-    subtotal_with_discount: Float @doc(description: "Subtotal with discount")
-    shipping_amount: Float @doc(description: "Shipping amount")
-    base_shipping_amount: Float @doc(description: "Base shipping amount")
-    shipping_discount_amount: Float @doc(description: "Shipping discount amount")
-    tax_amount: Float @doc(description: "Tax amount")
-    base_tax_amount: Float @doc(description: "base_tax_amount")
-    shipping_tax_amount: Float @doc(description: "shipping_tax_amount")
-    subtotal_incl_tax: Float @doc(description: "subtotal_incl_tax")
-    shipping_incl_tax: Float @doc(description: "shipping_incl_tax")
-    base_shipping_incl_tax: Float @doc(description: "base_shipping_incl_tax")
-    base_currency_code: String @doc(description: "base_currency_code")
-    quote_currency_code: String @doc(description: "quote_currency_code")
-    items_qty: Int @doc(description: "items_qty")
-    items: [ItemsOutput] @doc(description: "Items details")
-    total_segments: [TotalSegmentOutput] @doc(description: "Total segments")
+    grand_total: Money
+    subtotal_including_tax: Money
+    subtotal_excluding_tax: Money
+    discount: CartDiscount
+    subtotal_with_discount_excluding_tax: Money
+    applied_taxes: [CartTaxItem]
 }
 
-type ItemsOutput {
-    item_id: ID @doc(description: "Item ID")
-    price: Float @doc(description: "Price")
-    base_price: Float @doc(description: "Base price")
-    qty: Int @doc(description: "Quantity")
-    row_total: Float @doc(description: "Row total")
-    base_row_total: Float @doc(description: "Base row total")
-    row_total_with_discount: Float @doc(description: "Row total with discount")
-    tax_amount: Float @doc(description: "Tax amount")
-    base_tax_amount: Float @doc(description: "Base tax amount")
-    tax_percent: Float @doc(description: "Tax percent")
-    discount_amount: Float @doc(description: "Discount amount")
-    base_discount_amount: Float @doc(description: "Base discount amount")
-    discount_percent: Float @doc(description: "Discount percent")
-    price_incl_tax: Float @doc(description: "Price incl. tax")
-    base_price_incl_tax: Float @doc(description: "Base price incl. tax")
-    row_total_incl_tax: Float @doc(description: "Row total incl. tax")
-    base_row_total_incl_tax: Float @doc(description: "Base row total incl. tax")
-    name: String @doc(description: "Name")
+type CartTaxItem {
+    amount: Money!
+    label: String!
 }
 
-type TotalSegmentOutput {
-    code: String @doc(description: "Segment code")
-    title: String @doc(description: "Segment title")
-    value: Float @doc(description: "Segment value")
-}
-
-type TotalInfo {
-    totals: TotalsOutput! @doc(description: "List of order otals for negotiable quote")
-}
-
-input UpdatedPricesInput {
-    quote_ids: [String]! @doc(description: "IDs of the updated quotes")
+type CartDiscount {
+    amount: Money!
+    label: [String!]!
 }
 
 input NegotiableQuoteRequestInput {
@@ -203,60 +142,31 @@ input NegotiableQuoteRequestInput {
     files: [FileInput] @doc(description: "Attached files")
 }
 
-type RequestQuoteOutput {
+type RequestNegotiableQuoteOutput {
     negotiable_quote:NegotiableQuote!
 }
 
 input FileInput @doc(description: "The list of file attachment codes") {
-    base64_encoded_data: String
-    type: String
+    base64_encoded_data: String!
+    mime_type: String!
     name: String!
-    extension_attributes: [FileAttributeInput] @doc(description: "File extension attributes")
 }
 
-input FileAttributeInput {
-    attribute_code: String! @doc(description: "Attribute code")
-    value: String! @doc(description: "Attribute value")
-}
-
-type UpdatedPricesOutput{
+type RecalculateNegotiableQuotePricesOutput{
     negotiable_quote:NegotiableQuote
     price_updated: Boolean!
-}
-
-input NegotiableQuoteBillingAddressInput {
-    cart_id: String! @doc(description: "Cart hash")
-    address: BillingAddress @doc(description: "Address assigned to negotiable quote")
-    use_for_shipping: Boolean @doc(description: "Use for shipping")
-}
-
-type AssignBillingAddressToNegotiableQuoteOutput {
-    id: ID @doc(description: "Negotiable quote billing address id")
-}
-
-input NegotiableQuoteEstimateShippinAddressInput {
-    cart_id: String! @doc(description: "Cart hash")
-    address: NegotiableQuoteShipAddressInput @doc(description: "Shipping address assigned to negotiable quote")
 }
 
 input NegotiableQuoteShipAddressInput {
     firstname: String! @doc(description: "The first name of the person associated with the billing address")
     lastname: String! @doc(description: "The family name of the person associated with the billing address")
     telephone: String! @doc(description: "The telephone number")
-    street: [String]! @doc(description: "An array of strings that define the street number and name")
+    street: [String]! @doc(description: "A list of strings that define the street number and name")
     city: String! @doc(description: "The city or town")
     region: String! @doc(description: "The region name")
     region_id: Int @doc(description: "The region ID")
     postcode: String! @doc(description: "The customer's ZIP or postal code")
-    country_id: String! @doc(description: "Deprecated: use `country_code` instead.")
-}
-
-type EstimateShippingCostForNegotiableQuoteOutput {
-    shipping_methods: [ShippingMethodsOutput]! @doc(description: "All shipping methods for the shipping address")
-}
-
-type EstimateShippingCostByAddressIdOutput {
-    shipping_methods: [ShippingMethodsOutput]! @doc(description: "All shipping methods for the shipping address")
+    country_code: String! @doc(description: "The country code")
 }
 
 type ShippingMethodsOutput {
@@ -272,16 +182,6 @@ type ShippingMethodsOutput {
     price_incl_tax: String @doc(description: "Shipping method price with inclusive tax")
 }
 
-input NegotiableQuoteEstimateShippinAddressIdInput {
-    cart_id: String! @doc(description: "Cart hash")
-    address_id: String! @doc(description: "Masked shipping address ID assigned to negotiable quote")
-}
-
-input NegotiableQuoteShippingInformationInput {
-    cart_id: String! @doc(description: "Cart hash")
-    address_info: NegotiableQuoteAddressInformationInput @doc(description: "Input for address and shipping info")
-}
-
 input NegotiableQuoteAddressInformationInput {
     shipping_address: NegotiableQuoteShipAddressInput @doc(description: "Shipping address assigned to negotiable quote")
     billing_address: NegotiableQuoteBillAddressInput @doc(description: "Billing address assigned to negotiable quote")
@@ -293,16 +193,12 @@ input NegotiableQuoteBillAddressInput {
     firstname: String! @doc(description: "The first name of the person associated with the billing address")
     lastname: String! @doc(description: "The family name of the person associated with the billing address")
     telephone: String! @doc(description: "The telephone number")
-    street: [String]! @doc(description: "An array of strings that define the street number and name")
+    street: [String]! @doc(description: "A list of strings that define the street number and name")
     city: String! @doc(description: "The city or town")
     region: String! @doc(description: "The region name")
     region_id: Int @doc(description: "The region ID")
     postcode: String! @doc(description: "The customer's ZIP or postal code")
-    country_id: String! @doc(description: "Deprecated: use `country_code` instead.")
-}
-
-type EstimateShippingInformationForNegotiableQuoteOutput {
-    payment_information: NegotiableQuotePaymentInfo! @doc(description: "All list of payment options and totals")
+    country_code: String! @doc(description: "The country code")
 }
 
 input NegotiableQuoteShippingMethodInput {
@@ -310,52 +206,6 @@ input NegotiableQuoteShippingMethodInput {
     shipping_method: String @doc(description: "Input for shipping method")
 }
 
-type setShippingMethodToNegotiableQuoteOutput {
+type setShippingMethodsOnNegotiableQuoteOutput {
     shipping_method_set: Boolean!
-}
-
-input NegotiableQuoteCouponCodeInput {
-    cart_id: String! @doc(description: "Cart hash")
-    coupon_code: String @doc(description: "Input for coupon code")
-}
-
-type SetCouponCodeToNegotiableQuoteOutput {
-    negotiable_quote: NegotiableQuote
-    coupon_code_set: Boolean
-}
-
-input NegotiableQuotePaymentInformationInput {
-    cart_id: String! @doc(description: "Cart hash")
-    payment_method: NegotiableQuotePaymentMethodInput @doc(description: "Payment method assigned to negotiable quote")
-    billing_address: NegotiableQuoteBillAddressInput @doc(description: "Billing address assigned to negotiable quote")
-}
-
-type SetPaymentInformationForNegotiableQuoteOutput {
-    payment_information_set: Boolean!
-}
-
-type CreateOrderWithPaymentInfoNegotiableQuoteOutput {
-    order_id: Int! @doc(description: "Negotiable quote order ID")
-}
-
-input NegotiableQuoteGiftCardAccountDataInput {
-    cart_id: String! @doc(description: "Cart hash")
-    gift_cards: [String]! @doc(description: "Gift cards to be assigned")
-}
-
-type CreateOrderWithGiftCardForNegotiableQuoteOutput {
-    gift_card_assigned: Boolean!
-}
-
-input NegotiableQuotegiftCardsInput {
-    cart_id: String! @doc(description: "Cart hash")
-    gift_card_code: String! @doc(description: "Gift cards code to be assigned")
-}
-
-type RemoveCouponCodeFromNegotiableQuoteOutput {
-    cart: Cart! @doc(description: "Cart")
-}
-
-type RemoveGiftCardFromNegotiableQuoteOutput {
-    cart: Cart! @doc(description: "Cart")
 }
