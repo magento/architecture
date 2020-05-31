@@ -1,0 +1,174 @@
+type Customer {
+    gitft_registry_list: [GiftRegistry]
+    gitft_registry(id: ID!): GiftRegistry
+}
+
+type Query {
+    giftRegistryTypes: [GiftRegistryType] @doc(description: "Get a list of available gift registry types")
+}
+
+type Mutation {
+    createGiftRegistry(gift_registry: CreateGiftRegistryInput): CreateGiftRegistryOutput
+}
+
+input CreateGiftRegistryInput {
+    event_name: String!
+    type_id: String!
+    message: String!
+    privacy_settings: GiftRegistryPrivacySettings!
+    status: GiftRegistryStatus!
+    registrants: [CreateGiftRegistryRegistrantInput!]!
+    shipping_address: CreateGiftRegistryShippingAddressInput
+    dynamic_attributes: [GiftRegistryDynamicAttributeInput]
+}
+
+type CreateGiftRegistryShippingAddressInput @doc(description: "Either address data or address ID should be provided") {
+    address_data: CustomerAddressInput
+    address_id: Int
+}
+
+type CreateGiftRegistryRegistrantInput {
+    first_name: String!
+    last_name: String!
+    email: String!
+    dynamic_attributes: [GiftRegistryDynamicAttributeInput]
+}
+
+type GiftRegistryDynamicAttributeInput {
+    code: ID!
+    value: String!
+}
+
+type CreateGiftRegistryOutput {
+    gift_registry: GiftRegistry
+}
+
+type GiftRegistryType {
+    id: ID!
+    label: String!
+    dynamic_attributes_metadata: [GiftRegistryDynamicAttributeMetadataInterface]
+}
+
+interface GiftRegistryDynamicAttributeMetadataInterface {
+    code: ID!
+    input_type: String!
+    attribute_group: String!
+    label: String!
+    is_required: Boolean!
+    sort_order: Int
+}
+
+type GiftRegistryTextAttributeMetadata implements GiftRegistryDynamicAttributeMetadataInterface {
+
+}
+
+type GiftRegistrySelectAttributeMetadata implements GiftRegistryDynamicAttributeMetadataInterface, GiftRegistrySelectAttributeMetadataInterface {
+}
+
+type GiftRegistryDateAttributeMetadata implements GiftRegistryDynamicAttributeMetadataInterface {
+    format: GiftRegistryDateAttributeFormat!
+}
+
+enum GiftRegistryDateAttributeFormat {
+    SHORT
+    MEDIUM
+    LONG
+    FULL
+}
+
+type GiftRegistryCountryAttributeMetadata implements GiftRegistryDynamicAttributeMetadataInterface {
+    show_region: Boolean!
+}
+
+type GiftRegistryEventCountryAttributeMetadata implements GiftRegistryDynamicAttributeMetadataInterface, GiftRegistrySearcheableAttributeMetadataInterface {
+    show_region: Boolean!
+}
+
+type GiftRegistryEventDateAttributeMetadata implements GiftRegistryDynamicAttributeMetadataInterface, GiftRegistrySearcheableAttributeMetadataInterface {
+    format: GiftRegistryDateAttributeFormat!
+}
+
+type GiftRegistryEventLocationAttributeMetadata implements GiftRegistryDynamicAttributeMetadataInterface, GiftRegistrySearcheableAttributeMetadataInterface {
+}
+
+type GiftRegistryRoleAttributeMetadata implements GiftRegistryDynamicAttributeMetadataInterface, GiftRegistrySearcheableAttributeMetadataInterface, GiftRegistrySelectAttributeMetadataInterface {
+}
+
+interface GiftRegistrySearcheableAttributeMetadataInterface {
+    is_searcheable: Boolean!
+}
+
+interface GiftRegistrySelectAttributeMetadataInterface {
+    options: [GiftRegistrySelectAttributeOptionMetadata]
+}
+
+type GiftRegistrySelectAttributeOptionMetadata {
+    code: ID!
+    label: String!
+    is_default: Boolean
+}
+
+type GiftRegistry {
+    id: ID!
+    event_name: String!
+    type: GiftRegistryType
+    message: String!
+    created_on: String! @doc(description: "Creation date")
+    privacy_settings: GiftRegistryPrivacySettings!
+    status: GiftRegistryStatus!
+    registrants: [GiftRegistryRegistrant]
+    shipping_address: CustomerAddress
+    dynamic_attributes: [GiftRegistryDynamicAttribute]
+}
+
+interface GiftRegistryDynamicAttributeInterface  {
+    code: ID!
+    label: String!
+    value: String!
+}
+
+type GiftRegistryDynamicAttribute implements GiftRegistryDynamicAttributeInterface {
+    group: GiftRegistryDynamicAttributeGroup!
+}
+
+type GiftRegistryRegistrantDynamicAttribute implements GiftRegistryDynamicAttributeInterface {
+
+}
+
+enum GiftRegistryDynamicAttributeGroup {
+    GENERAL_INFORMATION
+    EVENT_INFORMATION
+    PRIVACY_SETTINGS
+    DETAILED_INFORMATION
+    SHIPPING_ADDRESS
+}
+
+type GiftRegistryRegistrant {
+    first_name: String!
+    last_name: String!
+    email: String!
+    dynamic_attributes: [GiftRegistryRegistrantDynamicAttribute]
+}
+
+enum GiftRegistryStatus {
+    ACTIVE
+    INACTIVE
+}
+
+enum GiftRegistryPrivacySettings {
+    PRIVATE
+    PUBLIC
+}
+
+type Mutation {
+    createProductReview(input: CreateProductReviewInput!): CreateProductReviewOutput!
+}
+
+type Query {
+    productReviewRatingsMetadata(): ProductReviewRatingsMetadata! @doc(description: "Metadata required by clients to render ratings & reviews section.")
+}
+
+type StoreConfig {
+    magento_giftregistry_general_enabled : String
+    magento_giftregistry_general_max_registrant : String
+}
