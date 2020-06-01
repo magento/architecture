@@ -176,11 +176,12 @@ type Invoice {
     id: ID! @doc("the ID of the invoice, used for API purposes")
     number: String! @doc("sequential invoice number")
     total: InvoiceTotal! @doc("invoice total amount details")
-    items: [InvoiceItem]! @doc("invoiced product details")
+    items: [InvoiceItemInterface]! @doc("invoiced product details")
+    comments: [InvoiceComment]
 }
 
 @doc("Invoice item details")
-type InvoiceItem {
+type InvoiceItemInterface {
     id: ID! @doc("invoice item unique identifier") #base64encode(invoiceItemId)
     order_item_id: String @doc("link to order item")
     product_name: String @doc("name of the base product")
@@ -189,6 +190,18 @@ type InvoiceItem {
     product_sale_price: Money! @doc("sale price for the base product including selected options")
     discounts: [Discount] @doc("final discount information for the base product including discounts on options")
     quantity_invoiced: Float @doc("number of invoiced items")
+}
+
+type InvoiceItem implements InvoiceItemInterface {
+}
+
+type BundledInvoiceItem implements InvoiceItemInterface {
+    child_items: [InvoiceItemInterface]
+}
+
+type InvoiceComment {
+    timestamp: String!
+    message: String
 }
 
 @doc("Invoice total amount details")
