@@ -5,6 +5,12 @@ type Customer {
 
 type Query {
     giftRegistryTypes: [GiftRegistryType] @doc(description: "Get a list of available gift registry types")
+    giftRegistrySearch(
+        registrant_firstname: String!,
+        registrant_lastname: String!,
+        gift_registry_type_id: ID,
+        searchable_dynamic_attributes: [GiftRegistryDynamicAttributeInput] @doc(description: "For select attributes ID should be provided expected. For range search, '_from' and '_to' suffixes can be added to the attribute code. For text attributes provide value for exact matching.")
+    ): [GiftRegistry] @doc(description: "Gift registry search by registrant name and additional searchable attributes.")
 }
 
 type Mutation {
@@ -136,11 +142,12 @@ type GiftRegistry {
     event_name: String!
     type: GiftRegistryType
     message: String!
-    created_on: String! @doc(description: "Creation date")
-    privacy_settings: GiftRegistryPrivacySettings!
-    status: GiftRegistryStatus!
+    created_on: String! @doc(description: "Creation date") @doc(description: "Accessible to the registry owner only")
+    privacy_settings: GiftRegistryPrivacySettings! @doc(description: "Accessible to the registry owner only")
+    status: GiftRegistryStatus! @doc(description: "Accessible to the registry owner only")
+    owner_name: String!
     registrants: [GiftRegistryRegistrant]
-    shipping_address: CustomerAddress
+    shipping_address: CustomerAddress @doc(description: "Accessible to the registry owner only")
     dynamic_attributes: [GiftRegistryDynamicAttribute]
 }
 
@@ -170,7 +177,7 @@ type GiftRegistryRegistrant {
     id: ID!
     first_name: String!
     last_name: String!
-    email: String!
+    email: String! @doc(description: "Accessible to the registry owner only")
     dynamic_attributes: [GiftRegistryRegistrantDynamicAttribute]
 }
 
