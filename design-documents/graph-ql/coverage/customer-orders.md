@@ -268,6 +268,8 @@ type ShipmentTracking {
     number: String @doc("tracking number of the order shipment")
 }
 ```
+The `id` will be a `base64_encode(increment_id)` which in future can be replaced by UUID.
+
 ## CommentItem type
 ```graphql
 type CommentItem {
@@ -275,7 +277,6 @@ type CommentItem {
     message: String! @doc("the comment message")
 }
 ```
-The `id` will be a `base64_encode(increment_id)` which in future can be replaced by UUID.
 
 ## Additional Types
 
