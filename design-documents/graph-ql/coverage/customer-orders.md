@@ -268,7 +268,7 @@ type ShipmentTracking {
     number: String @doc("tracking number of the order shipment")
 }
 ```
-### Comments
+## CommentItem type
 ```graphql
 type CommentItem {
     timestamp: String! @doc("The timestamp of the comment")
