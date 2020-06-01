@@ -60,7 +60,7 @@ type CustomerOrder {
     order_date: String! @doc("date when the order was placed")
     status: String! @doc("current status of the order")
     number: String! @doc("sequential order number")
-    items: [OrderItem]! @doc("collection of all the items purchased")
+    items: [OrderItemInterface]! @doc("collection of all the items purchased")
     total: OrderTotal! @doc("total amount details for the order")
     invoices: [Invoice]! @doc("invoice list for the order")
     credit_memos: [CreditMemo]! @doc("credit memo list for the order")
@@ -79,52 +79,38 @@ The `id` will be a `base64_encode(increment_id)` which in future can be replaced
 
 ### Order Item
 
-The order items will be presented as separate interface which will have multiple implementations for invoice, shipment and credit memo types.
-
 ```graphql
-@doc("Interface to reprent order/invoice/shipment/credit memo items")
-interface SalesItemInterface {
+@doc("Order item")
+type OrderItemInterface {
+    id: ID! @doc("Order item unique identifier") #base64encode(orderItemId)
     product_name: String @doc("name of the base product")
     product_sku: String! @doc("SKU of the base product")
-    product_url: String @doc("URL of the base product")
+    product_url_key: String @doc("URL key of the base product")
+    product_type: String @doc("Type of product (e.g. simple, configurable, bundle)")
+    status: String @doc("the status of order item")
     product_sale_price: Money! @doc("sale price for the base product including selected options")
     discounts: [Discount] @doc("final discount information for the base product including discounts on options")
-    parent_product_name: String @doc("name of parent product like configurable or bundle")
-    parent_product_sku: String @doc("SKU of parent product like configurable or bundle")
-    parent_product_url: String @doc("URL of parent product in the catalog")
-    selected_options: [SalesItemSelectedOption] @doc("selected options for the base product. for e.g color, size etc.")
-    entered_options: [SalesItemEnteredOption] @doc("entered option for the base product. for e.g logo image etc.")
-}
-
-@doc("Represents sales item selected options")
-type SalesItemSelectedOption {
-    id: ID! @doc("ID of the option")
-    label: String! @doc("name of the option")
-    value_labels: [String]! @doc("list of option value labels")
-}
-
-@doc("Represents sales item entered options")
-type SalesItemEnteredOption {
-    id: ID! @doc("ID of the option")
-    label: String! @doc("name of the option")
-    value: String! @doc("value of the option")
-}
-```
-
-The `id` will be a `base64_encode(option_id)` which in future can be replaced by UUID.
-
-The `SalesItemInterface` will be implemented by the following types:
-
-```graphql
-@doc("Order Product implementation of OrderProductInterface")
-type OrderItem implements SalesItemInterface {
+    selected_options: [OrderItemOption] @doc("selected options for the base product. for e.g color, size etc.")
+    entered_options: [OrderItemOption] @doc("entered option for the base product. for e.g logo image etc.")
     quantity_ordered: Float @doc("number of items")
     quantity_shipped: Float @doc("number of shipped items")
     quantity_refunded: Float @doc("number of refunded items")
     quantity_invoiced: Float @doc("number of invoiced items")
     quantity_canceled: Float @doc("number of cancelled items")
     quantity_returned: Float @doc("number of returned items")
-    status: String @doc("the status of order item")
+}
+
+type OrderItem implements OrderItemInterface {
+}
+
+type BundleOrderItem implements OrderItemInterface {
+    child_items: [OrderItemInterface]
+}
+
+@doc("Represents order item options like selected or entered")
+type OrderItemOption {
+    id: String! @doc("name of the option")
+    value: String! @doc("value of the option")
 }
 ```
 
@@ -194,8 +180,15 @@ type Invoice {
 }
 
 @doc("Invoice item details")
-type InvoiceItem implements SalesItemInterface{
-    quantity_invoiced: Float! @doc("number of invoiced items")
+type InvoiceItem {
+    id: ID! @doc("invoice item unique identifier") #base64encode(invoiceItemId)
+    order_item_id: String @doc("link to order item")
+    product_name: String @doc("name of the base product")
+    product_sku: String! @doc("SKU of the base product")
+    product_type: String @doc("Type of product (e.g. simple, configurable, bundle)")
+    product_sale_price: Money! @doc("sale price for the base product including selected options")
+    discounts: [Discount] @doc("final discount information for the base product including discounts on options")
+    quantity_invoiced: Float @doc("number of invoiced items")
 }
 
 @doc("Invoice total amount details")
@@ -221,8 +214,14 @@ type CreditMemo {
 }
 
 @doc("Credit memo item details")
-type CreditMemoItem implements SalesItemInterface{
-    quantity_refunded: Float! @doc("number of refunded items")
+type CreditMemoItem {
+    id: ID! @doc("Credit memo item unique identifier") #base64encode(creditMemoItemId)
+    order_item_id: String @doc("link to order item")
+    product_name: String @doc("name of the base product")
+    product_sku: String! @doc("SKU of the base product")
+    product_sale_price: Money! @doc("sale price for the base product including selected options")
+    discounts: [Discount] @doc("final discount information for the base product including discounts on options")
+    quantity_invoiced: Float @doc("number of invoiced items")
 }
 
 @doc("Credit memo price details")
@@ -245,16 +244,20 @@ type OrderShipment {
 }
 
 @doc("Order shipment item details")
-type ShipmentItem implements SalesItemInterface{
+type ShipmentItem{
+    id: ID! @doc("Shipment item unique identifier") #base64encode(shipmentItemId)
+    order_item_id: String @doc("link to order item") 
+    product_name: String @doc("name of the base product")
+    product_sku: String! @doc("SKU of the base product")
+    product_sale_price: Money! @doc("sale price for the base product")
     quantity_shipped: Float! @doc("number of shipped items")
 }
 
 @doc("Order shipment tracking details")
 type ShipmentTracking {
-    method: String! @doc("shipping method for the order")
+    title: String! @doc("shipment tracking title")
     carrier: String! @doc("shipping carrier for the order delivery")
     number: String @doc("tracking number of the order shipment")
-    link: String @doc("tracking link of the order shipment")
 }
 ```
 
