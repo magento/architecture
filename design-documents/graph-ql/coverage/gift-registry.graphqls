@@ -9,6 +9,18 @@ type Query {
 
 type Mutation {
     createGiftRegistry(gift_registry: CreateGiftRegistryInput): CreateGiftRegistryOutput
+    updateGiftRegistry(id: ID!, gift_registry: UpdateGiftRegistryInput): UpdateGiftRegistryOutput
+}
+
+input UpdateGiftRegistryInput {
+    event_name: String
+    type_id: String
+    message: String
+    privacy_settings: GiftRegistryPrivacySettings
+    status: GiftRegistryStatus
+    registrants: [UpdateGiftRegistryRegistrantInput!] @doc(description: "As a result of the update, only the records of provided registrants will be affected. If the registrant is missing in the request, its attributes will not be changed")
+    shipping_address: GiftRegistryShippingAddressInput
+    dynamic_attributes: [GiftRegistryDynamicAttributeInput!] @doc(description: "As a result of the update, only the values of provided attributes will be affected. If the attribute is missing in the request, its value will not be changed")
 }
 
 input CreateGiftRegistryInput {
@@ -18,13 +30,21 @@ input CreateGiftRegistryInput {
     privacy_settings: GiftRegistryPrivacySettings!
     status: GiftRegistryStatus!
     registrants: [CreateGiftRegistryRegistrantInput!]!
-    shipping_address: CreateGiftRegistryShippingAddressInput
+    shipping_address: GiftRegistryShippingAddressInput
     dynamic_attributes: [GiftRegistryDynamicAttributeInput]
 }
 
-type CreateGiftRegistryShippingAddressInput @doc(description: "Either address data or address ID should be provided") {
+type GiftRegistryShippingAddressInput @doc(description: "Either address data or address ID should be provided") {
     address_data: CustomerAddressInput
     address_id: Int
+}
+
+type UpdateGiftRegistryRegistrantInput {
+    id: ID!
+    first_name: String
+    last_name: String
+    email: String
+    dynamic_attributes: [GiftRegistryDynamicAttributeInput] @doc(description: "As a result of the update, only the values of provided attributes will be affected. If the attribute is missing in the request, its value will not be changed")
 }
 
 type CreateGiftRegistryRegistrantInput {
@@ -40,6 +60,10 @@ type GiftRegistryDynamicAttributeInput {
 }
 
 type CreateGiftRegistryOutput {
+    gift_registry: GiftRegistry
+}
+
+type UpdateGiftRegistryOutput {
     gift_registry: GiftRegistry
 }
 
@@ -59,7 +83,6 @@ interface GiftRegistryDynamicAttributeMetadataInterface {
 }
 
 type GiftRegistryTextAttributeMetadata implements GiftRegistryDynamicAttributeMetadataInterface {
-
 }
 
 type GiftRegistrySelectAttributeMetadata implements GiftRegistryDynamicAttributeMetadataInterface, GiftRegistrySelectAttributeMetadataInterface {
@@ -144,6 +167,7 @@ enum GiftRegistryDynamicAttributeGroup {
 }
 
 type GiftRegistryRegistrant {
+    id: ID!
     first_name: String!
     last_name: String!
     email: String!
@@ -160,15 +184,11 @@ enum GiftRegistryPrivacySettings {
     PUBLIC
 }
 
-type Mutation {
-    createProductReview(input: CreateProductReviewInput!): CreateProductReviewOutput!
-}
-
-type Query {
-    productReviewRatingsMetadata(): ProductReviewRatingsMetadata! @doc(description: "Metadata required by clients to render ratings & reviews section.")
-}
-
 type StoreConfig {
     magento_giftregistry_general_enabled : String
     magento_giftregistry_general_max_registrant : String
 }
+
+directive @doc(
+    description: String
+) on FIELD_DEFINITION | ENUM_VALUE | OBJECT | INPUT_OBJECT | INPUT_FIELD_DEFINITION
