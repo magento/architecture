@@ -70,6 +70,7 @@ type CustomerOrder {
     billing_address: CustomerAddress! @doc("billing address for the order")
     carrier: String! @doc("shipping carrier for the order delivery")
     method: String! @doc("shipping method for the order")
+    comments: [CommentItem]! @doc("comments on the order")
 }
 ```
 
@@ -113,7 +114,6 @@ type OrderItemOption {
     value: String! @doc("value of the option")
 }
 ```
-
 ### Payment Method Schema
 
 To provide more customization for different payment solutions, the payment method will be represented by own type instead of simple string:
@@ -177,7 +177,7 @@ type Invoice {
     number: String! @doc("sequential invoice number")
     total: InvoiceTotal! @doc("invoice total amount details")
     items: [InvoiceItemInterface]! @doc("invoiced product details")
-    comments: [InvoiceComment]
+    comments: [CommentItem]! @doc("comments on the invoice")
 }
 
 @doc("Invoice item details")
@@ -197,11 +197,6 @@ type InvoiceItem implements InvoiceItemInterface {
 
 type BundledInvoiceItem implements InvoiceItemInterface {
     child_items: [InvoiceItemInterface]
-}
-
-type InvoiceComment {
-    timestamp: String!
-    message: String
 }
 
 @doc("Invoice total amount details")
@@ -273,7 +268,13 @@ type ShipmentTracking {
     number: String @doc("tracking number of the order shipment")
 }
 ```
-
+### Comments
+```graphql
+type CommentItem {
+    timestamp: String! @doc("The timestamp of the comment")
+    message: String! @doc("the comment message")
+}
+```
 The `id` will be a `base64_encode(increment_id)` which in future can be replaced by UUID.
 
 ## Additional Types
