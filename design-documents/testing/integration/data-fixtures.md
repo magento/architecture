@@ -7,12 +7,8 @@ Here is a real example:
 - dev/tests/integration/testsuite/Magento/Catalog/_files/product_virtual_in_stock.php
 - dev/tests/integration/testsuite/Magento/Catalog/_files/product_virtual_out_of_stock.php
 
-All these 3 files create a virtual product except one marks the product as out of stock and the other assigns different quantity to the product.
-So if you need a virtual product with available quantity 1, you will probably have to:
-
-- Write a new data fixture (copy-past)
-- Reuse one of these data fixtures in a new data fixture file and edit the quantity there.
-- Reuse one of these data fixtures in your test case and edit the quantity in the test directly.
+All these 3 files create a virtual product except that one marks the product as out of stock and the other assigns different quantity to the product.
+So if you need a virtual product with available quantity 1, you will probably have to create a new data fixture.
  
 ## Solution
 
@@ -55,14 +51,14 @@ class QuoteTest extends \PHPUnit\Framework\TestCase
 }
 ```
 With the `as` and `require` keywords, we'll be able to inject data and resolve dependencies between fixtures.
-The `as` keyword is used for aliasing a fixture and the `require` keyword is used to declare fixtures dependencies on each other using fixtures aliases.
+The `as` keyword is used for aliasing fixtures and the `require` keyword is used to declare fixtures dependencies on each other using fixtures aliases.
 
-The method `collectTotalsDataFixture` deducted from the test name with suffix `DataFixture` is the data provider for all fixtures defined for test case. Test class fixture data provider method would be `dataFixture`. The data fixture provider should return an associative array with fixtures aliases as key and data to overwrite the corresponding fixture data.
-The data fixture provider uses `@` before attribute name to resolve dependencies. The `@` prefixed attribute value must be an associative array which keys are dependent fixtures aliases and values are an array containing the relationship data.
+The method `collectTotalsDataFixture()` deducted from the test name with suffix `DataFixture` is the data provider for all fixtures defined for test case. Test case class fixture data provider method would be simply `dataFixture()`. The data fixture provider should return an associative array with fixtures aliases as key and data to overwrite the corresponding fixture data.
+The data fixture provider uses `@` before attribute name to resolve dependencies. The `@` prefixed attribute value can be a _string_ or an associative array which keys are depending fixtures aliases and values are an array containing the relationship data.
 
-In the example above, `Magento/Catalog/_files/product_virtual.php`, `Magento/Customer/_files/customer.php`, `Magento/Customer/_files/customer_address.php` and `Magento/Checkout/_files/quote.php` are respectively aliased as _virtualProduct_, _customer_, _customerAddress_ and _quote_.
-`Magento/Customer/_files/customer_address.php` requires _customer_ (`Magento/Customer/_files/customer.php`) and `Magento/Checkout/_files/quote.php` requires _virtualProduct_ (`Magento/Catalog/_files/product_virtual.php`) and _customer_ (`Magento/Customer/_files/customer.php`) fixtures.
-The data fixture provider overwrites the fixtures _virtualProduct_, _customerAddress_ and _quote_ data as well as resolves fixtures dependencies using the `@` keyword.
+In the example above, the data fixture provider overwrites the fixtures _virtualProduct_, _customerAddress_ and _quote_ data as well as resolves fixtures dependencies using the `@` keyword.
+
+**Examples**
 
 ```php
 #Magento/Catalog/_files/product_virtual.php
@@ -71,7 +67,7 @@ use Magento\TestFramework\Helper\Bootstrap;
 
 $objectManager = Bootstrap::getObjectManager();
 $productFixture = $objectManager->get(ProductFixture::class);
-$product = $productFixture->create($data ?? []);
+$product = $productFixture->create(['data' => $data ?? []]);
 return $product;
 ```
 
@@ -82,7 +78,7 @@ use Magento\TestFramework\Helper\Bootstrap;
 
 $objectManager = Bootstrap::getObjectManager();
 $customerFixture = $objectManager->get(CustomerFixture::class);
-$customer = $customerFixture->create($data ?? []);
+$customer = $customerFixture->create(['data' => $data ?? []]);
 return $customer;
 ```
 
@@ -93,7 +89,7 @@ use Magento\TestFramework\Helper\Bootstrap;
 
 $objectManager = Bootstrap::getObjectManager();
 $customerAddressFixture = $objectManager->get(CustomerAddressFixture::class);
-$customerAddress = $customerAddressFixture->create(['customer' => $customer, 'data' => $data ?? []]);
+$customerAddress = $customerAddressFixture->create(['data' => $data ?? [], 'customer' => $customer]);
 return $customerAddress;
 ```
 
@@ -104,7 +100,7 @@ use Magento\TestFramework\Helper\Bootstrap;
 
 $objectManager = Bootstrap::getObjectManager();
 $quoteFixture = $objectManager->get(QuoteFixture::class);
-$quote = $quoteFixture->create(['customer' => $customer, 'products' => $products, 'data' => $data ?? []]);
+$quote = $quoteFixture->create(['data' => $data ?? [], 'customer' => $customer, 'products' => $products]);
 return $quote;
 ```
 
@@ -187,7 +183,9 @@ class ProductFixture implements FixtureInterface
     }
 }
 ```
-With the examples above, one can notice that there is absolutely no need for fixtures file anymore. Instead, we can simply use the fixture class in the data fixture annotation as following:
+**Class based fixtures**
+
+In the examples above, one can notice that there is absolutely no need for fixtures file anymore. Instead, we can simply and directly use fixture classes in the data fixture annotation as following:
 
 ```php
 class QuoteTest extends \PHPUnit\Framework\TestCase
@@ -208,7 +206,7 @@ class QuoteTest extends \PHPUnit\Framework\TestCase
     }
 }
 ```
-You can create as many instances of a fixture as you wish for your test case:
+One can create as many instances of a fixture as you wish for your test case:
 
 ```php
 class ProductsList extends \PHPUnit\Framework\TestCase
