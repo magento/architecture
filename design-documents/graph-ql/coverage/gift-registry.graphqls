@@ -1,6 +1,6 @@
 type Customer {
-    gitft_registry_list: [GiftRegistry]
-    gitft_registry(id: ID!): GiftRegistry
+    gift_registry_list: [GiftRegistry]
+    gift_registry(id: ID!): GiftRegistry
 }
 
 type Query {
@@ -187,7 +187,7 @@ type GiftRegistry {
     items: [GiftRegistryItemInterface]
 }
 
-type GiftRegistryItemInterface {
+interface GiftRegistryItemInterface {
     id: String!
     quantity: Float!
     quantity_fulfilled: Float!
