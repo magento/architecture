@@ -17,10 +17,12 @@ type Mutation {
     # All mutations below should only be accessible to the registry owner
     createGiftRegistry(gift_registry: CreateGiftRegistryInput): CreateGiftRegistryOutput
     updateGiftRegistry(id: ID!, gift_registry: UpdateGiftRegistryInput): UpdateGiftRegistryOutput
-    addProductsToGiftRegistry(gift_registry_id: ID!, items: [GiftRegistryItemInput!]!): AddProductsToGiftRegistryOutput
+    addGiftRegistryItems(gift_registry_id: ID!, items: [AddGiftRegistryItemInput!]!): AddGiftRegistryItemsOutput
+    removeGiftRegistryItems(gift_registry_id: ID!, item_ids: [ID!]!): RemoveGiftRegistryItemsOutput
+    updateGiftRegistryItems(gift_registry_id: ID!, items: [UpdateGiftRegistryItemInput!]!): UpdateGiftRegistryItemsOutput
 }
 
-input GiftRegistryItemInput {
+input AddGiftRegistryItemInput {
     sku: String!
     quantity: Float!
     parent_sku: String,
@@ -31,18 +33,26 @@ input GiftRegistryItemInput {
     entered_options: [EnteredOptionInput!]
 }
 
+input UpdateGiftRegistryItemInput {
+    id: ID!
+    quantity: Float!
+    note: String
+}
+
 input UpdateGiftRegistryInput {
     event_name: String
     type_id: String
     message: String
     privacy_settings: GiftRegistryPrivacySettings
     status: GiftRegistryStatus
-    registrants: [UpdateGiftRegistryRegistrantInput!] @doc(description: "As a result of the update, only the records of provided registrants will be affected. If the registrant is missing in the request, its attributes will not be changed")
+    # TODO: Consider creating separate mutations for registrants
+    registrants: [UpdateGiftRegistryRegistrantInput!] @doc(description: "In case the field is not provided in the request, no registrant records will be affected. If the field is provided, the records of existing registrants missing in the request will be removed. To preserve an existing registrant while updating the other one, provide its id only. ")
     shipping_address: GiftRegistryShippingAddressInput
     dynamic_attributes: [GiftRegistryDynamicAttributeInput!] @doc(description: "As a result of the update, only the values of provided attributes will be affected. If the attribute is missing in the request, its value will not be changed")
 }
 
 input CreateGiftRegistryInput {
+    id: ID @doc(description: "Optional id, can be generated on the client and used for sending multiple gift-registry related mutations in a single request. For example, create registry and immediatly add items.")
     event_name: String!
     type_id: String!
     message: String!
@@ -86,7 +96,15 @@ type UpdateGiftRegistryOutput {
     gift_registry: GiftRegistry
 }
 
-type AddProductsToGiftRegistryOutput {
+type AddGiftRegistryItemsOutput {
+    gift_registry: GiftRegistry
+}
+
+type RemoveGiftRegistryItemsOutput {
+    gift_registry: GiftRegistry
+}
+
+type UpdateGiftRegistryItemsOutput {
     gift_registry: GiftRegistry
 }
 
