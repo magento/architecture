@@ -149,6 +149,48 @@ type GiftRegistry {
     registrants: [GiftRegistryRegistrant]
     shipping_address: CustomerAddress @doc(description: "Accessible to the registry owner only")
     dynamic_attributes: [GiftRegistryDynamicAttribute]
+    items: [GiftRegistryItemInterface]
+}
+
+type GiftRegistryItemInterface {
+    id: String!
+    quantity: Float!
+    quantity_fulfilled: Float!
+    note: String
+    added_on: String!
+    product: ProductInterface
+}
+
+type SimpleGiftRegistryItem implements GiftRegistryItemInterface {
+    customizable_options: [SelectedCustomizableOption]
+}
+
+type BundleGiftRegistryItem implements GiftRegistryItemInterface {
+    customizable_options: [SelectedCustomizableOption]
+    bundle_options: [SelectedBundleOption!]
+}
+
+type ConfigurableGiftRegistryItem implements GiftRegistryItemInterface {
+    customizable_options: [SelectedCustomizableOption]
+    configurable_options: [SelectedConfigurableOption!]
+}
+
+type DownloadableGiftRegistryItem implements GiftRegistryItemInterface @doc(description: "Not currently supported by Magento core") {
+    customizable_options: [SelectedCustomizableOption]
+    links: [DownloadableProductLinks]
+    samples: [DownloadableProductSamples]
+}
+
+type VirtualGiftRegistryItem implements GiftRegistryItemInterface @doc(description: "Not currently supported by Magento core") {
+    customizable_options: [SelectedCustomizableOption]
+}
+
+type GiftCardGiftRegistryItem implements GiftRegistryItemInterface @doc(description: "Not currently supported by Magento core") {
+    sender_name: String!
+    recepient_name: String!
+    amount: Money!
+    message: String
+    customizable_options: [SelectedCustomizableOption]
 }
 
 interface GiftRegistryDynamicAttributeInterface  {
@@ -196,6 +238,21 @@ type StoreConfig {
     magento_giftregistry_general_max_registrant : String
 }
 
-directive @doc(
-    description: String
-) on FIELD_DEFINITION | ENUM_VALUE | OBJECT | INPUT_OBJECT | INPUT_FIELD_DEFINITION
+# This directicve is declared here to make the schema valid. It is already declared in Magento
+directive @doc(description: String="") on QUERY
+    | MUTATION
+    | FIELD
+    | FRAGMENT_DEFINITION
+    | FRAGMENT_SPREAD
+    | INLINE_FRAGMENT
+    | SCHEMA
+    | SCALAR
+    | OBJECT
+    | FIELD_DEFINITION
+    | ARGUMENT_DEFINITION
+    | INTERFACE
+    | UNION
+    | ENUM
+    | ENUM_VALUE
+    | INPUT_OBJECT
+    | INPUT_FIELD_DEFINITION
