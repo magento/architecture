@@ -66,10 +66,10 @@ type CustomerOrder {
     credit_memos: [CreditMemo]! @doc("credit memo list for the order")
     shipments: [OrderShipment]! @doc("shipment list for the order")
     payment_methods: [PaymentMethod]! @doc("payment details for the order")
-    shipping_address: CustomerAddress! @doc("shipping address for the order")
+    shipping_address: CustomerAddress @doc("shipping address for the order")
     billing_address: CustomerAddress! @doc("billing address for the order")
-    carrier: String! @doc("shipping carrier for the order delivery")
-    method: String! @doc("shipping method for the order")
+    carrier: String @doc("shipping carrier for the order delivery")
+    method: String @doc("shipping method for the order")
     comments: [CommentItem]! @doc("comments on the order")
 }
 ```
@@ -219,6 +219,7 @@ type CreditMemo {
     number: String! @doc("sequential credit memo number")
     items: [CreditMemoItem]! @doc("items refunded")
     total: CredtiMemoTotal! @doc("refund total amount details")
+    comments: [CommentItem]! @doc("comments on the credit memo")
 }
 
 @doc("Credit memo item details")
@@ -249,6 +250,7 @@ type OrderShipment {
     number: String! @doc("sequential credit shipment number")
     tracking: [ShipmentTracking] @doc("shipment tracking details")
     items: [ShipmentItem]! @doc("items included in the shipment")
+    comments: [CommentItem]! @doc("comments on the shipment")
 }
 
 @doc("Order shipment item details")
