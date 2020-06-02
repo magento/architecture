@@ -14,8 +14,21 @@ type Query {
 }
 
 type Mutation {
+    # All mutations below should only be accessible to the registry owner
     createGiftRegistry(gift_registry: CreateGiftRegistryInput): CreateGiftRegistryOutput
     updateGiftRegistry(id: ID!, gift_registry: UpdateGiftRegistryInput): UpdateGiftRegistryOutput
+    addProductsToGiftRegistry(gift_registry_id: ID!, items: [GiftRegistryItemInput!]!): AddProductsToGiftRegistryOutput
+}
+
+input GiftRegistryItemInput {
+    sku: String!
+    quantity: Float!
+    parent_sku: String,
+    note: String,
+    # see https://github.com/magento/architecture/blob/master/design-documents/graph-ql/coverage/add-items-to-cart-single-mutation.md
+    selected_options: [String!]
+    # see https://github.com/magento/architecture/blob/master/design-documents/graph-ql/coverage/add-items-to-cart-single-mutation.md
+    entered_options: [EnteredOptionInput!]
 }
 
 input UpdateGiftRegistryInput {
@@ -70,6 +83,10 @@ type CreateGiftRegistryOutput {
 }
 
 type UpdateGiftRegistryOutput {
+    gift_registry: GiftRegistry
+}
+
+type AddProductsToGiftRegistryOutput {
     gift_registry: GiftRegistry
 }
 
@@ -175,17 +192,20 @@ type ConfigurableGiftRegistryItem implements GiftRegistryItemInterface {
     configurable_options: [SelectedConfigurableOption!]
 }
 
-type DownloadableGiftRegistryItem implements GiftRegistryItemInterface @doc(description: "Not currently supported by Magento core") {
+# Not currently supported by Magento core
+type DownloadableGiftRegistryItem implements GiftRegistryItemInterface {
     customizable_options: [SelectedCustomizableOption]
     links: [DownloadableProductLinks]
     samples: [DownloadableProductSamples]
 }
 
-type VirtualGiftRegistryItem implements GiftRegistryItemInterface @doc(description: "Not currently supported by Magento core") {
+# Not currently supported by Magento core
+type VirtualGiftRegistryItem implements GiftRegistryItemInterface {
     customizable_options: [SelectedCustomizableOption]
 }
 
-type GiftCardGiftRegistryItem implements GiftRegistryItemInterface @doc(description: "Not currently supported by Magento core") {
+# Not currently supported by Magento core
+type GiftCardGiftRegistryItem implements GiftRegistryItemInterface {
     sender_name: String!
     recepient_name: String!
     amount: Money!
