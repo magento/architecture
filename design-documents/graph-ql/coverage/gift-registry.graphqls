@@ -14,12 +14,19 @@ type Query {
 }
 
 type Mutation {
-    # All mutations below should only be accessible to the registry owner
-    createGiftRegistry(gift_registry: CreateGiftRegistryInput): CreateGiftRegistryOutput
-    updateGiftRegistry(id: ID!, gift_registry: UpdateGiftRegistryInput): UpdateGiftRegistryOutput
+    # All mutations below should only be accessible to the registry owner. Guest users should be getting authorization error
+
+    createGiftRegistry(gift_registry: CreateGiftRegistryInput!): CreateGiftRegistryOutput
+    updateGiftRegistry(id: ID!, gift_registry: UpdateGiftRegistryInput!): UpdateGiftRegistryOutput
+    removeGiftRegistry(id: ID!): RemoveGiftRegistryOutput
+
     addGiftRegistryItems(gift_registry_id: ID!, items: [AddGiftRegistryItemInput!]!): AddGiftRegistryItemsOutput
     removeGiftRegistryItems(gift_registry_id: ID!, item_ids: [ID!]!): RemoveGiftRegistryItemsOutput
     updateGiftRegistryItems(gift_registry_id: ID!, items: [UpdateGiftRegistryItemInput!]!): UpdateGiftRegistryItemsOutput
+
+    addGiftRegistryRegistrants(gift_registry_id: ID!, registrants: [AddGiftRegistryRegistrantInput!]!): AddGiftRegistryRegistrantsOutput
+    updateGiftRegistryRegistrants(gift_registry_id: ID!, registrants: [UpdateGiftRegistryRegistrantInput!]!): UpdateGiftRegistryRegistrantsOutput
+    removeGiftRegistryRegistrants(gift_registry_id: ID!, registrant_ids: [ID!]!): RemoveGiftRegistryRegistrantsOutput
 }
 
 input AddGiftRegistryItemInput {
@@ -45,20 +52,17 @@ input UpdateGiftRegistryInput {
     message: String
     privacy_settings: GiftRegistryPrivacySettings
     status: GiftRegistryStatus
-    # TODO: Consider creating separate mutations for registrants
-    registrants: [UpdateGiftRegistryRegistrantInput!] @doc(description: "In case the field is not provided in the request, no registrant records will be affected. If the field is provided, the records of existing registrants missing in the request will be removed. To preserve an existing registrant while updating the other one, provide its id only. ")
     shipping_address: GiftRegistryShippingAddressInput
     dynamic_attributes: [GiftRegistryDynamicAttributeInput!] @doc(description: "As a result of the update, only the values of provided attributes will be affected. If the attribute is missing in the request, its value will not be changed")
 }
 
 input CreateGiftRegistryInput {
-    id: ID @doc(description: "Optional id, can be generated on the client and used for sending multiple gift-registry related mutations in a single request. For example, create registry and immediatly add items.")
+    id: ID @doc(description: "Optional id, can be generated on the client and used for sending multiple gift-registry related mutations in a single request. For example, create registry and immediatly add items or registrants.")
     event_name: String!
     type_id: String!
     message: String!
     privacy_settings: GiftRegistryPrivacySettings!
     status: GiftRegistryStatus!
-    registrants: [CreateGiftRegistryRegistrantInput!]!
     shipping_address: GiftRegistryShippingAddressInput
     dynamic_attributes: [GiftRegistryDynamicAttributeInput]
 }
@@ -76,7 +80,7 @@ type UpdateGiftRegistryRegistrantInput {
     dynamic_attributes: [GiftRegistryDynamicAttributeInput] @doc(description: "As a result of the update, only the values of provided attributes will be affected. If the attribute is missing in the request, its value will not be changed")
 }
 
-type CreateGiftRegistryRegistrantInput {
+type AddGiftRegistryRegistrantInput {
     first_name: String!
     last_name: String!
     email: String!
@@ -96,6 +100,10 @@ type UpdateGiftRegistryOutput {
     gift_registry: GiftRegistry
 }
 
+type RemoveGiftRegistryOutput {
+    gift_registry: GiftRegistry
+}
+
 type AddGiftRegistryItemsOutput {
     gift_registry: GiftRegistry
 }
@@ -105,6 +113,18 @@ type RemoveGiftRegistryItemsOutput {
 }
 
 type UpdateGiftRegistryItemsOutput {
+    gift_registry: GiftRegistry
+}
+
+type AddGiftRegistryRegistrantsOutput {
+    gift_registry: GiftRegistry
+}
+
+type UpdateGiftRegistryRegistrantsOutput {
+    gift_registry: GiftRegistry
+}
+
+type RemoveGiftRegistryRegistrantsOutput {
     gift_registry: GiftRegistry
 }
 
