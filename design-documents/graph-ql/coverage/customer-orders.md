@@ -60,17 +60,17 @@ type CustomerOrder {
     order_date: String! @doc("date when the order was placed")
     status: String! @doc("current status of the order")
     number: String! @doc("sequential order number")
-    items: [OrderItemInterface]! @doc("collection of all the items purchased")
-    total: OrderTotal! @doc("total amount details for the order")
-    invoices: [Invoice]! @doc("invoice list for the order")
-    credit_memos: [CreditMemo]! @doc("credit memo list for the order")
-    shipments: [OrderShipment]! @doc("shipment list for the order")
-    payment_methods: [PaymentMethod]! @doc("payment details for the order")
+    items: [OrderItemInterface] @doc("collection of all the items purchased")
+    total: OrderTotal @doc("total amount details for the order")
+    invoices: [Invoice] @doc("invoice list for the order")
+    credit_memos: [CreditMemo] @doc("credit memo list for the order")
+    shipments: [OrderShipment] @doc("shipment list for the order")
+    payment_methods: [PaymentMethod] @doc("payment details for the order")
     shipping_address: CustomerAddress @doc("shipping address for the order")
-    billing_address: CustomerAddress! @doc("billing address for the order")
+    billing_address: CustomerAddress @doc("billing address for the order")
     carrier: String @doc("shipping carrier for the order delivery")
     method: String @doc("shipping method for the order")
-    comments: [CommentItem]! @doc("comments on the order")
+    comments: [CommentItem] @doc("comments on the order")
 }
 ```
 
@@ -139,7 +139,7 @@ interface SalesTotalAmountInterface {
     subtotal: Money! @doc("subtotal amount excluding, shipping, discounts and tax")
     discounts: [Discount] @doc("applied discounts")
     total_tax: Money! @doc("total tax amount")
-    taxes: [TaxItem]! @doc("order taxes details")
+    taxes: [TaxItem] @doc("order taxes details")
     grand_total: Money! @doc("final total amount including shipping and taxes")
     base_grand_total: Money! @doc("final total amount in base currency")
 }
@@ -147,7 +147,7 @@ interface SalesTotalAmountInterface {
 @doc("Order total amounts details")
 type OrderTotal implements SalesTotalAmountInterface {
    total_shipping: Money! @doc("order shipping amount")
-   shipping_handling: ShippingHandling! @doc("shipping and handling for the order")
+   shipping_handling: ShippingHandling @doc("shipping and handling for the order")
 }
 
 @doc("Shipping handling details")
@@ -155,7 +155,7 @@ type ShippingHandling {
     total_amount: Money! @doc("shipping total amount")
     amount_inc_tax: Money @doc("shipping amount including tax")
     amount_exc_tax: Money @doc("shipping amount excluding tax")
-    taxes: [TaxItem]! @doc("shipping taxes details")
+    taxes: [TaxItem] @doc("shipping taxes details")
 }
 
 @doc("Tax item details")
@@ -175,9 +175,9 @@ The invoice entity will have the similar to the order schema:
 type Invoice {
     id: ID! @doc("the ID of the invoice, used for API purposes")
     number: String! @doc("sequential invoice number")
-    total: InvoiceTotal! @doc("invoice total amount details")
-    items: [InvoiceItemInterface]! @doc("invoiced product details")
-    comments: [CommentItem]! @doc("comments on the invoice")
+    total: InvoiceTotal @doc("invoice total amount details")
+    items: [InvoiceItemInterface] @doc("invoiced product details")
+    comments: [CommentItem] @doc("comments on the invoice")
 }
 
 @doc("Invoice item details")
@@ -195,14 +195,14 @@ type InvoiceItemInterface {
 type InvoiceItem implements InvoiceItemInterface {
 }
 
-type BundledInvoiceItem implements InvoiceItemInterface {
+type BundleInvoiceItem implements InvoiceItemInterface {
     child_items: [InvoiceItemInterface]
 }
 
 @doc("Invoice total amount details")
 type InvoiceTotal implements SalesTotalAmountInterface {
     total_shipping: Money! @doc("order shipping amount")
-    shipping_handling: ShippingHandling! @doc("shipping and handling for the order")
+    shipping_handling: ShippingHandling @doc("shipping and handling for the order")
 }
 ```
 
@@ -217,9 +217,9 @@ The credit memo entity will have the similar to the order and invoice schema:
 type CreditMemo {
     id: ID! @doc("the ID of the credit memo, used for API purposes")
     number: String! @doc("sequential credit memo number")
-    items: [CreditMemoItem]! @doc("items refunded")
-    total: CredtiMemoTotal! @doc("refund total amount details")
-    comments: [CommentItem]! @doc("comments on the credit memo")
+    items: [CreditMemoItem] @doc("items refunded")
+    total: CredtiMemoTotal @doc("refund total amount details")
+    comments: [CommentItem] @doc("comments on the credit memo")
 }
 
 @doc("Credit memo item details")
@@ -249,8 +249,8 @@ type OrderShipment {
     id: ID! @doc("the ID of the shipment, used for API purposes")
     number: String! @doc("sequential credit shipment number")
     tracking: [ShipmentTracking] @doc("shipment tracking details")
-    items: [ShipmentItem]! @doc("items included in the shipment")
-    comments: [CommentItem]! @doc("comments on the shipment")
+    items: [ShipmentItem] @doc("items included in the shipment")
+    comments: [CommentItem] @doc("comments on the shipment")
 }
 
 @doc("Order shipment item details")
