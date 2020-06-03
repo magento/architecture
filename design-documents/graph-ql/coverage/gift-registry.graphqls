@@ -67,12 +67,12 @@ input CreateGiftRegistryInput {
     dynamic_attributes: [GiftRegistryDynamicAttributeInput]
 }
 
-type GiftRegistryShippingAddressInput @doc(description: "Either address data or address ID should be provided") {
+input GiftRegistryShippingAddressInput @doc(description: "Either address data or address ID should be provided") {
     address_data: CustomerAddressInput
     address_id: Int
 }
 
-type UpdateGiftRegistryRegistrantInput {
+input UpdateGiftRegistryRegistrantInput {
     id: ID!
     first_name: String
     last_name: String
@@ -80,14 +80,14 @@ type UpdateGiftRegistryRegistrantInput {
     dynamic_attributes: [GiftRegistryDynamicAttributeInput] @doc(description: "As a result of the update, only the values of provided attributes will be affected. If the attribute is missing in the request, its value will not be changed")
 }
 
-type AddGiftRegistryRegistrantInput {
+input AddGiftRegistryRegistrantInput {
     first_name: String!
     last_name: String!
     email: String!
     dynamic_attributes: [GiftRegistryDynamicAttributeInput]
 }
 
-type GiftRegistryDynamicAttributeInput {
+input GiftRegistryDynamicAttributeInput {
     code: ID!
     value: String!
 }
