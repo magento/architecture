@@ -186,7 +186,6 @@ type InvoiceItemInterface {
     order_item: OrderItemInterface @doc("associated order item")
     product_name: String @doc("name of the base product")
     product_sku: String! @doc("SKU of the base product")
-    product_type: String @doc("Type of product (e.g. simple, configurable, bundle)")
     product_sale_price: Money! @doc("sale price for the base product including selected options")
     discounts: [Discount] @doc("final discount information for the base product including discounts on options")
     quantity_invoiced: Float @doc("number of invoiced items")
