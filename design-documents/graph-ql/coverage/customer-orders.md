@@ -183,7 +183,7 @@ type Invoice {
 @doc("Invoice item details")
 type InvoiceItemInterface {
     id: ID! @doc("invoice item unique identifier") #base64encode(invoiceItemId)
-    order_item_id: String @doc("link to order item")
+    order_item: OrderItemInterface @doc("associated order item")
     product_name: String @doc("name of the base product")
     product_sku: String! @doc("SKU of the base product")
     product_type: String @doc("Type of product (e.g. simple, configurable, bundle)")
@@ -225,7 +225,7 @@ type CreditMemo {
 @doc("Credit memo item details")
 type CreditMemoItem {
     id: ID! @doc("Credit memo item unique identifier") #base64encode(creditMemoItemId)
-    order_item_id: String @doc("link to order item")
+    order_item: OrderItemInterface @doc("associated order item")
     product_name: String @doc("name of the base product")
     product_sku: String! @doc("SKU of the base product")
     product_sale_price: Money! @doc("sale price for the base product including selected options")
@@ -234,7 +234,7 @@ type CreditMemoItem {
 }
 
 @doc("Credit memo price details")
-type CredtiMemoTotal implements SalesTotalAmountInterface {
+type CreditMemoTotal implements SalesTotalAmountInterface {
 
 }
 ```
@@ -256,7 +256,7 @@ type OrderShipment {
 @doc("Order shipment item details")
 type ShipmentItem{
     id: ID! @doc("Shipment item unique identifier") #base64encode(shipmentItemId)
-    order_item_id: String @doc("link to order item") 
+    order_item: OrderItemInterface @doc("associated order item")
     product_name: String @doc("name of the base product")
     product_sku: String! @doc("SKU of the base product")
     product_sale_price: Money! @doc("sale price for the base product")
