@@ -82,7 +82,7 @@ The `id` will be a `base64_encode(increment_id)` which in future can be replaced
 
 ```graphql
 @doc("Order item")
-type OrderItemInterface {
+interface OrderItemInterface {
     id: ID! @doc("Order item unique identifier") #base64encode(orderItemId)
     product_name: String @doc("name of the base product")
     product_sku: String! @doc("SKU of the base product")
