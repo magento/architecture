@@ -27,7 +27,7 @@ type CustomerOrders {
 ```graphql
 @doc("Allows to extend the list of search criteria for customer orders")
 input CustomerOrdersFilterInput {
-    number: String @doc("Order number. Allows to filter orders by fully or partial entered number")
+    number: FilterStringTypeInput @doc("Order number. Allows to filter orders by fully or partial entered number")
     status: String @("Order status")
     createdDate: FilterRangeTypeInput
     total: CustomerOrdersAmountFilterInput
@@ -44,6 +44,13 @@ input CustomerOrdersAmountFilterInput {
 input SalesItemFilterInput {
     name: String @doc("Order item name. Allows to filter orders by fully or partial entered order item name")
     sku: String @doc("Order item SKU. Allows to filter orders by fully or partial entered order item SKU")
+}
+
+@doc( "Defines a filter for an input string.")
+input FilterStringTypeInput  {
+    in: [String] @doc("Filters items that are exactly the same as entries specified in an array of strings.")
+    eq: String @doc("Filters items that are exactly the same as the specified string.")
+    match: String @doc("Defines a filter that performs a fuzzy search using the specified string.")
 }
 ```
 
@@ -218,7 +225,7 @@ type CreditMemo {
     id: ID! @doc("the ID of the credit memo, used for API purposes")
     number: String! @doc("sequential credit memo number")
     items: [CreditMemoItem] @doc("items refunded")
-    total: CredtiMemoTotal @doc("refund total amount details")
+    total: CreditMemoTotal @doc("refund total amount details")
     comments: [CommentItem] @doc("comments on the credit memo")
 }
 
