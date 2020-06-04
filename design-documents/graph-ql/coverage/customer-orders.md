@@ -153,9 +153,10 @@ type OrderTotal implements SalesTotalAmountInterface {
 @doc("Shipping handling details")
 type ShippingHandling {
     total_amount: Money! @doc("shipping total amount")
-    amount_inc_tax: Money @doc("shipping amount including tax")
-    amount_exc_tax: Money @doc("shipping amount excluding tax")
+    amount_including_tax: Money @doc("shipping amount including tax")
+    amount_excluding_tax: Money @doc("shipping amount excluding tax")
     taxes: [TaxItem] @doc("shipping taxes details")
+    discounts: [Discount] @doc(description: "The applied discounts to the shipping)
 }
 
 @doc("Tax item details")
