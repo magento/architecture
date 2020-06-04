@@ -25,210 +25,117 @@
 #
 
 type Customer {
-    "Get Requisition Lists of customer"
     requisitionLists(
         pageSize: Int = 20,
         currentPage: Int = 1,
         filter: RequisitionListFilterInput
-    ): RequisitionLists
+    ): RequisitionLists @doc(description: "Get Requisition Lists of customer")
 }
 
-"""
-Provides Customer's Requisition Lists
-"""
-type RequisitionLists  {
-    "List of Requisition Lists"
-    items: [RequisitionList]
-    "Page Information for pagination"
-    page_info: SearchResultPageInfo
-    "Total count of Requisition Lists"
-    total_count: Int
+type RequisitionLists @doc(description: "Provides Customer's Requisition Lists")  {
+    items: [RequisitionList] @doc(description: "List of Requisition Lists")
+    page_info: SearchResultPageInfo @doc(description: "Page Information for pagination")
+    total_count: Int @doc(description: "Total count of Requisition Lists")
 }
 
-"""
-Requisition List Type
-"""
-type RequisitionList {
-    "Unique Identifier of Requisition List"
-    id: ID!
-    "Name of the list"
-    name: String!
-    "Description of the list"
-    description: String
-    "Items in the list"
-    items: [RequisitionListItemInterface]
-    "Number of items in list"
-    items_count: Int!
-    "Latest Activity"
-    updated_at: String
+type RequisitionList @doc(description: "Requisition List Type") {
+    id: ID! @doc(description: "Unique Identifier of Requisition List")
+    name: String! @doc(description: "Name of the list")
+    description: String @doc(description: "Description of the list")
+    items: [RequisitionListItemInterface] @doc(description: "Items in the list")
+    items_count: Int! @doc(description: "Number of items in list")
+    updated_at: String @doc(description: "Latest Activity")
 }
 
-"""
-Interface type for Requisition List Item
-"""
-interface RequisitionListItemInterface {
-    "Unique Identifier of Requisition List Item"
-    id: ID!
+interface RequisitionListItemInterface @doc(description: "Interface type for Requisition List Item") {
+    id: ID! @doc(description:"Unique Identifier of Requisition List Item")
     product: ProductInterface!
-    "Quantity added"
-    qty: Float!
+    qty: Float! @doc(description: "Quantity added")
 }
 
-"""
-Requisition List Item Implementation that for Simple and Virtual Products
-"""
-type DefaultRequisitionListItem implements RequisitionListItemInterface {
-    "Unique Identifier of Requisition List Item"
-    id: ID!
+type DefaultRequisitionListItem implements RequisitionListItemInterface
+@doc(description: "Requisition List Item Implementation that for Simple and Virtual Products") {
+    id: ID! @doc(description: "Unique Identifier of Requisition List Item")
     product: ProductInterface!
-    "Quantity added"
-    qty: Float!
-    "custom Option selected"
-    customizable_options: [SelectedCustomizableOption]
+    qty: Float! @doc(description:  "Quantity added")
+    customizable_options: [SelectedCustomizableOption] @doc(description: "custom Option selected")
 }
 
-"""
-Requisition List Item Implementation that for Downloadable Products
-"""
-type DownloadableRequisitionListItem implements RequisitionListItemInterface {
-    "Unique Identifier of Requisition List Item"
-    id: ID!
+type DownloadableRequisitionListItem implements RequisitionListItemInterface
+@doc(description: "Requisition List Item Implementation that for Downloadable Products") {
+    id: ID! @doc(description: "Unique Identifier of Requisition List Item")
     product: ProductInterface!
-    "Quantity added"
-    qty: Float!
-    "custom Option selected"
-    customizable_options: [SelectedCustomizableOption]
-    "DownloadableProductLinks defines characteristics of a downloadable product"
-    links: [DownloadableProductLinks]
-    "DownloadableProductSamples defines characteristics of a downloadable product"
-    samples: [DownloadableProductSamples]
+    qty: Float! @doc(description: "Quantity added")
+    customizable_options: [SelectedCustomizableOption] @doc(description:  "custom Option selected")
+    links: [DownloadableProductLinks] @doc(description: "DownloadableProductLinks defines characteristics of a downloadable product")
+    samples: [DownloadableProductSamples] @doc(description:  "DownloadableProductSamples defines characteristics of a downloadable product")
 }
 
-"""
-Requisition List Item Implementation that for Bundle Products
-"""
-type BundleRequisitionListItem implements RequisitionListItemInterface {
-    "Unique Identifier of Requisition List Item"
-    id: ID!
+type BundleRequisitionListItem implements RequisitionListItemInterface
+@doc(description: "Requisition List Item Implementation that for Bundle Products") {
+    id: ID! @doc(description: "Unique Identifier of Requisition List Item")
     product: ProductInterface!
-    "Quantity added"
-    qty: Float!
-    "custom Option selected"
-    customizable_options: [SelectedCustomizableOption]
-    "selected bundle options"
-    bundle_options: [SelectedBundleOption]!
+    qty: Float! @doc(description: "Quantity added")
+    customizable_options: [SelectedCustomizableOption] @doc(description: "custom Option selected")
+    bundle_options: [SelectedBundleOption]! @doc(description: "selected bundle options")
 }
 
-"""
-Requisition List Item Implementation that for Configurable Products
-"""
-type ConfigurableRequisitionListItem implements RequisitionListItemInterface {
-    "Unique Identifier of Requisition List Item"
-    id: ID!
+type ConfigurableRequisitionListItem implements RequisitionListItemInterface
+@doc(description: "Requisition List Item Implementation that for Configurable Products") {
+    id: ID! @doc(description:  "Unique Identifier of Requisition List Item")
     product: ProductInterface!
-    "Quantity added"
-    qty: Float!
-    "custom Option selected"
-    customizable_options: [SelectedCustomizableOption]
-    "Configurable options selected"
-    configurable_options: [SelectedConfigurableOption]
+    qty: Float! @doc(description: "Quantity added")
+    customizable_options: [SelectedCustomizableOption] @doc(description: "custom Option selected")
+    configurable_options: [SelectedConfigurableOption] @doc(description: "Configurable options selected")
 }
 
 type Mutation {
-
-    """
-    Create Empty Requisition List
-    """
     createRequisitionList(
-        "name for the list"
-        name: String!,
-        "description For the list"
-        description: String
-    ): CreateRequisitionListOutput
+        name: String!, @doc(description: "name for the list")
+        description: String @doc(description: "description For the list")
+    ): CreateRequisitionListOutput @doc(description: "Create Empty Requisition List")
 
-    """
-    Rename a requisition list and change description"
-    """
     renameRequisitionList(
-        "unique Id of requisition list"
-        id: ID!,
-        "new name for list"
-        name: String!,
-        "new description For the List"
-        description: String
-    ): RenameRequisitionListOutput
+        id: ID!, @doc(description: "unique Id of requisition list")
+        name: String!, @doc(description: "new name for list")
+        description: String @doc(description: "new description For the List")
+    ): RenameRequisitionListOutput @doc(description: "Rename a requisition list and change description")
 
-    """
-    Delete a requisition list with Id
-    """
     deleteRequisitionList(
-        "unique Id of requisition list"
-        id: ID!
-    ): DeleteRequisitionListOutput
+        id: ID! @doc(description: "unique Id of requisition list")
+    ): DeleteRequisitionListOutput @doc(description: "Delete a requisition list with Id")
 
-    """
-    Add items to requisition list
-    """
     addProductsToRequisitionList(
-        "unique Id of requisition list"
-        id: ID!,
-        "Products to be added to requisition list"
-        items: [RequisitionListItemsInput!]!
-    ): AddProductsToRequisitionListOutput
+        id: ID!, @doc(description: "unique Id of requisition list")
+        items: [RequisitionListItemsInput!]! @doc(description: "Products to be added to requisition list")
+    ): AddProductsToRequisitionListOutput @doc(description: "Add items to requisition list")
 
-    """
-    Remove Items in requisition list
-    """
     removeRequisitionListItems(
-        "unique Id of requisition list"
-        id: ID!,
-        "unique Ids of Items to be removed from requisition list"
-        items: [ID!]!
-    ): RemoveRequisitionListItemsOutput
+        id: ID!, @doc(description: "unique Id of requisition list")
+        items: [ID!]! @doc(description: "unique Ids of Items to be removed from requisition list")
+    ): RemoveRequisitionListItemsOutput @doc(description: "Remove Items in requisition list")
 
-    """
-    Update Items in requisition list"
-    """
     updateRequisitionListItems(
-        "unique Id of requisition list"
-        id: ID!,
-        "Items to be updated from requisition list"
-        items: [UpdateRequisitionListItemsInput!]!
-    ): UpdateRequisitionListItemsOutput
+        id: ID!, @doc(description: "unique Id of requisition list")
+        items: [UpdateRequisitionListItemsInput!]! @doc(description: "Items to be updated from requisition list")
+    ): UpdateRequisitionListItemsOutput @doc(description: "Update Items in requisition list")
 
-    """
-    Add Requisition List Items To Customer Cart"
-    """
     addRequisitionListItemToCart(
-        "unique Id of requisition list"
-        requisition_list_id: ID!,
-        "selected requisition list items that are to be added"
-        item_ids: [ID!]!
-    ): AddRequisitionListItemToCartOutput
+        requisition_list_id: ID!, @doc(description: "unique Id of requisition list")
+        item_ids: [ID!]! @doc(description: "selected requisition list items that are to be added")
+    ): AddRequisitionListItemToCartOutput @doc(description: "Add Requisition List Items To Customer Cart")
 
-    """
-    Copy Items from Requisition List to another requisition list"
-    """
     copyItemsBetweenRequisitionList(
-        "unique Id of source requisition list"
-        source_id: ID!,
-        "unique Id of destination requisition list"
-        destination_id: ID, # If null new requisition list will be created
-        "selected requisition list items that are to be copied from source"
-        item_ids: [ID!]!
-    ): CopyItemsFromRequisitionListOutput
+        source_id: ID!, @doc(description: "unique Id of source requisition list")
+        destination_id: ID,  @doc(description: "unique Id of destination requisition list") # If null new requisition list will be created
+        item_ids: [ID!]! @doc(description:  "selected requisition list items that are to be copied from source")
+    ): CopyItemsFromRequisitionListOutput @doc(description: "Copy Items from Requisition List to another requisition list")
 
-    """
-    Move Items from Requisition List to another requisition List
-    """
     moveItemsBetweenRequisitionList(
-        "unique Id of source requisition list"
-        source_id: ID!,
-        "unique Id of destination requisition list"
-        destination_id: ID, # If null new requisition list will be created
-        "selected requisition list items that are to be moved from source"
-        item_ids: [ID!]!
-    ): MoveItemsFromRequisitionListOutput
+        source_id: ID!, @doc(description: "unique Id of source requisition list")
+        destination_id: ID, @doc(description: "unique Id of destination requisition list") # If null new requisition list will be created
+        item_ids: [ID!]! @doc(description: "selected requisition list items that are to be moved from source")
+    ): MoveItemsFromRequisitionListOutput @doc(description: "Move Items from Requisition List to another requisition List")
 }
 
 type RemoveRequisitionListItemsOutput {
@@ -244,25 +151,20 @@ type AddProductsToRequisitionListOutput {
 }
 
 input RequisitionListFilterInput {
-    "Filter Customer Requisition lists with an requisition list ID or list of requisition list IDs"
-    ids: FilterEqualTypeInput,
-    "Filter by display name of the Requisition list"
-    name: FilterMatchTypeInput
+    ids: FilterEqualTypeInput, @doc(description: "Filter Customer Requisition lists with an requisition list ID or list of requisition list IDs")
+    name: FilterMatchTypeInput @doc(description: "Filter by display name of the Requisition list")
 }
 
 input RequisitionListItemsInput {
     sku: String!
     quantity: Float
     parent_sku: String
-    "selected option ID"
-    selected_options: [String!]
-    "entered Options ID"
-    entered_options: [EnteredOptionInput!]
+    selected_options: [String!] @doc(description: "selected option ID")
+    entered_options: [EnteredOptionInput!] @doc(description: "entered Options ID")
 }
 
 input UpdateRequisitionListItemsInput {
-    "unique ID of Requisition List Item"
-    item_id: ID!
+    item_id: ID! @doc(description: "unique ID of Requisition List Item")
     customizable_options: [CustomizableOptionInput]
     quantity: Float
 }
@@ -284,13 +186,10 @@ type AddRequisitionListItemToCartOutput {
 }
 
 type CopyItemsFromRequisitionListOutput {
-    "Destination Requisition List"
-    list : RequisitionList # since source requisition list is not mutated it is not part of the output
+    list : RequisitionList  @doc(description:  "Destination Requisition List")# since source requisition list is not mutated it is not part of the output
 }
 
 type MoveItemsFromRequisitionListOutput {
-    "Source Requisition List"
-    source : RequisitionList
-    "Destination Requisition List"
-    destination : RequisitionList
+    source : RequisitionList @doc(description:  "Source Requisition List")
+    destination : RequisitionList @doc(description: "Destination Requisition List")
 }
