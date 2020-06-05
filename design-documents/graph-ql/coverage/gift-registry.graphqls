@@ -40,6 +40,12 @@ input AddGiftRegistryItemInput {
     entered_options: [EnteredOptionInput!]
 }
 
+# Should be defined in scope of https://github.com/magento/architecture/blob/master/design-documents/graph-ql/coverage/add-items-to-cart-single-mutation.md
+input EnteredOptionInput {
+    id: String!
+    value: String!
+}
+
 input UpdateGiftRegistryItemInput {
     id: ID!
     quantity: Float!
@@ -67,7 +73,7 @@ input CreateGiftRegistryInput {
     dynamic_attributes: [GiftRegistryDynamicAttributeInput]
 }
 
-input GiftRegistryShippingAddressInput @doc(description: "Either address data or address ID should be provided") {
+input GiftRegistryShippingAddressInput @doc(description: "Either address data or address ID should be provided. In case both are provided, validation will fail") {
     address_data: CustomerAddressInput
     address_id: Int
 }
@@ -160,12 +166,17 @@ enum GiftRegistryDateAttributeFormat {
     FULL
 }
 
-type GiftRegistryCountryAttributeMetadata implements GiftRegistryDynamicAttributeMetadataInterface {
+type GiftRegistryCountryAttributeMetadata implements GiftRegistryDynamicAttributeMetadataInterface, GiftRegistrySelectAttributeMetadataInterface {
+    show_region: Boolean!
+}
+type GiftRegistryRegionAttributeMetadata implements GiftRegistryDynamicAttributeMetadataInterface, GiftRegistrySelectAttributeMetadataInterface {
+}
+
+type GiftRegistryEventCountryAttributeMetadata implements GiftRegistryDynamicAttributeMetadataInterface, GiftRegistrySearcheableAttributeMetadataInterface, GiftRegistrySelectAttributeMetadataInterface {
     show_region: Boolean!
 }
 
-type GiftRegistryEventCountryAttributeMetadata implements GiftRegistryDynamicAttributeMetadataInterface, GiftRegistrySearcheableAttributeMetadataInterface {
-    show_region: Boolean!
+type GiftRegistryEventRegionAttributeMetadata implements GiftRegistryDynamicAttributeMetadataInterface, GiftRegistrySearcheableAttributeMetadataInterface, GiftRegistrySelectAttributeMetadataInterface {
 }
 
 type GiftRegistryEventDateAttributeMetadata implements GiftRegistryDynamicAttributeMetadataInterface, GiftRegistrySearcheableAttributeMetadataInterface {
