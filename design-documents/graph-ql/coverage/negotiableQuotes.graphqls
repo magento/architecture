@@ -1,11 +1,15 @@
 type Mutation {
-    requestNegotiableQuote(
-        negotiableQuote: NegotiableQuoteRequestInput!
+    createNegotiableQuote(
+        cart_id: ID! @doc(description: "Cart ID")
+        quote_name: String @doc(description: "Quote name")
+        comment: String @doc(description: "Comment")
+        files: [FileInput!] @doc(description: "Attached files")
     ): RequestNegotiableQuoteOutput! @doc(description:"Generates negotiable quote request")
 
     setShippingMethodsOnNegotiableQuote(
-        negotiableQuoteShippingMethod: NegotiableQuoteShippingMethodInput!
-    ): setShippingMethodsOnNegotiableQuoteOutput @doc(description:"Set negotiable quote shipping method")
+        cart_id: ID! @doc(description: "Cart ID")
+        shipping_methods: [String!]! @doc(description: "Input for shipping method")
+    ): SetShippingMethodsOnNegotiableQuoteOutput @doc(description:"Set negotiable quote shipping method")
 }
 
 type Customer {
@@ -28,12 +32,13 @@ type Customer {
 }
 
 type NegotiableQuote {
+    quote_id: ID!  @doc(description: "Negotiable quote ID")
     items: [NegotiableQuoteItem] @doc(description: "Negotiable quote item")
     attachements: [AttachmentContent] @doc(description: "Negotiable quote Attachements")
     comments: [NegotiableQuoteComment] @doc(description: "Negotiable quote comments")
     totals: TotalsOutput! @doc(description: "Negotiable quote totals output")
     payment_info: NegotiableQuotePaymentInfo! @doc(description: "Negotiable quote payment info.")
-    available_payment_methods: [PaymentMethodsOutput] @doc(description: "Available payment methods")
+    available_shipping_methods: [ShippingMethodsOutput]! @doc(description: "Available shipping methods")
 }
 
 input NegotiableQuoteFilterInput {
@@ -42,7 +47,7 @@ input NegotiableQuoteFilterInput {
 }
 
 type NegotiableQuoteItem {
-    id: String!
+    id: ID!
     quantity: Float!
     product: ProductInterface!
 }
@@ -102,13 +107,6 @@ type CartDiscount {
     label: [String!]!
 }
 
-input NegotiableQuoteRequestInput {
-    quote_id: ID! @doc(description: "Quote hash")
-    quote_name: String @doc(description: "Quote name")
-    comment: String @doc(description: "Comment")
-    files: [FileInput] @doc(description: "Attached files")
-}
-
 type RequestNegotiableQuoteOutput {
     negotiable_quote:NegotiableQuote!
 }
@@ -144,23 +142,6 @@ type ShippingMethodsOutput {
     price_incl_tax: String @doc(description: "Shipping method price with inclusive tax")
 }
 
-input NegotiableQuoteBillAddressInput {
-    firstname: String! @doc(description: "The first name of the person associated with the billing address")
-    lastname: String! @doc(description: "The family name of the person associated with the billing address")
-    telephone: String! @doc(description: "The telephone number")
-    street: [String]! @doc(description: "A list of strings that define the street number and name")
-    city: String! @doc(description: "The city or town")
-    region: String! @doc(description: "The region name")
-    region_id: Int @doc(description: "The region ID")
-    postcode: String! @doc(description: "The customer's ZIP or postal code")
-    country_code: String! @doc(description: "The country code")
-}
-
-input NegotiableQuoteShippingMethodInput {
-    quote_id: ID! @doc(description: "Quote hash")
-    shipping_method: [String!]! @doc(description: "Input for shipping method")
-}
-
-type setShippingMethodsOnNegotiableQuoteOutput {
+type SetShippingMethodsOnNegotiableQuoteOutput {
     shipping_method_set: Boolean!
 }
