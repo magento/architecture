@@ -27,6 +27,20 @@ type Mutation {
     addGiftRegistryRegistrants(gift_registry_id: ID!, registrants: [AddGiftRegistryRegistrantInput!]!): AddGiftRegistryRegistrantsOutput
     updateGiftRegistryRegistrants(gift_registry_id: ID!, registrants: [UpdateGiftRegistryRegistrantInput!]!): UpdateGiftRegistryRegistrantsOutput
     removeGiftRegistryRegistrants(gift_registry_id: ID!, registrant_ids: [ID!]!): RemoveGiftRegistryRegistrantsOutput
+
+    shareGiftRegistry(id: ID!, sender: ShareGiftRegistrySenderInput!, invitees: [ShareGiftRegistryInviteeInput!]!): ShareGiftRegistryOutput
+}
+
+input ShareGiftRegistryInviteeInput
+{
+    name: String!
+    email: String!
+}
+
+input ShareGiftRegistrySenderInput
+{
+    name: String!
+    message: String!
 }
 
 input AddGiftRegistryItemInput {
@@ -107,7 +121,7 @@ type UpdateGiftRegistryOutput {
 }
 
 type RemoveGiftRegistryOutput {
-    gift_registry: GiftRegistry
+    is_removed: Boolean!
 }
 
 type AddGiftRegistryItemsOutput {
@@ -131,6 +145,10 @@ type UpdateGiftRegistryRegistrantsOutput {
 }
 
 type RemoveGiftRegistryRegistrantsOutput {
+    gift_registry: GiftRegistry
+}
+
+type ShareGiftRegistryOutput {
     gift_registry: GiftRegistry
 }
 

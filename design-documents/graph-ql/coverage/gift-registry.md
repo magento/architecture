@@ -39,57 +39,141 @@ First, get a list of available gift registry types and dynamic attributes metada
 }
 ``` 
 
-Then create a new gift registry based on the user input:
+Then create a new gift registry based on the user input. Registrants are added using a separate mutation, which can be sent in the same request if gift registry ID is client-side generated.
 ```graphql
-mutation {
-  createGiftRegistry(
-    gift_registry: {
-      id: "optional client-generated ID"
-      event_name: "My Birthday"
-      type_id: "2"
-      message: "Pleas come to my birthday"
-      privacy_settings: PUBLIC
-      status: ACTIVE
-      shipping_address: {
-        address_id: 3
+# In real query only one should be provided: existing address ID OR address data
+mutation CreateGiftRegistryWithRegistrants($giftRegistryData: CreateGiftRegistryInput!, $giftRegistryId: ID!, $registrantsData: [AddGiftRegistryRegistrantInput!]!) {
+  createGiftRegistry(gift_registry: $giftRegistryData) {
+    gift_registry {
+      id
+      event_name
+      shipping_address {
+        id
+      	street
+    	}
+    }
+  }
+  addGiftRegistryRegistrants(gift_registry_id: $giftRegistryId, registrants: $registrantsData) {
+    gift_registry {
+      registrants {
+        id
+        first_name
+        last_name
+        email
+        dynamic_attributes {
+          code
+          value
+          label
+        }
       }
-      dynamic_attributes: [
+    }
+  }
+}
+```
+The following JSON represents query variables for the `CreateGiftRegistryWithRegistrants` mutation above.
+```json
+{
+  "giftRegistryId": "optional client-generated ID",
+  "giftRegistryData": {
+      "id": "optional client-generated ID",
+      "event_name": "My Birthday",
+      "type_id": "2",
+      "message": "Pleas come to my birthday",
+      "privacy_settings":"PUBLIC",
+      "status": "ACTIVE",
+      "shipping_address": {
+        "address_id": 3,
+        "address_data": {
+          "firstname": "John",
+          "lastname": "Doe",
+          "street": ["123 Some Avenue"],
+          "city": "Austin",
+          "region": {
+            "region_code": "TX"
+          },
+          "postcode": "78758",
+          "company": "Magento",
+          "country_code": "US"
+        }
+      },
+      "dynamic_attributes": [
         {
-          code: "event_country"
-          value: "US"
+          "code": "event_country",
+          "value": "US"
         },
         {
-          code: "event_date"
-          value: "6/2/20"
+          "code": "event_date",
+          "value": "6/2/20"
+        }
+      ]
+  },
+  "registrantsData": [
+    {
+      "email": "John@example.com",
+      "first_name": "John",
+      "last_name": "Roller",
+      "dynamic_attributes": [
+        {
+          "code": "diet",
+          "value": "none"
         }
       ]
     }
-  )
+  ]
 }
 ```
 
+### Gift registry owner views the list of the gift registries created earlier
+
++
+
+### Gift registry owner views the existing gift registry details
+
++
+
 ### Gift registry owner modifies an existing gift registry
+
++
 
 ### Gift registry owner removes items from an existing gift registry
 
++
+
 ### Gift registry owner removes an existing gift registry
+
++
 
 ### Gift registry owner adds items to the gift registry from cart
 
+?
+
 ### Gift registry owner adds items to the gift registry from wish list
 
-### Gift registry owner shares a gift registry with friends
+?
 
 ### Gift registry visitor adds items from the gift registry to the cart
 
+?
+
 ### Storefront application retrieves gift registry search form metadata
+
+?
 
 ### Gift registry visitor searches a gift registry by the recipient name
 
++
 Search by registrant name and dynamic attributes.
  
 Explicitly excluded scenarios: search by ID and by email. 
 
+
+### Gift registry owner shares a gift registry with friends
+
+When gift registry is shared with the invitees, the email they receive will contain a link. 
+This link will contain gift registry hash as query parameter and should lead to the page processed by the storefront application. 
+The application should parse the URL, extract gift registry ID hash and query gift registry details by ID. 
+
+
 ### Gift registry visitor opens a gift registry using the link from email
 
-### Storefront application retrieves gift registry edit form metadata
+
