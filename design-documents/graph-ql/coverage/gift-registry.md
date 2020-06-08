@@ -498,7 +498,22 @@ The following JSON should be provided as query variables for the mutation above:
 
 ### Gift registry owner adds items to the gift registry from wish list
 
-?
+Wishlist query does not support fetching the information about selected options and need to be extended. After that the same mutation can be used to add items to gift registry as describe above in the use case of adding items to gift registry from cart.
+
+```graphql
+{
+  customer {
+    wishlist {
+      items {
+        qty
+        product {
+          sku
+        }
+      }
+    }
+  }
+}
+```
 
 ### Gift registry visitor adds items from the gift registry to the cart
 
