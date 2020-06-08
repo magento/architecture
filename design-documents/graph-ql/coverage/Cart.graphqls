@@ -40,22 +40,22 @@ interface CartItemInterface @typeResolver(class: "Magento\\QuoteGraphQl\\Model\\
     quantity: Float!
     prices: CartItemPrices
     product: ProductInterface!
+    customizable_options: [SelectedCustomizableOption]
 }
 
 type SimpleCartItem implements CartItemInterface @doc(description: "Simple Cart Item") {
-    customizable_options: [SelectedCustomizableOption]
 }
 
 type VirtualCartItem implements CartItemInterface @doc(description: "Virtual Cart Item") {
-    customizable_options: [SelectedCustomizableOption]
 }
 
 type ConfigurableCartItem implements CartItemInterface {
-    customizable_options: [SelectedCustomizableOption]!
+    child_sku: String! @doc(description: "SKU of the simple product corresponding to a set of selected configurable options.")
     configurable_options: [SelectedConfigurableOption!]!
 }
 
 type SelectedConfigurableOption {
+    value_hash: String! @doc(description: "Hash which includes option ID, option type and slected values. Can be used to move configurable product to wishlist or gift registry")
     id: Int!
     option_label: String!
     value_id: Int!
@@ -63,12 +63,12 @@ type SelectedConfigurableOption {
 }
 
 type DownloadableCartItem implements CartItemInterface @doc(description: "Downloadable Cart Item") {
-    customizable_options: [SelectedCustomizableOption]
     links: [DownloadableProductLinks] @doc(description: "An array containing information about the links for the added to cart downloadable product")
     samples: [DownloadableProductSamples] @doc(description: "DownloadableProductSamples defines characteristics of a downloadable product")
 }
 
 type DownloadableProductLinks @doc(description: "DownloadableProductLinks defines characteristics of a downloadable product") {
+    link_hash: String! @doc(description: "Hash based on option type and slected link. Can be used to move downloadable product to wishlist or gift registry")
     title: String @doc(description: "The display name of the link")
     sort_order: Int @doc(description: "A number indicating the sort order")
     price: Float @doc(description: "The price of the downloadable product")
@@ -82,12 +82,12 @@ type DownloadableProductSamples @doc(description: "DownloadableProductSamples de
 }
 
 type BundleCartItem implements CartItemInterface {
-    customizable_options: [SelectedCustomizableOption]!
     bundle_options: [SelectedBundleOption!]!
 }
 
 type SelectedBundleOption {
     id: Int!
+    values_hash: String! @doc(description: "Hash which includes option ID, option type and slected values. Can be used to move bundle product to wishlist or gift registry")
     label: String!
     type: String!
     values: [SelectedBundleOptionValue!]!
@@ -101,6 +101,7 @@ type SelectedBundleOptionValue {
 }
 
 type SelectedCustomizableOption {
+    values_hash: String! @doc(description: "Hash which includes option ID, option type and slected values. Can be used to move a product to wishlist or gift registry")
     id: Int!
     label: String!
     is_required: Boolean!
