@@ -314,7 +314,187 @@ mutation RemoveGiftRegistry($giftRegistryId: ID!) {
 
 ### Gift registry owner adds items to the gift registry from cart
 
-?
+First get the cart item data which can be used to add a new item to the gift registry:
+
+```graphql
+{
+  customerCart {
+    items {
+      id
+      quantity
+      product {
+        sku
+      }
+      ... on SimpleCartItem {
+        customizable_options {
+          id
+          values {
+            id
+            value
+          }
+        }
+      }
+      ... on VirtualCartItem {
+        customizable_options {
+          id
+          values {
+            id
+            value
+          }
+        }
+      }
+      ... on DownloadableCartItem {
+        customizable_options {
+          id
+          values {
+            id
+          }
+        }
+      }
+      ... on BundleCartItem {
+        bundle_options {
+          id
+          values {
+            id
+            quantity
+          }
+        }
+        customizable_options {
+          id
+          values {
+            id
+            value
+          }
+        }
+      }
+      ... on ConfigurableCartItem {
+        configurable_options {
+          id
+          value_id
+        }
+        customizable_options {
+          id
+          values {
+            id
+            value
+          }
+        }
+      }
+    }
+  }
+}
+
+```
+
+Based on that information we can send a mutation to add the selected item to gift registry.
+
+```graphql
+mutation AddGiftRegistryItems($giftRegistryId: ID!, $giftRegistryItems: [AddGiftRegistryItemInput!]!) {
+  addGiftRegistryItems(gift_registry_id: $giftRegistryId, items: $giftRegistryItems) {
+    gift_registry {
+      event_name
+      items {
+        id
+        product {
+          name
+          thumbnail {
+            url
+          }
+        }
+        selected_customizable_options {
+          id
+          is_required
+          label
+          sort_order
+          values {
+            id
+            price {
+              type
+              units
+              value
+            }
+            value
+            label
+          }
+        }
+        added_on
+        note
+        quantity
+        quantity_fulfilled
+        ... on BundleGiftRegistryItem {
+            selected_bundle_options {
+            	id
+              label
+              type
+              values {
+                id
+                label
+                price
+                quantity
+              }
+            }
+          }
+        ... on ConfigurableGiftRegistryItem {
+          selected_configurable_options {
+            id
+            option_label
+            value_id
+            value_label
+          }
+        }
+        ... on DownloadableGiftRegistryItem {
+          links {
+            price
+            sample_url
+            sort_order
+            title
+          }
+          samples {
+            sample_url
+            sort_order
+            title
+          }
+        }
+        ... on GiftCardGiftRegistryItem {
+          sender_name
+          recepient_name
+          amount {
+            currency
+            value
+          }
+          message
+        }
+      }
+    }
+  }
+}
+```
+
+The following JSON should be provided as query variables for the mutation above:
+
+```json
+{
+  "giftRegistryId": "existing-gift-registry-id",
+  "giftRegistryItems": [
+    {
+      "sku": "custom-hat-red",
+      "quantity": 2.0,
+      "note": "Really like this color",
+      "parent_sku": "custom-hat",
+      "selected_options": [
+			 	"hash from the color option ID and its value ID",
+        "hash from the size option ID and its value ID"
+      ],
+      "entered_options": [
+      	{
+          "id": "hash from custom phrase option ID",
+          "value": "Custom Hat"
+        }
+      ]
+    }
+  ]
+}
+```
 
 ### Gift registry owner adds items to the gift registry from wish list
 

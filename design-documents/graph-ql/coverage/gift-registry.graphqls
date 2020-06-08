@@ -243,32 +243,28 @@ interface GiftRegistryItemInterface {
     note: String
     added_on: String!
     product: ProductInterface
+    selected_customizable_options: [SelectedCustomizableOption]
 }
 
 type SimpleGiftRegistryItem implements GiftRegistryItemInterface {
-    customizable_options: [SelectedCustomizableOption]
 }
 
 type BundleGiftRegistryItem implements GiftRegistryItemInterface {
-    customizable_options: [SelectedCustomizableOption]
-    bundle_options: [SelectedBundleOption!]
+    selected_bundle_options: [SelectedBundleOption!]
 }
 
 type ConfigurableGiftRegistryItem implements GiftRegistryItemInterface {
-    customizable_options: [SelectedCustomizableOption]
-    configurable_options: [SelectedConfigurableOption!]
+    selected_configurable_options: [SelectedConfigurableOption!]
 }
 
 # Not currently supported by Magento core
 type DownloadableGiftRegistryItem implements GiftRegistryItemInterface {
-    customizable_options: [SelectedCustomizableOption]
     links: [DownloadableProductLinks]
     samples: [DownloadableProductSamples]
 }
 
 # Not currently supported by Magento core
 type VirtualGiftRegistryItem implements GiftRegistryItemInterface {
-    customizable_options: [SelectedCustomizableOption]
 }
 
 # Not currently supported by Magento core
@@ -277,7 +273,6 @@ type GiftCardGiftRegistryItem implements GiftRegistryItemInterface {
     recepient_name: String!
     amount: Money!
     message: String
-    customizable_options: [SelectedCustomizableOption]
 }
 
 interface GiftRegistryDynamicAttributeInterface  {
@@ -324,22 +319,3 @@ type StoreConfig {
     magento_giftregistry_general_enabled : String
     magento_giftregistry_general_max_registrant : String
 }
-
-# This directicve is declared here to make the schema valid. It is already declared in Magento
-directive @doc(description: String="") on QUERY
-    | MUTATION
-    | FIELD
-    | FRAGMENT_DEFINITION
-    | FRAGMENT_SPREAD
-    | INLINE_FRAGMENT
-    | SCHEMA
-    | SCALAR
-    | OBJECT
-    | FIELD_DEFINITION
-    | ARGUMENT_DEFINITION
-    | INTERFACE
-    | UNION
-    | ENUM
-    | ENUM_VALUE
-    | INPUT_OBJECT
-    | INPUT_FIELD_DEFINITION
