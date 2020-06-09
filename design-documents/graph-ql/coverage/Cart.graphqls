@@ -51,7 +51,7 @@ type VirtualCartItem implements CartItemInterface @doc(description: "Virtual Car
 
 type ConfigurableCartItem implements CartItemInterface {
     child_sku: String! @doc(description: "SKU of the simple product corresponding to a set of selected configurable options.")
-    configurable_options: [SelectedConfigurableOption!]!
+    configurable_options: [SelectedConfigurableOption!]
 }
 
 type SelectedConfigurableOption {
@@ -63,7 +63,7 @@ type SelectedConfigurableOption {
 }
 
 type DownloadableCartItem implements CartItemInterface @doc(description: "Downloadable Cart Item") {
-    links: [DownloadableProductLinks] @doc(description: "An array containing information about the links for the added to cart downloadable product")
+    links: [DownloadableProductLinks] @doc(description: "An array containing information about the selected links")
     samples: [DownloadableProductSamples] @doc(description: "DownloadableProductSamples defines characteristics of a downloadable product")
 }
 
@@ -82,7 +82,7 @@ type DownloadableProductSamples @doc(description: "DownloadableProductSamples de
 }
 
 type BundleCartItem implements CartItemInterface {
-    bundle_options: [SelectedBundleOption!]!
+    bundle_options: [SelectedBundleOption!]
 }
 
 type SelectedBundleOption {

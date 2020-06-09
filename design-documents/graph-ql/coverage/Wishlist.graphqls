@@ -59,10 +59,32 @@ type WishlistOutput @deprecated(reason: "Deprecated: `Wishlist` type should be u
     updated_at: String @deprecated
 }
 
-type WishlistItem {
+type WishlistItemInterface {
     id: ID
     qty: Float
     description: String
     added_at: String
     product: ProductInterface
+    customizable_options: [SelectedCustomizableOption]
 }
+
+type SimpleWishlistItem implements WishlistItemInterface @doc(description: "Simple Wishlist Item") {
+}
+
+type VirtualWishlistItem implements WishlistItemInterface @doc(description: "Virtual Wishlist Item") {
+}
+
+type ConfigurableWishlistItem implements WishlistItemInterface {
+    child_sku: String! @doc(description: "SKU of the simple product corresponding to a set of selected configurable options.")
+    configurable_options: [SelectedConfigurableOption!]
+}
+
+type DownloadableWishlistItem implements WishlistItemInterface @doc(description: "Downloadable Wishlist Item") {
+    links: [DownloadableProductLinks] @doc(description: "An array containing information about the selected links")
+    samples: [DownloadableProductSamples] @doc(description: "DownloadableProductSamples defines characteristics of a downloadable product")
+}
+
+type BundleWishlistItem implements WishlistItemInterface {
+    bundle_options: [SelectedBundleOption!]
+}
+
