@@ -43,7 +43,7 @@ Then create a new gift registry based on the user input. Registrants are added u
 ```graphql
 # In real query only one should be provided: existing address ID OR address data
 mutation CreateGiftRegistryWithRegistrants($giftRegistryData: CreateGiftRegistryInput!, $giftRegistryId: ID!, $registrantsData: [AddGiftRegistryRegistrantInput!]!) {
-  createGiftRegistry(gift_registry: $giftRegistryData) {
+  createGiftRegistry(giftRegistry: $giftRegistryData) {
     gift_registry {
       id
       event_name
@@ -53,7 +53,7 @@ mutation CreateGiftRegistryWithRegistrants($giftRegistryData: CreateGiftRegistry
     	}
     }
   }
-  addGiftRegistryRegistrants(gift_registry_id: $giftRegistryId, registrants: $registrantsData) {
+  addGiftRegistryRegistrants(giftRegistryId: $giftRegistryId, registrants: $registrantsData) {
     gift_registry {
       registrants {
         id
@@ -222,7 +222,7 @@ Modify gift registry data:
 
 ```graphql
 mutation UpdateGiftRegistryWithRegistrants($giftRegistryId: ID!, $giftRegistryData: UpdateGiftRegistryInput!, $registrantsData: [UpdateGiftRegistryRegistrantInput!]!) {
-  updateGiftRegistry(id: $giftRegistryId, gift_registry: $giftRegistryData) {
+  updateGiftRegistry(id: $giftRegistryId, giftRegistry: $giftRegistryData) {
     gift_registry {
       id
       event_name
@@ -232,7 +232,7 @@ mutation UpdateGiftRegistryWithRegistrants($giftRegistryId: ID!, $giftRegistryDa
     	}
     }
   }
-  updateGiftRegistryRegistrants(gift_registry_id: $giftRegistryId, registrants: $registrantsData) {
+  updateGiftRegistryRegistrants(giftRegistryId: $giftRegistryId, registrants: $registrantsData) {
     gift_registry {
       registrants {
         id
@@ -390,7 +390,7 @@ Based on that information we can send a mutation to add the selected item to gif
 
 ```graphql
 mutation AddGiftRegistryItems($giftRegistryId: ID!, $giftRegistryItems: [AddGiftRegistryItemInput!]!) {
-  addGiftRegistryItems(gift_registry_id: $giftRegistryId, items: $giftRegistryItems) {
+  addGiftRegistryItems(giftRegistryId: $giftRegistryId, items: $giftRegistryItems) {
     gift_registry {
       event_name
       items {

@@ -5,9 +5,9 @@ type Query {
 type Mutation {
     createWishlist(name: String!): ID # Multiple wishlists Commerce functionality
     removeWishlist(id: ID!): Boolean # Commerce fucntionality - in Opens Source we assume customer always has one wishlist
-    addProductsToWishlist(wishlist_id: ID!, wishlist_items: [WishlistItemInput!]!): AddProductsToWishlistOutput
-    removeProductsFromWishlist(wishlist_id: ID!, wishlist_items_ids: [ID!]!): RemoveProductsFromWishlistOutput
-    updateProductsInWishlist(wishlist_id: ID!, wishlist_items: [WishlistItemUpdateInput!]!): UpdateProductsInWishlistOutput
+    addProductsToWishlist(wishlistId: ID!, wishlistItems: [WishlistItemInput!]!): AddProductsToWishlistOutput
+    removeProductsFromWishlist(wishlistId: ID!, wishlistItemsIds: [ID!]!): RemoveProductsFromWishlistOutput
+    updateProductsInWishlist(wishlistId: ID!, wishlistItems: [WishlistItemUpdateInput!]!): UpdateProductsInWishlistOutput
 }
 
 type Customer {

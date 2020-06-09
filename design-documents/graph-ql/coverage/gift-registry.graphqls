@@ -6,27 +6,27 @@ type Customer {
 type Query {
     giftRegistryTypes: [GiftRegistryType] @doc(description: "Get a list of available gift registry types")
     giftRegistrySearch(
-        registrant_firstname: String!,
-        registrant_lastname: String!,
-        gift_registry_type_id: ID,
-        searchable_dynamic_attributes: [GiftRegistryDynamicAttributeInput] @doc(description: "For select attributes ID should be provided expected. For range search, '_from' and '_to' suffixes can be added to the attribute code. For text attributes provide value for exact matching.")
+        registrantFirstname: String!,
+        registrantLastname: String!,
+        giftRegistryTypeId: ID,
+        searchableDynamicAttributes: [GiftRegistryDynamicAttributeInput] @doc(description: "For select attributes ID should be provided expected. For range search, '_from' and '_to' suffixes can be added to the attribute code. For text attributes provide value for exact matching.")
     ): [GiftRegistry] @doc(description: "Gift registry search by registrant name and additional searchable attributes.")
 }
 
 type Mutation {
     # All mutations below should only be accessible to the registry owner. Guest users should be getting authorization error
 
-    createGiftRegistry(gift_registry: CreateGiftRegistryInput!): CreateGiftRegistryOutput
-    updateGiftRegistry(id: ID!, gift_registry: UpdateGiftRegistryInput!): UpdateGiftRegistryOutput
+    createGiftRegistry(giftRegistry: CreateGiftRegistryInput!): CreateGiftRegistryOutput
+    updateGiftRegistry(id: ID!, giftRegistry: UpdateGiftRegistryInput!): UpdateGiftRegistryOutput
     removeGiftRegistry(id: ID!): RemoveGiftRegistryOutput
 
-    addGiftRegistryItems(gift_registry_id: ID!, items: [AddGiftRegistryItemInput!]!): AddGiftRegistryItemsOutput
-    removeGiftRegistryItems(gift_registry_id: ID!, item_ids: [ID!]!): RemoveGiftRegistryItemsOutput
-    updateGiftRegistryItems(gift_registry_id: ID!, items: [UpdateGiftRegistryItemInput!]!): UpdateGiftRegistryItemsOutput
+    addGiftRegistryItems(giftRegistryId: ID!, items: [AddGiftRegistryItemInput!]!): AddGiftRegistryItemsOutput
+    removeGiftRegistryItems(giftRegistryId: ID!, itemIds: [ID!]!): RemoveGiftRegistryItemsOutput
+    updateGiftRegistryItems(giftRegistryId: ID!, items: [UpdateGiftRegistryItemInput!]!): UpdateGiftRegistryItemsOutput
 
-    addGiftRegistryRegistrants(gift_registry_id: ID!, registrants: [AddGiftRegistryRegistrantInput!]!): AddGiftRegistryRegistrantsOutput
-    updateGiftRegistryRegistrants(gift_registry_id: ID!, registrants: [UpdateGiftRegistryRegistrantInput!]!): UpdateGiftRegistryRegistrantsOutput
-    removeGiftRegistryRegistrants(gift_registry_id: ID!, registrant_ids: [ID!]!): RemoveGiftRegistryRegistrantsOutput
+    addGiftRegistryRegistrants(giftRegistryId: ID!, registrants: [AddGiftRegistryRegistrantInput!]!): AddGiftRegistryRegistrantsOutput
+    updateGiftRegistryRegistrants(giftRegistryId: ID!, registrants: [UpdateGiftRegistryRegistrantInput!]!): UpdateGiftRegistryRegistrantsOutput
+    removeGiftRegistryRegistrants(giftRegistryId: ID!, registrantIds: [ID!]!): RemoveGiftRegistryRegistrantsOutput
 
     shareGiftRegistry(id: ID!, sender: ShareGiftRegistrySenderInput!, invitees: [ShareGiftRegistryInviteeInput!]!): ShareGiftRegistryOutput
 }
