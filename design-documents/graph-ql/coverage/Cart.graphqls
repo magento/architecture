@@ -87,9 +87,7 @@ type BundleCartItem implements CartItemInterface {
 }
 
 type SelectedBundleOption {
-    id_v2: ID! @doc(description: "Hash which includes option ID, option type and slected values. Can be used to move bundle product to wishlist or gift registry")
     id: Int!
-    child_sku: String!
     label: String!
     type: String!
     values: [SelectedBundleOptionValue!]!
@@ -98,8 +96,9 @@ type SelectedBundleOption {
 type SelectedBundleOptionValue {
     id: Int!
     label: String!
-    quantity: Float!
     price: Float!
+    quantity: Float!
+    child_sku: String!
 }
 
 type SelectedCustomizableOption {
