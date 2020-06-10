@@ -54,18 +54,29 @@ type ConfigurableCartItem implements CartItemInterface {
     configurable_options: [SelectedConfigurableOption!]
 }
 
+type DownloadableCartItem implements CartItemInterface @doc(description: "Downloadable Cart Item") {
+    links: [DownloadableProductLinks] @deprecated(description: "Type was renamed from plural to singular, also link now has different ID type")
+    links_v2: [DownloadableProductLink] @doc(description: "An array containing information about the selected links")
+    samples: [DownloadableProductSamples] @doc(description: "DownloadableProductSamples defines characteristics of a downloadable product")
+}
+
+type BundleCartItem implements CartItemInterface {
+    bundle_options: [SelectedBundleOption!]
+}
+
+type GiftCardCartItem implements CartItemInterface {
+    sender_name: String!
+    recepient_name: String!
+    amount: SelectedGiftCardAmount
+    message: String
+}
+
 type SelectedConfigurableOption {
     id_v2: ID! @doc(description: "Hash which includes option ID, option type and slected values. Can be used to move configurable product to wishlist or gift registry")
     id: Int!
     option_label: String!
     value_id: Int!
     value_label: String!
-}
-
-type DownloadableCartItem implements CartItemInterface @doc(description: "Downloadable Cart Item") {
-    links: [DownloadableProductLinks] @deprecated(description: "Type was renamed from plural to singular, also link now has different ID type")
-    links_v2: [DownloadableProductLink] @doc(description: "An array containing information about the selected links")
-    samples: [DownloadableProductSamples] @doc(description: "DownloadableProductSamples defines characteristics of a downloadable product")
 }
 
 type DownloadableProductLink @doc(description: "Defines characteristics of a downloadable product") {
@@ -80,10 +91,6 @@ type DownloadableProductSamples @doc(description: "DownloadableProductSamples de
     title: String @doc(description: "The display name of the sample")
     sort_order: Int @doc(description: "A number indicating the sort order")
     sample_url: String @doc(description: "URL to the downloadable sample")
-}
-
-type BundleCartItem implements CartItemInterface {
-    bundle_options: [SelectedBundleOption!]
 }
 
 type SelectedBundleOption {
@@ -121,13 +128,6 @@ type CartItemSelectedOptionValuePrice {
     value: Float!
     units: String!
     type: PriceTypeEnum!
-}
-
-type GiftCardCartItem implements CartItemInterface {
-    sender_name: String!
-    recepient_name: String!
-    amount: SelectedGiftCardAmount
-    message: String
 }
 
 type SelectedGiftCardAmount {

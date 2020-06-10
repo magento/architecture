@@ -43,13 +43,14 @@ input WishlistItemInput {
     sku: String
     quantity: Float
     parent_sku: String,
+    parent_quantity: Float,
     selected_options: [String!]
     entered_options: [EnteredOptionInput!]
 }
 
 interface WishlistItemInterface {
     id: ID
-    qty: Float
+    quantity: Float
     description: String
     added_at: String
     product: ProductInterface
@@ -68,11 +69,18 @@ type ConfigurableWishlistItem implements WishlistItemInterface {
 }
 
 type DownloadableWishlistItem implements WishlistItemInterface @doc(description: "Downloadable Wishlist Item") {
-    links: [DownloadableProductLink] @doc(description: "An array containing information about the selected links")
+    links_v2: [DownloadableProductLink] @doc(description: "An array containing information about the selected links")
     samples: [DownloadableProductSamples] @doc(description: "DownloadableProductSamples defines characteristics of a downloadable product")
 }
 
 type BundleWishlistItem implements WishlistItemInterface {
     bundle_options: [SelectedBundleOption!]
+}
+
+type GiftCardCartItem implements CartItemInterface {
+    sender_name: String!
+    recepient_name: String!
+    amount: SelectedGiftCardAmount
+    message: String
 }
 

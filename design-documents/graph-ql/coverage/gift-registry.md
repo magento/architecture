@@ -314,7 +314,14 @@ mutation RemoveGiftRegistry($giftRegistryId: ID!) {
 
 ### Gift registry owner adds items to the gift registry from cart
 
-First get the cart item data which can be used to add a new item to the gift registry:
+
+### Adding items to the gift registry
+
+It should be possible to additems to the gift registry from the product/category page, cart or wishlist. 
+Selected and entered options are specified in a form of hash, which is based on option type, selected values and potentially quantity. 
+It is critical to have ability to avoid the hash generation on the client, that is why it must be accessible through products, cart, wishlist and gift registry queries.
+
+#### Getting details about cart item which needs to be added to gift registry
 
 ```graphql
 {
@@ -348,12 +355,63 @@ First get the cart item data which can be used to add a new item to the gift reg
         }
       }
       ... on GiftCardCartItem {
-        id
+        amount {
+          id
+        }
       }
     }
   }
 }
 ```
+
+#### Getting details wishlist item which needs to be added to gift registry
+
+Note that if the item is not fully configured, the user must be redirected to the product page to complete selections before the item can be added to the gift registry.
+
+Query structure is almost identical to the query for getting items  
+
+```graphql
+{
+  customer {
+    wishlist {
+      items {
+        id
+        quantity
+        product {
+          sku
+        }
+        customizable_options {
+          id_v2
+        }
+        ... on BundleWishlistItem {
+          bundle_options {
+            values {
+              child_sku
+              quantity
+            }
+          }
+        }
+        ... on ConfigurableWishlistItem {
+          child_sku
+          configurable_options {
+            id_v2
+          }
+        }
+        ... on DownloadableWishlistItem {
+          links_v2 {
+            id
+          }
+        }
+        ... on GiftCardWishlistItem {
+          id
+        }
+      }
+    }
+  }
+}
+```
+
+#### Executing mutation to add items to gift registry
 
 Based on that information we can send a mutation to add the selected item to gift registry.
 
@@ -449,7 +507,7 @@ Simple product with custom options:
   "giftRegistryItems": [
     {
       "sku": "simple-hat",
-      "quantity": 2.0,
+      "quantity": 2,
       "note": "Really like this color",
       "selected_options": [
         "hash based on custom option for the select type goes here"
@@ -472,7 +530,7 @@ Configurable product with custom options:
   "giftRegistryItems": [
     {
       "sku": "custom-hat",
-      "quantity": 2.0,
+      "quantity": 2,
       "note": "Really like this color",
       "selected_options": [
         "hash from the color configurable option ID and its value ID",
@@ -499,8 +557,8 @@ Bundle product with custom options:
     {
       "sku": "fan-kit-hat",
       "parent_sku": "fan-kit",
-      "quantity": 2.0,
-      "parent_quantity": 3.0,
+      "quantity": 2,
+      "parent_quantity": 3,
       "note": "Really like this color. Must be identical for all bundle children.",
       "selected_options": [
         "hash based on custom option for the select type goes here. Must be identical for all bundle children."
@@ -515,8 +573,8 @@ Bundle product with custom options:
     {
       "sku": "fan-kit-scarf",
       "parent_sku": "fan-kit",
-      "quantity": 1.0,
-      "parent_quantity": 3.0,
+      "quantity": 1,
+      "parent_quantity": 3,
       "note": "Really like this color. Must be identical for all bundle children.",
       "selected_options": [
         "hash based on custom option for the select type goes here. Must be identical for all bundle children."
@@ -525,6 +583,75 @@ Bundle product with custom options:
       	{
           "id": "hash based on custom phrase option goes here. Must be identical for all bundle children.",
           "value": "Custom Text"
+        }
+      ]
+    }
+  ]
+}
+```
+
+Downloadable product with custom options:
+```json
+{
+  "giftRegistryId": "existing-gift-registry-id",
+  "giftRegistryItems": [
+    {
+      "sku": "downloadable-product",
+      "quantity": 2,
+      "selected_options": [
+        "hash from the selected link A",
+        "hash from the selected link B",
+        "hash from the selected custom option"
+      ],
+      "entered_options": [
+      	{
+          "id": "hash from custom text option ID",
+          "value": "Custom Entry"
+        }
+      ]
+    }
+  ]
+}
+```
+
+Gift card product with custom options:
+```json
+{
+  "giftRegistryId": "existing-gift-registry-id",
+  "giftRegistryItems": [
+    {
+      "sku": "giftcard-product",
+      "quantity": 2,
+      "selected_options": [
+        "hash from the selected gift card amount",
+        "hash from the selected custom option"
+      ],
+      "entered_options": [
+      	{
+          "id": "hash from custom text option ID",
+          "value": "Custom Entry"
+        }
+      ]
+    }
+  ]
+}
+```
+
+Virtual card product with custom options:
+```json
+{
+  "giftRegistryId": "existing-gift-registry-id",
+  "giftRegistryItems": [
+    {
+      "sku": "virtual-product",
+      "quantity": 2,
+      "selected_options": [
+        "hash from the selected custom option"
+      ],
+      "entered_options": [
+      	{
+          "id": "hash from custom text option ID",
+          "value": "Custom Entry"
         }
       ]
     }
