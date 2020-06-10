@@ -55,7 +55,7 @@ type ConfigurableCartItem implements CartItemInterface {
 }
 
 type SelectedConfigurableOption {
-    value_hash: String! @doc(description: "Hash which includes option ID, option type and slected values. Can be used to move configurable product to wishlist or gift registry")
+    id_v2: ID! @doc(description: "Hash which includes option ID, option type and slected values. Can be used to move configurable product to wishlist or gift registry")
     id: Int!
     option_label: String!
     value_id: Int!
@@ -63,12 +63,13 @@ type SelectedConfigurableOption {
 }
 
 type DownloadableCartItem implements CartItemInterface @doc(description: "Downloadable Cart Item") {
-    links: [DownloadableProductLinks] @doc(description: "An array containing information about the selected links")
+    links: [DownloadableProductLinks] @deprecated(description: "Type was renamed from plural to singular, also link now has different ID type")
+    links_v2: [DownloadableProductLink] @doc(description: "An array containing information about the selected links")
     samples: [DownloadableProductSamples] @doc(description: "DownloadableProductSamples defines characteristics of a downloadable product")
 }
 
-type DownloadableProductLinks @doc(description: "DownloadableProductLinks defines characteristics of a downloadable product") {
-    link_hash: String! @doc(description: "Hash based on option type and slected link. Can be used to move downloadable product to wishlist or gift registry")
+type DownloadableProductLink @doc(description: "Defines characteristics of a downloadable product") {
+    id: ID! @doc(description: "Hash based on option type and slected link. Can be used to move downloadable product to wishlist or gift registry")
     title: String @doc(description: "The display name of the link")
     sort_order: Int @doc(description: "A number indicating the sort order")
     price: Float @doc(description: "The price of the downloadable product")
@@ -86,8 +87,9 @@ type BundleCartItem implements CartItemInterface {
 }
 
 type SelectedBundleOption {
+    id_v2: ID! @doc(description: "Hash which includes option ID, option type and slected values. Can be used to move bundle product to wishlist or gift registry")
     id: Int!
-    values_hash: String! @doc(description: "Hash which includes option ID, option type and slected values. Can be used to move bundle product to wishlist or gift registry")
+    child_sku: String!
     label: String!
     type: String!
     values: [SelectedBundleOptionValue!]!
@@ -101,7 +103,7 @@ type SelectedBundleOptionValue {
 }
 
 type SelectedCustomizableOption {
-    values_hash: String! @doc(description: "Hash which includes option ID, option type and slected values. Can be used to move a product to wishlist or gift registry")
+    id_v2: ID! @doc(description: "Hash which includes option ID, option type and slected values. Can be used to move a product to wishlist or gift registry")
     id: Int!
     label: String!
     is_required: Boolean!
@@ -120,6 +122,18 @@ type CartItemSelectedOptionValuePrice {
     value: Float!
     units: String!
     type: PriceTypeEnum!
+}
+
+type GiftCardCartItem implements CartItemInterface {
+    sender_name: String!
+    recepient_name: String!
+    amount: SelectedGiftCardAmount
+    message: String
+}
+
+type SelectedGiftCardAmount {
+    id: ID! @doc(description: "Hash from the type of the option and value")
+    value: Money!
 }
 
 enum PriceTypeEnum @doc(description: "This enumeration the price type.") {

@@ -1,7 +1,3 @@
-type Query {
-    wishlist: WishlistOutput @deprecated(reason: "Moved under `Customer` `wishlists`")
-}
-
 type Mutation {
     createWishlist(name: String!): ID # Multiple wishlists Commerce functionality
     removeWishlist(id: ID!): Boolean # Commerce fucntionality - in Opens Source we assume customer always has one wishlist
@@ -17,11 +13,11 @@ type Customer {
 
 type Wishlist {
     id: ID
-    items: [WishlistItem]
+    items: [WishlistItemInterface]
     items_count: Int
     sharing_code: String
     updated_at: String
-    #name: String should be added in Commerce edition
+    name: String @doc(description: "Avaialble in Commerce edition only")
 }
 
 input WishlistItemUpdateInput {
@@ -51,15 +47,7 @@ input WishlistItemInput {
     entered_options: [EnteredOptionInput!]
 }
 
-type WishlistOutput @deprecated(reason: "Deprecated: `Wishlist` type should be used instead") {
-    items: [WishlistItem] @deprecated
-    items_count: Int @deprecated
-    name: String @deprecated
-    sharing_code: String @deprecated
-    updated_at: String @deprecated
-}
-
-type WishlistItemInterface {
+interface WishlistItemInterface {
     id: ID
     qty: Float
     description: String
@@ -80,7 +68,7 @@ type ConfigurableWishlistItem implements WishlistItemInterface {
 }
 
 type DownloadableWishlistItem implements WishlistItemInterface @doc(description: "Downloadable Wishlist Item") {
-    links: [DownloadableProductLinks] @doc(description: "An array containing information about the selected links")
+    links: [DownloadableProductLink] @doc(description: "An array containing information about the selected links")
     samples: [DownloadableProductSamples] @doc(description: "DownloadableProductSamples defines characteristics of a downloadable product")
 }
 
