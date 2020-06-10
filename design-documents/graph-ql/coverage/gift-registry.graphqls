@@ -47,6 +47,7 @@ input AddGiftRegistryItemInput {
     sku: String!
     quantity: Float!
     parent_sku: String,
+    parent_quantity: Float,
     note: String,
     # see https://github.com/magento/architecture/blob/master/design-documents/graph-ql/coverage/add-items-to-cart-single-mutation.md
     selected_options: [String!]

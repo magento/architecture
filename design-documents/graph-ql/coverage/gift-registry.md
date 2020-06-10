@@ -325,65 +325,34 @@ First get the cart item data which can be used to add a new item to the gift reg
       product {
         sku
       }
-      ... on SimpleCartItem {
-        customizable_options {
-          id
-          values {
-            id
-            value
-          }
-        }
-      }
-      ... on VirtualCartItem {
-        customizable_options {
-          id
-          values {
-            id
-            value
-          }
-        }
-      }
-      ... on DownloadableCartItem {
-        customizable_options {
-          id
-          values {
-            id
-          }
-        }
+      customizable_options {
+        id_v2
       }
       ... on BundleCartItem {
         bundle_options {
-          id
           values {
-            id
+            child_sku
             quantity
-          }
-        }
-        customizable_options {
-          id
-          values {
-            id
-            value
           }
         }
       }
       ... on ConfigurableCartItem {
+        child_sku
         configurable_options {
-          id
-          value_id
+          id_v2
         }
-        customizable_options {
+      }
+      ... on DownloadableCartItem {
+        links_v2 {
           id
-          values {
-            id
-            value
-          }
         }
+      }
+      ... on GiftCardCartItem {
+        id
       }
     }
   }
 }
-
 ```
 
 Based on that information we can send a mutation to add the selected item to gift registry.
@@ -472,23 +441,90 @@ mutation AddGiftRegistryItems($giftRegistryId: ID!, $giftRegistryItems: [AddGift
 
 The following JSON should be provided as query variables for the mutation above:
 
+Simple product with custom options:
+
 ```json
 {
   "giftRegistryId": "existing-gift-registry-id",
   "giftRegistryItems": [
     {
-      "sku": "custom-hat-red",
+      "sku": "simple-hat",
       "quantity": 2.0,
       "note": "Really like this color",
-      "parent_sku": "custom-hat",
       "selected_options": [
-			 	"hash from the color option ID and its value ID",
-        "hash from the size option ID and its value ID"
+        "hash based on custom option for the select type goes here"
       ],
       "entered_options": [
       	{
           "id": "hash from custom phrase option ID",
           "value": "Custom Hat"
+        }
+      ]
+    }
+  ]
+}
+```
+
+Configurable product with custom options:
+```json
+{
+  "giftRegistryId": "existing-gift-registry-id",
+  "giftRegistryItems": [
+    {
+      "sku": "custom-hat",
+      "quantity": 2.0,
+      "note": "Really like this color",
+      "selected_options": [
+        "hash from the color configurable option ID and its value ID",
+        "hash from the size configurable option ID and its value ID",
+        "hash based on custom option for the select type goes here"
+      ],
+      "entered_options": [
+      	{
+          "id": "hash from custom phrase option ID",
+          "value": "Custom Hat"
+        }
+      ]
+    }
+  ]
+}
+```
+
+Bundle product with custom options:
+
+```json
+{
+  "giftRegistryId": "existing-gift-registry-id",
+  "giftRegistryItems": [
+    {
+      "sku": "fan-kit-hat",
+      "parent_sku": "fan-kit",
+      "quantity": 2.0,
+      "parent_quantity": 3.0,
+      "note": "Really like this color. Must be identical for all bundle children.",
+      "selected_options": [
+        "hash based on custom option for the select type goes here. Must be identical for all bundle children."
+      ],
+      "entered_options": [
+      	{
+          "id": "hash based on custom phrase option goes here. Must be identical for all bundle children.",
+          "value": "Custom Text"
+        }
+      ]
+    },
+    {
+      "sku": "fan-kit-scarf",
+      "parent_sku": "fan-kit",
+      "quantity": 1.0,
+      "parent_quantity": 3.0,
+      "note": "Really like this color. Must be identical for all bundle children.",
+      "selected_options": [
+        "hash based on custom option for the select type goes here. Must be identical for all bundle children."
+      ],
+      "entered_options": [
+      	{
+          "id": "hash based on custom phrase option goes here. Must be identical for all bundle children.",
+          "value": "Custom Text"
         }
       ]
     }
