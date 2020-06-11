@@ -198,9 +198,6 @@ Render the edit gift registry form and populate it with current gift registry pr
           ... on GiftRegistryEventCountryAttributeMetadata {
             show_region
           }
-          ... on GiftRegistrySearcheableAttributeMetadataInterface {
-            is_searcheable
-          }
           ... on GiftRegistryEventDateAttributeMetadata {
             format
           }
@@ -311,9 +308,6 @@ mutation RemoveGiftRegistry($giftRegistryId: ID!) {
   }
 }
 ```
-
-### Gift registry owner adds items to the gift registry from cart
-
 
 ### Adding items to the gift registry
 
@@ -723,17 +717,69 @@ Query variables:
 }
 ```
 
-### Storefront application retrieves gift registry search form metadata
-
-?
-
 ### Gift registry visitor searches a gift registry by the recipient name
 
-+
+First, storefront application retrieves gift registry search form metadata:
+
+```graphql
+{
+  giftRegistryTypes {
+    id
+    label
+    dynamic_attributes_metadata {
+      code
+      label
+      attribute_group
+      input_type
+      is_required
+      sort_order
+      ... on GiftRegistryCountryAttributeMetadata {
+        show_region
+      }
+      ... on GiftRegistryEventCountryAttributeMetadata {
+        show_region
+      }
+      ... on GiftRegistrySearcheableAttributeMetadataInterface {
+        is_searcheable
+      }
+      ... on GiftRegistryEventDateAttributeMetadata {
+        format
+      }
+      ... on GiftRegistrySelectAttributeMetadataInterface {
+        options {
+          code
+          is_default
+          label
+        }
+      }
+    }
+  }
+}
+``` 
+
 Search by registrant name and dynamic attributes.
  
-Explicitly excluded scenarios: search by ID and by email. 
+Explicitly excluded scenarios: search by ID and by email.
 
+```graphql
+{
+  giftRegistrySearch(
+    registrantFirstname: "John", 
+    registrantLastname: "Roller", 
+    giftRegistryTypeId: "2",
+    searchableDynamicAttributes: [{code: "event_country", value: "US"}]
+  ) {
+    id
+    event_name
+    dynamic_attributes {
+      code
+      group
+      label
+      value
+    }
+  }
+}
+```
 
 ### Gift registry owner shares a gift registry with friends
 
@@ -741,7 +787,72 @@ When gift registry is shared with the invitees, the email they receive will cont
 This link will contain gift registry hash as query parameter and should lead to the page processed by the storefront application. 
 The application should parse the URL, extract gift registry ID hash and query gift registry details by ID. 
 
+```graphql
+mutation ShareGiftRegistry($id: ID!, $sender: ShareGiftRegistrySenderInput!, $invitees: [ShareGiftRegistryInviteeInput!]!) {
+  shareGiftRegistry(id: $id, sender: $sender, invitees: $invitees) {
+    is_shared
+  }
+}
+```
+
+The following JSON should be provided as query variables:
+
+```json
+{
+  "id": "existing-gift-registry-id",
+  "sender": {
+    "message": "Hi, please come to my birth day",
+    "name": "John Roller"
+  },
+  "invitees": [
+     {
+      "email": "invitee@example.com",
+      "name": "John Doe"
+    }
+  ]
+}
+```
 
 ### Gift registry visitor opens a gift registry using the link from email
 
-
+```graphql
+{
+  giftRegistry(id: "ID obtained from the invitation link in email") {
+    event_name
+    message
+    dynamic_attributes {
+      code
+      group
+      label
+      value
+    }
+    type {
+      label
+      dynamic_attributes_metadata {
+        code
+        label
+        attribute_group
+        input_type
+        is_required
+        sort_order
+        ... on GiftRegistryCountryAttributeMetadata {
+          show_region
+        }
+        ... on GiftRegistryEventCountryAttributeMetadata {
+          show_region
+        }
+        ... on GiftRegistryEventDateAttributeMetadata {
+          format
+        }
+        ... on GiftRegistrySelectAttributeMetadataInterface {
+          options {
+            code
+            is_default
+            label
+          }
+        }
+      }
+    }
+  }
+}
+```

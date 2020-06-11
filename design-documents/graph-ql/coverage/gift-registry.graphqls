@@ -151,7 +151,7 @@ type RemoveGiftRegistryRegistrantsOutput {
 }
 
 type ShareGiftRegistryOutput {
-    gift_registry: GiftRegistry
+    is_shared: Boolean!
 }
 
 type GiftRegistryType {
