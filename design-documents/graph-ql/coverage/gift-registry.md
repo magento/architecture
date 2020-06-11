@@ -703,6 +703,25 @@ The following query returns enough data to add product to cart or wishlist.
 
 ### Gift registry owner removes items from an existing gift registry
 
+```graphql
+mutation RemoveGiftRegistryItem($giftRegistryId: ID!, $itemIds: [ID!]!) {
+  removeGiftRegistryItems(giftRegistryId: $giftRegistryId, itemIds: $itemIds) {
+    gift_registry {
+      items {
+        id
+      }
+    }
+  }
+}
+```
+
+Query variables:
+```json
+{
+  "giftRegistryId": "existing-gift-registry-id",
+  "itemIds": ["item-one-id", "item-two-id"]
+}
+```
 
 ### Storefront application retrieves gift registry search form metadata
 

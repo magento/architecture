@@ -11,6 +11,7 @@ type Query {
         giftRegistryTypeId: ID,
         searchableDynamicAttributes: [GiftRegistryDynamicAttributeInput] @doc(description: "For select attributes ID should be provided expected. For range search, '_from' and '_to' suffixes can be added to the attribute code. For text attributes provide value for exact matching.")
     ): [GiftRegistry] @doc(description: "Gift registry search by registrant name and additional searchable attributes.")
+    giftRegistry(id: ID!): GiftRegistry @doc(description: "This query is intended for guests and some fields of GiftRegistry will not be availalbe")
 }
 
 type Mutation {
