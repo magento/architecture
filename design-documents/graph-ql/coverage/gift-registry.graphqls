@@ -244,23 +244,24 @@ interface GiftRegistryItemInterface {
     note: String
     added_on: String!
     product: ProductInterface
-    selected_customizable_options: [SelectedCustomizableOption]
+    customizable_options: [SelectedCustomizableOption]
 }
 
 type SimpleGiftRegistryItem implements GiftRegistryItemInterface {
 }
 
 type BundleGiftRegistryItem implements GiftRegistryItemInterface {
-    selected_bundle_options: [SelectedBundleOption!]
+    bundle_options: [SelectedBundleOption!]
 }
 
 type ConfigurableGiftRegistryItem implements GiftRegistryItemInterface {
-    selected_configurable_options: [SelectedConfigurableOption!]
+    child_sku: String! @doc(description: "SKU of the simple product corresponding to a set of selected configurable options.")
+    configurable_options: [SelectedConfigurableOption!]
 }
 
 # Not currently supported by Magento core
 type DownloadableGiftRegistryItem implements GiftRegistryItemInterface {
-    links: [DownloadableProductLinks]
+    links: [DownloadableProductLink]
     samples: [DownloadableProductSamples]
 }
 
@@ -272,7 +273,7 @@ type VirtualGiftRegistryItem implements GiftRegistryItemInterface {
 type GiftCardGiftRegistryItem implements GiftRegistryItemInterface {
     sender_name: String!
     recepient_name: String!
-    amount: Money!
+    amount: SelectedGiftCardAmount
     message: String
 }
 

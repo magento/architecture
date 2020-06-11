@@ -659,28 +659,47 @@ Virtual card product with custom options:
 }
 ```
 
-### Gift registry owner adds items to the gift registry from wish list
+### Gift registry visitor adds items from the gift registry to the cart
 
-Wishlist query does not support fetching the information about selected options and need to be extended. After that the same mutation can be used to add items to gift registry as describe above in the use case of adding items to gift registry from cart.
-
+The following query returns enough data to add product to cart or wishlist.
 ```graphql
 {
-  customer {
-    wishlist {
-      items {
-        qty
-        product {
-          sku
+  giftRegistry(id: "existing-gift-registry-id") {
+    items {
+      id
+      quantity
+      product {
+        sku
+      }
+      customizable_options {
+        id_v2
+      }
+      ... on BundleGiftRegistryItem {
+        bundle_options {
+          values {
+            child_sku
+            quantity
+          }
         }
+      }
+        ... on ConfigurableGiftRegistryItem {
+        child_sku
+        configurable_options {
+          id_v2
+        }
+      }
+      ... on DownloadableGiftRegistryItem {
+        links {
+          id
+        }
+      }
+      ... on GiftCardGiftRegistryItem {
+        id
       }
     }
   }
 }
 ```
-
-### Gift registry visitor adds items from the gift registry to the cart
-
-?
 
 ### Gift registry owner removes items from an existing gift registry
 
