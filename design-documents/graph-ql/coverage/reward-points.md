@@ -35,5 +35,7 @@ The following information should be available to customer in his account when re
    - Date
  - "Balance Updates" email subscription status
  - "Points Expiration Notification" email subscription status
-
  
+### Use reward points on checkout
+ 
+### View reward points applied on checkout 
