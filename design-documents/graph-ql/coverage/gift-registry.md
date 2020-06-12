@@ -1,3 +1,9 @@
+## Configuration
+
+The following configurations must be exposed via existing `storeConfig` query:
+- Enable gift registry
+- Maximum registrants
+
 ## Use Cases
 
 ### Registered customer creates a new gift registry
