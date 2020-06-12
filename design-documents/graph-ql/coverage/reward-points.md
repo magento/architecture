@@ -18,3 +18,22 @@ Scenarios which may need these settings include:
 - Reward program promotions and details
 - Customer registration
 - Rendering of the reward points section in the customer account
+
+## Use cases
+
+### View reward points information in customer account
+
+The following information should be available to customer in his account when reward points functionality is enabled on the site:
+ - Balance in points and currency
+ - Exchange rate from points to currency (redemption rate)
+ - Exchange rate from currency to points (earning rate)
+ - Balance history, should include the following fields:
+   - Balance in points
+   - Amount in currency
+   - Balance change in points
+   - Reason for balance change
+   - Date
+ - "Balance Updates" email subscription status
+ - "Points Expiration Notification" email subscription status
+
+ 
