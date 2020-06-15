@@ -36,6 +36,42 @@ The following information should be available to customer in his account when re
  - "Balance Updates" email subscription status
  - "Points Expiration Notification" email subscription status
  
+ ```graphql
+{
+  customer {
+    reward_points {
+      balance {
+        points
+        amount {
+          value
+          currency
+        }
+      }
+      exchange_rates {
+        earning
+        redemption
+      }
+      subscription_status {
+        balance_updates
+        points_expiration_notifications
+      }
+      balance_history {
+        balance {
+        	points
+        	amount {
+          	value
+          	currency
+        	}
+      	}
+        points_change
+        change_reason
+        date
+      }
+    }
+  }
+}
+```
+ 
 ### Use reward points on checkout
  
 ### View reward points applied on checkout 

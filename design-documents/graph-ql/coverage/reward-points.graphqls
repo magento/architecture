@@ -1,0 +1,38 @@
+type Customer {
+    reward_points: RewardPoints @doc(description: "Customer reward points")
+}
+
+type RewardPoints {
+    balance: RewardPointsBalance @doc(description: "Current reward points balance")
+    exchange_rate: RewardPointsExchangeRate @doc(description: "Current reward points exchange rate")
+    subscription_status: RewardPointsSubscriptionStatus @doc(description: "Reward points related email subscription status")
+    balance_history: [RewardPointsBalanceHistoryItem] @doc(description: "Reward points balance history. Visibility of this section depends on the configuration")
+}
+
+type RewardPointsBalance {
+    points: Float! @doc(description: "Reward points balance in points")
+    amount: Money! @doc(description: "Reward points balance in store currency")
+}
+
+type RewardPointsExchangeRates @doc (description: "Exchange rates depend on the customer group"){
+    earning: Float! @doc(description: "How many points are earned per 1 currency spent")
+    redemption: Float! @doc(description: "How many points need to be redeemed to get 1 currency discount at the checkout")
+}
+
+type RewardPointsSubscriptionStatus {
+    balance_updates: SubscriptionStatus! @doc(description: "Customer subscription status to 'Reward points balance updates' emails")
+    points_expiration_notifications: SubscriptionStatus! @doc(description: "Customer subscription status to 'Reward points expiration notifications' emails")
+}
+
+enum SubscriptionStatus {
+    SUBSCRIBED
+    NOT_SUBSCRIBED
+}
+
+type RewardPointsBalanceHistoryItem {
+    balance: RewardPointsBalance @doc(description: "Reward points balance after the completion of the transaction")
+    points_change: Float! @doc(description: "Number of points added or deducted in the transaction")
+    change_reason: String! @doc(description: "Reason for balance change")
+    date: String! @doc(description: "Transaction date")
+}
+
