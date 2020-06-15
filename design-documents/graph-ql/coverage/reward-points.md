@@ -3,21 +3,44 @@
 See https://docs.magento.com/user-guide/configuration/customers/reward-points.html
 
 The following settings should be accessible via `storeConfig` query:
+- Reward points functionality status: enabled/disabled
 - Reward points functionality status on the storefront: enabled/disabled
 - Enable reward points history for the customer
 - Reward points redemption minimum threshold
-- Whether to show a message in shopping cart about the rewards points earned for the purchase, as well as the customer’s current reward point balance
+- Whether customer earns points for shopping according to the reward point exchange rate. In Luma this also controls whether to show a message in shopping cart about the rewards points earned for the purchase, as well as the customer’s current reward point balance
 - Number of points customer gets for registration
 - Number of points for newsletter subscription 
 - Number of points for referral, when invitee registers on the site 
+- Maximum number of registration referrals that will qualify for rewards
 - Number of points for referral, when invitee places an initial order on the site
+- Maximum number of order placements by invitees that will qualify for rewards
 - Number of points for writing a review
-- Reward points default subscription status 
+- Maximum number of reviews that will qualify for the rewards
 
 Scenarios which may need these settings include:
 - Reward program promotions and details
 - Customer registration
 - Rendering of the reward points section in the customer account
+
+```graphql
+{
+  storeConfig {
+    magento_reward_general_is_enabled
+    magento_reward_general_is_enabled_on_front
+    magento_reward_general_publish_history
+    magento_reward_general_min_points_balance
+    magento_reward_points_order
+    magento_reward_points_register
+    magento_reward_points_newsletter
+    magento_reward_points_invitation_customer
+    magento_reward_points_invitation_customer_limit
+    magento_reward_points_invitation_order
+    magento_reward_points_invitation_order_limit
+    magento_reward_points_review
+    magento_reward_points_review_limit
+  }
+}
+```
 
 ## Use cases
 
