@@ -42,7 +42,7 @@ The following information should be available to customer in his account when re
     reward_points {
       balance {
         points
-        amount {
+        money {
           value
           currency
         }
@@ -57,12 +57,12 @@ The following information should be available to customer in his account when re
       }
       balance_history {
         balance {
-        	points
-        	amount {
-          	value
-          	currency
-        	}
-      	}
+          points
+          money {
+            value
+            currency
+          }
+        }
         points_change
         change_reason
         date
@@ -72,6 +72,40 @@ The following information should be available to customer in his account when re
 }
 ```
  
-### Use reward points on checkout
- 
-### View reward points applied on checkout 
+### Apply/remove reward points to/from cart and view applied reward points summary
+
+Apply reward points to the cart and view applied reward points balance:
+
+```graphql
+mutation {
+  applyRewardPointsToCart(cartId: "existing-cart-id") {
+    cart {
+      applied_reward_points {
+        money {
+          currency
+          value
+        }
+        points
+      }
+    }
+  }
+}
+```
+
+Remove applied reward points from the cart and view applied balance:
+
+```graphql
+mutation {
+  removeRewardPointsFromCart(cartId: "existing-cart-id") {
+    cart {
+      applied_reward_points {
+        money {
+          currency
+          value
+        }
+        points
+      }
+    }
+  }
+}
+```

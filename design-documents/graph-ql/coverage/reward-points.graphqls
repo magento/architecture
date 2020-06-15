@@ -2,16 +2,33 @@ type Customer {
     reward_points: RewardPoints @doc(description: "Customer reward points")
 }
 
+type Cart {
+    applied_reward_points: RewardPointsAmount
+}
+
+type Mutation {
+    applyRewardPointsToCart(cartId: ID!): ApplyRewardPointsToCartOutput
+    removeRewardPointsFromCart(cartId: ID!): RemoveRewardPointsFromCartOutput
+}
+
+type ApplyRewardPointsToCartOutput {
+    cart: Cart
+}
+
+type RemoveRewardPointsFromCartOutput {
+    cart: Cart
+}
+
 type RewardPoints {
-    balance: RewardPointsBalance @doc(description: "Current reward points balance")
-    exchange_rate: RewardPointsExchangeRate @doc(description: "Current reward points exchange rate")
+    balance: RewardPointsAmount @doc(description: "Current reward points balance")
+    exchange_rates: RewardPointsExchangeRates @doc(description: "Current reward points exchange rates")
     subscription_status: RewardPointsSubscriptionStatus @doc(description: "Reward points related email subscription status")
     balance_history: [RewardPointsBalanceHistoryItem] @doc(description: "Reward points balance history. Visibility of this section depends on the configuration")
 }
 
-type RewardPointsBalance {
-    points: Float! @doc(description: "Reward points balance in points")
-    amount: Money! @doc(description: "Reward points balance in store currency")
+type RewardPointsAmount {
+    points: Float! @doc(description: "Reward points amount in points")
+    money: Money! @doc(description: "Reward points amount in store currency")
 }
 
 type RewardPointsExchangeRates @doc (description: "Exchange rates depend on the customer group"){
@@ -30,7 +47,7 @@ enum SubscriptionStatus {
 }
 
 type RewardPointsBalanceHistoryItem {
-    balance: RewardPointsBalance @doc(description: "Reward points balance after the completion of the transaction")
+    balance: RewardPointsAmount @doc(description: "Reward points balance after the completion of the transaction")
     points_change: Float! @doc(description: "Number of points added or deducted in the transaction")
     change_reason: String! @doc(description: "Reason for balance change")
     date: String! @doc(description: "Transaction date")
