@@ -111,7 +111,7 @@ type OrderItem implements OrderItemInterface {
 }
 
 type BundleOrderItem implements OrderItemInterface {
-    bundle_options: [SelectedBundleOptionItems] @doc("A list of bundle options that are assigned to the bundle product")
+    bundle_options: [ItemSelectedBundleOption] @doc("A list of bundle options that are assigned to the bundle product")
 }
 
 type GiftCardOrderItem implements OrderItemInterface {
@@ -121,10 +121,18 @@ type GiftCardOrderItem implements OrderItemInterface {
     gift_card_message: String @doc("Message accompanying gift card")
 }
 
-type SelectedBundleOptionItems {
-    id: ID! @doc("The unique identifier of the option")
-    label: String! @doc("The label of the option")
-    items: [OrderItemInterface] @doc("A list of products that represent the values of the parent option")
+type ItemSelectedBundleOption {
+    id: ID! @doc(description: "The unique identifier of the option")
+    label: String! @doc(description: "The label of the option")
+    values: [ItemSelectedBundleOptionValue] @doc(description: "A list of products that represent the values of the parent option")
+}
+
+type ItemSelectedBundleOptionValue {
+    id: ID! @doc("unique identifier of option value")
+    product_name: String! @doc("product name for option value")
+    product_sku: String! @doc("product sku for option value")
+    quantity: Float! @doc("quantitity of value selected")
+    price: Money! @doc("Option value price. price for single quantity")
 }
 
 @doc("Represents order item options like selected or entered")
@@ -211,13 +219,7 @@ type InvoiceItem implements InvoiceItemInterface {
 }
 
 type BundleInvoiceItem implements InvoiceItemInterface {
-    bundle_options: [SelectedBundleInvoiceOptionItems] @doc("A list of bundle options that are assigned to the bundle product")
-}
-
-type SelectedBundleInvoiceOptionItems {
-    id: ID! @doc("The unique identifier of the option")
-    label: String! @doc("The label of the option")
-    items: [InvoiceItemInterface] @doc("A list of products that represent the values of the parent option")
+    bundle_options: [ItemSelectedBundleOption] @doc("A list of bundle options that are assigned to the bundle product")
 }
 
 @doc("Invoice total amount details")
@@ -263,13 +265,7 @@ type CreditMemoItem implements CreditMemoItemInterface {
 }
 
 type BundleCreditMemoItem implements CreditMemoIntemInterface {
-    bundle_options: [CreditMemoItemSelectedBundleOptions]
-}
-
-type CreditMemoItemSelectedBundleOptions {
-    id: ID! @doc("The unique identifier of the option")
-    label: String! @doc("The label of the option")
-    items: [CreditMemoItemInterface] @doc("A list of products that represent the values of the parent option")
+    bundle_options: [ItemSelectedBundleOption]
 }
 
 @doc("Credit memo price details")
@@ -309,13 +305,7 @@ type ShipmentItem implements ShipmentItemInterface {
 }
 
 type BundleShipmentItem implements ShipmentItemInterface {
-    bundle_options: [ShipmentItemSelectedBundleOptions]
-}
-
-type ShipmentItemSelectedBundleOptions {
-    id: ID! @doc("The unique identifier of the option")
-    label: String! @doc("The label of the option")
-    items: [ShipmentItemInterface] @doc("A list of products that represent the values of the parent option")
+    bundle_options: [ItemSelectedBundleOption]
 }
 
 @doc("Order shipment tracking details")
