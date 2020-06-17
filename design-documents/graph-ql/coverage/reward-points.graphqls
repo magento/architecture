@@ -12,11 +12,11 @@ type Mutation {
 }
 
 type ApplyRewardPointsToCartOutput {
-    cart: Cart
+    cart: Cart!
 }
 
 type RemoveRewardPointsFromCartOutput {
-    cart: Cart
+    cart: Cart!
 }
 
 type RewardPoints {
