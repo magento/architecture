@@ -273,7 +273,7 @@ type VirtualGiftRegistryItem implements GiftRegistryItemInterface {
 # Not currently supported by Magento core
 type GiftCardGiftRegistryItem implements GiftRegistryItemInterface {
     sender_name: String!
-    recepient_name: String!
+    recipient_name: String!
     amount: SelectedGiftCardAmount
     message: String
 }

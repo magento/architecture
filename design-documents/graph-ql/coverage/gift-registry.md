@@ -484,7 +484,7 @@ mutation AddGiftRegistryItems($giftRegistryId: ID!, $giftRegistryItems: [AddGift
         }
         ... on GiftCardGiftRegistryItem {
           sender_name
-          recepient_name
+          recipient_name
           amount {
             currency
             value

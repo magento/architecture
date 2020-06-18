@@ -79,7 +79,7 @@ type BundleWishlistItem implements WishlistItemInterface {
 
 type GiftCardCartItem implements CartItemInterface {
     sender_name: String!
-    recepient_name: String!
+    recipient_name: String!
     amount: SelectedGiftCardAmount
     message: String
 }
