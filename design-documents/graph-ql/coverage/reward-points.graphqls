@@ -23,7 +23,7 @@ type RewardPoints {
     balance: RewardPointsAmount @doc(description: "Current reward points balance")
     exchange_rates: RewardPointsExchangeRates @doc(description: "Current reward points exchange rates")
     subscription_status: RewardPointsSubscriptionStatus @doc(description: "Reward points related email subscription status")
-    balance_history: [RewardPointsBalanceHistoryItem] @doc(description: "Reward points balance history. This field will be set to null if disabled in the admin")
+    balance_history: [RewardPointsBalanceHistoryItem!] @doc(description: "Reward points balance history. This field will be set to null if disabled in the admin")
 }
 
 type RewardPointsAmount {
