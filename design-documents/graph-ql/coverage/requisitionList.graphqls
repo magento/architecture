@@ -122,7 +122,8 @@ type Mutation {
 
     addRequisitionListItemToCart(
         requisition_list_id: ID!, @doc(description: "unique Id of requisition list")
-        item_ids: [ID!]! @doc(description: "selected requisition list items that are to be added")
+        item_ids: [ID!]!, @doc(description: "selected requisition list items that are to be added")
+	is_replace: Boolean @doc(description: "replaces or merges the existing cart items with requisition list items")
     ): AddRequisitionListItemToCartOutput @doc(description: "Add Requisition List Items To Customer Cart")
 
     copyItemsBetweenRequisitionList(
