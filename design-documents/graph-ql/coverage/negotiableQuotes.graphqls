@@ -1,14 +1,36 @@
 type Mutation {
     createNegotiableQuote(
-        cart_id: ID! @doc(description: "Cart ID")
-        quote_name: String @doc(description: "Quote name")
+        cartId: ID! @doc(description: "Cart ID")
+        quoteName: String @doc(description: "Quote name")
         comment: String @doc(description: "Comment")
         files: [FileInput!] @doc(description: "Attached files")
-    ): RequestNegotiableQuoteOutput! @doc(description:"Generates negotiable quote request")
+    ): CreateNegotiableQuoteOutput! @doc(description:"Generates negotiable quote request")
+
+    addNegotiableQuoteComments(
+        cartId: ID! @doc(description: "Cart ID")
+        comment: String @doc(description: "Comment")
+        files: [FileInput!] @doc(description: "Attached files")
+    ): AddNegotiableQuoteCommentsOutput! @doc(description:"Generates negotiable quote request")
+
+    updateNegotiableQuoteItemsQuantity(
+        cart_id: ID!, @doc(description: "unique Id of negotiable quote")
+        items: [ID!]! @doc(description: "unique Ids of Items to be update in negotiable quote")
+        quantity: Float, @doc(description: "quantity of the item  to be updated")
+    ): UpdateNegotiableQuoteItemsQuantityOutput @doc(description: "Remove Items in negotiable quote")
+
+    removeNegotiableQuoteItems(
+        cart_id: ID!, @doc(description: "unique Id of negotiable quote")
+        items: [ID!]! @doc(description: "unique Ids of Items to be removed from negotiable quote")
+    ): RemoveNegotiableQuoteItemsOutput @doc(description: "Remove Items in negotiable quote")
+
+    setShippingAddressesOnNegotiableQuote(
+        cart_id: ID!
+        shipping_addresses: [NegotiableQuoteShippingAddressInput!]!
+    ): SetShippingAddressesOnNegotiableQuoteOutput @doc(description: "Assign shipping address to Negotiable quote")
 
     setShippingMethodsOnNegotiableQuote(
-        cart_id: ID! @doc(description: "Cart ID")
-        shipping_methods: [String!]! @doc(description: "Input for shipping method")
+        cartId: ID! @doc(description: "Cart ID")
+        shippingMethods: [ShippingMethodInput]! @doc(description: "Input for shipping method")
     ): SetShippingMethodsOnNegotiableQuoteOutput @doc(description:"Set negotiable quote shipping method")
 }
 
@@ -17,9 +39,9 @@ type Customer {
         id: ID!): NegotiableQuote @doc(description: "Get negotiable quote of a customer")
 
     negotiable_quotes(
-        page_size: Int = 20,
-        current_page: Int = 1,
-        filter: NegotiableQuoteFilterInput
+        filter: NegotiableQuoteFilterInput,
+        pageSize: Int = 20,
+        currentPage: Int = 1
     ): [NegotiableQuote] @doc(description: "Get negotiable quotes of a customer")
 
     estimateShippingCostForNegotiableQuote(
@@ -33,11 +55,16 @@ type Customer {
 
 type NegotiableQuote {
     quote_id: ID!  @doc(description: "Negotiable quote ID")
-    items: [NegotiableQuoteItem] @doc(description: "Negotiable quote item")
+    items: [NegotiableQuoteItemInterface] @doc(description: "Negotiable quote item")
     attachements: [AttachmentContent] @doc(description: "Negotiable quote Attachements")
     comments: [NegotiableQuoteComment] @doc(description: "Negotiable quote comments")
-    totals: TotalsOutput! @doc(description: "Negotiable quote totals output")
+    historyLog: [NegotiableQuoteHistoryLog] @doc(description: "Negotiable history log")
+    prices: CartPrices! @doc(description: "Negotiable quote totals output")
+    created_by: String @doc(description: "Negotiable quote creator")
+    created_at: String @doc(description: "Timestamp indicating when the negotiable quote was created.")
+    updated_at: String @doc(description: "Timestamp indicating when the negotiable quote was updated.")
     payment_info: NegotiableQuotePaymentInfo! @doc(description: "Negotiable quote payment info.")
+    status: String @doc(description: "Negotiable quote status")
     available_shipping_methods: [ShippingMethodsOutput]! @doc(description: "Available shipping methods")
 }
 
@@ -46,10 +73,61 @@ input NegotiableQuoteFilterInput {
     name: FilterMatchTypeInput @doc(description: "Filter by display name of the negotiable quote")
 }
 
-type NegotiableQuoteItem {
+type NegotiableQuoteItemInterface {
     id: ID!
     quantity: Float!
+    stock: Float!
+    prices: NegotiableQuoteItemPrices
     product: ProductInterface!
+}
+
+type NegotiableQuoteItemPrices {
+    price: Money!
+    row_total: Money!
+    row_total_including_tax: Money!
+    discounts: [Discount] @doc(description:"An array of discounts to be applied to the quote item")
+    total_item_discount: Money @doc(description:"The total of all discounts applied to the item")
+}
+
+type Discount @doc(description:"Defines an individual discount. A discount can be applied to the quote as a whole or to an item.") {
+    amount: Money! @doc(description:"The amount of the discount")
+    label: String! @doc(description:"A description of the discount")
+}
+
+type DefaultNegotiableQuoteItem implements NegotiableQuoteItemInterface
+@doc(description: "Negotiable Quote Item Implementation for Simple and Virtual Products") {
+    id: ID! @doc(description: "Unique Identifier of Negotiable Quote Item")
+    product: ProductInterface!
+    qty: Float! @doc(description:  "Quantity added")
+    customizable_options: [SelectedCustomizableOption] @doc(description: "custom Option selected")
+}
+
+type DownloadableRequisitionListItem implements NegotiableQuoteItemInterface
+@doc(description: "Negotiable Quote Item Implementation that for Downloadable Products") {
+    id: ID! @doc(description: "Unique Identifier of Negotiable Quote Item")
+    product: ProductInterface!
+    qty: Float! @doc(description: "Quantity added")
+    customizable_options: [SelectedCustomizableOption] @doc(description:  "custom Option selected")
+    links: [DownloadableProductLinks] @doc(description: "DownloadableProductLinks defines characteristics of a downloadable product")
+    samples: [DownloadableProductSamples] @doc(description:  "DownloadableProductSamples defines characteristics of a downloadable product")
+}
+
+type BundleRequisitionListItem implements NegotiableQuoteItemInterface
+@doc(description: "Negotiable Quote Item Implementation that for Bundle Products") {
+    id: ID! @doc(description: "Unique Identifier of Negotiable Quote Item")
+    product: ProductInterface!
+    qty: Float! @doc(description: "Quantity added")
+    customizable_options: [SelectedCustomizableOption] @doc(description: "custom Option selected")
+    bundle_options: [SelectedBundleOption]! @doc(description: "selected bundle options")
+}
+
+type ConfigurableRequisitionListItem implements NegotiableQuoteItemInterface
+@doc(description: "Negotiable Quote Item Implementation that for Configurable Products") {
+    id: ID! @doc(description:  "Unique Identifier of Negotiable Quote Item")
+    product: ProductInterface!
+    qty: Float! @doc(description: "Quantity added")
+    customizable_options: [SelectedCustomizableOption] @doc(description: "custom Option selected")
+    configurable_options: [SelectedConfigurableOption] @doc(description: "Configurable options selected")
 }
 
 type AttachmentContent @doc(description: "Negotiable quote attachment file") {
@@ -59,28 +137,26 @@ type AttachmentContent @doc(description: "Negotiable quote attachment file") {
 }
 
 type NegotiableQuoteComment {
-    entity_id: ID!
-    parent_id: ID!
-    creator_type: Int
-    is_decline: Int
-    is_draft: Int
-    creator_id: ID!
-    comment: String
+    id: ID!
+    parent_id: String!
+    author: String!
+    text: String
     created_at: String
-    attachments: [NegotiableQuoteCommentAttachments]
+    attachments: [String]
 }
 
-type NegotiableQuoteCommentAttachments {
-    attachment_id: ID!
-    comment_id: ID
-    file_name: String
-    file_path: String
-    file_type: String
+type NegotiableQuoteHistoryLog {
+    id: ID!
+    author: String!
+    action: String!
+    comment: String
+    status: String
+    created_at: String
 }
 
 type NegotiableQuotePaymentInfo {
     payment_methods: [PaymentMethodsOutput]! @doc(description: "All list of payment options and totals")
-    totals: TotalsOutput! @doc(description: "List of totals")
+    prices: CartPrices! @doc(description: "List of totals")
 }
 
 type PaymentMethodsOutput {
@@ -88,26 +164,19 @@ type PaymentMethodsOutput {
     title: String @doc(description: "Payment method title")
 }
 
-type TotalsOutput {
-    grand_total: Money
-    subtotal_including_tax: Money
-    subtotal_excluding_tax: Money
-    discount: CartDiscount
-    subtotal_with_discount_excluding_tax: Money
-    applied_taxes: [CartTaxItem]
+type CreateNegotiableQuoteOutput {
+    negotiable_quote:NegotiableQuote!
 }
 
-type CartTaxItem {
-    amount: Money!
-    label: String!
+type AddNegotiableQuoteCommentsOutput {
+    negotiable_quote:NegotiableQuote!
 }
 
-type CartDiscount {
-    amount: Money!
-    label: [String!]!
+type UpdateNegotiableQuoteItemsQuantityOutput {
+    negotiable_quote:NegotiableQuote!
 }
 
-type RequestNegotiableQuoteOutput {
+type RemoveNegotiableQuoteItemsOutput{
     negotiable_quote:NegotiableQuote!
 }
 
@@ -118,15 +187,7 @@ input FileInput @doc(description: "The list of file attachment codes") {
 }
 
 input NegotiableQuoteShippingAddressInput {
-    firstname: String! @doc(description: "The first name of the person associated with the billing address")
-    lastname: String! @doc(description: "The family name of the person associated with the billing address")
-    telephone: String! @doc(description: "The telephone number")
-    street: [String]! @doc(description: "A list of strings that define the street number and name")
-    city: String! @doc(description: "The city or town")
-    region: String! @doc(description: "The region name")
-    region_id: Int @doc(description: "The region ID")
-    postcode: String! @doc(description: "The customer's ZIP or postal code")
-    country_code: String! @doc(description: "The country code")
+    address: CartAddressInput
 }
 
 type ShippingMethodsOutput {
@@ -143,5 +204,9 @@ type ShippingMethodsOutput {
 }
 
 type SetShippingMethodsOnNegotiableQuoteOutput {
-    shipping_method_set: Boolean!
+    negotiable_quote: NegotiableQuote
 }
+
+ type SetShippingAddressesOnNegotiableQuoteOutput{
+     negotiable_quote: NegotiableQuote
+ }
