@@ -13,7 +13,7 @@ type CartQueryOutput {
 type Cart {
     id: ID! @doc(description: "The ID of the cart.")
     items: [CartItemInterface]
-    applied_coupons: [AppliedCoupon] @doc(description:"An array of `AppliedCoupon` objects. Each object contains the `code` text attribute, which specifies the coupon code")
+    applied_coupons: [AppliedCoupon] @doc(description:"An array of `AppliedCoupon` objects. Each object contains the `code` text attribute, which specifies the coupon code. By default Magento supports only one coupon.")
     email: String
     shipping_addresses: [ShippingCartAddress]!
     billing_address: BillingCartAddress
@@ -72,7 +72,8 @@ type GiftCardCartItem implements CartItemInterface {
 }
 
 type SelectedConfigurableOption {
-    id_v2: ID! @doc(description: "Hash which includes option ID, option type and slected values. Can be used to move configurable product to wishlist or gift registry")
+    # Hash which includes option ID, option type and slected values. Can be used to move configurable product to wishlist or gift registry
+    id_v2: ID!
     id: Int!
     option_label: String!
     value_id: Int!
@@ -80,7 +81,8 @@ type SelectedConfigurableOption {
 }
 
 type DownloadableProductLink @doc(description: "Defines characteristics of a downloadable product") {
-    id: ID! @doc(description: "Hash based on option type and slected link. Can be used to move downloadable product to wishlist or gift registry")
+    # Hash based on option type and slected link. Can be used to move downloadable product to wishlist or gift registry
+    id: ID!
     title: String @doc(description: "The display name of the link")
     sort_order: Int @doc(description: "A number indicating the sort order")
     price: Float @doc(description: "The price of the downloadable product")
@@ -109,7 +111,8 @@ type SelectedBundleOptionValue {
 }
 
 type SelectedCustomizableOption {
-    id_v2: ID! @doc(description: "Hash which includes option ID, option type and slected values. Can be used to move a product to wishlist or gift registry")
+    # Hash which includes option ID, option type and slected values. Can be used to move a product to wishlist or gift registry
+    id_v2: ID!
     id: Int!
     label: String!
     is_required: Boolean!
@@ -131,7 +134,8 @@ type CartItemSelectedOptionValuePrice {
 }
 
 type SelectedGiftCardAmount {
-    id: ID! @doc(description: "Hash from the type of the option and value")
+    # Hash from the type of the option and value
+    id: ID!
     value: Money!
 }
 
