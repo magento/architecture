@@ -11,22 +11,138 @@ type CartQueryOutput {
 }
 
 type Cart {
-    id: String!
-
-    line_items_count: Int!
-    items_quantity: Float!
-
-    selected_payment_method: CheckoutPaymentMethod
-    available_payment_methods: [CheckoutPaymentMethod]!
-
-    customer: CheckoutCustomer
-    customer_notes: String
-
-    gift_cards_amount_used: Money
-    applied_gift_cards: [CartGiftCard]
-
-    is_multishipping: Boolean!
+    id: ID! @doc(description: "The ID of the cart.")
+    items: [CartItemInterface]
+    applied_coupons: [AppliedCoupon] @doc(description:"An array of `AppliedCoupon` objects. Each object contains the `code` text attribute, which specifies the coupon code. By default Magento supports only one coupon.")
+    email: String
+    shipping_addresses: [ShippingCartAddress]!
+    billing_address: BillingCartAddress
+    available_payment_methods: [AvailablePaymentMethod] @doc(description: "Available payment methods")
+    selected_payment_method: SelectedPaymentMethod
+    prices: CartPrices
+    total_quantity: Float!
     is_virtual: Boolean!
+}
+
+type AvailablePaymentMethod {
+    code: String! @doc(description: "The payment method code")
+    title: String! @doc(description: "The payment method title.")
+}
+
+type SelectedPaymentMethod {
+    code: String! @doc(description: "The payment method code")
+    title: String! @doc(description: "The payment method title.")
+    purchase_order_number: String @doc(description: "The purchase order number.")
+}
+
+interface CartItemInterface @typeResolver(class: "Magento\\QuoteGraphQl\\Model\\Resolver\\CartItemTypeResolver") {
+    id: String!
+    quantity: Float!
+    prices: CartItemPrices
+    product: ProductInterface!
+    customizable_options: [SelectedCustomizableOption]
+}
+
+type SimpleCartItem implements CartItemInterface @doc(description: "Simple Cart Item") {
+}
+
+type VirtualCartItem implements CartItemInterface @doc(description: "Virtual Cart Item") {
+}
+
+type ConfigurableCartItem implements CartItemInterface {
+    child_sku: String! @doc(description: "SKU of the simple product corresponding to a set of selected configurable options.")
+    configurable_options: [SelectedConfigurableOption!]
+}
+
+type DownloadableCartItem implements CartItemInterface @doc(description: "Downloadable Cart Item") {
+    links: [DownloadableProductLinks] @deprecated(description: "Type was renamed from plural to singular, also link now has different ID type")
+    links_v2: [DownloadableProductLink] @doc(description: "An array containing information about the selected links")
+    samples: [DownloadableProductSamples] @doc(description: "DownloadableProductSamples defines characteristics of a downloadable product")
+}
+
+type BundleCartItem implements CartItemInterface {
+    bundle_options: [SelectedBundleOption!]
+}
+
+type GiftCardCartItem implements CartItemInterface {
+    sender_name: String!
+    recipient_name: String!
+    amount: SelectedGiftCardAmount
+    message: String
+}
+
+type SelectedConfigurableOption {
+    # Hash which includes option ID, option type and slected values. Can be used to move configurable product to wishlist or gift registry
+    id_v2: ID!
+    id: Int!
+    option_label: String!
+    value_id: Int!
+    value_label: String!
+}
+
+type DownloadableProductLink @doc(description: "Defines characteristics of a downloadable product") {
+    # Hash based on option type and slected link. Can be used to move downloadable product to wishlist or gift registry
+    id: ID!
+    title: String @doc(description: "The display name of the link")
+    sort_order: Int @doc(description: "A number indicating the sort order")
+    price: Float @doc(description: "The price of the downloadable product")
+    sample_url: String @doc(description: "URL to the downloadable sample")
+}
+
+type DownloadableProductSamples @doc(description: "DownloadableProductSamples defines characteristics of a downloadable product") {
+    title: String @doc(description: "The display name of the sample")
+    sort_order: Int @doc(description: "A number indicating the sort order")
+    sample_url: String @doc(description: "URL to the downloadable sample")
+}
+
+type SelectedBundleOption {
+    id: Int!
+    label: String!
+    type: String!
+    values: [SelectedBundleOptionValue!]!
+}
+
+type SelectedBundleOptionValue {
+    id: Int!
+    label: String!
+    price: Float!
+    quantity: Float!
+    child_sku: String!
+}
+
+type SelectedCustomizableOption {
+    # Hash which includes option ID, option type and slected values. Can be used to move a product to wishlist or gift registry
+    id_v2: ID!
+    id: Int!
+    label: String!
+    is_required: Boolean!
+    values: [SelectedCustomizableOptionValue!]!
+    sort_order: Int!
+}
+
+type SelectedCustomizableOptionValue {
+    id: Int!
+    label: String!
+    value: String!
+    price: CartItemSelectedOptionValuePrice!
+}
+
+type CartItemSelectedOptionValuePrice {
+    value: Float!
+    units: String!
+    type: PriceTypeEnum!
+}
+
+type SelectedGiftCardAmount {
+    # Hash from the type of the option and value
+    id: ID!
+    value: Money!
+}
+
+enum PriceTypeEnum {
+    FIXED
+    PERCENT
+    DYNAMIC
 }
 
 type CheckoutCustomer {

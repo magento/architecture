@@ -1,5 +1,5 @@
 type Mutation {
-    addProductsToCart(cart_id: String!, cart_items: [CartItemInput!]!): AddProductsToCartOutput
+    addProductsToCart(cartId: String!, cartItems: [CartItemInput!]!): AddProductsToCartOutput
 }
 
 input CartItemInput {

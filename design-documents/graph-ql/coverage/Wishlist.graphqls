@@ -1,13 +1,9 @@
-type Query {
-    wishlist: WishlistOutput @deprecated(reason: "Moved under `Customer` `wishlists`")
-}
-
 type Mutation {
     createWishlist(name: String!): ID # Multiple wishlists Commerce functionality
     removeWishlist(id: ID!): Boolean # Commerce fucntionality - in Opens Source we assume customer always has one wishlist
-    addProductsToWishlist(wishlist_id: ID!, wishlist_items: [WishlistItemInput!]!): AddProductsToWishlistOutput
-    removeProductsFromWishlist(wishlist_id: ID!, wishlist_items_ids: [ID!]!): RemoveProductsFromWishlistOutput
-    updateProductsInWishlist(wishlist_id: ID!, wishlist_items: [WishlistItemUpdateInput!]!): UpdateProductsInWishlistOutput
+    addProductsToWishlist(wishlistId: ID!, wishlistItems: [WishlistItemInput!]!): AddProductsToWishlistOutput
+    removeProductsFromWishlist(wishlistId: ID!, wishlistItemsIds: [ID!]!): RemoveProductsFromWishlistOutput
+    updateProductsInWishlist(wishlistId: ID!, wishlistItems: [WishlistItemUpdateInput!]!): UpdateProductsInWishlistOutput
 }
 
 type Customer {
@@ -17,11 +13,11 @@ type Customer {
 
 type Wishlist {
     id: ID
-    items: [WishlistItem]
+    items: [WishlistItemInterface]
     items_count: Int
     sharing_code: String
     updated_at: String
-    #name: String should be added in Commerce edition
+    name: String @doc(description: "Avaialble in Commerce edition only")
 }
 
 input WishlistItemUpdateInput {
@@ -47,22 +43,44 @@ input WishlistItemInput {
     sku: String
     quantity: Float
     parent_sku: String,
+    parent_quantity: Float,
     selected_options: [String!]
     entered_options: [EnteredOptionInput!]
 }
 
-type WishlistOutput @deprecated(reason: "Deprecated: `Wishlist` type should be used instead") {
-    items: [WishlistItem] @deprecated
-    items_count: Int @deprecated
-    name: String @deprecated
-    sharing_code: String @deprecated
-    updated_at: String @deprecated
-}
-
-type WishlistItem {
+interface WishlistItemInterface {
     id: ID
-    qty: Float
+    quantity: Float
     description: String
     added_at: String
     product: ProductInterface
+    customizable_options: [SelectedCustomizableOption]
 }
+
+type SimpleWishlistItem implements WishlistItemInterface @doc(description: "Simple Wishlist Item") {
+}
+
+type VirtualWishlistItem implements WishlistItemInterface @doc(description: "Virtual Wishlist Item") {
+}
+
+type ConfigurableWishlistItem implements WishlistItemInterface {
+    child_sku: String! @doc(description: "SKU of the simple product corresponding to a set of selected configurable options.")
+    configurable_options: [SelectedConfigurableOption!]
+}
+
+type DownloadableWishlistItem implements WishlistItemInterface @doc(description: "Downloadable Wishlist Item") {
+    links_v2: [DownloadableProductLink] @doc(description: "An array containing information about the selected links")
+    samples: [DownloadableProductSamples] @doc(description: "DownloadableProductSamples defines characteristics of a downloadable product")
+}
+
+type BundleWishlistItem implements WishlistItemInterface {
+    bundle_options: [SelectedBundleOption!]
+}
+
+type GiftCardCartItem implements CartItemInterface {
+    sender_name: String!
+    recipient_name: String!
+    amount: SelectedGiftCardAmount
+    message: String
+}
+

@@ -1,0 +1,324 @@
+type Customer {
+    gift_registry_list: [GiftRegistry]
+    gift_registry(id: ID!): GiftRegistry
+}
+
+type Query {
+    giftRegistryTypes: [GiftRegistryType] @doc(description: "Get a list of available gift registry types")
+    giftRegistrySearch(
+        registrantFirstname: String!,
+        registrantLastname: String!,
+        giftRegistryTypeId: ID,
+        searchableDynamicAttributes: [GiftRegistryDynamicAttributeInput] @doc(description: "For select attributes ID should be provided expected. For range search, '_from' and '_to' suffixes can be added to the attribute code. For text attributes provide value for exact matching.")
+    ): [GiftRegistry] @doc(description: "Gift registry search by registrant name and additional searchable attributes.")
+    giftRegistry(id: ID!): GiftRegistry @doc(description: "This query is intended for guests and some fields of GiftRegistry will not be availalbe")
+}
+
+type Mutation {
+    # All mutations below should only be accessible to the registry owner. Guest users should be getting authorization error
+
+    createGiftRegistry(giftRegistry: CreateGiftRegistryInput!): CreateGiftRegistryOutput
+    updateGiftRegistry(id: ID!, giftRegistry: UpdateGiftRegistryInput!): UpdateGiftRegistryOutput
+    removeGiftRegistry(id: ID!): RemoveGiftRegistryOutput
+
+    addGiftRegistryItems(giftRegistryId: ID!, items: [AddGiftRegistryItemInput!]!): AddGiftRegistryItemsOutput
+    removeGiftRegistryItems(giftRegistryId: ID!, itemIds: [ID!]!): RemoveGiftRegistryItemsOutput
+    updateGiftRegistryItems(giftRegistryId: ID!, items: [UpdateGiftRegistryItemInput!]!): UpdateGiftRegistryItemsOutput
+
+    addGiftRegistryRegistrants(giftRegistryId: ID!, registrants: [AddGiftRegistryRegistrantInput!]!): AddGiftRegistryRegistrantsOutput
+    updateGiftRegistryRegistrants(giftRegistryId: ID!, registrants: [UpdateGiftRegistryRegistrantInput!]!): UpdateGiftRegistryRegistrantsOutput
+    removeGiftRegistryRegistrants(giftRegistryId: ID!, registrantIds: [ID!]!): RemoveGiftRegistryRegistrantsOutput
+
+    shareGiftRegistry(id: ID!, sender: ShareGiftRegistrySenderInput!, invitees: [ShareGiftRegistryInviteeInput!]!): ShareGiftRegistryOutput
+}
+
+input ShareGiftRegistryInviteeInput
+{
+    name: String!
+    email: String!
+}
+
+input ShareGiftRegistrySenderInput
+{
+    name: String!
+    message: String!
+}
+
+input AddGiftRegistryItemInput {
+    sku: String!
+    quantity: Float!
+    parent_sku: String,
+    parent_quantity: Float,
+    note: String,
+    # see https://github.com/magento/architecture/blob/master/design-documents/graph-ql/coverage/add-items-to-cart-single-mutation.md
+    selected_options: [String!]
+    # see https://github.com/magento/architecture/blob/master/design-documents/graph-ql/coverage/add-items-to-cart-single-mutation.md
+    entered_options: [EnteredOptionInput!]
+}
+
+# Should be defined in scope of https://github.com/magento/architecture/blob/master/design-documents/graph-ql/coverage/add-items-to-cart-single-mutation.md
+input EnteredOptionInput {
+    id: String!
+    value: String!
+}
+
+input UpdateGiftRegistryItemInput {
+    id: ID!
+    quantity: Float!
+    note: String
+}
+
+input UpdateGiftRegistryInput {
+    event_name: String
+    type_id: String
+    message: String
+    privacy_settings: GiftRegistryPrivacySettings
+    status: GiftRegistryStatus
+    shipping_address: GiftRegistryShippingAddressInput
+    dynamic_attributes: [GiftRegistryDynamicAttributeInput!] @doc(description: "As a result of the update, only the values of provided attributes will be affected. If the attribute is missing in the request, its value will not be changed")
+}
+
+input CreateGiftRegistryInput {
+    id: ID @doc(description: "Optional id, can be generated on the client and used for sending multiple gift-registry related mutations in a single request. For example, create registry and immediatly add items or registrants.")
+    event_name: String!
+    type_id: String!
+    message: String!
+    privacy_settings: GiftRegistryPrivacySettings!
+    status: GiftRegistryStatus!
+    shipping_address: GiftRegistryShippingAddressInput
+    dynamic_attributes: [GiftRegistryDynamicAttributeInput]
+}
+
+input GiftRegistryShippingAddressInput @doc(description: "Either address data or address ID should be provided. In case both are provided, validation will fail") {
+    address_data: CustomerAddressInput
+    address_id: Int
+}
+
+input UpdateGiftRegistryRegistrantInput {
+    id: ID!
+    first_name: String
+    last_name: String
+    email: String
+    dynamic_attributes: [GiftRegistryDynamicAttributeInput] @doc(description: "As a result of the update, only the values of provided attributes will be affected. If the attribute is missing in the request, its value will not be changed")
+}
+
+input AddGiftRegistryRegistrantInput {
+    first_name: String!
+    last_name: String!
+    email: String!
+    dynamic_attributes: [GiftRegistryDynamicAttributeInput]
+}
+
+input GiftRegistryDynamicAttributeInput {
+    code: ID!
+    value: String!
+}
+
+type CreateGiftRegistryOutput {
+    gift_registry: GiftRegistry
+}
+
+type UpdateGiftRegistryOutput {
+    gift_registry: GiftRegistry
+}
+
+type RemoveGiftRegistryOutput {
+    is_removed: Boolean!
+}
+
+type AddGiftRegistryItemsOutput {
+    gift_registry: GiftRegistry
+}
+
+type RemoveGiftRegistryItemsOutput {
+    gift_registry: GiftRegistry
+}
+
+type UpdateGiftRegistryItemsOutput {
+    gift_registry: GiftRegistry
+}
+
+type AddGiftRegistryRegistrantsOutput {
+    gift_registry: GiftRegistry
+}
+
+type UpdateGiftRegistryRegistrantsOutput {
+    gift_registry: GiftRegistry
+}
+
+type RemoveGiftRegistryRegistrantsOutput {
+    gift_registry: GiftRegistry
+}
+
+type ShareGiftRegistryOutput {
+    is_shared: Boolean!
+}
+
+type GiftRegistryType {
+    id: ID!
+    label: String!
+    dynamic_attributes_metadata: [GiftRegistryDynamicAttributeMetadataInterface]
+}
+
+interface GiftRegistryDynamicAttributeMetadataInterface {
+    code: ID!
+    input_type: String!
+    attribute_group: String!
+    label: String!
+    is_required: Boolean!
+    sort_order: Int
+}
+
+type GiftRegistryTextAttributeMetadata implements GiftRegistryDynamicAttributeMetadataInterface {
+}
+
+type GiftRegistrySelectAttributeMetadata implements GiftRegistryDynamicAttributeMetadataInterface, GiftRegistrySelectAttributeMetadataInterface {
+}
+
+type GiftRegistryDateAttributeMetadata implements GiftRegistryDynamicAttributeMetadataInterface {
+    format: GiftRegistryDateAttributeFormat!
+}
+
+enum GiftRegistryDateAttributeFormat {
+    SHORT
+    MEDIUM
+    LONG
+    FULL
+}
+
+type GiftRegistryCountryAttributeMetadata implements GiftRegistryDynamicAttributeMetadataInterface, GiftRegistrySelectAttributeMetadataInterface {
+    show_region: Boolean!
+}
+type GiftRegistryRegionAttributeMetadata implements GiftRegistryDynamicAttributeMetadataInterface, GiftRegistrySelectAttributeMetadataInterface {
+}
+
+type GiftRegistryEventCountryAttributeMetadata implements GiftRegistryDynamicAttributeMetadataInterface, GiftRegistrySearcheableAttributeMetadataInterface, GiftRegistrySelectAttributeMetadataInterface {
+    show_region: Boolean!
+}
+
+type GiftRegistryEventRegionAttributeMetadata implements GiftRegistryDynamicAttributeMetadataInterface, GiftRegistrySearcheableAttributeMetadataInterface, GiftRegistrySelectAttributeMetadataInterface {
+}
+
+type GiftRegistryEventDateAttributeMetadata implements GiftRegistryDynamicAttributeMetadataInterface, GiftRegistrySearcheableAttributeMetadataInterface {
+    format: GiftRegistryDateAttributeFormat!
+}
+
+type GiftRegistryEventLocationAttributeMetadata implements GiftRegistryDynamicAttributeMetadataInterface, GiftRegistrySearcheableAttributeMetadataInterface {
+}
+
+type GiftRegistryRoleAttributeMetadata implements GiftRegistryDynamicAttributeMetadataInterface, GiftRegistrySearcheableAttributeMetadataInterface, GiftRegistrySelectAttributeMetadataInterface {
+}
+
+interface GiftRegistrySearcheableAttributeMetadataInterface {
+    is_searcheable: Boolean!
+}
+
+interface GiftRegistrySelectAttributeMetadataInterface {
+    options: [GiftRegistrySelectAttributeOptionMetadata]
+}
+
+type GiftRegistrySelectAttributeOptionMetadata {
+    code: ID!
+    label: String!
+    is_default: Boolean
+}
+
+type GiftRegistry {
+    id: ID!
+    event_name: String!
+    type: GiftRegistryType
+    message: String!
+    created_on: String! @doc(description: "Creation date") @doc(description: "Accessible to the registry owner only")
+    privacy_settings: GiftRegistryPrivacySettings! @doc(description: "Accessible to the registry owner only")
+    status: GiftRegistryStatus! @doc(description: "Accessible to the registry owner only")
+    owner_name: String!
+    registrants: [GiftRegistryRegistrant]
+    shipping_address: CustomerAddress @doc(description: "Accessible to the registry owner only")
+    dynamic_attributes: [GiftRegistryDynamicAttribute]
+    items: [GiftRegistryItemInterface]
+}
+
+interface GiftRegistryItemInterface {
+    id: String!
+    quantity: Float!
+    quantity_fulfilled: Float!
+    note: String
+    added_on: String!
+    product: ProductInterface
+    customizable_options: [SelectedCustomizableOption]
+}
+
+type SimpleGiftRegistryItem implements GiftRegistryItemInterface {
+}
+
+type BundleGiftRegistryItem implements GiftRegistryItemInterface {
+    bundle_options: [SelectedBundleOption!]
+}
+
+type ConfigurableGiftRegistryItem implements GiftRegistryItemInterface {
+    child_sku: String! @doc(description: "SKU of the simple product corresponding to a set of selected configurable options.")
+    configurable_options: [SelectedConfigurableOption!]
+}
+
+# Not currently supported by Magento core
+type DownloadableGiftRegistryItem implements GiftRegistryItemInterface {
+    links: [DownloadableProductLink]
+    samples: [DownloadableProductSamples]
+}
+
+# Not currently supported by Magento core
+type VirtualGiftRegistryItem implements GiftRegistryItemInterface {
+}
+
+# Not currently supported by Magento core
+type GiftCardGiftRegistryItem implements GiftRegistryItemInterface {
+    sender_name: String!
+    recipient_name: String!
+    amount: SelectedGiftCardAmount
+    message: String
+}
+
+interface GiftRegistryDynamicAttributeInterface  {
+    code: ID!
+    label: String!
+    value: String!
+}
+
+type GiftRegistryDynamicAttribute implements GiftRegistryDynamicAttributeInterface {
+    group: GiftRegistryDynamicAttributeGroup!
+}
+
+type GiftRegistryRegistrantDynamicAttribute implements GiftRegistryDynamicAttributeInterface {
+
+}
+
+enum GiftRegistryDynamicAttributeGroup {
+    GENERAL_INFORMATION
+    EVENT_INFORMATION
+    PRIVACY_SETTINGS
+    DETAILED_INFORMATION
+    SHIPPING_ADDRESS
+}
+
+type GiftRegistryRegistrant {
+    id: ID!
+    first_name: String!
+    last_name: String!
+    email: String! @doc(description: "Accessible to the registry owner only")
+    dynamic_attributes: [GiftRegistryRegistrantDynamicAttribute]
+}
+
+enum GiftRegistryStatus {
+    ACTIVE
+    INACTIVE
+}
+
+enum GiftRegistryPrivacySettings {
+    PRIVATE
+    PUBLIC
+}
+
+type StoreConfig {
+    magento_giftregistry_general_enabled : String
+    magento_giftregistry_general_max_registrant : String
+}
