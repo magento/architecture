@@ -68,6 +68,10 @@ type CustomerOrder {
     status: String! @doc("current status of the order")
     number: String! @doc("sequential order number")
     items: [OrderItemInterface] @doc("collection of all the items purchased")
+    items_v2(
+             currentPage: Int = 1 @doc("current page of the customer order item list. default is 1")
+             pageSize: Int = 20 @doc("page size for the customer orders item list. default is 20")
+             ): OrderItems! @doc("collection of all the items purchased with pagination")
     total: OrderTotal @doc("total amount details for the order")
     invoices: [Invoice] @doc("invoice list for the order")
     credit_memos: [CreditMemo] @doc("credit memo list for the order")
@@ -86,6 +90,17 @@ The `id` will be a `base64_encode(increment_id)` which in future can be replaced
 > The order `status` should be filtered in the same way as for Luma via `Order Status` and `Visible On Storefront` configuration 
 
 ### Order Item
+The order items will be presented as separate interface which will have multiple implementations for invoice, shipment and credit memo types.
+The order items will be paginated.
+
+```graphql
+@doc("Grpahql Order Item Output Wrapper")
+type OrderItems {
+    items: [OrderItem]  @doc("collection of customer orders items that contains individual order item details.")
+    page_info: SearchResultPageInfo
+    total_count: Int
+}
+```
 
 ```graphql
 interface OrderItemInterface @doc("Order item details") {
