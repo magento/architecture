@@ -51,7 +51,8 @@ Similar to the product edit scenario
 
 ### Concepts:
 
-1. Store-Fronts stores only original image URLs
+1. Store-Front stores only original image URLs
+2. Store-Front is not responsible for physical images. This is responsibility of DAM (which can be a specialized DAM or Magento Back office). 
 2. Image URLs support image transformation by parameters (e.g., `https://some.domain.com/media/catalog/product/1/2/3.jpg?w=100&h=100`)
    1. Image transformation is performed by CDN. The URLs passed from the Backoffice to Store-Front are CDN-based.
    2. Image transformation can be done by web server on the Magento side (e.g., Store-Front), but this looks less efficient than using a CDN. Benefits of this approach are not clear. Such scenario is assumed useful for development scenarios only.
