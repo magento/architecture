@@ -82,7 +82,7 @@ type GiftOptionsPrices {
 }
 
 type GiftMessage {
-    to: String! @doc(description: "Recepient name")
+    to: String! @doc(description: "Recipient name")
     from: String! @doc(description: "Sender name")
     message: String! @doc(description: "Gift message text")
 }
@@ -189,7 +189,7 @@ type SetGiftOptionsOnCartOutput {
 }
 
 type GiftMessageInput {
-    to: String! @doc(description: "Recepient name")
+    to: String! @doc(description: "Recipient name")
     from: String! @doc(description: "Sender name")
     message: String! @doc(description: "Gift message text")
 }
