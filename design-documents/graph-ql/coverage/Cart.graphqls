@@ -50,7 +50,7 @@ type VirtualCartItem implements CartItemInterface @doc(description: "Virtual Car
 }
 
 type ConfigurableCartItem implements CartItemInterface {
-    child_sku: String! @doc(description: "SKU of the simple product corresponding to a set of selected configurable options.")
+    configured_variant: SimpleProduct! @doc(description: "Simple product corresponding to configured product.")
     configurable_options: [SelectedConfigurableOption!]
 }
 
