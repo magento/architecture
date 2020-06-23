@@ -9,7 +9,7 @@ Based on the store code passed via header (or default), returns the storeConfig 
 ### Proposed schema
 ```graphql
 type Query {
-    availableStores: [StoreConfig] @doc(description: "Get a list of available stores")
+    availableStores: [StoreConfig] @doc(description: "Get a list of available store views and their config information.")
 }
 
 # Existing schema
