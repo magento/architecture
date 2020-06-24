@@ -1,7 +1,7 @@
 type Mutation {
     createNegotiableQuote(
         cartId: ID! @doc(description: "Cart ID")
-        quoteName: String @doc(description: "Quote name")
+        quoteName: String! @doc(description: "Quote name")
         comment: String @doc(description: "Comment")
         files: [FileInput!] @doc(description: "Attached files")
     ): CreateNegotiableQuoteOutput! @doc(description:"Generates negotiable quote request")
@@ -10,13 +10,13 @@ type Mutation {
         cartId: ID! @doc(description: "Cart ID")
         comment: String @doc(description: "Comment")
         files: [FileInput!] @doc(description: "Attached files")
-    ): AddNegotiableQuoteCommentsOutput! @doc(description:"Generates negotiable quote request")
+    ): AddNegotiableQuoteCommentsOutput! @doc(description:"Add comments to negotiable quote")
 
-    updateNegotiableQuoteItemsQuantity(
+    updateNegotiableQuoteItemQuantity(
         cart_id: ID!, @doc(description: "unique Id of negotiable quote")
-        items: [ID!]! @doc(description: "unique Ids of Items to be update in negotiable quote")
-        quantity: Float, @doc(description: "quantity of the item  to be updated")
-    ): UpdateNegotiableQuoteItemsQuantityOutput @doc(description: "Remove Items in negotiable quote")
+        item: ID!, @doc(description: "unique Id of Item to be update in negotiable quote")
+        quantity: Float @doc(description: "quantity of the item  to be updated")
+    ): UpdateNegotiableQuoteItemsQuantityOutput @doc(description: "Update items quantity in negotiable quote")
 
     removeNegotiableQuoteItems(
         cart_id: ID!, @doc(description: "unique Id of negotiable quote")
@@ -44,13 +44,6 @@ type Customer {
         currentPage: Int = 1
     ): [NegotiableQuote] @doc(description: "Get negotiable quotes of a customer")
 
-    estimateShippingCostForNegotiableQuote(
-        address: NegotiableQuoteShippingAddressInput!
-    ): [ShippingMethodsOutput]! @doc(description:"Estimate shipping costs for a negotiable quote")
-
-    estimateShippingCostByAddressIdForNegotiableQuote(
-        address_id: String!
-    ): [ShippingMethodsOutput]! @doc(description:"Estimate shipping costs for a negotiable quote by Address ID")
 }
 
 type NegotiableQuote {
@@ -195,12 +188,12 @@ type ShippingMethodsOutput {
     method_code: String @doc(description: "Shipping method code")
     carrier_title: String @doc(description: "Shiping carrier title")
     method_title: String @doc(description: "Shipping method title")
-    amount: String @doc(description: "Shipping amount")
-    base_amount: String @doc(description: "Shipping base amount")
+    amount: Money @doc(description: "Shipping amount")
+    base_amount: Money @doc(description: "Shipping base amount")
     available: String @doc(description: "Shipping method availble")
     error_message: String @doc(description: "Shipping method error message")
-    price_excl_tax: String @doc(description: "Shipping method price with exclusive tax")
-    price_incl_tax: String @doc(description: "Shipping method price with inclusive tax")
+    price_excl_tax: Money @doc(description: "Shipping method price with exclusive tax")
+    price_incl_tax: Money @doc(description: "Shipping method price with inclusive tax")
 }
 
 type SetShippingMethodsOnNegotiableQuoteOutput {
@@ -209,4 +202,4 @@ type SetShippingMethodsOnNegotiableQuoteOutput {
 
  type SetShippingAddressesOnNegotiableQuoteOutput{
      negotiable_quote: NegotiableQuote
- }
+}
