@@ -122,8 +122,7 @@ type Mutation {
 
     addRequisitionListItemToCart(
         requisition_list_id: ID!, @doc(description: "unique Id of requisition list")
-        item_ids: [ID!]!, @doc(description: "selected requisition list items that are to be added")
-	is_replace: Boolean @doc(description: "replaces or merges the existing cart items with requisition list items")
+        item_ids: [ID!]! @doc(description: "selected requisition list items that are to be added")
     ): AddRequisitionListItemToCartOutput @doc(description: "Add Requisition List Items To Customer Cart")
 
     copyItemsBetweenRequisitionList(
@@ -137,6 +136,10 @@ type Mutation {
         destination_id: ID, @doc(description: "unique Id of destination requisition list") # If null new requisition list will be created
         item_ids: [ID!]! @doc(description: "selected requisition list items that are to be moved from source")
     ): MoveItemsFromRequisitionListOutput @doc(description: "Move Items from Requisition List to another requisition List")
+
+    clearCustomerCart(
+	cart_id: String! @doc(description: "masked Cart Id")
+    ): ClearCustomerCartOutput @doc(description: "Clears the cart items")
 }
 
 type RemoveRequisitionListItemsOutput {
@@ -193,4 +196,8 @@ type CopyItemsFromRequisitionListOutput {
 type MoveItemsFromRequisitionListOutput {
     source : RequisitionList @doc(description:  "Source Requisition List")
     destination : RequisitionList @doc(description: "Destination Requisition List")
+}
+
+type ClearCustomerCartOutput {
+    cart: Cart
 }
