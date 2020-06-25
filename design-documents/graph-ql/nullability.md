@@ -97,6 +97,8 @@ Note that no data was obtained by the client for `product`
 
 With this in mind, when in doubt, the safer route is to make a field nullable, with the agreement that we'll iterate and improve schemas as we get feedback on usage from clients.
 
+**Note**: The [GraphQL reference implementation](https://github.com/graphql/graphql-js) has a `findBreakingChanges` feature that can be inspected to see a [list of all known schema changes that cause breaks for clients](https://github.com/graphql/graphql-js/blob/2232ebdef828566f3add3ed2a31709d3c1710c0e/src/utilities/findBreakingChanges.js#L41-L67). It [explicitly notes](https://github.com/graphql/graphql-js/blob/2232ebdef828566f3add3ed2a31709d3c1710c0e/src/utilities/findBreakingChanges.js#L461) that moving from a nullable value to a non-nullable value of the same type is safe.
+
 ## Recommendations
 
 ### Top-level Query fields should always be nullable
