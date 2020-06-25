@@ -4,7 +4,7 @@ By default, all field values in GraphQL are _nullable_
 
 ```graphql
 type Query {
-	product(id: ID): Product # Server can also return "null"
+    product(id: ID): Product # Server can also return "null"
 }
 ```
 
@@ -12,7 +12,7 @@ GraphQL provides a wrapper/modifier that can be used to disallow null values. It
 
 ```graphql
 type Query {
-   product(id: ID): Product! # Server cannot return "null"
+    product(id: ID): Product! # Server cannot return "null"
 }
 ```
 
@@ -50,7 +50,7 @@ type Product {
     price: Money!
     description: String!
     url: String!
-    related_products: [RelatedProduct!]!
+    related_products: RelatedProducts!
 }
 ```
 **Query**:
@@ -65,10 +65,12 @@ query ProductDetailsPage($id: ID) {
        # down/unreachable at the time this query runs, we can't fulfill
        # the contract
        related_products {
-          id
-          name
-          price
-          url
+           items {
+               id
+               name
+               price
+               url
+           }
        }
     }
 }
@@ -97,27 +99,55 @@ With this in mind, when in doubt, the safer route is to make a field nullable, w
 
 ## Recommendations
 
-### Scalars
+### Top-level Query fields should always be nullable
 
-If the field's value is obtained from a backing data source, and that value is required in the backing data source, then the field in the GraphQL schema should be non-nullable
+Because of error propagation, if an error occurs in a non-null field on the `Query` root, the client will lose data from all other top-level queries.
 
-#### Example
 ```graphql
-type Product {
-   id: ID! # Products service would not allow a product without an ID, so id is non-nullable
-   color: String # Backing products DB does not require color, so it's nullable
+type Query {
+    # If a client queries for both fields, and one of them fails,
+    # the client will receive no data
+    product(id: ID): Product!
+    category(id: ID): Category!
 }
 ```
 
-### Object Types
+### Primary keys (id field) should always be non-nullable
 
-Object type fields are frequently used to create joins between types. Object type fields should be nullable when the backing data is likely to live in a different service from the parent object type. This rule will require more thought since it depends where we think domain boundaries will be drawn as we decompose to services.
+It very rarely makes sense to have a resource that _can_ have an ID but might not.
 
-#### Example
+IDs are extremely important for caching in most GraphQL clients, so it's worthwhile to be safe here.
+
 ```graphql
 type Product {
-    price: Price! # non-nullable, because price is highly likely to be part of a products service
-	recommended_products: ProductRecommendations # nullable, because product recommendations would likely be a function that lives outside of the products service
+    id: ID! # Rarely makes sense for this to be nullable
+}
+```
+
+### Consider the Parent Type
+
+If you're not dealing with an `id` field or a top-level `Query` field, the most important question to ask is:
+
+**Is the parent object still usable if this field has an error?**
+
+#### Example: Parent still usable with field error
+
+```graphql
+type Product {
+    # Recommended products are not critical data on a product page, and a UI can represent
+    # a product safely without related products, so we keep the field nullable
+	recommended_products: ProductRecommendations
+}
+```
+
+#### Example: Parent not usable with field error
+
+```graphql
+type Product {
+    # A user would not be able to add a product to the cart from the Product
+    # details page if this field fails, because it may have required options.
+    # We make the field's type non-nullable
+    options: ProductOptions!
 }
 ```
 
@@ -125,7 +155,7 @@ type Product {
 
 List fields have [2 distinct forms of nullability](http://spec.graphql.org/draft/#sec-Combining-List-and-Non-Null):
 
-1. Field nullability (whether field can return `null` instead of a list)
+1. Field nullability (same as all other fields)
 2. List nullability (whether a list can have `null` items inside it)
 
 These forms can be composed together in various ways:
@@ -138,22 +168,30 @@ type Example {
 }
 ```
 
-There are 2 rules of thumb to follow. Note that these can be combined together depending on the use-case
+To decide whether the _field_ should be nullable, use the other recommendations provided in this document.
 
-#### Non-Nullable List _Field_
+When deciding whether a _List_ should be nullable, the most important question to ask is:
 
-A list _field_ should be non-nullable when its absence would make the parent type fairly useless.
+**"Is the parent object still usable if at least one item in this list has an error?"**
 
-An example is a `Product` type with an `options` field. When rendering a product detail page and asking for `Product.options`, you typically wouldn't want to keep rendering the page if `options` fails, because a shopper can't do much with a configurable product without the options.
+#### Example: Parent not usable if an item in List has an error
 
-If a product has no options at all, an empty list can still be returned (`null` would only be used to represent an error state).
+```graphql
+type Product {
+   # Note: The "!" inside of the List ([]) means the List is non-nullable
+   # Making the list non-nullable guarantees to the client that, if the receive
+   # a list of product options, it will be complete/without errors
+   options: [ProductOption!]!
+}
+```
 
-The syntax for a non-nullable list _field_ is `fieldname: [TypeName]!`
+#### Example: Parent still usable if an item in List has an error
 
-#### Non-Nullable List
-
-A _list_ should be non-nullable when the absence of at least 1 item in the list would make the parent type useless.
-
-Using the `Product.options` example again, it's extremely rare that you would want to render a product page with only _some_ of the configured options - what if you're missing a required one in the list?
-
-The syntax for a non-nullable _list_ is `[TypeName!]`
+```graphql
+type Product {
+    # The absence of a "!" inside the list means that we could fail
+    # to fetch a nested field in a related product, and it won't
+    # impact our ability to render the rest of the product page
+    related_products: [RelatedProduct]
+}
+```
