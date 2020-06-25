@@ -30,7 +30,14 @@ Making fields non-nullable alleviates some of these issues for clients.
 
 When a field's resolver has an error, GraphQL requires that the value of the field be set to `null`. But, if a field is non-nullable, a `null` value would break that contract.
 
-Instead, an error in a resolver for a non-nullable field propagates up to the nearest nullable ancestor field. This can end up causing a client to lose more data farther up the response tree, even though that data may have been resolved without errors.
+Instead, an error in a resolver for a non-nullable field propagates up to the nearest parent field. It that field is also non-nullable, the error propagates up to the next parent field. This propagation continues until either:
+
+- A nullable parent field is found
+- We reach the root `Query` object
+
+ A non-nullable type in the wrong place can end up causing a client to lose more data farther up the response tree, even though that data may have been resolved without errors.
+
+_[Further reading on the relationship between non-null types and errors](http://spec.graphql.org/draft/#sec-Errors-and-Non-Nullability)_
 
 ### Example: Bad use of non-nullable field
 
