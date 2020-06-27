@@ -95,7 +95,7 @@ enum AddItemUserErrorType {
 With this new schema, we get the following query and response:
 
 ```graphql
-query {
+mutation {
     addItemToCart(sku: "abc", quantity: 1) {
         cart {
             items {
