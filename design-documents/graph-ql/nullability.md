@@ -52,8 +52,8 @@ type Query {
 }
 
 type Product {
-	id: ID!
-	name: String!
+    id: ID!
+    name: String!
     price: Money!
     description: String!
     url: String!
@@ -63,7 +63,7 @@ type Product {
 **Query**:
 ```graphql
 query ProductDetailsPage($id: ID) {
-	product(id: $id) {
+    product(id: $id) {
        id
        name
        price
@@ -93,7 +93,7 @@ Note that no data was obtained by the client for `product`
    },
    "errors": [
       // details about failure in related_products field populated here
-	]
+   ]
 }
 ```
 
@@ -155,7 +155,7 @@ If you're not dealing with an `id` field or a top-level `Query` field, the most 
 type Product {
     # Recommended products are not critical data on a product page, and a UI can represent
     # a product safely without related products, so we keep the field nullable
-	recommended_products: ProductRecommendations
+    recommended_products: ProductRecommendations
 }
 ```
 
