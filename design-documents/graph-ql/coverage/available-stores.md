@@ -3,8 +3,10 @@
 ### Use case:
 Implementing a store switcher; it is necessary to know which stores are available and some basic info about them (i.e. store code)
 
-### Implementation detail:
-Based on the store code passed via header (or default), returns the storeConfig for all stores available under the same website.
+### Security Requirement:
+Based on the store code passed via header (or default), returns the storeConfig for other stores available under the same website.
+
+This query MUST NOT expose other websites or stores available under websites other than the current website.
 
 ### Proposed schema
 ```graphql
