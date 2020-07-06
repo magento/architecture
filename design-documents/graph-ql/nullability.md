@@ -175,7 +175,7 @@ type Product {
 List fields have [2 distinct forms of nullability](http://spec.graphql.org/draft/#sec-Combining-List-and-Non-Null):
 
 1. Field nullability (same as all other fields)
-2. List nullability (whether a list can have `null` items inside it)
+2. List item nullability (whether a list can have `null` items inside it)
 
 These forms can be composed together in various ways:
 ```graphql
@@ -189,7 +189,7 @@ type Example {
 
 To decide whether the _field_ should be nullable, use the other recommendations provided in this document.
 
-When deciding whether a _List_ should be nullable, the most important question to ask is:
+When deciding whether _List items_ should be nullable, the most important question to ask is:
 
 **"Is the parent object still usable if at least one item in this list has an error?"**
 
@@ -197,8 +197,8 @@ When deciding whether a _List_ should be nullable, the most important question t
 
 ```graphql
 type Product {
-   # Note: The "!" inside of the List ([]) means the List is non-nullable
-   # Making the list non-nullable guarantees to the client that, if the receive
+   # Note: The "!" inside of the List ([]) means the list items are non-nullable
+   # Making the list items non-nullable guarantees to the client that, if they receive
    # a list of product options, it will be complete/without errors
    options: [ProductOption!]!
 }
