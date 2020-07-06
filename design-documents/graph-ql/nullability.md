@@ -133,6 +133,16 @@ type Product {
 }
 ```
 
+### Scalars should be non-nullable when required in backing data source
+
+Scalars form the leaves of a response in GraphQL, and are the bits of data the client really cares about. Because of this, we should strive to make scalars non-nullable when possible.
+
+The exceptions to this rule are:
+
+- A scalar field _should_ be nullable if it can be empty in the application/backing data source
+- A scalar field _should_ be nullable if it's likely to come from a different service than its parent object (fairly rare)
+
+
 ### Consider the Parent Type
 
 If you're not dealing with an `id` field or a top-level `Query` field, the most important question to ask is:
