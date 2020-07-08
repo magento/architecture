@@ -174,7 +174,8 @@ input RequisitionListItemsInput {
 
 input UpdateRequisitionListItemsInput {
     item_id: ID! @doc(description: "unique ID of Requisition List Item")
-    customizable_options: [CustomizableOptionInput]
+    selected_options: [String!] @doc(description: "selected option ID")
+    entered_options: [EnteredOptionInput!] @doc(description: "entered Options ID")
     quantity: Float
 }
 
