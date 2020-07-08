@@ -5,10 +5,16 @@ type Query {
 type ConfigurableOptionsSelectionMetadata @doc(description: "Metadata corresponding to the configurable options selection.")
 {
     configurable_options_available_for_selection: [ConfigurableOptionAvailableForSelection!] @doc(description: "Configurable options available for further selection based on current selection.")
-    media_gallery: [MediaGalleryInterface!] @doc(description: "Product images and videos corresponding to the specified configurable attributes selection.")
+    media_gallery: [MediaGalleryInterface!] @doc(description: "Product images and videos corresponding to the specified configurable options selection.")
+    variant: SimpleProduct @doc(description: "Variant represented by the specified configurable options selection. It is expected to be null, until selections are made for each configurable option.")
 }
 
 type ConfigurableOptionAvailableForSelection @doc(description: "Configurable option available for further selection based on current selection.") {
     available_value_ids: [ID!]! @doc(description: "Configurable option values available for further selection.")
     attribute_code: String! @doc(description: "Attribute code that uniquely identifies configurable option.")
+}
+
+# Configurable option value type has to be extended to include ID which can be used to uniquely identify the option value across the system. This is consistent with proposal of single mutation for add-to-cart
+type ConfigurableProductOptionsValues {
+    id: ID
 }
