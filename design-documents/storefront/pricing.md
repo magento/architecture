@@ -43,14 +43,14 @@ The resulting product price will be the value from current price book if it's ex
 
 ![Price books diagram](pricing/pricebooks.png)
 
-### Default priceb ook
+### Default price book
 
 A `default price book` is a predefined system price book that contains `base prices` for __all__ products in the system. User-defined `price books` may contain only sub-set of products. Default `price book` should be used as fallback storage if the price for a specific product doesn't exist in other resolved pricebook.
 
 
 ### Customer tags instead of customer groups
 
-Magento monolith uses `customer groups` for customer segmentation globally. There is one-to-one relation between customer and customer group, 
+Magento monolith uses `customer groups` for customer segmentation globally. There is one-to-many relation between customer groups and customers, 
 so customer could be a member of excatly one group only. However, in modern world, each customer could be a 
 member of different groups based on current behavior. For example, pricing system works with wholesale and regular buyers,
 but recommendation system works with different groups of customers which are based on gender, age, ML-generated groups, etc.
@@ -59,6 +59,31 @@ In order to provide more flexibility in customer segmentation, we may introduce 
 which are not bound to pricing functionality make them looks like a regular tags. Thus, we may also rename them to tags:
 
 ![Price books diagram](pricing/customer-tags.png)
+
+### Complex products support
+
+The `minimum prices` of complex products calculated based on variation's prices, variation's availability and variation's stock.
+Having variations as a separate products makes `minimum price` and `maximum price` dependent on products which may not
+be visible for the current group or in a current catalog. Example: configurable product contains variation #1 - price $10,
+ 2 - price $9 and 3 - price $12. Let's imagine that variation #2 is visible for people with "VIP access" only,
+then `minimum price` of configurable product for basic access will be $10, for "VIP access" - $9.
+
+This happens because parent product and variation are separate products which could be assigned to different access lists 
+and price books. In order to mitigate this issue products should be isolated, so product options fully define complex products.
+
+The case from example above could be handled by two independent configurable products with different set of variations.
+
+Details will be provided in the separate proposal.
+
+### Synchronization with monolith
+
+One of the goals of `price books` is to speedup reindex process. Existing reindex process lives in the monolith and 
+prepares the prices for luma storefront exclusively. The data produced by this indexer is useless for the new storefront, 
+so old indexer should be disabled for the installation which uses the new storefront exclusively.
+
+
+
+
 
 ## Scenarios
 
