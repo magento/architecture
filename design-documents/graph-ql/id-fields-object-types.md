@@ -18,7 +18,7 @@ When a GraphQL Object Type is used to represent an entity that can be referenced
 - Include info in the client-facing description describing how the field is encoded/decoded (should be opaque)
     - Example: The client shouldn't know if an `ID` is a base64-encoded integer
 - Use `String` or `Int` type
-- Use duplicate IDs across a concrete type. In other words, if the client wants to produce a cache key, the concetenation of a `__typename` + `id` field should _always_ be unique
+- Use duplicate IDs across a concrete type. In other words, if the client wants to produce a cache key, the concatenation of a `__typename` + `id` field should _always_ be unique
 
 ## Examples where an ID is not helpful
 
