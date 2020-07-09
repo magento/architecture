@@ -6,19 +6,43 @@ User navigates to the configurable product page. Option values available for sel
 
 ```graphql
 {
-  configurableOptionsSelectionMetadata(configurableProductSku: "configurable-sku") {
-    configurable_options_available_for_selection {
-      attribute_code
-      available_value_ids
-    }
-    media_gallery {
-      url
-      label
-      position
-      disabled
+  products(filter: {sku: {eq: "configurable-sku"}}) {
+    items {
+      description {
+        html
+      }
+      name
+      ... on ConfigurableProduct {
+        configurable_options {
+          attribute_code
+          label
+          values {
+            id
+            value_index
+            label
+            swatch_data {
+              value
+            }
+            use_default_value
+          }
+        }
+        configurable_options_selection_metadata {
+          configurable_options_available_for_selection {
+            attribute_code
+            available_value_ids
+          }
+          media_gallery {
+            url
+            label
+            position
+            disabled
+          }
+        }
+      }
     }
   }
 }
+
 ```
 
 The user makes a selection for the first option and the list of option values available for selection is updated for the remaining options. 
@@ -26,19 +50,24 @@ The images and videos relevant for the selection are also updated.
 
 ```graphql
 {
-  configurableOptionsSelectionMetadata(
-    configurableProductSku: "configurable-sku", 
-    selectedConfigurableOptionValues: ["hash from selected option value"]
-  ) {
-    configurable_options_available_for_selection {
-      attribute_code
-      available_value_ids
-    }
-    media_gallery {
-      url
-      label
-      position
-      disabled
+  products(filter: {sku: {eq: "configurable-sku"}}) {
+    items {
+      ... on ConfigurableProduct {
+        configurable_options_selection_metadata(
+          selectedConfigurableOptionValues: ["hash from selected option value"]
+        ) {
+          configurable_options_available_for_selection {
+            attribute_code
+            available_value_ids
+          }
+          media_gallery {
+            url
+            label
+            position
+            disabled
+          }
+        }
+      }
     }
   }
 }
@@ -63,13 +92,13 @@ Then the product data along with available selections can be requested in a sing
 {
   products(filter: {sku: {eq: "resolved-sku"}}) {
     items {
-    	description {
+      description {
         html
       }
       name
       ... on ConfigurableProduct {
         configurable_options {
-        	attribute_code
+          attribute_code
           label
           values {
             id
@@ -81,25 +110,24 @@ Then the product data along with available selections can be requested in a sing
             use_default_value
           }
         }
+        configurable_options_selection_metadata(
+          selectedConfigurableOptionValues: ["hash from selected option value", "hash from another option value"]
+        ) {
+          configurable_options_available_for_selection {
+            attribute_code
+            available_value_ids
+          }
+          media_gallery {
+            url
+            label
+            position
+            disabled
+          }
+          variant {
+            sku
+          }
+        }
       }
-    }
-  }
-  configurableOptionsSelectionMetadata(
-    configurableProductSku: "configurable-sku", 
-    selectedConfigurableOptionValues: ["hash from selected option value", "hash from another option value"]
-  ) {
-    configurable_options_available_for_selection {
-      attribute_code
-      available_value_ids
-    }
-    media_gallery {
-      url
-      label
-      position
-      disabled
-    }
-    variant {
-      sku
     }
   }
 }
@@ -111,22 +139,27 @@ After the user makes final selection, the corresponding simple product data beco
 
 ```graphql
 {
-  configurableOptionsSelectionMetadata(
-    configurableProductSku: "configurable-sku", 
-    selectedConfigurableOptionValues: ["hash from selected option value", "hash from another option value"]
-  ) {
-    configurable_options_available_for_selection {
-      attribute_code
-      available_value_ids
-    }
-    media_gallery {
-      url
-      label
-      position
-      disabled
-    }
-    variant {
-      sku
+  products(filter: {sku: {eq: "configurable-sku"}}) {
+    items {
+      ... on ConfigurableProduct {
+        configurable_options_selection_metadata(
+          selectedConfigurableOptionValues: ["hash from selected option value", "hash from another option value"]
+        ) {
+          configurable_options_available_for_selection {
+            attribute_code
+            available_value_ids
+          }
+          media_gallery {
+            url
+            label
+            position
+            disabled
+          }
+          variant {
+            sku
+          }
+        }
+      }
     }
   }
 }
@@ -136,9 +169,34 @@ Information about variant is taken from previous query result and used to add co
 
 ### Render configurable option values available for selection on the category page
 
-Category and search result pages do not require the list of configurable option values available for selection. A list of all available options is enough.
+In case when the facet filter was used on the category page, for example to search "Red" shorts, it would be a good idea to display available sizes in "Red" for each product on the page. This can be achieved with the following query:
 
-It is still possible to make selection on the category page directly after it was renedered for the first time. The `configurableOptionsSelectionMetadata` query can be used in the same way as on product page.
+```graphql
+{
+  products(filter: {category_id: {eq: "shorts category ID"}}) {
+    items {
+      name
+			sku
+      ... on ConfigurableProduct {
+        configurable_options_selection_metadata(
+          selectedConfigurableOptionValues: ["hash from selected red color option"]
+        ) {
+          configurable_options_available_for_selection {
+            attribute_code
+            available_value_ids
+          }
+          media_gallery {
+            url
+            label
+            position
+            disabled
+          }
+        }
+      }
+    }
+  }
+}
+```
 
 ### Extension points
 

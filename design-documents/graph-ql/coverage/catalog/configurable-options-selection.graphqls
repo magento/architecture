@@ -1,5 +1,5 @@
-type Query {
-    configurableOptionsSelectionMetadata(configurableProductSku: ID!, selectedConfigurableOptionValues: [ID!]): ConfigurableOptionsSelectionMetadata @doc(description: "Get metadata for the specified configurable options selection")
+type ConfigurableProduct {
+    configurable_options_selection_metadata(selectedConfigurableOptionValues: [ID!]): ConfigurableOptionsSelectionMetadata @doc(description: "Metadata for the specified configurable options selection")
 }
 
 type ConfigurableOptionsSelectionMetadata @doc(description: "Metadata corresponding to the configurable options selection.")
