@@ -7,6 +7,7 @@ When a GraphQL Object Type is used to represent an entity that can be referenced
 ### Do
 
 - Use the `ID` scalar type
+- Make the `ID` field non-nullable (syntax: `ID!`)
 - Use the field name `id` or `_id`
     - Most GraphQL client libs automatically use this field for caching. Any other field name will require manual caching logic on the client
         - https://www.apollographql.com/docs/react/caching/cache-configuration/#assigning-unique-identifiers
