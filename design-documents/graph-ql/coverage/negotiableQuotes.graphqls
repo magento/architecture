@@ -1,90 +1,196 @@
-type Mutation {
-    createNegotiableQuote(
-        cartId: ID! @doc(description: "Cart ID")
-        quoteName: String! @doc(description: "Quote name")
-        comment: String @doc(description: "Comment")
-        files: [FileInput!] @doc(description: "Attached files")
-    ): CreateNegotiableQuoteOutput! @doc(description:"Generates negotiable quote request")
-
-    addNegotiableQuoteComments(
-        cartId: ID! @doc(description: "Cart ID")
-        comment: String @doc(description: "Comment")
-        files: [FileInput!] @doc(description: "Attached files")
-    ): AddNegotiableQuoteCommentsOutput! @doc(description:"Add comments to negotiable quote")
-
-    updateNegotiableQuoteItemQuantity(
-        cart_id: ID!, @doc(description: "unique Id of negotiable quote")
-        item: ID!, @doc(description: "unique Id of Item to be update in negotiable quote")
-        quantity: Float @doc(description: "quantity of the item  to be updated")
-    ): UpdateNegotiableQuoteItemsQuantityOutput @doc(description: "Update items quantity in negotiable quote")
-
-    removeNegotiableQuoteItems(
-        cart_id: ID!, @doc(description: "unique Id of negotiable quote")
-        items: [ID!]! @doc(description: "unique Ids of Items to be removed from negotiable quote")
-    ): RemoveNegotiableQuoteItemsOutput @doc(description: "Remove Items in negotiable quote")
-
-    setShippingAddressesOnNegotiableQuote(
-        cart_id: ID!
-        shipping_addresses: [NegotiableQuoteShippingAddressInput!]!
-    ): SetShippingAddressesOnNegotiableQuoteOutput @doc(description: "Assign shipping address to Negotiable quote")
-
-    setShippingMethodsOnNegotiableQuote(
-        cartId: ID! @doc(description: "Cart ID")
-        shippingMethods: [ShippingMethodInput]! @doc(description: "Input for shipping method")
-    ): SetShippingMethodsOnNegotiableQuoteOutput @doc(description:"Set negotiable quote shipping method")
-}
-
-type Customer {
-    negotiable_quote (
-        id: ID!): NegotiableQuote @doc(description: "Get negotiable quote of a customer")
-
+type Query {
+    # Implementation Note: Negotiable Quotes belong to the Query type,
+    # rather than the Customer type, because managers
+    # in a company can see quotes belonging to their
+    # employees. If `Customer.negotiable_quotes` is desirable for buyer's
+    # that aren't managers, we can always add that on
+    negotiable_quote(id: ID!): NegotiableQuote
     negotiable_quotes(
         filter: NegotiableQuoteFilterInput,
         pageSize: Int = 20,
         currentPage: Int = 1
-    ): [NegotiableQuote] @doc(description: "Get negotiable quotes of a customer")
+    ): [NegotiableQuote] @doc(description: "A (optionally filtered) list of Negotiable Quotes viewable by the logged-in customer")
+}
 
+# Coverage missing:
+#   - Negotiable Quote Checkout Process (once seller has approved the quote)
+#   - File Upload (depends on reaching consensus on file upload design - design is in internal wiki)
+type Mutation {
+    # https://docs.magento.com/user-guide/sales/quote-request.html
+    requestNegotiableQuote(
+        input: RequestNegotiableQuoteInput!
+    ): RequestNegotiableQuoteOutput
+
+    # Covers "Add your Comment" section of https://docs.magento.com/user-guide/customers/account-dashboard-quotes-negotiate.html#shipping-information
+    addNegotiableQuoteComment(
+        input: AddNegotiableQuoteCommentInput!
+    ): AddNegotiableQuoteCommentOutput
+
+    # https://docs.magento.com/user-guide/customers/account-dashboard-quotes-negotiate.html#change-the-quantity
+    updateNegotiableQuoteQuantities(
+        input: UpdateNegotiableQuoteQuantitiesInput!
+    ): UpdateNegotiableQuoteItemsQuantityOutput
+
+    # Covers "Delete Line Item" section of https://docs.magento.com/user-guide/customers/account-dashboard-quotes-negotiate.html#tabbed-sections
+    removeNegotiableQuoteItems(
+        input: RemoveNegotiableQuoteItemsInput!
+    ): RemoveNegotiableQuoteItemsOutput
+
+    # Covers "buyer can add, update, or delete items" of https://devdocs.magento.com/guides/v2.4/b2b/negotiable-update.html#add-a-new-quote-item-to-the-negotiable-quote
+    addNegotiableQuoteItems(
+        input: AddNegotiableQuoteItemsInput!
+    ): AddNegotiableQuoteItemsOutput
+
+    # Covers first half of https://docs.magento.com/user-guide/customers/account-dashboard-quotes.html#cancel-a-quote-request
+    closeNegotiableQuotes(
+        input: CloseNegotiableQuotesInput!
+    ): CloseNegotiableQuotesOutput
+
+    # Covers second half of https://docs.magento.com/user-guide/customers/account-dashboard-quotes.html#cancel-a-quote-request
+    deleteNegotiableQuotes(
+        input: DeleteNegotiableQuotesInput!
+    ): DeleteNegotiableQuotesOutput
+
+    # Covers "Select Existing Address" in https://docs.magento.com/user-guide/customers/account-dashboard-quotes-negotiate.html#shipping-information
+    # "New Address" flow is covered by Mutation.createCustomerAddress
+    setNegotiableQuoteShippingAddress(
+        input: SetNegotiableQuoteShippingAddressInput!
+    ): SetNegotiableQuoteShippingAddressOutput
+
+    # Pending decision on design of file upload (design doc still pending decisions)
+    # addNegotiableQuoteFiles(
+    #     input: AddNegotiableQuoteFilesInput!
+    # ): AddNegotiableQuoteFilesInput
+}
+
+input SetNegotiableQuoteShippingAddressInput {
+    quote_id: ID! @doc(description: "ID obtained from NegotiableQuote type")
+    customer_address_id: ID! @doc(
+        description: "ID obtained from the CustomerAddress type. A new address can be added using Mutation.createCustomerAddress"
+    )
+}
+
+type SetNegotiableQuoteShippingAddressOutput {
+    quote: NegotiableQuote
+}
+
+input AddNegotiableQuoteItemsInput {
+    # TODO: Should be modeled similar to the new, single add to cart mutation
+}
+
+input DeleteNegotiableQuotesInput {
+    quote_ids: [ID!]! @doc(description: "A List of IDs obtained from NegotiableQuote types")
+}
+
+type DeleteNegotiableQuotesOutput {
+    # Implementation Note: We don't make the deleted quotes accessible
+    # because "deleted" means they're hidden from the storefront UI. They will
+    # still be visible (and labeled as deleted) for a Seller in the admin
+    negotiable_quotes(
+        filter: NegotiableQuoteFilterInput,
+        pageSize: Int = 20,
+        currentPage: Int = 1
+    ): [NegotiableQuote]! @doc(description: "List of negotiable quotes available to customer")
+}
+
+input CloseNegotiableQuotesInput {
+    quote_ids: [ID!]! @doc(description: "A List of IDs obtained from NegotiableQuote types")
+}
+
+type CloseNegotiableQuotesOutput {
+    closed_quotes: [NegotiableQuote]! @doc(description: "Quotes that were just closed")
+    negotiable_quotes(
+        filter: NegotiableQuoteFilterInput,
+        pageSize: Int = 20,
+        currentPage: Int = 1
+    ): [NegotiableQuote] @doc(description: A (optionally filtered) list of Negotiable Quotes viewable by the logged-in customer")
+}
+
+input RemoveNegotiableQuoteItemsInput {
+    quote_ID: ID!
+    quote_item_ids: [ID!]!
+}
+
+input UpdateNegotiableQuoteQuantitiesInput {
+    quote_id: ID!
+    items: [NegotiableQuoteItemQuantityInput!]!
+}
+
+input NegotiableQuoteItemQuantityInput {
+    quote_item_id: ID!
+    quantity: Float!
+}
+
+input RequestNegotiableQuoteInput {
+    cart_id: ID!
+    quote_name: String!
+    comment: NegotiableQuoteCommentInput!
+    # files (attachments) to be added at a later date when file upload design has been finalized
+}
+
+input NegotiableQuoteCommentInput {
+    comment: String!
+    # files (attachments) to be added at a later date when file upload design has been finalized
+}
+
+input AddNegotiableQuoteCommentInput {
+    quote_id: ID!
+    comment: NegotiableQuoteCommentInput!
+}
+
+type NegotiableQuoteComment {
+    id: ID!
+    created_at: String!
+    author: NegotiableQuoteUser!
+    creator_type: NegotiableQuoteCommentCreatorType!
+    value: String! @doc(description: "A simple (non-html) comment submitted by a seller or buyer")
+}
+
+enum NegotiableQuoteCommentCreatorType {
+    BUYER
+    SELLER
 }
 
 type NegotiableQuote {
-    quote_id: ID!  @doc(description: "Negotiable quote ID")
-    items: [NegotiableQuoteItemInterface] @doc(description: "Negotiable quote item")
-    attachements: [AttachmentContent] @doc(description: "Negotiable quote Attachements")
-    comments: [NegotiableQuoteComment] @doc(description: "Negotiable quote comments")
-    historyLog: [NegotiableQuoteHistoryLog] @doc(description: "Negotiable history log")
-    prices: CartPrices! @doc(description: "Negotiable quote totals output")
-    created_by: String @doc(description: "Negotiable quote creator")
+    id: ID!
+    name: String!
+    items: [NegotiableQuoteItemInterface!]
+    # Attachment Support is dependent on headless File Upload design
+    # attachments: [AttachmentContent]
+    comments: [NegotiableQuoteComment!]
+    history: [NegotiableQuoteHistoryEntry!]
+    prices: CartPrices
+    buyer: NegotiableQuoteUser!
     created_at: String @doc(description: "Timestamp indicating when the negotiable quote was created.")
     updated_at: String @doc(description: "Timestamp indicating when the negotiable quote was updated.")
-    payment_info: NegotiableQuotePaymentInfo! @doc(description: "Negotiable quote payment info.")
-    status: String @doc(description: "Negotiable quote status")
-    available_shipping_methods: [ShippingMethodsOutput]! @doc(description: "Available shipping methods")
+    status: NegotiableQuoteStatus!
+}
+
+# Implementation Note: Using the values from the "Buyer Status" column of the state mapping table in devdocs.
+# These states are identical between storefront/admin, but we name them differently for buyers.
+# https://devdocs.magento.com/guides/v2.4/b2b/negotiable-quote.html#quote-statuses
+enum NegotiableQuoteStatus {
+    SUBMITTED
+    PENDING
+    UPDATED
+    OPEN
+    ORDERED
+    CLOSED
+    DECLINED
+    EXPIRED
 }
 
 input NegotiableQuoteFilterInput {
-    ids: FilterEqualTypeInput @doc(description: "Filter Customer Negotiable quotes with an negotiable quote ID or list of negotiable quote IDs")
-    name: FilterMatchTypeInput @doc(description: "Filter by display name of the negotiable quote")
+    ids: FilterEqualTypeInput @doc(description: "Filter by Negotiable Quote ID(s)")
+    name: FilterMatchTypeInput @doc(description: "Filter by Negotiable Quote name")
 }
 
-type NegotiableQuoteItemInterface {
+interface NegotiableQuoteItemInterface {
     id: ID!
     quantity: Float!
-    stock: Float!
-    prices: NegotiableQuoteItemPrices
-    product: ProductInterface!
-}
-
-type NegotiableQuoteItemPrices {
-    price: Money!
-    row_total: Money!
-    row_total_including_tax: Money!
-    discounts: [Discount] @doc(description:"An array of discounts to be applied to the quote item")
-    total_item_discount: Money @doc(description:"The total of all discounts applied to the item")
-}
-
-type Discount @doc(description:"Defines an individual discount. A discount can be applied to the quote as a whole or to an item.") {
-    amount: Money! @doc(description:"The amount of the discount")
-    label: String! @doc(description:"A description of the discount")
+    stock: Float
+    price: CartItemPrices!
+    product: ProductInterface
 }
 
 type DefaultNegotiableQuoteItem implements NegotiableQuoteItemInterface
@@ -123,83 +229,115 @@ type ConfigurableRequisitionListItem implements NegotiableQuoteItemInterface
     configurable_options: [SelectedConfigurableOption] @doc(description: "Configurable options selected")
 }
 
-type AttachmentContent @doc(description: "Negotiable quote attachment file") {
-    base64_encoded_data: String!
-    mime_type: String!
-    name: String!
-}
-
-type NegotiableQuoteComment {
+type NegotiableQuoteHistoryEntry {
     id: ID!
-    parent_id: String!
-    author: String!
-    text: String
+    author: NegotiableQuoteUser!
+    change_type: NegotiableQuoteHistoryEntryChangeType!
     created_at: String
-    attachments: [String]
+    changes: NegotiableQuoteHistoryChanges
 }
 
-type NegotiableQuoteHistoryLog {
-    id: ID!
-    author: String!
-    action: String!
-    comment: String
-    status: String
-    created_at: String
+# Note: Most of these HistoryChange types were built based on looking through UI code in Luma, because we don't have existing API
+#       support for the Negotiable Quote history log feature. If we find these types aren't ideal during implementation,
+#       let's iterate rather than stay glued to them.
+#
+#       Resources
+#       Diffing class: https://github.com/magento/magento2b2b/blob/5547298c3dde48234ce74ed8ae9000fce3fe01b1/app/code/Magento/NegotiableQuote/Model/History/DiffProcessor.php
+#       Block for UI:  https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/Block/Quote/History.php
+#       Usage in UI:   https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml
+#
+#       There is currently no support for the `Custom Log` feature supported by the Luma UI, but we can add it on
+#       https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L316-L363
+#
+# Implementation Note: Fields in NegotiableQuoteHistoryChanges should be null
+#                      when no change is present
+type NegotiableQuoteHistoryChanges {
+    status: NegotiableQuoteHistoryStatusChange
+    comment: NegotiableQuoteHistoryCommentChange
+    total: NegotiableQuoteHistoryTotalChange
+    expiration: NegotiableQuoteHistoryExpirationChange
+    quantity: NegotiableQuoteHistoryQuantityChange
+    products_removed: NegotiableQuoteHistoryProductsRemovedChange
+    products_added: NegotiableQuoteHistoryProductsAddedChange
 }
 
-type NegotiableQuotePaymentInfo {
-    payment_methods: [PaymentMethodsOutput]! @doc(description: "All list of payment options and totals")
-    prices: CartPrices! @doc(description: "List of totals")
+# Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L40-L73
+type NegotiableQuoteHistoryStatusChange {
+    old_status: NegotiableQuoteStatus @doc(description: "Will be null for the first history entry on a Negotiable Quote")
+    new_status: NegotiableQuoteStatus!
 }
 
-type PaymentMethodsOutput {
-    code: String @doc(description: "Payment method code")
-    title: String @doc(description: "Payment method title")
+# Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L239-L258
+type NegotiableQuoteHistoryCommentChange {
+    comment: String! @doc(description: "A simple (non-html) comment submitted by a seller or buyer")
 }
 
-type CreateNegotiableQuoteOutput {
-    negotiable_quote:NegotiableQuote!
+# Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L259-L294
+type NegotiableQuoteHistoryTotalChange {
+    old_price: Money!
+    new_price: Money!
 }
 
-type AddNegotiableQuoteCommentsOutput {
-    negotiable_quote:NegotiableQuote!
+# Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L74-L103
+type NegotiableQuoteHistoryExpirationChange {
+    old_expiration: String @doc(description: "Old quote expiration. Will be 'null' if not previously set")
+    new_expiration: String!
+}
+
+# Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L104-L127
+type NegotiableQuoteHistoryQuantityChange {
+    # think it's just quantities?
+}
+
+# Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L132-L146
+type NegotiableQuoteHistoryProductsRemovedChange {
+    # Need to cover removal from catalog and removal from order
+}
+
+# Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L148-L169
+type NegotiableQuoteHistoryProductsAddedChange {
+
+}
+
+# Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L172-L197
+type NegotiableQuoteHistoryAddressChange {
+
+}
+# Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L316-L363
+type NegotiableQuoteCustomLogChange {
+    title: String!
+    old_value: String
+    new_value: String!
+}
+
+enum NegotiableQuoteHistoryEntryChangeType {
+    CREATED
+    UPDATED
+    CLOSED
+    UPDATED_BY_SYSTEM
+}
+
+type RequestNegotiableQuoteOutput {
+    quote: NegotiableQuote
+}
+
+type RemoveNegotiableQuoteItemsOutput {
+    quote: NegotiableQuote
+}
+
+type AddNegotiableQuoteCommentOutput {
+    comment: NegotiableQuoteComment @doc(description: "The newly added comment")
+    quote: NegotiableQuote
 }
 
 type UpdateNegotiableQuoteItemsQuantityOutput {
-    negotiable_quote:NegotiableQuote!
+    quote: NegotiableQuote
 }
 
-type RemoveNegotiableQuoteItemsOutput{
-    negotiable_quote:NegotiableQuote!
-}
-
-input FileInput @doc(description: "The list of file attachment codes") {
-    base64_encoded_data: String!
-    mime_type: String!
-    name: String!
-}
-
-input NegotiableQuoteShippingAddressInput {
-    address: CartAddressInput
-}
-
-type ShippingMethodsOutput {
-    carrier_code: String @doc(description: "Shipping carrier code")
-    method_code: String @doc(description: "Shipping method code")
-    carrier_title: String @doc(description: "Shiping carrier title")
-    method_title: String @doc(description: "Shipping method title")
-    amount: Money @doc(description: "Shipping amount")
-    base_amount: Money @doc(description: "Shipping base amount")
-    available: String @doc(description: "Shipping method availble")
-    error_message: String @doc(description: "Shipping method error message")
-    price_excl_tax: Money @doc(description: "Shipping method price with exclusive tax")
-    price_incl_tax: Money @doc(description: "Shipping method price with inclusive tax")
-}
-
-type SetShippingMethodsOnNegotiableQuoteOutput {
-    negotiable_quote: NegotiableQuote
-}
-
- type SetShippingAddressesOnNegotiableQuoteOutput{
-     negotiable_quote: NegotiableQuote
+# Implementation Note: We don't want to expose the `Customer` object of the Seller to the client, and we don't
+# have much of a permissions model in the storefront to limit access by field. We're using a limited view
+# instead, excluding the ID because a Seller's ID shouldn't be exposed to the client.
+type NegotiableQuoteUser @doc(description: "A limited view of a Buyer or Seller in the Negotiable Quote Process") {
+    firstname: String!
+    lastname: String!
 }
