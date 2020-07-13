@@ -4,7 +4,7 @@ type Query {
     # in a company can see quotes belonging to their
     # employees. If `Customer.negotiable_quotes` is desirable for buyer's
     # that aren't managers, we can always add that on
-    negotiable_quote(id: ID!): NegotiableQuote
+    negotiable_quote(id: ID!): NegotiableQuote @doc(description: "Get a buyer's NegotiableQuote by ID")
     negotiable_quotes(
         filter: NegotiableQuoteFilterInput,
         pageSize: Int = 20,
@@ -19,43 +19,43 @@ type Mutation {
     # https://docs.magento.com/user-guide/sales/quote-request.html
     requestNegotiableQuote(
         input: RequestNegotiableQuoteInput!
-    ): RequestNegotiableQuoteOutput
+    ): RequestNegotiableQuoteOutput @doc(description: "Request a new Negotiable Quote for a buyer")
 
     # Covers "Add your Comment" section of https://docs.magento.com/user-guide/customers/account-dashboard-quotes-negotiate.html#shipping-information
     addNegotiableQuoteComment(
         input: AddNegotiableQuoteCommentInput!
-    ): AddNegotiableQuoteCommentOutput
+    ): AddNegotiableQuoteCommentOutput @doc(description: "Append a new comment from the buyer to a Negotiable Quote")
 
     # https://docs.magento.com/user-guide/customers/account-dashboard-quotes-negotiate.html#change-the-quantity
     updateNegotiableQuoteQuantities(
         input: UpdateNegotiableQuoteQuantitiesInput!
-    ): UpdateNegotiableQuoteItemsQuantityOutput
+    ): UpdateNegotiableQuoteItemsQuantityOutput @doc(description: "Change the quantity of 1 or more items already in a NegotiableQuote")
 
     # Covers "Delete Line Item" section of https://docs.magento.com/user-guide/customers/account-dashboard-quotes-negotiate.html#tabbed-sections
     removeNegotiableQuoteItems(
         input: RemoveNegotiableQuoteItemsInput!
-    ): RemoveNegotiableQuoteItemsOutput
+    ): RemoveNegotiableQuoteItemsOutput @doc(description: "Remove 1 or more products from a Negotiable Quote")
 
-    # Covers "buyer can add, update, or delete items" of https://devdocs.magento.com/guides/v2.4/b2b/negotiable-update.html#add-a-new-quote-item-to-the-negotiable-quote
+    # Covers "buyer can add items" of https://devdocs.magento.com/guides/v2.4/b2b/negotiable-update.html#add-a-new-quote-item-to-the-negotiable-quote
     addNegotiableQuoteItems(
         input: AddNegotiableQuoteItemsInput!
-    ): AddNegotiableQuoteItemsOutput
+    ): AddNegotiableQuoteItemsOutput @doc(description: "Add 1 or more products to a Negotiable Quote")
 
     # Covers first half of https://docs.magento.com/user-guide/customers/account-dashboard-quotes.html#cancel-a-quote-request
     closeNegotiableQuotes(
         input: CloseNegotiableQuotesInput!
-    ): CloseNegotiableQuotesOutput
+    ): CloseNegotiableQuotesOutput @doc(description: "Mark a Negotiable Quote as closed, leaving it visible in the storefront")
 
     # Covers second half of https://docs.magento.com/user-guide/customers/account-dashboard-quotes.html#cancel-a-quote-request
     deleteNegotiableQuotes(
         input: DeleteNegotiableQuotesInput!
-    ): DeleteNegotiableQuotesOutput
+    ): DeleteNegotiableQuotesOutput @doc(description: "Delete a Negotiable Quote, removing it from the display in the storefront")
 
     # Covers "Select Existing Address" in https://docs.magento.com/user-guide/customers/account-dashboard-quotes-negotiate.html#shipping-information
     # "New Address" flow is covered by Mutation.createCustomerAddress
     setNegotiableQuoteShippingAddress(
         input: SetNegotiableQuoteShippingAddressInput!
-    ): SetNegotiableQuoteShippingAddressOutput
+    ): SetNegotiableQuoteShippingAddressOutput @doc(description: "Assign one of buyers' existing addresses to a Negotiable Quote")
 
     # Pending decision on design of file upload (design doc still pending decisions)
     # addNegotiableQuoteFiles(
