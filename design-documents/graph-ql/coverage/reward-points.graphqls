@@ -32,8 +32,13 @@ type RewardPointsAmount {
 }
 
 type RewardPointsExchangeRates @doc (description: "Exchange rates depend on the customer group"){
-    earning: Float! @doc(description: "How many points are earned per 1 currency spent")
-    redemption: Float! @doc(description: "How many points need to be redeemed to get 1 currency discount at the checkout")
+    earning: RewardPointsRate @doc(description: "How many points are earned for a given amount spent")
+    redemption: RewardPointsRate @doc(description: "How many points must be redeemed to get a given amount of currency discount at the checkout")
+}
+
+type RewardPointsRate {
+    points: Float! @doc(description: "The number of points for exchange rate. For earnings this this the number of points earned. For redemption this is the number of points needed for redemption.")
+    currency_amount: Float! @doc(description: "The money value for exchange rate. For earnings this is amount spent to earn the specified points. For redemption this is the amount of money the number of points represents.")
 }
 
 type RewardPointsSubscriptionStatus {
