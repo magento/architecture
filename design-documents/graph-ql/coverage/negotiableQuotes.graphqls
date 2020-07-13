@@ -63,6 +63,13 @@ type Mutation {
     # ): AddNegotiableQuoteFilesInput
 }
 
+type AddNegotiableQuoteItemsOutput {
+    quote: NegotiableQuote
+    # TODO: We'll probably want to add the same
+    #       errors that can happen when adding an item
+    #       to a normal cart object
+}
+
 input SetNegotiableQuoteShippingAddressInput {
     quote_id: ID! @doc(description: "ID obtained from NegotiableQuote type")
     customer_address_id: ID! @doc(
@@ -75,7 +82,8 @@ type SetNegotiableQuoteShippingAddressOutput {
 }
 
 input AddNegotiableQuoteItemsInput {
-    # TODO: Should be modeled similar to the new, single add to cart mutation
+    quote_id: ID! @doc(description: "ID from a NegotiableQuote object")
+    cart_items: [CartItemInput!]!
 }
 
 input DeleteNegotiableQuotesInput {
