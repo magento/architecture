@@ -102,7 +102,7 @@ type DeleteNegotiableQuotesOutput {
 }
 
 input CloseNegotiableQuotesInput {
-    quote_ids: [ID!]! @doc(description: "A List of IDs obtained from NegotiableQuote types")
+    quote_ids: [ID!]! @doc(description: "A List of IDs from NegotiableQuote objects")
 }
 
 type CloseNegotiableQuotesOutput {
@@ -264,9 +264,10 @@ type NegotiableQuoteHistoryChanges {
     comment: NegotiableQuoteHistoryCommentChange
     total: NegotiableQuoteHistoryTotalChange
     expiration: NegotiableQuoteHistoryExpirationChange
-    quantity: NegotiableQuoteHistoryQuantityChange
+    products_changed: NegotiableQuoteHistoryProductsChange
     products_removed: NegotiableQuoteHistoryProductsRemovedChange
     products_added: NegotiableQuoteHistoryProductsAddedChange
+    custom_changes: NegotiableQuoteCustomLogChange
 }
 
 # Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L40-L73
@@ -293,13 +294,15 @@ type NegotiableQuoteHistoryExpirationChange {
 }
 
 # Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L104-L127
-type NegotiableQuoteHistoryQuantityChange {
-    # think it's just quantities?
+type NegotiableQuoteHistoryProductsChange {
+    # TODO: needs to model qty_changed and options_changed
 }
 
 # Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L132-L146
 type NegotiableQuoteHistoryProductsRemovedChange {
-    # Need to cover removal from catalog and removal from order
+    # Open Question: Should `removed_from_catalog` ID type represent the SKU or the product id?
+    removed_from_catalog: [ID!] @doc(description: "List of product skus removed from Seller's catalog")
+    removed_from_quote: [ProductInterface!] @doc(description: "List of products removed by a Buyer or Seller")
 }
 
 # Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L148-L169
