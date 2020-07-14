@@ -12,11 +12,37 @@ type Returns {
 }
 
 type Return @doc(description: "Customer return") {
-    number: ID! @doc(description: "Customer return number")
-    date: String! @doc(description: "Customer return date")
-    # TODO: Why is this required, maybe for guests, need to verify
-    ship_from: String @doc(description: "The name of the person returning the item")
+    id: ID! @doc(description: "Customer return number")
+    order_id: String!
+    creation_date: String! @doc(description: "Customer return request date")
+    customer_email: String!
+    customer_name: String @doc(description: "The name of the person returning the item")
     return_status: ReturnStatus
+    shipping: ReturnShipping
+}
+
+type ReturnShipping {
+    address: ReturnShippingAddress
+    # Tracking is not currently supported by Magento
+    tracking: ReturnShippingTracking
+}
+
+type ReturnShippingTracking {
+    id: ID!
+    shipping_method: String
+    carier: String
+    tracking_number: String
+    status: String
+}
+
+type ReturnShippingAddress {
+    contact_name: String
+    street: [String]!
+    city: String!
+    region: Region!
+    postcode: String!
+    country: Country!
+    telephone: String
 }
 
 enum ReturnStatus {
