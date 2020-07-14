@@ -2,7 +2,36 @@ type Customer {
     returns(
         pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. Defaults to 20."),
         currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
-    ): CustomerReturns @doc(description: "Information about the company returns.")
+    ): Returns @doc(description: "Information about the company returns.")
+}
+
+type Returns {
+    items: [Return] @doc(description: "List of returns")
+    page_info: SearchResultPageInfo @doc(description: "Pagination metadata")
+    total_count: Int @doc(description: "Total count of customer returns")
+}
+
+type Return @doc(description: "Customer return") {
+    number: ID! @doc(description: "Customer return number")
+    date: String! @doc(description: "Customer return date")
+    # TODO: Why is this required, maybe for guests, need to verify
+    ship_from: String @doc(description: "The name of the person returning the item")
+    return_status: ReturnStatus
+}
+
+enum ReturnStatus {
+    PENDING
+    AUTHORIZED
+    PARTIALLY_AUTHORIZED
+    RECEIVED
+    RECEIVED_ON_ITEM
+    APPROVED
+    APPROVED_ON_ITEM
+    REJECTED
+    REJECTED_ON_ITEM
+    DENIED
+    CLOSED
+    PROCESSED_CLOSED
 }
 
 type StoreConfig {
