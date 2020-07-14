@@ -18,6 +18,7 @@ User navigates to the configurable product page. Option values available for sel
           label
           values {
             id
+            is_available_for_selection
             value_index
             label
             swatch_data {
@@ -27,7 +28,7 @@ User navigates to the configurable product page. Option values available for sel
           }
         }
         configurable_options_selection_metadata {
-          configurable_options_available_for_selection {
+          options_available_for_selection {
             attribute_code
             available_value_ids
           }
@@ -56,7 +57,7 @@ The images and videos relevant for the selection are also updated.
         configurable_options_selection_metadata(
           selectedConfigurableOptionValues: ["hash from selected option value"]
         ) {
-          configurable_options_available_for_selection {
+          options_available_for_selection {
             attribute_code
             available_value_ids
           }
@@ -102,6 +103,7 @@ Then the product data along with available selections can be requested in a sing
           label
           values {
             id
+            is_available_for_selection    
             value_index
             label
             swatch_data {
@@ -113,7 +115,7 @@ Then the product data along with available selections can be requested in a sing
         configurable_options_selection_metadata(
           selectedConfigurableOptionValues: ["hash from selected option value", "hash from another option value"]
         ) {
-          configurable_options_available_for_selection {
+          options_available_for_selection {
             attribute_code
             available_value_ids
           }
@@ -145,7 +147,7 @@ After the user makes final selection, the corresponding simple product data beco
         configurable_options_selection_metadata(
           selectedConfigurableOptionValues: ["hash from selected option value", "hash from another option value"]
         ) {
-          configurable_options_available_for_selection {
+          options_available_for_selection {
             attribute_code
             available_value_ids
           }
@@ -181,7 +183,7 @@ In case when the facet filter was used on the category page, for example to sear
         configurable_options_selection_metadata(
           selectedConfigurableOptionValues: ["hash from selected red color option"]
         ) {
-          configurable_options_available_for_selection {
+          options_available_for_selection {
             attribute_code
             available_value_ids
           }
