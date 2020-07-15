@@ -67,7 +67,9 @@ type AddNegotiableQuoteItemsOutput {
     quote: NegotiableQuote
     # TODO: We'll probably want to add the same
     #       errors that can happen when adding an item
-    #       to a normal cart object
+    #       to a normal cart object, but will also have
+    #       some additional errors (i.e can't add an item
+    #       when a negotiable quote is in some statuses)
 }
 
 input SetNegotiableQuoteShippingAddressInput {
@@ -257,11 +259,15 @@ type NegotiableQuoteHistoryEntry {
 #       There is currently no support for the `Custom Log` feature supported by the Luma UI, but we can add it on
 #       https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L316-L363
 #
-# Implementation Note: Fields in NegotiableQuoteHistoryChanges should be null
-#                      when no change is present
+# Implementation Notes:
+#       - Fields in NegotiableQuoteHistoryChanges should be null when no change is present
+#       - An Object Type is used, rather than a list, because the UI likely wants
+#         to render some of these differently from others in the UI, and a List would require us to guess
+#         at the desired ordering for the client. This is also more extensible with less risk of breaking
+#         changes (compared to extending a union or shared interface)
 type NegotiableQuoteHistoryChanges {
-    status: NegotiableQuoteHistoryStatusChange
-    comment: NegotiableQuoteHistoryCommentChange
+    statuses: NegotiableQuoteHistoryStatusesChange
+    comment_added: NegotiableQuoteHistoryCommentChange
     total: NegotiableQuoteHistoryTotalChange
     expiration: NegotiableQuoteHistoryExpirationChange
     products_changed: NegotiableQuoteHistoryProductsChange
@@ -276,9 +282,17 @@ type NegotiableQuoteHistoryStatusChange {
     new_status: NegotiableQuoteStatus!
 }
 
+# Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L48
+type NegotiableQuoteHistoryStatusesChange {
+    changes: [NegotiableQuoteHistoryStatusChange!]!
+}
+
 # Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L239-L258
 type NegotiableQuoteHistoryCommentChange {
+    # Implementation Note: Comments are append-only and don't support editing, which explains
+    #                       the absence of `old_*` and `new_*` fields
     comment: String! @doc(description: "A simple (non-html) comment submitted by a seller or buyer")
+    # Need to add attachment support when file upload has been designed/implemented
 }
 
 # Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L259-L294
@@ -295,6 +309,7 @@ type NegotiableQuoteHistoryExpirationChange {
 
 # Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L104-L127
 type NegotiableQuoteHistoryProductsChange {
+    # TODO: List of changes for both product quantities and selected options
     # TODO: needs to model qty_changed and options_changed
 }
 
@@ -307,15 +322,15 @@ type NegotiableQuoteHistoryProductsRemovedChange {
 
 # Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L148-L169
 type NegotiableQuoteHistoryProductsAddedChange {
-
+    # TODO: List of products added and their respective options.   
 }
 
 # Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L172-L197
 type NegotiableQuoteHistoryAddressChange {
-
+    # TODO
 }
 # Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L316-L363
-type NegotiableQuoteCustomLogChange {
+type NegotiableQuoteCustomLogChange @doc(description: "Custom log entries added by 3rd party extensions") {
     title: String!
     old_value: String
     new_value: String!
