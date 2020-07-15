@@ -1,3 +1,6 @@
+
+# TODO: Custom attribute metadata can be retrieved using customAttributeMetadata query. A new query should be added to fetch all attributes for entities that do not support attribute sets, like returns.
+
 type Customer {
     returns(
         pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. Defaults to 20."),
@@ -28,17 +31,18 @@ type ReturnItem {
     id: ID!
     product: ProductInterface!
     # Do we need reference to order ID? How about entered and selected options
-    dynamic_attributes: [ReturnDynamicAttribute]
+    custom_attributes: [CustomAttribute]
     request_quantity: Float!
     quantity: Float!
     # TODO: Should enums be separated for Return and Return item?
     status: ReturnStatus!
 }
 
-type ReturnDynamicAttribute {
-    code: ID!
+# See https://github.com/magento/architecture/blob/master/design-documents/graph-ql/custom-attributes-container.md
+type CustomAttribute {
+    id: ID!
     label: String!
-    value: String!
+    value: String! @doc(description: "JSON encoded value of the attribute.")
 }
 
 type ReturnComment {
