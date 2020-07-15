@@ -1,6 +1,9 @@
 ## Problem statement
 
-The final price of the product in Magento monolith depends on multiple variables such as current customer group, current website, qty of items in the shopping cart and current date/time. Magento monolith calculates all possible permutations of prices in advance and store them in `price index`. These calculations are expensive and may not be done in reasonable time for large catalogs.
+The final price of the product in Magento monolith depends on multiple variables such as current customer group, current 
+website, qty of items in the shopping cart and current date/time. 
+Magento monolith calculates all possible permutations of prices in advance and store them in `price index`. These 
+calculations are expensive and may not be done in reasonable time for large catalogs.
 
 Few problematic use cases from real merchants:
 
@@ -43,10 +46,124 @@ The resulting product price will be the value from current price book if it's ex
 
 ![Price books diagram](pricing/pricebooks.png)
 
-### Default price book
+Guidelines:
+* There is no need to resolve price book on each HTTP call. Resolved price book could be stored in JWT during "login" step 
+and reused for consequent requests.
+* In order to minimize "query-time" work, customer should have exactly one resolved price book.
 
-A `default price book` is a predefined system price book that contains `base prices` for __all__ products in the system. User-defined `price books` may contain only sub-set of products. Default `price book` should be used as fallback storage if the price for a specific product doesn't exist in other resolved pricebook.
 
+### Price book types
+
+#### Default price book
+
+A `default price book` is a predefined system price book that contains `base prices` for __all__ products in the system. User-defined `price books` may contain only sub-set of products. 
+Default `price book` should be used as fallback storage if the price for a specific product doesn't exist in other resolved pricebook.
+
+Other words, there is always some price for sku in `default price book`.
+
+#### Fixed price book
+
+This price book type overrides the `default price book` prices and accepts a fixed price for a set of products. (e.g. $10)
+
+#### Time-based price books
+
+`Special price` functionality could be represented as time based `price books` which in addition to standard price book fields 
+contain `start` and `end` dates. Pricing service will resolve `time-based price books` only in specified range of dates.
+
+#### Volume price books
+
+Volume price books provide discounts based on the number of ordered items. Prices provided by `volume price books` do not
+ participate in minimum price calculations (excluded from price on product listing page).
+
+### Price book API
+
+```proto
+syntax = "proto3";
+
+package magento.pricing.api;
+
+// Creates a new price book
+// All fields are required.
+// Throws invalid argument error if some argument is missing
+message PriceBookInput {
+    // Client side generated price book ID
+    string id = 1;
+
+    // Price book name (e.g. "10% off on selected products")
+    string name = 2;
+
+    // Customer groups associated with price book
+    // A combination of customer group and website must be unique. Error will be returned in case when combination is
+    // already occupied by another price book.
+    repeated string customer_groups = 3;
+    
+    // Website ids associated with price book
+    // A combination of customer group and website must be unique. Error will be returned in case when combination is
+    // already occupied by another price book.
+    repeated string website_ids = 4;
+}
+
+message PriceBookDeleteInput {
+    string id = 1;    
+}
+
+message AssignProductsInput {
+    message ProductPriceInput {
+        string product_id = 1;
+        float price = 2;
+        float regular_price = 3;
+    }
+    repeated ProductPriceInput prices = 1;
+}
+
+message UnassignProducts {
+    repeated string product_ids = 1;
+}
+
+message PriceBookCreateResult {
+    int32 status = 1;
+}
+
+message PriceBookDeleteResult {
+    int32 status = 1;
+}
+
+message PriceBookAssignProductsResult {
+    int32 status = 1;
+}
+
+message PriceBookUnassignProductsResult {
+    int32 status = 1;
+}
+
+
+message GetPricesInput {
+    string price_book_id = 1;
+    repeated string product_ids = 2;
+}
+
+message GetPricesOutput {
+    message ProductPrice {
+        string product_id = 2;
+        // Price without applied discounts
+        float regular_price = 3;
+        // Price with applied discounts
+        float price = 4;
+        float minimum_price = 5;
+        float maximum_price = 6;
+    }
+
+    repeated ProductPrice prices = 1;
+}
+
+
+service PriceBook {
+    rpc create(PriceBookInput) returns (PriceBookCreateResult);
+    rpc delete(PriceBookDeleteInput) returns (PriceBookDeleteResult);
+    rpc assignProducts(PriceBookInput) returns (PriceBookAssignProductsResult);
+    rpc unassignProducts(UnassignProducts) returns (PriceBookUnassignProductsResult);
+}
+```
 
 ### Customer tags instead of customer groups
 
@@ -66,14 +183,36 @@ The `minimum prices` of complex products calculated based on variation's prices,
 Having variations as a separate products makes `minimum price` and `maximum price` dependent on products which may not
 be visible for the current group or in a current catalog. Example: configurable product contains variation #1 - price $10,
  2 - price $9 and 3 - price $12. Let's imagine that variation #2 is visible for people with "VIP access" only,
-then `minimum price` of configurable product for basic access will be $10, for "VIP access" - $9.
+then the desired `minimum price` of configurable product for basic access will be $10, for "VIP access" - $9. However, there is 
+only one price book in the system, so we can hold only one value.
 
 This happens because parent product and variation are separate products which could be assigned to different access lists 
 and price books. In order to mitigate this issue products should be isolated, so product options fully define complex products.
 
-The case from example above could be handled by two independent configurable products with different set of variations.
+The case from example above could be handled by two independent configurable products with different sets of variations 
+for different access lists.
 
 Details will be provided in the separate proposal.
+
+### Prices fallback
+
+A most efficient way to work with prices on catalog scenarios is to create a prices' projection in `catalog` service. This 
+way we can retrieve prices in one query together with other product's information.
+
+This approach will work fine till some limits. There are always some limits on data we can handle in any service. The 
+`catalog` service is not an exception. It's designed to handle a large amount of products, but product itself is not infinite.
+The target number of EAV attributes in the product is `300`, the limit of underlying storage is `10,000` attributes per product.
+If we move closer to the limits, system may slow down and eventually fail.
+
+These limits mean that we can't implement `personalized pricing` feature by storing all prices in product documents.
+Even a large list of price books will be challenging for such approach. For such extreme use cases we may introduce a 
+`prices fallback` on a service which is designed to work with the large amount of prices.
+
+![Price fallback](pricing/pricing-fallback.png)
+
+Consequences:
+- Aggregation functions like facets in search service will not work properly for products with large amount of prices. Only default or limited number of prices will be available for faceting.
+- Second request obviously affects performance. A good news, performance will be affected only in queries which fetch products with large amount of prices. Other queries or slices with small products will not be affected.
 
 ### Synchronization with monolith
 
