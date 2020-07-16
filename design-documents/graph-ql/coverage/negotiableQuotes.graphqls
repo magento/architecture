@@ -164,7 +164,7 @@ enum NegotiableQuoteCommentCreatorType {
 type NegotiableQuote {
     id: ID!
     name: String!
-    items: [NegotiableQuoteItemInterface!]
+    items: [NegotiableQuoteItem!]
     # Attachment Support is dependent on headless File Upload design
     # attachments: [AttachmentContent]
     comments: [NegotiableQuoteComment!]
@@ -190,53 +190,14 @@ enum NegotiableQuoteStatus {
     EXPIRED
 }
 
+type NegotiableQuoteItem @doc(description: "A line item on a Negotiable Quote") {
+    id: ID! @doc(description: "ID of the line item (not product) in a Negotiable Quote")
+    item: CartItemInterface @doc(description: "Product assigned to line item, with selected configurations")
+}
+
 input NegotiableQuoteFilterInput {
     ids: FilterEqualTypeInput @doc(description: "Filter by Negotiable Quote ID(s)")
     name: FilterMatchTypeInput @doc(description: "Filter by Negotiable Quote name")
-}
-
-interface NegotiableQuoteItemInterface {
-    id: ID!
-    quantity: Float!
-    stock: Float
-    price: CartItemPrices!
-    product: ProductInterface
-}
-
-type DefaultNegotiableQuoteItem implements NegotiableQuoteItemInterface
-@doc(description: "Negotiable Quote Item Implementation for Simple and Virtual Products") {
-    id: ID! @doc(description: "Unique Identifier of Negotiable Quote Item")
-    product: ProductInterface!
-    qty: Float! @doc(description:  "Quantity added")
-    customizable_options: [SelectedCustomizableOption] @doc(description: "custom Option selected")
-}
-
-type DownloadableRequisitionListItem implements NegotiableQuoteItemInterface
-@doc(description: "Negotiable Quote Item Implementation that for Downloadable Products") {
-    id: ID! @doc(description: "Unique Identifier of Negotiable Quote Item")
-    product: ProductInterface!
-    qty: Float! @doc(description: "Quantity added")
-    customizable_options: [SelectedCustomizableOption] @doc(description:  "custom Option selected")
-    links: [DownloadableProductLinks] @doc(description: "DownloadableProductLinks defines characteristics of a downloadable product")
-    samples: [DownloadableProductSamples] @doc(description:  "DownloadableProductSamples defines characteristics of a downloadable product")
-}
-
-type BundleRequisitionListItem implements NegotiableQuoteItemInterface
-@doc(description: "Negotiable Quote Item Implementation that for Bundle Products") {
-    id: ID! @doc(description: "Unique Identifier of Negotiable Quote Item")
-    product: ProductInterface!
-    qty: Float! @doc(description: "Quantity added")
-    customizable_options: [SelectedCustomizableOption] @doc(description: "custom Option selected")
-    bundle_options: [SelectedBundleOption]! @doc(description: "selected bundle options")
-}
-
-type ConfigurableRequisitionListItem implements NegotiableQuoteItemInterface
-@doc(description: "Negotiable Quote Item Implementation that for Configurable Products") {
-    id: ID! @doc(description:  "Unique Identifier of Negotiable Quote Item")
-    product: ProductInterface!
-    qty: Float! @doc(description: "Quantity added")
-    customizable_options: [SelectedCustomizableOption] @doc(description: "custom Option selected")
-    configurable_options: [SelectedConfigurableOption] @doc(description: "Configurable options selected")
 }
 
 type NegotiableQuoteHistoryEntry {
