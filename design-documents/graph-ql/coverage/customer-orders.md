@@ -335,7 +335,7 @@ type OrderAddress @doc(description: "OrderAddress contains detailed information 
     region: String @doc(description: "The state or province name")
     region_id: ID @doc(description: "The unique ID for a pre-defined region")
     country_code: CountryCodeEnum @doc(description: "The customer's order country")
-    street: [String]! @doc(description: "An array of strings that define the street number and name")
+    street: [String!] @doc(description: "An array of strings that define the street number and name")
     company: String @doc(description: "The customer's order company")
     telephone: String! @doc(description: "The telephone number")
     fax: String @doc(description: "The fax number")
