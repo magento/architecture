@@ -1,5 +1,17 @@
+type Query{
+    # See https://github.com/magento/architecture/blob/master/design-documents/graph-ql/framework/attributes-metadata.md
+    pageSpecificCustomAttributes(
+        page_type: CustomAttributesPageEnum!
+    ): CustomAttributeMetadata
+}
 
-# TODO: Custom attribute metadata can be retrieved using customAttributeMetadata query. A new query should be added to fetch all attributes for entities that do not support attribute sets, like returns.
+enum CustomAttributesPageEnum {
+    RETURN_EDIT_FORM
+    # See https://github.com/magento/architecture/blob/master/design-documents/graph-ql/framework/attributes-metadata.md
+    # PRODUCTS_COMPARE
+    # PRODUCTS_LISTING
+    # ADVANCED_CATALOG_SEARCH
+}
 
 type Customer {
     returns(
