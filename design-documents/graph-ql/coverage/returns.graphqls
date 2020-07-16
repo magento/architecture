@@ -6,7 +6,8 @@ type Query{
 }
 
 enum CustomAttributesPageEnum {
-    RETURN_EDIT_FORM
+    RETURN_ITEM_EDIT_FORM
+    RETURN_ITEMS_LISTING
     # See https://github.com/magento/architecture/blob/master/design-documents/graph-ql/framework/attributes-metadata.md
     # PRODUCTS_COMPARE
     # PRODUCTS_LISTING
@@ -17,8 +18,15 @@ type Customer {
     returns(
         pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. Defaults to 20."),
         currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
-    ): Returns @doc(description: "Information about the company returns.")
+    ): Returns @doc(description: "Information about the customer returns.")
     return(id: ID!): Return @doc(description: "Get customer return details by its ID.")
+}
+
+type CustomerOrder {
+    returns(
+        pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. Defaults to 20."),
+        currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
+    ): Returns @doc(description: "Information about the order returns.")
 }
 
 type Returns {
