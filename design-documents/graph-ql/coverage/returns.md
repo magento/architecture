@@ -39,3 +39,5 @@ First, we need to know if there are any order items eligible for return. In the 
 ### Leave a return comment
 
 ### Create a return for guest order
+
+Guest orders are not accessible via GraphQL yet, but the schema of returns will be identical to the one for customer orders.

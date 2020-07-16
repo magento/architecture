@@ -5,6 +5,35 @@ type Query{
     ): CustomAttributeMetadata
 }
 
+type Mutation {
+    createReturn(input: CreateReturnInput!): CreateReturnOutput @doc(description: "Create a new return.")
+}
+
+input CreateReturnInput {
+    items: [CreateReturnItemInput]!
+    comment_text: String
+    # Do we need contact_email? It is present in the form when requesting return as a guest
+}
+
+input CreateReturnItemInput {
+    orderItemId: ID!
+    quantity_to_return: Float!
+    selected_custom_attributes: [ID!]
+    entered_custom_attributes: [EnteredCustomAttributeInput!]
+}
+
+input EnteredCustomAttributeInput {
+    id: ID!
+    value: String!
+}
+
+type CreateReturnOutput {
+    returns(
+        pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. Defaults to 20."),
+        currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
+    ): Returns
+}
+
 enum CustomAttributesPageEnum {
     RETURN_ITEM_EDIT_FORM
     RETURN_ITEMS_LISTING
