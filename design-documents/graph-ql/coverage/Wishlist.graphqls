@@ -7,8 +7,9 @@ type Mutation {
 }
 
 type Customer {
-    wishlist: Wishlist! @doc(description: "Customer wishlist") # Commerce will extend filed with required `id` argument `wishlists(ids: ID!)`
-    wishlists: [Wishlist!]! @doc(description: "Customer multiple wishlists") # Multiple wishlists Commerce functionality
+    wishlist: Wishlist! @deprecated(reason: "Use `Customer.wishlists` or `Customer.wishlistByID") 
+    wishlistByID(id: ID!): Wishlist
+    wishlists: [Wishlist!]! @doc(description: "Customer wishlists are limited to a max of 1 wishlist in Magento Open Source")
 }
 
 type Wishlist {
