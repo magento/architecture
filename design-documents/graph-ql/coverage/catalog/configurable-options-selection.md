@@ -205,3 +205,7 @@ In case when the facet filter was used on the category page, for example to sear
 `ConfigurableOptionsSelectionMetadata` type can be extended to support additional use cases, which are not currently supported by Magento like:
  - Price range for the variants based on configurable options selection
  - Low stock notification based on configurable options selection
+ 
+### Long term vision
+
+In the future all option types will be unified to support additional use cases like conflicting custom options, or price range based on custom + configurable options selection. The new query will be introduced on the top level, and current solution being specific to configurable options only will be deprecated.
