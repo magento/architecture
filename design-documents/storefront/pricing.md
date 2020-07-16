@@ -52,29 +52,38 @@ and reused for consequent requests.
 * In order to minimize "query-time" work, customer should have exactly one resolved price book.
 
 
-### Price book types
-
-#### Default price book
+### Default price book
 
 A `default price book` is a predefined system price book that contains `base prices` for __all__ products in the system. User-defined `price books` may contain only sub-set of products. 
 Default `price book` should be used as fallback storage if the price for a specific product doesn't exist in other resolved pricebook.
 
 Other words, there is always some price for sku in `default price book`.
 
-#### Fixed price book
+### Synchronization with monolith
 
-This price book type overrides the `default price book` prices and accepts a fixed price for a set of products. (e.g. $10)
+One of the goals of `price books` is to speedup reindex process. Existing reindex process lives in the monolith and 
+prepares the prices for luma storefront exclusively. The data produced by this indexer is useless for the new storefront, 
+so old indexer should be disabled for the installation which uses the new storefront exclusively.
 
-#### Time-based price books
+The following diagram shows the pricing structure for a given product, website and customer group. It also shows respective 
+`price books` on the storefront.
 
-`Special price` functionality could be represented as time based `price books` which in addition to standard price book fields 
-contain `start` and `end` dates. Pricing service will resolve `time-based price books` only in specified range of dates.
+![Pricing structure](pricing/pricing-structure.png)
 
-#### Volume price books
-
-Volume price books provide discounts based on the number of ordered items. Prices provided by `volume price books` do not
- participate in minimum price calculations (excluded from price on product listing page).
-
+- t1 - New product was created. Every product should have some base price, so new product also introduce one price in the system.
+  - Storefront receives new base price and put it in the default price book
+- t2 - New price for customer group was introduced on the monolith side
+  - Message broker checks if price book for specified customer group exists on storefront and create new price book if needed
+  - Message broker assigns product to the new price book and set appropriate price
+- t3 - New catalog price rule was created on the monolith side. Catalog price rule has start and end dates.
+  - Message broker checks if price book for specified customer group exists on storefront and create new price book if needed
+  - Message broker detects products matched by the rule
+  - Message broker calculate prices apply discounts for selected products and write prices to price book
+- Alternative t3  
+  - Monolith detects matched products and fire `price_changed` events for those products. Event includes information about affected customer groups. Product matches are stored in cache for the later use.
+  - Message broker call monolith for prices of affected products
+  - Monolith calculates prices based on the cache (product matches)
+  - Message broker store prices in price book
 ### Price book API
 
 ```proto
@@ -213,15 +222,6 @@ Even a large list of price books will be challenging for such approach. For such
 Consequences:
 - Aggregation functions like facets in search service will not work properly for products with large amount of prices. Only default or limited number of prices will be available for faceting.
 - Second request obviously affects performance. A good news, performance will be affected only in queries which fetch products with large amount of prices. Other queries or slices with small products will not be affected.
-
-### Synchronization with monolith
-
-One of the goals of `price books` is to speedup reindex process. Existing reindex process lives in the monolith and 
-prepares the prices for luma storefront exclusively. The data produced by this indexer is useless for the new storefront, 
-so old indexer should be disabled for the installation which uses the new storefront exclusively.
-
-
-
 
 
 ## Scenarios
