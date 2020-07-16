@@ -85,6 +85,8 @@ type SetNegotiableQuoteShippingAddressOutput {
 
 input AddNegotiableQuoteItemsInput {
     quote_id: ID! @doc(description: "ID from a NegotiableQuote object")
+    # Implementation Note: This *should* be compatible with the new, single
+    # add to cart mutation. https://github.com/magento/architecture/blob/master/design-documents/graph-ql/coverage/AddProductsToCart.graphqls
     cart_items: [CartItemInput!]!
 }
 
