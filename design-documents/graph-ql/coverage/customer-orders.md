@@ -73,8 +73,8 @@ type CustomerOrder {
     credit_memos: [CreditMemo] @doc("credit memo list for the order")
     shipments: [OrderShipment] @doc("shipment list for the order")
     payment_methods: [PaymentMethod] @doc("payment details for the order")
-    shipping_address: CustomerAddress @doc("shipping address for the order")
-    billing_address: CustomerAddress @doc("billing address for the order")
+    shipping_address: OrderAddress @doc("shipping address for the order")
+    billing_address: OrderAddress @doc("billing address for the order")
     carrier: String @doc("shipping carrier for the order delivery")
     shipping_method: String @doc("shipping method for the order")
     comments: [CommentItem] @doc("comments on the order")
@@ -323,6 +323,30 @@ type CommentItem {
     timestamp: String! @doc("The timestamp of the comment")
     message: String! @doc("the comment message")
 }
+```
+
+## OrderAddress type
+```graphql
+
+type OrderAddress @doc(description: "OrderAddress contains detailed information about the order billing and shipping addresses"){
+    firstname: String! @doc(description: "The first name of the person associated with the shipping/billing address")
+    lastname: String! @doc(description: "The family name of the person associated with the shipping/billing address")
+    middlename: String @doc(description: "The middle name of the person associated with the shipping/billing address")
+    region: String @doc(description: "The state or province name")
+    region_id: ID @doc(description: "The unique ID for a pre-defined region")
+    country_code: CountryCodeEnum @doc(description: "The customer's order country")
+    street: [String!] @doc(description: "An array of strings that define the street number and name")
+    company: String @doc(description: "The customer's order company")
+    telephone: String! @doc(description: "The telephone number")
+    fax: String @doc(description: "The fax number")
+    postcode: String @doc(description: "The customer's order ZIP or postal code")
+    city: String! @doc(description: "The city or town")
+    prefix: String @doc(description: "An honorific, such as Dr., Mr., or Mrs.")
+    suffix: String @doc(description: "A value such as Sr., Jr., or III")
+    vat_id: String @doc(description: "The customer's Value-added tax (VAT) number (for corporate customers)")
+}
+
+
 ```
 
 ## Additional Types
