@@ -7,6 +7,7 @@ type Query{
 
 type Mutation {
     createReturn(input: CreateReturnInput!): CreateReturnOutput @doc(description: "Create a new return.")
+    addReturnComment(input: AddReturnCommentInput!): AddReturnCommentOutput @doc(description: "Add a comment to an existing return.")
 }
 
 input CreateReturnInput {
@@ -16,7 +17,7 @@ input CreateReturnInput {
 }
 
 input CreateReturnItemInput {
-    orderItemId: ID!
+    order_item_id: ID!
     quantity_to_return: Float!
     selected_custom_attributes: [ID!]
     entered_custom_attributes: [EnteredCustomAttributeInput!]
@@ -28,10 +29,16 @@ input EnteredCustomAttributeInput {
 }
 
 type CreateReturnOutput {
-    returns(
-        pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. Defaults to 20."),
-        currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
-    ): Returns
+    return: Return
+}
+
+input AddReturnCommentInput {
+    return_id: ID!
+    comment_text: String!
+}
+
+type AddReturnCommentOutput {
+    return: Return
 }
 
 enum CustomAttributesPageEnum {
@@ -56,6 +63,7 @@ type CustomerOrder {
         pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. Defaults to 20."),
         currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
     ): Returns @doc(description: "Information about the order returns.")
+    items_eligible_for_return: [OrderItemInterface] @doc(description: "A list of order items eligible for return.")
 }
 
 type Returns {

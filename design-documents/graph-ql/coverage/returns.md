@@ -26,7 +26,7 @@ Scenarios which may need these settings include:
 
 #### Determine whether any order items are eligible for return
 
-First, we need to know if there are any order items eligible for return. In the Luma example this will dictate whether "Return" link should be displayed on the order details page.
+First, we need to know if there are any order items eligible for return. In the Luma example this is dictating whether "Return" link will be displayed on the order details page.
 
 #### Render return form with dynamic RMA attributes
 
