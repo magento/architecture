@@ -30,7 +30,9 @@ This type of configuration should be propagated to Storefront in one of the foll
 1. Pre-calculate final data on back office side and provide final result to the Storefront during synchronization.
    1. Pros: simpler implementation of Storefront due to eliminated necessity for Storefront to keep knowledge about additional configuration, including data calculation algorithms.
    2. Cons: massive (up to full) reindexation necessary in case the configuration is changed.
-   
+2. Move/duplicate calculation logic in the Storefront service based on original data is synced from the back office.
+    1. Pros and cons are opposite to option 1. So this option is valuable in case of expected frequent change of configuration that impacts a lot of data.
+
 To choose the right approach in a specific case, consider the following:
 
 1. How frequently the configuration is expected to change?
