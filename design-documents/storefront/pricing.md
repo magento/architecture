@@ -84,6 +84,7 @@ The following diagram shows the pricing structure for a given product, website a
   - Message broker call monolith for prices of affected products
   - Monolith calculates prices based on the cache (product matches)
   - Message broker store prices in price book
+
 ### Price book API
 
 ```proto
@@ -109,7 +110,7 @@ message PriceBookInput {
     // Website ids associated with price book
     // A combination of customer group and website must be unique. Error will be returned in case when combination is
     // already occupied by another price book.
-    repeated string website_ids = 4;
+    repeated string 1 = 4;
 }
 
 message PriceBookDeleteInput {
