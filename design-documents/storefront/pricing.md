@@ -103,14 +103,14 @@ message PriceBookInput {
     string name = 2;
 
     // Customer groups associated with price book
-    // A combination of customer group and website must be unique. Error will be returned in case when combination is
+    // A combination of customer group and currency must be unique. Error will be returned in case when combination is
     // already occupied by another price book.
     repeated string customer_groups = 3;
     
-    // Website ids associated with price book
-    // A combination of customer group and website must be unique. Error will be returned in case when combination is
+    // Currency of price book
+    // A combination of customer group and currency must be unique. Error will be returned in case when combination is
     // already occupied by another price book.
-    repeated string 1 = 4;
+    string currency = 4;
 }
 
 message PriceBookDeleteInput {
