@@ -18,9 +18,113 @@ Scenarios which may need these settings include:
 
 ### View return list with pagination in customer account
 
+```graphql
+{
+  customer {
+    returns(pageSize: 10, currentPage: 2) {
+      items {
+        id
+        creation_date
+        customer_name
+        status
+      }
+      page_info {
+        current_page
+        page_size
+        total_pages
+      }
+      total_count
+    }
+  }
+}
+```
+
 ### View return list with pagination in order details
 
+```graphql
+{
+  customer {
+    orders(filter: {number: {eq: "00000008"}}) {
+      items {
+        returns(pageSize: 10, currentPage: 1) {
+          items {
+            id
+            creation_date
+            customer_name
+            status
+          }
+          page_info {
+            current_page
+            page_size
+            total_pages
+          }
+          total_count
+        }
+      }
+    }
+  }
+}
+```
+
 ### View return details
+
+```graphql
+{
+  customer {
+    return(id: "0000003") {
+      id
+      order_id
+      creation_date
+      customer_email
+      customer_name
+      status
+      shipping {
+        tracking {
+          id
+          carier
+          shipping_method
+          tracking_number
+          status
+        }
+        address {
+          contact_name
+          street
+          city
+          region {
+            name
+          }
+          postcode
+          country {
+            full_name_locale
+          }
+          telephone
+        }
+      }
+      comments {
+        id
+        text
+        created_at
+        created_by
+      }
+      items {
+        id
+        product {
+          sku
+          name
+        }
+        custom_attributes {
+          id
+          label
+          value
+        }
+        request_quantity
+        quantity
+        status
+      }
+    }
+  }
+}
+```
 
 ### Create a return
 
