@@ -130,17 +130,126 @@ Scenarios which may need these settings include:
 
 #### Determine whether any order items are eligible for return
 
-First, we need to know if there are any order items eligible for return. In the Luma example this is dictating whether "Return" link will be displayed on the order details page.
+There is a need to know if any order items are eligible for return. In the Luma example this is dictating whether "Return" link will be displayed on the order details page.
+
+```graphql
+{
+  customer {
+    orders(filter: {number: {eq: "00000008"}}) {
+      items {
+        items_eligible_for_return {
+          id
+          product_name
+        }
+      }
+    }
+  }
+}
+```
 
 #### Render return form with dynamic RMA attributes
 
+```graphql
+{
+  pageSpecificCustomAttributes(page_type: RETURN_ITEM_EDIT_FORM) {
+    items {
+      id
+      attribute_code
+      attribute_type
+      input_type
+      attribute_options {
+        id
+        label
+        value
+      }
+    }
+  }
+}
+```
+
+Existing schema of `Attribute` and `AttributeOption` must be extended to provide `ID` field, which will be used in mutations to specify custom attribute values for returns.
+
 #### Determine which order items are eligible for return
 
-#### Add more items to the return
+```graphql
+{
+  customer {
+    orders(filter: {number: {eq: "00000008"}}) {
+      items {
+        items_eligible_for_return {
+          id
+          product_name
+        }
+      }
+    }
+  }
+}
+```
 
-#### Submit return
+#### Submit a return with multiple items and comments
+
+```graphql
+mutation {
+  createReturn(
+    input: {
+      items: [
+        {
+          order_item_id: "0000004", 
+          quantity_to_return: 1, 
+          selected_custom_attributes: ["encoded-custom-select-attribute-value-id"], 
+          entered_custom_attributes: [{id: "encoded-custom-text-attribute-id", value: "Custom attribute value"}]
+        }
+      ], 
+      comment_text: "Return comment"
+    }
+  ) {
+    return {
+      id
+      items {
+        id
+        quantity
+        request_quantity
+        product {
+          sku
+          name
+        }
+        custom_attributes {
+          id
+          label
+          value
+        }
+      }
+      comments {
+        created_at
+        created_by
+        text
+      }
+    }
+  }
+}
+```
 
 ### Leave a return comment
+
+```graphql
+mutation {
+  addReturnComment(
+    input: {
+      return_id: "000000001", 
+      comment_text: "Another return comment"
+    }
+  ) {
+    return {
+      id
+      comments {
+        created_at
+        created_by
+        text
+      }
+    }
+  }
+}
+```
 
 ### Create a return for guest order
 

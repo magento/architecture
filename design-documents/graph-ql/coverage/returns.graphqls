@@ -159,3 +159,11 @@ enum ReturnItemStatus {
 type StoreConfig {
     sales_magento_rma_enabled: String! @doc(description: "Returns functionality status on the storefront: enabled/disabled.")
 }
+
+type Attribute {
+    id: ID!
+}
+
+type AttributeOption {
+    id: ID!
+}
