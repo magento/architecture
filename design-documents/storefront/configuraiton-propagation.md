@@ -46,22 +46,79 @@ To choose the right approach in a specific case, consider the following:
 
 Example: include or exclude taxes in displayed prices. 
 
-This kind of configuration has nothing to do with Storefront data itself, and so it is suggested to have a separate service that provides this configuration.
+This kind of configuration has nothing to do with Storefront data itself, but is still necessary for the client to know how to display the data.
+
+This section describes possible implementation options.
+
+#### 3.1. Configuration as Part of Domain Service
+
+UI Configuration is synced to the Storefront domain service, similarly to how the data is synced.
+This may be done by means of a separate data flow as configuration usually doesn't change together with the data.
+
+Is UI config included in the data (on the level of entities)?
+
+![UI Configuration Propagation as Part of Domain Service](https://app.lucidchart.com/publicSegments/view/4805a8df-abe8-4605-96e2-20266b2f2876/image.png)
+
+Pros:
+
+1. Simplicity in case of Magento as back office. Same/similar data sync can be implemented for configuration
+2. In-process call to storage for UI configuration
+
+Cons:
+
+1. Potential difficulties with UI configuration exclusion from deployment in case it is not needed, as it is part of the service 
+
+#### 3.2. Domain-Specific Configuration Service 
+
+Each domain service that requires UI configuration has a companion UI Configuration service.
 Client application may call the specialized configuration service to get configuration it needs.
 Some clients may not need all or part of UI configuration.
+
 GraphQL serves as a single entry point for both data and UI requests to simplify client implementation and have more control of which APIs are publicly exposed.
 
-![UI Configuration Propagation](https://app.lucidchart.com/publicSegments/view/b7ec5763-eb23-48ac-9092-6b92821040fb/image.png)
-
-Pros and cons of a separate service compared to configuration being part of the domain service are described bellow.
+![UI Configuration Propagation as Domain-Specific Configuration Service](https://app.lucidchart.com/publicSegments/view/c3c9f0a7-1780-416f-ab3f-caeeebb15680/image.png)
 
 Pros:
 
 1. More control of the deployment, scalability, technologies for the domain and config services.
-2. Ability to exclude config service from deployment in case it becomes unnecessary for the specific use case.
-   1. In case of multi-tenant deployment, of course it can't be done based on specific customer needs, but still may allow resources optimization in case specific merchant does not need UI configuration propagated from Magento.
-   1. Even in case of multi-tenant deployment, it is easier to eliminate configuration feature (and free resources needed for it) if it's represented by a separate service.
+2. More flexibility in the future
+   1. Easier path for UI configuration disablement in case it becomes unnecessary. For example, if it turnes out that client apps want to have full ownership of UI configuration
 
 Cons: 
 
 1. Additional request to configuration service instead of in-process request to the storage.
+
+#### 3.3. Single UI Configuration Service for All Domain Services
+
+UI configuration settings are fed into a single UI Configuration service and read from it when necessary.
+
+As, most likelly, all configuration options will look like key-value pairs, it might be reasonable to unify all of them under umpbrella of a single serfvice and so provide more uniformity of working with such configuration service.
+This is a variation of option 3.2.
+
+![UI Configuration Propagation as Single UI Configuration Service](https://app.lucidchart.com/publicSegments/view/cc77dc21-77ac-4eb4-b766-0f9afc8c11d5/image.png)
+
+Pros:
+
+1. More control of the deployment, scalability, technologies for the domain and config services. Assuming, all config services has the same technical requirements.
+
+Cons: 
+
+1. Additional request to configuration service instead of in-process request to the storage.
+
+#### Integration with 3rd-party Data-Provider System
+
+Data-prover system is a system that provides domain-specific data. For example, [PIM (product information management)](https://en.wikipedia.org/wiki/Product_information_management) system. 
+
+In case of integration with 3rd-party data-provider systems, a separate data flow process is setup to sync configuration when it's changed.
+If PIM doesn't provide all necessary configuration settings, a different management system may be used as the source.
+
+Additional configuration may be provided by a separate client application dedicated to the configuration management.
+Also, the additional configuration may be, in reality, the only source of configuration, in case PIM system doesn't provide such configuration.
+
+In case of UI Configuration provided as part of the domain service:
+
+![3rd-party PIM integration - UI Configuration as part of domain service](https://app.lucidchart.com/publicSegments/view/0e81c178-7480-41ca-8e7d-a37e6bdb6b6d/image.png)
+
+In case of UI Configuration provided by a separate service:
+
+![3rd-party PIM integration - UI Configuration as separate service](https://app.lucidchart.com/publicSegments/view/6051ef66-4b8f-44aa-9211-c6e7399bc9e2/image.png)
