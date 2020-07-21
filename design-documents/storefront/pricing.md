@@ -54,7 +54,7 @@ and reused for consequent requests.
 
 ### Default price book
 
-A `default price book` is a predefined system price book that contains `base prices` for __all__ products in the system. User-defined `price books` may contain only sub-set of products. 
+A `default price book` is a predefined system price book that contains `base prices` for __ALL__ products in the system. User-defined `price books` may contain only sub-set of products. 
 Default `price book` should be used as fallback storage if the price for a specific product doesn't exist in other resolved pricebook.
 
 Other words, there is always some price for sku in `default price book`.
@@ -185,7 +185,7 @@ but recommendation system works with different groups of customers which are bas
 In order to provide more flexibility in customer segmentation, we may introduce many-to-many. Also, having `customer groups` 
 which are not bound to pricing functionality make them looks like a regular tags. Thus, we may also rename them to tags:
 
-![Price books diagram](pricing/customer-tags.png)
+![Customer tags](pricing/customer-tags.png)
 
 ### Complex products support
 
