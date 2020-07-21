@@ -8,12 +8,13 @@ type Query{
 type Mutation {
     createReturn(input: CreateReturnInput!): CreateReturnOutput @doc(description: "Create a new return.")
     addReturnComment(input: AddReturnCommentInput!): AddReturnCommentOutput @doc(description: "Add a comment to an existing return.")
+    addReturnTracking(input: AddReturnTrackingInput!): AddReturnTrackingOutput @doc(description: "Add tracking information to the return.")
+    removeReturnTracking(input: RemoveReturnTrackingInput!): RemoveReturnTrackingOutput @doc(description: "Remove tracking information from the return.")
 }
 
 input CreateReturnInput {
     items: [CreateReturnItemInput]!
     comment_text: String
-    # Do we need contact_email? It is present in the form when requesting return as a guest
 }
 
 input CreateReturnItemInput {
@@ -38,6 +39,24 @@ input AddReturnCommentInput {
 }
 
 type AddReturnCommentOutput {
+    return: Return
+}
+
+input AddReturnTrackingInput {
+    return_id: ID!
+    carrier_id: ID!
+    tracking_number: String!
+}
+
+type AddReturnTrackingOutput {
+    return: Return
+}
+
+input RemoveReturnTrackingInput {
+    return_tracking_id: ID!
+}
+
+type RemoveReturnTrackingOutput {
     return: Return
 }
 
@@ -82,12 +101,12 @@ type Return @doc(description: "Customer return") {
     shipping: ReturnShipping @doc(description: "Shipping information for the return.")
     comments: [ReturnComment] @doc(description: "A list of comments posted for the return.")
     items: [ReturnItem] @doc(description: "A list of items being returned.")
+    available_shipping_carriers: [ReturnShippingCarrier] @doc(description: "A list of shipping carriers available for returns.")
 }
 
 type ReturnItem {
     id: ID!
     product: ProductInterface!
-    # Do we need reference to order ID? How about entered and selected options
     custom_attributes: [CustomAttribute]
     request_quantity: Float!
     quantity: Float!
@@ -109,17 +128,26 @@ type ReturnComment {
 }
 
 type ReturnShipping {
-    address: ReturnShippingAddress
-    # Tracking is not currently supported by Magento
-    tracking: ReturnShippingTracking
+    address: ReturnShippingAddress @doc(description: "Return shipping address, which is specified by the admin.")
+    tracking(id: ID): [ReturnShippingTracking] @doc(description: "Tracking information for all or a single tracking record when ID is provided.")
+}
+
+type ReturnShippingCarrier {
+    id: ID!
+    label: String!
 }
 
 type ReturnShippingTracking {
     id: ID!
-    shipping_method: String
-    carier: String
-    tracking_number: String
-    status: String
+    carier: ReturnShippingCarrier!
+    tracking_number: String!
+    status_type: ReturnShippingTrackingStatusType!
+    status: String!
+}
+
+enum ReturnShippingTrackingStatusType {
+    INFORMATION
+    ERROR
 }
 
 type ReturnShippingAddress {

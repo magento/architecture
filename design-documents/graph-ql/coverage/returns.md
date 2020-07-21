@@ -78,28 +78,6 @@ Scenarios which may need these settings include:
       customer_email
       customer_name
       status
-      shipping {
-        tracking {
-          id
-          carier
-          shipping_method
-          tracking_number
-          status
-        }
-        address {
-          contact_name
-          street
-          city
-          region {
-            name
-          }
-          postcode
-          country {
-            full_name_locale
-          }
-          telephone
-        }
-      }
       comments {
         id
         text
@@ -120,6 +98,28 @@ Scenarios which may need these settings include:
         request_quantity
         quantity
         status
+      }
+      shipping {
+        tracking {
+          id
+          carier {
+            label
+          }
+          tracking_number
+        }
+        address {
+          contact_name
+          street
+          city
+          region {
+            code
+          }
+          country {
+            full_name_english
+          }
+          postcode
+          telephone
+        }
       }
     }
   }
@@ -257,4 +257,92 @@ Guest orders are not accessible via GraphQL yet, but the schema of returns will 
 
 ### Specify shipping and tracking
 
-When return is authorized, the customer should specify shipping and tracking information
+When return is authorized by the admin user, the customer can specify shipping and tracking information.
+
+First, the client needs to get shipping cariers that can be used for returns:
+
+```graphql
+{
+  customer {
+    return(id: "0000003") {
+      available_shipping_carriers {
+        id
+        label
+      }
+    }
+  }
+}
+```
+
+Then tracking information can be submitted:
+
+```graphql
+mutation {
+  addReturnTracking(
+    input: {
+      return_id: "000005", 
+      carrier_id: "carrier-id", 
+      tracking_number: "4234213"
+    }
+  ) {
+    return {
+      shipping {
+        tracking {
+          id
+          carier {
+            label
+          }
+          tracking_number
+        }
+      }
+    }
+  }
+}
+```
+
+If the user decides to view the status of the return, it can be retrieved using the following query:
+
+```graphql
+{
+  customer {
+    return(id: "0000003") {
+      shipping {
+        tracking(id: "return-tracking-id") {
+          id
+          carier {
+            label
+          }
+          tracking_number
+          status
+          status_type
+        }
+      }
+    }
+  }
+}
+```
+
+In case the return shipping needs to be removed, the following mutation can be used:
+
+```graphql
+mutation {
+  removeReturnTracking(
+    input: {
+      return_tracking_id: "return-tracking-id"
+    }
+  ) {
+    return {
+      shipping {
+        tracking {
+          id
+          carier {
+            label
+          }
+          tracking_number
+        }
+      }
+    }
+  }
+}
+
+```
