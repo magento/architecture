@@ -21,7 +21,7 @@ It should be possible to make the following changes to a schema, _without_ intro
 - Add optional arguments to a query/mutation (some backwards-compat risks)
 - Add extra data to the output of a mutation (backwards-compatible)
 
-The following patterns should be followed to ensure our schema remains extensible, with _minimal_ (ideally no) breaking changes._
+The following patterns should be followed to ensure our schema remains extensible, with _minimal_ (ideally no) breaking changes.
 
 ## Backwards-Compatible GraphQL Schema Development Patterns
 
