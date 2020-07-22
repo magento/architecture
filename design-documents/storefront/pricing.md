@@ -75,12 +75,8 @@ The following diagram shows the pricing structure for a given product, website a
 - t2 - New price for customer group was introduced on the monolith side
   - Message broker checks if price book for specified customer group exists on storefront and create new price book if needed
   - Message broker assigns product to the new price book and set appropriate price
-- t3 - New catalog price rule was created on the monolith side. Catalog price rule has start and end dates.
-  - Message broker checks if price book for specified customer group exists on storefront and create new price book if needed
-  - Message broker detects products matched by the rule
-  - Message broker calculate prices apply discounts for selected products and write prices to price book
-- Alternative t3  
-  - Monolith detects matched products and fire `price_changed` events for those products. Event includes information about affected customer groups. Product matches are stored in cache for the later use.
+- t3-t7  
+  - Monolith detects products matched by the rule and fire `price_changed` events for those products. Event includes information about affected customer groups and websites. "Product by rule" matches are stored in cache for the later use.
   - Message broker call monolith for prices of affected products
   - Monolith calculates prices based on the cache (product matches)
   - Message broker store prices in price book
@@ -103,18 +99,18 @@ message PriceBookInput {
     string name = 2;
 
     // Customer groups associated with price book
-    // A combination of customer group and currency must be unique. Error will be returned in case when combination is
+    // A combination of customer group and website must be unique. Error will be returned in case when combination is
     // already occupied by another price book.
     repeated string customer_groups = 3;
     
-    // Currency of price book
-    // A combination of customer group and currency must be unique. Error will be returned in case when combination is
+    // Websites associated with price book
+    // A combination of customer group and website must be unique. Error will be returned in case when combination is
     // already occupied by another price book.
-    string currency = 4;
+    repeated string websites = 4;
 }
 
 message PriceBookDeleteInput {
-    string id = 1;    
+    string id = 1;
 }
 
 message AssignProductsInput {
@@ -254,4 +250,60 @@ Consequences:
 - Admin sets a `special price` for the same product for the current date
 - `product listing`, `PDP` and `checkout` scenarios contain `special price`
 - Customers and guests are able to buy the product for the `special price`
+
+## Appendix
+
+### Price calculation algorithm for single website and customer group
+```php
+<?php
+
+$time = time(); $product = new \StdClass; $customerGroup = 12;
+
+// FIXED PRICE CALCULATIONS
+$fixedCalculator = function ($product) use ($customerGroup, $time) {
+    $specialPrice = ($product->getSpecialPriceFrom >= $time && $product->getSpecialPriceTo <= $time)
+        ? $product->getSpecialPrice
+        : 0;
+
+    $fixedPrice = min($product->getBasePrice(), $specialPrice);
+
+    $groupPrice = $product->getGroupPrice($customerGroup);
+    if ($groupPrice) {
+        $fixedPrice = ($groupPrice->getType() == 'percentage')
+            ? $product->getBasePrice() - $product->getBasePrice() / 100 * $groupPrice->getValue()
+            : $groupPrice->getValue;
+
+    }
+    return $fixedPrice;
+};
+
+
+$fixedPrices = array_map($fixedCalculator, $product->getChildren());
+$fixedPrices[] = $fixedCalculator($product);
+
+$minFixedPrice = min($fixedPrices);
+
+// DISCOUNT CALCULATIONS. WE ASSUME THAT ALL RULES ALREADY RESOLVED AND WE HAVE A LIST OF RULES PER PRODUCT
+$discountCalculator = function ($product) use ($customerGroup, $time) {
+    $discountedPrice = $product->getBasePrice();
+    foreach ($product->getRules()->sortByPriority() as $rule) {
+        if ($rule->getDateFrom >= $time && $rule->getDateTo <= $time) {
+            $discountedPrice = $rule->getDiscount()->getType() == 'percentage'
+                ? $discountedPrice - $discountedPrice / 100 * $rule->getDiscount()->getValue()
+                : $discountedPrice - $rule->getDiscount()->getValue();
+
+            if ($rule->hasStopConsequentRules) {
+                break;
+            }
+        }
+    }
+    return $discountedPrice;
+};
+
+$discountedPrices = array_map($discountCalculator, $product->getChildren());
+$discountedPrices[] = $discountCalculator($product);
+$minDiscountedPrice = min($discountedPrices);
+
+$finalPrice = min($minFixedPrice, $minDiscountedPrice);
+``` 
 
