@@ -161,7 +161,7 @@ type NegotiableQuoteComment {
     created_at: String!
     author: NegotiableQuoteUser!
     creator_type: NegotiableQuoteCommentCreatorType!
-    value: String! @doc(description: "A simple (non-html) comment submitted by a seller or buyer")
+    text: String! @doc(description: "A simple (non-html) comment submitted by a seller or buyer")
 }
 
 enum NegotiableQuoteCommentCreatorType {
