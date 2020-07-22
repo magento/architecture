@@ -4,8 +4,8 @@ type Query {
     # in a company can see quotes belonging to their
     # employees. If `Customer.negotiable_quotes` is desirable for buyer's
     # that aren't managers, we can always add that on
-    negotiable_quote(id: ID!): NegotiableQuote @doc(description: "Get a buyer's NegotiableQuote by ID")
-    negotiable_quotes(
+    negotiableQuote(id: ID!): NegotiableQuote @doc(description: "Get a buyer's NegotiableQuote by ID")
+    negotiableQuotes(
         filter: NegotiableQuoteFilterInput,
         pageSize: Int = 20,
         currentPage: Int = 1
