@@ -50,25 +50,35 @@ This kind of configuration has nothing to do with Storefront data itself, but is
 
 This section describes possible implementation options.
 
-#### 3.1. Configuration as Part of Domain Service
+#### 3.1. Configuration is Responsibility of the Client
 
-UI Configuration is synced to the Storefront domain service, similarly to how the data is synced.
-This may be done by means of a separate data flow as configuration usually doesn't change together with the data.
+Client application (such as PWA) is responsible for the UI configuration, either hard-coded or by means of a service.
+UI configuration is not synced from Magento Admin Panel to Storefront.
 
-Is UI config included in the data (on the level of entities)?
+#### 3.2. Configuration is Provided by Magento Back Office API
 
-![UI Configuration Propagation as Part of Domain Service](https://app.lucidchart.com/publicSegments/view/4805a8df-abe8-4605-96e2-20266b2f2876/image.png)
+Rely on current GraphQL API for providing UI Configuration.
+No additional Store Front service is created to serve such configuration.
+GraphQL entry point can proxy to the Magento Back Office GraphQL for simplicity in API usage.
+
+#### 3.3. Single UI Configuration Service for All Domain Services
+
+UI configuration settings are fed into a single UI Configuration service and read from it when necessary.
+
+As, most likelly, all configuration options will look like key-value pairs, it might be reasonable to unify all of them under umpbrella of a single serfvice and so provide more uniformity of working with such configuration service.
+This is a variation of option 3.2.
+
+![UI Configuration Propagation as Single UI Configuration Service](https://app.lucidchart.com/publicSegments/view/cc77dc21-77ac-4eb4-b766-0f9afc8c11d5/image.png)
 
 Pros:
 
-1. Simplicity in case of Magento as back office. Same/similar data sync can be implemented for configuration
-2. In-process call to storage for UI configuration
+1. More control of the deployment, scalability, technologies for the domain and config services. Assuming, all config services has the same technical requirements.
 
-Cons:
+Cons: 
 
-1. Potential difficulties with UI configuration exclusion from deployment in case it is not needed, as it is part of the service 
+1. Additional request to configuration service instead of in-process request to the storage.
 
-#### 3.2. Domain-Specific Configuration Service 
+#### 3.4. Domain-Specific Configuration Service 
 
 Each domain service that requires UI configuration has a companion UI Configuration service.
 Client application may call the specialized configuration service to get configuration it needs.
@@ -88,24 +98,27 @@ Cons:
 
 1. Additional request to configuration service instead of in-process request to the storage.
 
-#### 3.3. Single UI Configuration Service for All Domain Services
+#### 3.5. Configuration as Part of Domain Service
 
-UI configuration settings are fed into a single UI Configuration service and read from it when necessary.
+UI Configuration is synced to the Storefront domain service, similarly to how the data is synced.
+This may be done by means of a separate data flow as configuration usually doesn't change together with the data.
 
-As, most likelly, all configuration options will look like key-value pairs, it might be reasonable to unify all of them under umpbrella of a single serfvice and so provide more uniformity of working with such configuration service.
-This is a variation of option 3.2.
+Is UI config included in the data (on the level of entities)?
 
-![UI Configuration Propagation as Single UI Configuration Service](https://app.lucidchart.com/publicSegments/view/cc77dc21-77ac-4eb4-b766-0f9afc8c11d5/image.png)
+![UI Configuration Propagation as Part of Domain Service](https://app.lucidchart.com/publicSegments/view/4805a8df-abe8-4605-96e2-20266b2f2876/image.png)
 
 Pros:
 
-1. More control of the deployment, scalability, technologies for the domain and config services. Assuming, all config services has the same technical requirements.
+1. Simplicity in case of Magento as back office. Same/similar data sync can be implemented for configuration
+2. In-process call to storage for UI configuration
 
-Cons: 
+Cons:
 
-1. Additional request to configuration service instead of in-process request to the storage.
+1. Potential difficulties with UI configuration exclusion from deployment in case it is not needed, as it is part of the service 
 
 #### Integration with 3rd-party Data-Provider System
+
+This section is relevant only in case Storefront services provide UI Configuration (options 3-6).
 
 Data-prover system is a system that provides domain-specific data. For example, [PIM (product information management)](https://en.wikipedia.org/wiki/Product_information_management) system. 
 
