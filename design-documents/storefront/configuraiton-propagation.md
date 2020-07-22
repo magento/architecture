@@ -27,7 +27,7 @@ Example: Base Media URL is used for calculation of media image URLs returned by 
 
 This type of configuration should be propagated to Storefront in one of the following ways:
 
-1. Pre-calculate final data on back office side and provide final result to the Storefront during synchronization.
+1. Pre-calculate final data on back office side and provide final result to the Storefront during synchronization. Minimize synchronization by updating only entities that have been really affected.
    1. Pros: simpler implementation of Storefront due to eliminated necessity for Storefront to keep knowledge about additional configuration, including data calculation algorithms.
    2. Cons: massive (up to full) reindexation necessary in case the configuration is changed.
 2. Move/duplicate calculation logic in the Storefront service based on original data is synced from the back office.
@@ -41,6 +41,12 @@ To choose the right approach in a specific case, consider the following:
 2. Is it acceptable to have significant delay in data propagation after the configuration change?
    1. Changing Base URL may be not a big issue, especially if a redirect can be setup. So it may be acceptable to have URLs to be fully updated in a few hours.
    2. Changes in prices, on the other side, may not stand long delays.
+3. Do 3rd-party systems provide similar configuration?
+   1. If 3rd-party systems don't have equivalent configuration, how will it be populated in the Storefront service? It might be better to avoid Magento-specific concepts to simplify integrations, and instead provide indexed data to the Storefront service.
+   1. If a configuration option is pretty common among 3rd-party systems, it may make sense to reflect it in the Storefront service.
+
+Expected consequences are described in the decision document for each case.
+For example, time for configuration propagation in case reindexation is chosen, logic duplication/complexity in case configuration is propagated to Storefront application, performance impact for Storefront read API or for synchronization.
 
 ### 3. Configuration that impacts UI representation of Storefront data
 
@@ -52,7 +58,13 @@ This section describes possible implementation options.
 
 #### 3.1. Configuration is Responsibility of the Client
 
+:white_check_mark: Accepted option.
+
 Client application (such as PWA) is responsible for the UI configuration, either hard-coded or by means of a service.
+
+Justification: Storefront service is responsible for providing data, client applications may vary significantly and may just want to hard-code many of the options or take settings from different sources.
+Until it is confirmed by the client developers (PWA, AEM, other teams) that UI Configuration API backed by Magento system configuration is necessary, Storefront efforts should not focus on supporting such API.
+
 UI configuration is not synced from Magento Admin Panel to Storefront.
 
 #### 3.2. Configuration is Provided by Magento Back Office API
