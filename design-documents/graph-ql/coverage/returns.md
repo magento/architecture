@@ -229,6 +229,8 @@ mutation {
 }
 ```
 
+Alternatively, the collection of returns associated with the order can be requested.
+
 ### Leave a return comment
 
 ```graphql
@@ -328,7 +330,7 @@ In case the return shipping needs to be removed, the following mutation can be u
 mutation {
   removeReturnTracking(
     input: {
-      return_tracking_id: "return-tracking-id"
+      return_shipping_tracking_id: "return-tracking-id"
     }
   ) {
     return {

@@ -13,7 +13,7 @@ type Mutation {
 }
 
 input CreateReturnInput {
-    items: [CreateReturnItemInput]!
+    items: [CreateReturnItemInput!]!
     comment_text: String
 }
 
@@ -31,6 +31,10 @@ input EnteredCustomAttributeInput {
 
 type CreateReturnOutput {
     return: Return
+    returns(
+        pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. Defaults to 20."),
+        currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
+    ): Returns @doc(description: "Information about the customer returns.")
 }
 
 input AddReturnCommentInput {
@@ -53,7 +57,7 @@ type AddReturnTrackingOutput {
 }
 
 input RemoveReturnTrackingInput {
-    return_tracking_id: ID!
+    return_shipping_tracking_id: ID!
 }
 
 type RemoveReturnTrackingOutput {
@@ -81,7 +85,7 @@ type CustomerOrder {
     returns(
         pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. Defaults to 20."),
         currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
-    ): Returns @doc(description: "Information about the order returns.")
+    ): Returns @doc(description: "Returns associated with this order.")
     items_eligible_for_return: [OrderItemInterface] @doc(description: "A list of order items eligible for return.")
 }
 
@@ -93,7 +97,7 @@ type Returns {
 
 type Return @doc(description: "Customer return") {
     id: ID! @doc(description: "Return number")
-    order_id: String! @doc(description: "ID of the order based on which the return was created.")
+    order_id: ID! @doc(description: "ID of the order based on which the return was created.")
     creation_date: String! @doc(description: "The date when the return was requested.")
     customer_email: String! @doc(description: "Email of the customer who created the return.")
     customer_name: String @doc(description: "The name of the person returning the item")
