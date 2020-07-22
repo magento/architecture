@@ -7,8 +7,8 @@ type Mutation {
 }
 
 type Customer {
-    wishlist: Wishlist! @deprecated(reason: "Use `Customer.wishlists` or `Customer.wishlistByID") 
-    wishlistByID(id: ID!): Wishlist
+    wishlist: Wishlist! @deprecated(reason: "Use `Customer.wishlists` or `Customer.wishlist_v2") 
+    wishlist_v2(id: ID!): Wishlist
     wishlists: [Wishlist!]! @doc(description: "Customer wishlists are limited to a max of 1 wishlist in Magento Open Source")
 }
 
