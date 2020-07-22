@@ -15,7 +15,7 @@ Add a new field gift_card_options under the GiftCardProduct type. The values can
 
 ```
 type GiftCardProduct {
-    gift_card_options: [CustomizableOptionInterface]!
+    gift_card_options: [CustomizableOptionInterface!]!
 }
 ```
 
