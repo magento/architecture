@@ -71,8 +71,10 @@ The following diagram shows the pricing structure for a given product, website a
 ![Pricing structure](pricing/pricing-structure.png)
 
 - t1 - New product was created. Every product should have some base price, so new product also introduce one price in the system.
+  - Monolith fires `price_changed` event for new product. Event specifies product_id and default website scope.
   - Storefront receives new base price and put it in the default price book
 - t2 - New price for customer group was introduced on the monolith side
+  - Monolith detects change in product price and fires `price_changed` event. Event specifies product_id, specified websites and customer group scope.
   - Message broker checks if price book for specified customer group exists on storefront and create new price book if needed
   - Message broker assigns product to the new price book and set appropriate price
 - t3-t7  
