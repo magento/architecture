@@ -119,7 +119,7 @@ type CloseNegotiableQuotesOutput {
 }
 
 input RemoveNegotiableQuoteItemsInput {
-    quote_ID: ID!
+    quote_id: ID!
     quote_item_ids: [ID!]!
 }
 
