@@ -9,7 +9,13 @@ type Query {
         filter: NegotiableQuoteFilterInput,
         pageSize: Int = 20,
         currentPage: Int = 1
-    ): [NegotiableQuote] @doc(description: "A (optionally filtered) list of Negotiable Quotes viewable by the logged-in customer")
+    ): NegotiableQuotesOutput @doc(description: "A (optionally filtered) list of Negotiable Quotes viewable by the logged-in customer")
+}
+
+type NegotiableQuotesOutput {
+    items: [NegotiableQuote]!
+    page_info: SearchResultPageInfo!
+    total_count: Int!
 }
 
 # Coverage missing:
@@ -102,7 +108,7 @@ type DeleteNegotiableQuotesOutput {
         filter: NegotiableQuoteFilterInput,
         pageSize: Int = 20,
         currentPage: Int = 1
-    ): [NegotiableQuote]! @doc(description: "List of negotiable quotes available to customer")
+    ): NegotiableQuotesOutput @doc(description: "List of negotiable quotes available to customer")
 }
 
 input CloseNegotiableQuotesInput {
@@ -115,7 +121,7 @@ type CloseNegotiableQuotesOutput {
         filter: NegotiableQuoteFilterInput,
         pageSize: Int = 20,
         currentPage: Int = 1
-    ): [NegotiableQuote] @doc(description: A (optionally filtered) list of Negotiable Quotes viewable by the logged-in customer")
+    ): NegotiableQuotesOutput @doc(description: A (optionally filtered) list of Negotiable Quotes viewable by the logged-in customer")
 }
 
 input RemoveNegotiableQuoteItemsInput {
