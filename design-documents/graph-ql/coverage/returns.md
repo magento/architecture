@@ -102,7 +102,7 @@ Scenarios which may need these settings include:
       shipping {
         tracking {
           id
-          carier {
+          carrier {
             label
           }
           tracking_number
@@ -126,7 +126,7 @@ Scenarios which may need these settings include:
 }
 ```
 
-### Create a return
+### Create a return request
 
 #### Determine whether any order items are eligible for return
 
@@ -140,6 +140,23 @@ There is a need to know if any order items are eligible for return. In the Luma 
         items_eligible_for_return {
           id
           product_name
+        }
+      }
+    }
+  }
+}
+```
+
+Alternative approach is to use a flag added to order items:
+
+```graphql
+{
+  customer {
+    orders(filter: {number: {eq: "00000008"}}) {
+      items {
+        items {
+          id
+          eligible_for_return
         }
       }
     }
@@ -186,11 +203,11 @@ Existing schema of `Attribute` and `AttributeOption` must be extended to provide
 }
 ```
 
-#### Submit a return with multiple items and comments
+#### Submit a return request with multiple items and comments
 
 ```graphql
 mutation {
-  createReturn(
+  requestReturn(
     input: {
       items: [
         {
@@ -261,7 +278,7 @@ Guest orders are not accessible via GraphQL yet, but the schema of returns will 
 
 When return is authorized by the admin user, the customer can specify shipping and tracking information.
 
-First, the client needs to get shipping cariers that can be used for returns:
+First, the client needs to get shipping carriers that can be used for returns:
 
 ```graphql
 {
@@ -291,7 +308,7 @@ mutation {
       shipping {
         tracking {
           id
-          carier {
+          carrier {
             label
           }
           tracking_number
@@ -302,7 +319,7 @@ mutation {
 }
 ```
 
-If the user decides to view the status of the return, it can be retrieved using the following query:
+If the user decides to view the status of the specific tracking item, it can be retrieved using the following query:
 
 ```graphql
 {
@@ -311,12 +328,14 @@ If the user decides to view the status of the return, it can be retrieved using 
       shipping {
         tracking(id: "return-tracking-id") {
           id
-          carier {
+          carrier {
             label
           }
           tracking_number
-          status
-          status_type
+          status {
+            text
+            type
+          }         
         }
       }
     }
@@ -337,7 +356,7 @@ mutation {
       shipping {
         tracking {
           id
-          carier {
+          carrier {
             label
           }
           tracking_number

@@ -6,22 +6,22 @@ type Query{
 }
 
 type Mutation {
-    createReturn(input: CreateReturnInput!): CreateReturnOutput @doc(description: "Create a new return.")
+    requestReturn(input: RequestReturnInput!): RequestReturnOutput @doc(description: "Create a new return.")
     addReturnComment(input: AddReturnCommentInput!): AddReturnCommentOutput @doc(description: "Add a comment to an existing return.")
     addReturnTracking(input: AddReturnTrackingInput!): AddReturnTrackingOutput @doc(description: "Add tracking information to the return.")
-    removeReturnTracking(input: RemoveReturnTrackingInput!): RemoveReturnTrackingOutput @doc(description: "Remove tracking information from the return.")
+    removeReturnTracking(input: RemoveReturnTrackingInput!): RemoveReturnTrackingOutput @doc(description: "Remove a single tracked shipment from the return.")
 }
 
-input CreateReturnInput {
-    items: [CreateReturnItemInput!]!
+input RequestReturnInput {
+    items: [RequestReturnItemInput!]!
     comment_text: String
 }
 
-input CreateReturnItemInput {
-    order_item_id: ID!
-    quantity_to_return: Float!
-    selected_custom_attributes: [ID!]
-    entered_custom_attributes: [EnteredCustomAttributeInput!]
+input RequestReturnItemInput {
+    order_item_id: ID! @doc(description: "ID of the order associated with the return.")
+    quantity_to_return: Float! @doc(description: "The quantity of the item requested to be returned.")
+    selected_custom_attributes: [ID!] @doc(description: "Values of return item attributes defined by the merchant, e.g. select attributes.")
+    entered_custom_attributes: [EnteredCustomAttributeInput!] @doc(description: "Values of return item attributes defined by the merchant, e.g. file or text attributes.")
 }
 
 input EnteredCustomAttributeInput {
@@ -29,7 +29,7 @@ input EnteredCustomAttributeInput {
     value: String!
 }
 
-type CreateReturnOutput {
+type RequestReturnOutput {
     return: Return
     returns(
         pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. Defaults to 20."),
@@ -89,6 +89,10 @@ type CustomerOrder {
     items_eligible_for_return: [OrderItemInterface] @doc(description: "A list of order items eligible for return.")
 }
 
+type OrderItemInterface {
+    eligible_for_return: Boolean @doc(description: "Indicates whether the order item is eligible for return.")
+}
+
 type Returns {
     items: [Return] @doc(description: "List of returns")
     page_info: SearchResultPageInfo @doc(description: "Pagination metadata")
@@ -110,11 +114,11 @@ type Return @doc(description: "Customer return") {
 
 type ReturnItem {
     id: ID!
-    product: ProductInterface!
-    custom_attributes: [CustomAttribute]
-    request_quantity: Float!
-    quantity: Float!
-    status: ReturnItemStatus!
+    product: ProductInterface! @doc(description: "The product being returned.")
+    custom_attributes: [CustomAttribute] @doc(description: "Return item custom attributes, which are marked by the admin to be visible on the storefront.")
+    request_quantity: Float! @doc(description: "The quantity of the item requested to be returned.")
+    quantity: Float! @doc(description: "The quantity of the items authorized by the merchant to be returned .")
+    status: ReturnItemStatus! @doc(description: "The return status of the item being returned.")
 }
 
 # See https://github.com/magento/architecture/blob/master/design-documents/graph-ql/custom-attributes-container.md
@@ -126,7 +130,8 @@ type CustomAttribute {
 
 type ReturnComment {
     id: ID! @doc(description: "Comment ID.")
-    created_by: String! @doc(description: "The name of the user who created posted the comment.")
+    author_firstname: String! @doc(description: "First name of the user who posted the comment.")
+    author_lastname: String! @doc(description: "Last name of the user who posted the comment.")
     created_at: String! @doc(description: "The date and time when the comment was posted.")
     text: String! @doc(description: "The comment text.")
 }
@@ -143,10 +148,14 @@ type ReturnShippingCarrier {
 
 type ReturnShippingTracking {
     id: ID!
-    carier: ReturnShippingCarrier!
+    carrier: ReturnShippingCarrier!
     tracking_number: String!
-    status_type: ReturnShippingTrackingStatusType!
-    status: String!
+    status: ReturnShippingTrackingStatus
+}
+
+type ReturnShippingTrackingStatus {
+    text: String!
+    type: ReturnShippingTrackingStatusType!
 }
 
 enum ReturnShippingTrackingStatusType {
