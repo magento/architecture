@@ -73,6 +73,17 @@ Rely on current GraphQL API for providing UI Configuration.
 No additional Store Front service is created to serve such configuration.
 GraphQL entry point can proxy to the Magento Back Office GraphQL for simplicity in API usage.
 
+Two options are possible, second expands on top of the first one.
+
+Client holds knowledge about two sources (one for data and one for config) and handles requests.
+This can be the first step.
+
+![Service Configuration - Direct Back Office API](https://app.lucidchart.com/publicSegments/view/aeae7ddc-7a1f-4c94-88aa-2309dca63c05/image.png)
+
+GraphQL handles requests routing to either Storefront domain service (for data) or to Magento Back Office GraphQL (for UI Config).
+
+![Service Configuration - GraphQL Proxy](https://app.lucidchart.com/publicSegments/view/775a580e-fdb0-4bda-a532-eef04767396a/image.png)
+
 #### 3.3. Single UI Configuration Service for All Domain Services
 
 UI configuration settings are fed into a single UI Configuration service and read from it when necessary.
