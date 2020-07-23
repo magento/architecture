@@ -50,7 +50,7 @@ For example, time for configuration propagation in case reindexation is chosen, 
 
 ### 3. Configuration that impacts UI representation of Storefront data
 
-Example: include or exclude taxes in displayed prices. 
+Example: number of products on products listing page. 
 
 This kind of configuration has nothing to do with Storefront data itself, but is still necessary for the client to know how to display the data.
 
