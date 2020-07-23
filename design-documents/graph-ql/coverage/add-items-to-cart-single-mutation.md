@@ -31,12 +31,12 @@ Each product may have options. Option can be of 2 types (see example below):
     ]
 ```
 
-We can consider "Selected Option" and "ID for Entered Option" as a globally unique identifier. They meet the criteria:
+We can consider "Selected Option" and "ID for Entered Option" as UUID. They meet the criteria:
 
 - "Selected Option" represents option value, while "ID for Entered Option" represents option
 - Must be unique across different options
 - Returned from server
-- Used by client as is (opaque)
+- Used by client as is
 
 Selected options can be used for:
 - Customizable options such as dropdwon, radiobutton, checkbox, etc
@@ -51,22 +51,14 @@ Entered options:
   
 #### Option implementation
   
-Product schema should be extended in order to provide option identifier (aka first iteration of "UUID"). This field will be named `uid` (unique identifier, or universal ID).
+Product schema should be extended in order to provide option identifier (aka first iteration of "UUID").
+Until introducing UUID lets name this identifier as *"id_v2"
 
----
-**Note on Field Name**
-`uid` was chosen for several reasons:
-- `id` is already reserved as an `Int` field in most types, and we want to avoid breaking changes
-- `uuid` implies a specific encoding algorithm, and the client shouldn't know or care
-- `id_v2` has a temporary-sounding name (`id_v2` makes me think `id_v3` will be coming). However, there is no need to change field names when changing the format of a field that uses the `ID` type, because clients are not meant to be parsing/formatting/inspecting `ID` values. The `uid` field can hold an integer or a base64-encoded value today, and a real UUID in the future, and it will _not_ be a breaking change. `ID` values are always serialized to a string
----
-
-
-For product options, for now, *uid* is a `base64` encoded string, wrapper in an `ID` type, that encodes details for each option and in most cases can be presented as 
+Option *id_v2* is `base64` encoded string, that encodes details for each option and in most cases can be presented as 
 `base64("<option-type>/<option-id>/<option-value-id>")`
-For example, for customizable drop-down option "Color(id = 1), with values Red(id = 1), Green(id = 2)" `uid` for Color:Red will looks like `"Y3VzdG9tLW9wdGlvbi8xLzE=" => base64("custom-option/1/1")` 
+For example, for customizable drop-down option "Color(id = 1), with values Red(id = 1), Green(id = 2)" id_v2 for Color:Red will looks like `"Y3VzdG9tLW9wdGlvbi8xLzE=" => base64("custom-option/1/1")` 
 
-Here is a GQL query that shows how to add a new field "uid: ID!" to cover existing cases:
+Here is a GQL query that shows how to add a new field "id_v2: String!" to cover existing cases:
 
 
 ``` graphql
@@ -81,7 +73,7 @@ query {
           ... on CustomizableRadioOption {
             title
             value {
-              uid # introduce new uid field in CustomizableRadioValue
+              id_v2 # introduce new id_v2 field in CustomizableRadioValue
               option_type_id
               title
             }
@@ -89,7 +81,7 @@ query {
           ... on CustomizableDropDownOption {
             title
             value {
-              uid # introduce new uid field in CustomizableDropDownValue
+              id_v2 # introduce new id_v2 field in CustomizableDropDownValue
               # see \Magento\QuoteGraphQl\Model\Cart\BuyRequest\CustomizableOptionsDataProvider
               option_type_id
               title
@@ -100,7 +92,7 @@ query {
       }      ... on ConfigurableProduct {
         variants {
           attributes {
-            uid # introduce new uid field in ConfigurableAttributeOption  (format: configurable/<attribute-id>/<value_index>)
+            id_v2 # introduce new id_v2 field in ConfigurableAttributeOption  (format: configurable/<attribute-id>/<value_index>)
             # see \Magento\ConfigurableProductGraphQl\Model\Cart\BuyRequest\SuperAttributeDataProvider
             code
             value_index
@@ -108,7 +100,7 @@ query {
         }
       }      ... on DownloadableProduct {
         downloadable_product_links {
-          uid #  introduce new uid field in DownloadableProductLinks (format: downloadable/link/<link_id>)
+          id_v2 #  introduce new id_v2 field in DownloadableProductLinks (format: downloadable/link/<link_id>)
           #  see \Magento\DownloadableGraphQl\Model\Cart\BuyRequest\DownloadableLinksDataProvider
           title
         }
@@ -117,7 +109,7 @@ query {
           sku
           title
           options {
-            uid #  introduce new uid field in BundleItemOption (format: bundle/<option-id>/<option-value-id>/<option-quantity>)
+            id_v2 #  introduce new id_v2 field in BundleItemOption (format: bundle/<option-id>/<option-value-id>/<option-quantity>)
             # see \Magento\BundleGraphQl\Model\Cart\BuyRequest\BundleDataProvider
             id
             label
@@ -125,7 +117,7 @@ query {
         }
       }      ... on GiftCardProduct {
         giftcard_amounts {
-          uid # introduce new uid field in GiftCardAmounts (format: giftcard/...TBD)
+          id_v2 # introduce new id_v2 field in GiftCardAmounts (format: giftcard/...TBD)
           # see \Magento\GiftCard\Model\Quote\Item\CartItemProcessor::convertToBuyRequest
           value_id
           website_id
@@ -162,7 +154,7 @@ query {
 
 In this example we want to add _personalized blue cup to cart_ to cart.
 
- - `selected_options` - predefined and selected by customer options. `base64` encoding is temporary until Magento supports UUIDs, but this is unknown to the client and purely a server implementation detail.
+ - `selected_options` - predefined and selected by customer options. `base64` encoding will help to use UUID in future.
 :warning: The encoded value will be returned from server and should be used by client as is. 
 
 In this example values will be following:
