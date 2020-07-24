@@ -71,9 +71,11 @@ Scenarios which may need these settings include:
 ```graphql
 {
   customer {
-    return(id: "0000003") {
-      id
-      order_id
+    return(id: "23as452gsa") {
+      number
+      order {
+        number
+      }
       creation_date
       customer_email
       customer_name
@@ -86,9 +88,9 @@ Scenarios which may need these settings include:
       }
       items {
         id
-        product {
-          sku
-          name
+        order_item {
+          product_sku
+          product_name
         }
         custom_attributes {
           id
@@ -211,7 +213,7 @@ mutation {
     input: {
       items: [
         {
-          order_item_id: "0000004", 
+          order_item_id: "absdfj2l3415", 
           quantity_to_return: 1, 
           selected_custom_attributes: ["encoded-custom-select-attribute-value-id"], 
           entered_custom_attributes: [{id: "encoded-custom-text-attribute-id", value: "Custom attribute value"}]
@@ -226,9 +228,9 @@ mutation {
         id
         quantity
         request_quantity
-        product {
-          sku
-          name
+        order_item {
+          product_sku
+          product_name
         }
         custom_attributes {
           id
@@ -254,7 +256,7 @@ Alternatively, the collection of returns associated with the order can be reques
 mutation {
   addReturnComment(
     input: {
-      return_id: "000000001", 
+      return_id: "23as452gsa", 
       comment_text: "Another return comment"
     }
   ) {
@@ -283,7 +285,7 @@ First, the client needs to get shipping carriers that can be used for returns:
 ```graphql
 {
   customer {
-    return(id: "0000003") {
+    return(id: "asdgah2341") {
       available_shipping_carriers {
         id
         label
@@ -299,7 +301,7 @@ Then tracking information can be submitted:
 mutation {
   addReturnTracking(
     input: {
-      return_id: "000005", 
+      return_id: "23as452gsa", 
       carrier_id: "carrier-id", 
       tracking_number: "4234213"
     }
@@ -324,7 +326,7 @@ If the user decides to view the status of the specific tracking item, it can be 
 ```graphql
 {
   customer {
-    return(id: "0000003") {
+    return(id: "23as452gsa") {
       shipping {
         tracking(id: "return-tracking-id") {
           id

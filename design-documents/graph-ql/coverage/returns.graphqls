@@ -18,7 +18,7 @@ input RequestReturnInput {
 }
 
 input RequestReturnItemInput {
-    order_item_id: ID! @doc(description: "ID of the order associated with the return.")
+    order_item_id: ID! @doc(description: "ID of the order item associated with the return.")
     quantity_to_return: Float! @doc(description: "The quantity of the item requested to be returned.")
     selected_custom_attributes: [ID!] @doc(description: "Values of return item attributes defined by the merchant, e.g. select attributes.")
     entered_custom_attributes: [EnteredCustomAttributeInput!] @doc(description: "Values of return item attributes defined by the merchant, e.g. file or text attributes.")
@@ -54,6 +54,7 @@ input AddReturnTrackingInput {
 
 type AddReturnTrackingOutput {
     return: Return
+    return_shipping_tracking: ReturnShippingTracking
 }
 
 input RemoveReturnTrackingInput {
@@ -100,8 +101,9 @@ type Returns {
 }
 
 type Return @doc(description: "Customer return") {
-    id: ID! @doc(description: "Return number")
-    order_id: ID! @doc(description: "ID of the order based on which the return was created.")
+    id: ID!
+    number: String! @doc(description: "Human-readable return number")
+    order: CustomerOrder @doc(description: "The order associated with the return.")
     creation_date: String! @doc(description: "The date when the return was requested.")
     customer_email: String! @doc(description: "Email of the customer who created the return.")
     customer_name: String @doc(description: "The name of the person returning the item")
@@ -114,7 +116,7 @@ type Return @doc(description: "Customer return") {
 
 type ReturnItem {
     id: ID!
-    product: ProductInterface! @doc(description: "The product being returned.")
+    order_item: OrderItemInterface! @doc(description: "Order item provides access to the product being returned, including selected/entered options information.")
     custom_attributes: [CustomAttribute] @doc(description: "Return item custom attributes, which are marked by the admin to be visible on the storefront.")
     request_quantity: Float! @doc(description: "The quantity of the item requested to be returned.")
     quantity: Float! @doc(description: "The quantity of the items authorized by the merchant to be returned .")
