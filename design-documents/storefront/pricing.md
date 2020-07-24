@@ -83,6 +83,13 @@ The following diagram shows the pricing structure for a given product, website a
   - Monolith calculates prices based on the cache (product matches)
   - Message broker store prices in price book
 
+
+Price calculations should be done on the monolith side (see appendix for calculation details). These calculations should 
+be made in runtime based on raw data from the database.
+The critical part is to have very granular price detection mechanism which should be firing `price_changed` events for 
+specific websites, customer groups, products and sub-products. Example: if product price was changed for single customer 
+group, only this customer group should be present in event and price calculations must be done also for single customer group only.
+
 ### Price book API
 
 ```proto
