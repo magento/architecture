@@ -2,6 +2,12 @@
 
 `Sales representative` is an admin user(merchant side) who is assigned to work with the company. Thus we can't use exsting `Customer` type for sales representative 
 
+# Behavioral Notes
+When a feature is disabled (e.g. Company) queries/mutations related to that feature should return a null response, along with an error indicating that the feature is not available.
+
+Update/Create mutations should return the entity they acted upon.
+Delete mutations return a field indicating success or failure. In the case of failure, an error should be returned indicating the error that occurred (suitable for storefront).
+
 # Queries
 
 ```graphql
@@ -164,7 +170,7 @@ type UpdateCompanyTeamOutput @doc(description: "Update company team output data 
 }
 
 type DeleteCompanyTeamOutput @doc(description: "Delete company team output data schema.") {
-    status: Boolean! @doc(description: "Status of delete operation: true - success; false - fail.")
+    success: Boolean! @doc(description: "Indicates whether or not the delete operation succeeded.")
 }
 
 type CreateCompanyOutput @doc(description: "Create company output data schema.") {
@@ -184,23 +190,23 @@ type UpdateCompanyUserOutput @doc(description: "Update company user output data 
 }
 
 type DeleteCompanyUserOutput @doc(description: "Delete company user output data schema.") {
-    status: Boolean! @doc(description: "Status of delete operation: true - success; false - fail.")
+    success: Boolean! @doc(description: "Indicates whether or not the delete operation succeeded.")
 }
 
 type CreateCompanyRoleOutput @doc(description: "Create company role output data schema.") {
-    user: CompanyRole! @doc(description: "New company role instance.")
+    role: CompanyRole! @doc(description: "New company role instance.")
 }
 
 type UpdateCompanyRoleOutput @doc(description: "Update company role output data schema.") {
-    user: CompanyRole! @doc(description: "Updated company role instance.")
+    role: CompanyRole! @doc(description: "Updated company role instance.")
 }
 
 type DeleteCompanyRoleOutput @doc(description: "Delete company role output data schema.") {
-    status: Boolean! @doc(description: "Status of delete operation: true - success; false - fail.")
+    success: Boolean! @doc(description: "Indicates whether or not the delete operation succeeded.")
 }
 
 type UpdateCompanyHierarchyOutput @doc(description: "Update company hierarchy output data schema.") {
-    status: Boolean! @doc(description: "Status of update operation: true - success; false - fail.")
+    company: Company! @doc(description: "Updated company instance.")
 }
 
 
