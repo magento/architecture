@@ -8,13 +8,14 @@ type Mutation {
 
 type Customer {
     wishlist: Wishlist! @deprecated(reason: "Use `Customer.wishlists` or `Customer.wishlist_v2") 
-    wishlist_v2(id: ID!): Wishlist
-    wishlists: [Wishlist!]! @doc(description: "Customer wishlists are limited to a max of 1 wishlist in Magento Open Source")
+    wishlist_v2(id: ID!): Wishlist # This query will be added in the ce
+    wishlists: [Wishlist!]! @doc(description: "Customer wishlists are limited to a max of 1 wishlist in Magento Open Source") # This query will be added in the ce
 }
 
 type Wishlist {
     id: ID
-    items: [WishlistItemInterface]
+    items: [WishlistItem] @deprecated(reason: "Use field `items_v2` from type `Wishlist` instead")
+    items_v2: [WishlistItemInterface] @doc(description: "An array of items in the customer's wishlist")
     items_count: Int
     sharing_code: String
     updated_at: String
@@ -24,7 +25,7 @@ type Wishlist {
 input WishlistItemUpdateInput {
     wishlist_item_id: ID
     quantity: Float
-    selected_options: [String!]
+    selected_options: [ID!]
     entered_options: [EnteredOptionInput!]
 }
 
@@ -45,7 +46,7 @@ input WishlistItemInput {
     quantity: Float
     parent_sku: String,
     parent_quantity: Float,
-    selected_options: [String!]
+    selected_options: [ID!]
     entered_options: [EnteredOptionInput!]
 }
 
@@ -78,9 +79,11 @@ type BundleWishlistItem implements WishlistItemInterface {
     bundle_options: [SelectedBundleOption!]
 }
 
-type GiftCardCartItem implements CartItemInterface {
+type GiftCardWishlistItem implements WishlistItemInterface {
     sender_name: String!
-    recipient_name: String!
+    sender_email: String!
+    recipient_name: String
+    recipient_email: String
     amount: SelectedGiftCardAmount
     message: String
 }

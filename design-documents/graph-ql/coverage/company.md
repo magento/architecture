@@ -42,7 +42,10 @@ type Company @doc(description: "Company entity output data schema.") {
     ): CompanyRoles!  @doc(description: "Returns the list of defined roles at Company.")
     role(id: ID!): CompanyRole  @doc(description: "Returns company role by id.")
     acl_resources: [CompanyAclResource]  @doc(description: "Returns the list of all permission resources.")
-    hierarchy: CompanyHierarchyOutput  @doc(description: "Returns the complete data about company structure.")
+    structure(
+        rootID: ID = 0 @doc(description: "Tree depth to begin query")
+        depth: Int = 10 @doc(description: "Specifies how deeply results are fetched")
+    ): CompanyStructure @doc(description: "Company structure of teams and customers in depth-first order")
     team(id: ID!): CompanyTeam  @doc(description: "Returns company team data by id.")
 }
 
@@ -112,19 +115,16 @@ type CompanyEmailCheckResponse @doc(description: "Response object schema for a C
     isEmailValid: Boolean @doc(description: "Email validation result")
 }
 
-type CompanyHierarchyOutput @doc(description: "Response object schema for a Company Hierarchy query.") {
-    structure: CompanyHierarchyElement @doc(description: "An array of Company structure elements.")
-    isEditable: Boolean @doc(description: "Flag that defines whether Company Hierarchy can be changed by current User or not.")
-    max_nesting: Int @doc(description: "Indicator of maximun nesting of elements within a whole Company Hierarchy.")
+union CompanyStructureEntity = CompanyTeam | Customer
+
+type CompanyStructureItem @doc(description: "Company Team and Customer structure") {
+    id: ID! @doc(description: "ID of the item in the hierarchy")
+    parentID: ID @doc(description: "ID of the parent item in the hierarchy")
+    entity: CompanyStructureEntity
 }
 
-type CompanyHierarchyElement @doc(description: "Company Hierarchy element output data schema.") {
-    id: ID! @doc(description: "Hierarchy element id.")
-    tree_id: ID @doc(description: "The hierarchical id of the element within a structure. Used for changing element's position in hierarchy.")
-    type: String @doc(description: "Hierarchy element type: 'customer' or a 'team'.")
-    text: String @doc(description: "Hierarchy element name.")
-    description: String @doc(description: "Hierarchy element description.")
-    children: [CompanyHierarchyElement!] @doc(description: "An array of child elements.")
+type CompanyStructure {
+    items: CompanyStructureItem[]
 }
 
 type CompanyTeam @doc(description: "Company Team entity output data schema.") {
