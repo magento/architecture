@@ -2,6 +2,12 @@
 
 `Sales representative` is an admin user(merchant side) who is assigned to work with the company. Thus we can't use exsting `Customer` type for sales representative 
 
+# Behavioral Notes
+When a feature is disabled (e.g. Company) queries/mutations related to that feature should return a null response, along with an error indicating that the feature is not available.
+
+Update/Create mutations should return the entity they acted upon.
+Delete mutations return a field indicating success or failure. In the case of failure, an error should be returned indicating the error that occurred (suitable for storefront).
+
 # Queries
 
 ```graphql
@@ -37,7 +43,7 @@ type Company @doc(description: "Company entity output data schema.") {
     role(id: ID!): CompanyRole  @doc(description: "Returns company role by id.")
     acl_resources: [CompanyAclResource]  @doc(description: "Returns the list of all permission resources.")
     structure(
-        rootID: ID = 0 @doc(description: "Tree depth to begin query")
+        root_id: ID = 0 @doc(description: "Tree depth to begin query")
         depth: Int = 10 @doc(description: "Specifies how deeply results are fetched")
     ): CompanyStructure @doc(description: "Company structure of teams and customers in depth-first order")
     team(id: ID!): CompanyTeam  @doc(description: "Returns company team data by id.")
@@ -82,7 +88,7 @@ type CompanyRoles @doc(description: "Output data schema for an object returned b
 type CompanyRole @doc(description: "Company role output data schema returned in response to a query by Role id.") {
     id: ID! @doc(description: "Role id.")
     name: String @doc(description: "Role name.")
-    users_count: Int @doc(description: "Total number of Users with such Role within Company Hierarchy.")
+    users_count: Int @doc(description: "Total number of Users with such Role within Company Structure.")
     permissions: [CompanyAclResource] @doc(description: "A list of permission resources defined for a Role.")
 }
 
@@ -113,12 +119,12 @@ union CompanyStructureEntity = CompanyTeam | Customer
 
 type CompanyStructureItem @doc(description: "Company Team and Customer structure") {
     id: ID! @doc(description: "ID of the item in the hierarchy")
-    parentID: ID @doc(description: "ID of the parent item in the hierarchy")
+    parent_id: ID @doc(description: "ID of the parent item in the hierarchy")
     entity: CompanyStructureEntity
 }
 
 type CompanyStructure {
-    items: CompanyStructureItem[]
+    items: [CompanyStructureItem]
 }
 
 type CompanyTeam @doc(description: "Company Team entity output data schema.") {
@@ -149,7 +155,7 @@ type Mutation {
     createCompanyRole(input: CompanyRoleCreateInput!): CreateCompanyRoleOutput  @doc(description:"Create new Company role.")
     updateCompanyRole(input: CompanyRoleUpdateInput!): UpdateCompanyRoleOutput  @doc(description:"Update Company role data.")
     deleteCompanyRole(id: ID!): DeleteCompanyRoleOutput  @doc(description:"Delete Company Role by ID.")
-    updateCompanyHierarchy(input: CompanyHierarchyUpdateInput!): UpdateCompanyHierarchyOutput  @doc(description:"Update Company Hierarchy element's parent node assignment.")
+    updateCompanyStructure(input: CompanyStructureUpdateInput!): UpdateCompanyStructureOutput  @doc(description:"Update Company Structure element's parent node assignment.")
     createCompanyTeam(input: CompanyTeamCreateInput!): CreateCompanyTeamOutput  @doc(description:"Create Company Team.")
     updateCompanyTeam(input: CompanyTeamUpdateInput!): UpdateCompanyTeamOutput  @doc(description:"Update Company Team data.")
     deleteCompanyTeam(id: ID!): DeleteCompanyTeamOutput  @doc(description:"Delete Company Team entity by ID.")
@@ -164,7 +170,7 @@ type UpdateCompanyTeamOutput @doc(description: "Update company team output data 
 }
 
 type DeleteCompanyTeamOutput @doc(description: "Delete company team output data schema.") {
-    status: Boolean! @doc(description: "Status of delete operation: true - success; false - fail.")
+    success: Boolean! @doc(description: "Indicates whether or not the delete operation succeeded.")
 }
 
 type CreateCompanyOutput @doc(description: "Create company output data schema.") {
@@ -184,23 +190,23 @@ type UpdateCompanyUserOutput @doc(description: "Update company user output data 
 }
 
 type DeleteCompanyUserOutput @doc(description: "Delete company user output data schema.") {
-    status: Boolean! @doc(description: "Status of delete operation: true - success; false - fail.")
+    success: Boolean! @doc(description: "Indicates whether or not the delete operation succeeded.")
 }
 
 type CreateCompanyRoleOutput @doc(description: "Create company role output data schema.") {
-    user: CompanyRole! @doc(description: "New company role instance.")
+    role: CompanyRole! @doc(description: "New company role instance.")
 }
 
 type UpdateCompanyRoleOutput @doc(description: "Update company role output data schema.") {
-    user: CompanyRole! @doc(description: "Updated company role instance.")
+    role: CompanyRole! @doc(description: "Updated company role instance.")
 }
 
 type DeleteCompanyRoleOutput @doc(description: "Delete company role output data schema.") {
-    status: Boolean! @doc(description: "Status of delete operation: true - success; false - fail.")
+    success: Boolean! @doc(description: "Indicates whether or not the delete operation succeeded.")
 }
 
-type UpdateCompanyHierarchyOutput @doc(description: "Update company hierarchy output data schema.") {
-    status: Boolean! @doc(description: "Status of update operation: true - success; false - fail.")
+type UpdateCompanyStructureOutput @doc(description: "Update company structure output data schema.") {
+    company: Company! @doc(description: "Updated company instance.")
 }
 
 
@@ -257,7 +263,7 @@ input CompanyUserCreateInput @doc(description: "Defines the input data schema fo
     email: String! @doc(description: "Company user's email address. Required.")
     telephone: String! @doc(description: "Company user's phone number. Required.")
     status: Int! @doc(description: "Company user's status ID. Required.")
-    target_id: ID @doc(description: "A target structure element ID within a Company's Hierarchy for a user to be assigned to.")
+    target_id: ID @doc(description: "A target structure element ID within a Company's Structure for a user to be assigned to.")
 }
 
 input CompanyUserUpdateInput @doc(description: "Defines the input data schema for updating an existing Customer - Company user.") {
@@ -282,15 +288,15 @@ input CompanyRoleUpdateInput @doc(description: "Defines the input data schema fo
     permissions: [String!] @doc(description: "A list of Role permission resources. Array value for a field, if provided, should consist only of string values.")
 }
 
-input CompanyHierarchyUpdateInput @doc(description: "Defines the input data schema for updating the Company Hierarchy.") {
-    tree_id: ID! @doc(description: "Company Hierarchy element's hierarchical ID that is being moved to another parent. Required.")
-    parent_tree_id: ID! @doc(description: "A target parent element tree ID within a Company's Hierarchy. Required.")
+input CompanyStructureUpdateInput @doc(description: "Defines the input data schema for updating the Company Structure.") {
+    tree_id: ID! @doc(description: "Company Structure element's hierarchical ID that is being moved to another parent. Required.")
+    parent_tree_id: ID! @doc(description: "A target parent element tree ID within a Company's Structure. Required.")
 }
 
 input CompanyTeamCreateInput @doc(description: "Defines the input data schema for creating a new Company team.") {
     name: String! @doc(description: "Team name. Required.")
     description: String @doc(description: "Team description.")
-    target_id: ID @doc(description: "A target structure element ID within a Company's Hierarchy for a team to be assigned to.")
+    target_id: ID @doc(description: "A target structure element ID within a Company's Structure for a team to be assigned to.")
 }
 
 input CompanyTeamUpdateInput @doc(description: "Defines the input data schema for updating an existing Company team.") {
