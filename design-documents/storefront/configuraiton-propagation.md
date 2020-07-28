@@ -15,6 +15,12 @@ A separate design decision should be made and documented for specific use cases.
 
 There are three use cases for the configuration, based on its impact.
 
+Magento configuration is divided into three categories, based on impact on Storefront services:
+
+1. Admin configuration - impacts Admin Panel behavior
+2. Data configuration - impacts data provided by Storefront
+3. UI Configuration - impacts UI representation of Storefront data
+
 ### 1. Configuration that impacts Admin Panel behavior
 
 Examples: admin ACLs that allow or deny parts of functionality for the admin user, reindex on update or by schedule.
@@ -54,11 +60,10 @@ Example: number of products on products listing page.
 
 This kind of configuration has nothing to do with Storefront data itself, but is still necessary for the client to know how to display the data.
 
-This section describes possible implementation options.
+This section describes possible implementation options, depending on the client use case.
+For other considered options see [older revision](https://github.com/magento/architecture/blob/48f2db6cc9f18a50b181b6a6b76cb0dbc81722cb/design-documents/storefront/configuraiton-propagation.md) of the document.
 
 #### 3.1. Configuration is Responsibility of the Client
-
-:white_check_mark: Accepted option.
 
 Client application (such as PWA) is responsible for the UI configuration, either hard-coded or by means of a service.
 
@@ -83,78 +88,3 @@ This can be the first step.
 GraphQL handles requests routing to either Storefront domain service (for data) or to Magento Back Office GraphQL (for UI Config).
 
 ![Service Configuration - GraphQL Proxy](https://app.lucidchart.com/publicSegments/view/775a580e-fdb0-4bda-a532-eef04767396a/image.png)
-
-#### 3.3. Single UI Configuration Service for All Domain Services
-
-UI configuration settings are fed into a single UI Configuration service and read from it when necessary.
-
-As, most likelly, all configuration options will look like key-value pairs, it might be reasonable to unify all of them under umpbrella of a single serfvice and so provide more uniformity of working with such configuration service.
-This is a variation of option 3.2.
-
-![UI Configuration Propagation as Single UI Configuration Service](https://app.lucidchart.com/publicSegments/view/cc77dc21-77ac-4eb4-b766-0f9afc8c11d5/image.png)
-
-Pros:
-
-1. More control of the deployment, scalability, technologies for the domain and config services. Assuming, all config services has the same technical requirements.
-
-Cons: 
-
-1. Additional request to configuration service instead of in-process request to the storage.
-
-#### 3.4. Domain-Specific Configuration Service 
-
-Each domain service that requires UI configuration has a companion UI Configuration service.
-Client application may call the specialized configuration service to get configuration it needs.
-Some clients may not need all or part of UI configuration.
-
-GraphQL serves as a single entry point for both data and UI requests to simplify client implementation and have more control of which APIs are publicly exposed.
-
-![UI Configuration Propagation as Domain-Specific Configuration Service](https://app.lucidchart.com/publicSegments/view/c3c9f0a7-1780-416f-ab3f-caeeebb15680/image.png)
-
-Pros:
-
-1. More control of the deployment, scalability, technologies for the domain and config services.
-2. More flexibility in the future
-   1. Easier path for UI configuration disablement in case it becomes unnecessary. For example, if it turnes out that client apps want to have full ownership of UI configuration
-
-Cons: 
-
-1. Additional request to configuration service instead of in-process request to the storage.
-
-#### 3.5. Configuration as Part of Domain Service
-
-UI Configuration is synced to the Storefront domain service, similarly to how the data is synced.
-This may be done by means of a separate data flow as configuration usually doesn't change together with the data.
-
-Is UI config included in the data (on the level of entities)?
-
-![UI Configuration Propagation as Part of Domain Service](https://app.lucidchart.com/publicSegments/view/4805a8df-abe8-4605-96e2-20266b2f2876/image.png)
-
-Pros:
-
-1. Simplicity in case of Magento as back office. Same/similar data sync can be implemented for configuration
-2. In-process call to storage for UI configuration
-
-Cons:
-
-1. Potential difficulties with UI configuration exclusion from deployment in case it is not needed, as it is part of the service 
-
-#### Integration with 3rd-party Data-Provider System
-
-This section is relevant only in case Storefront services provide UI Configuration (options 3-6).
-
-Data-prover system is a system that provides domain-specific data. For example, [PIM (product information management)](https://en.wikipedia.org/wiki/Product_information_management) system. 
-
-In case of integration with 3rd-party data-provider systems, a separate data flow process is setup to sync configuration when it's changed.
-If PIM doesn't provide all necessary configuration settings, a different management system may be used as the source.
-
-Additional configuration may be provided by a separate client application dedicated to the configuration management.
-Also, the additional configuration may be, in reality, the only source of configuration, in case PIM system doesn't provide such configuration.
-
-In case of UI Configuration provided as part of the domain service:
-
-![3rd-party PIM integration - UI Configuration as part of domain service](https://app.lucidchart.com/publicSegments/view/0e81c178-7480-41ca-8e7d-a37e6bdb6b6d/image.png)
-
-In case of UI Configuration provided by a separate service:
-
-![3rd-party PIM integration - UI Configuration as separate service](https://app.lucidchart.com/publicSegments/view/6051ef66-4b8f-44aa-9211-c6e7399bc9e2/image.png)
