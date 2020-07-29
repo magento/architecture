@@ -24,6 +24,8 @@
 
 ## Scenarios
 
+https://app.lucidchart.com/documents/view/b270d1f2-5d2a-4c36-bde5-e84e1b48919b
+
 ### Backoffice Scenarios
 
 #### Assign an image to a product (using DAM integration)
