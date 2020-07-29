@@ -60,7 +60,8 @@ Example: number of products on products listing page.
 
 This kind of configuration has nothing to do with Storefront data itself, but is still necessary for the client to know how to display the data.
 
-This section describes possible implementation options, depending on the client use case.
+This section describes possible implementation options.
+Both options are possible and acceptable. The correct option should be selected based on the specific use case and client requirements. 
 For other considered options see [older revision](https://github.com/magento/architecture/blob/48f2db6cc9f18a50b181b6a6b76cb0dbc81722cb/design-documents/storefront/configuraiton-propagation.md) of the document.
 
 #### 3.1. Configuration is Responsibility of the Client
