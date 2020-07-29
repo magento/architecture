@@ -24,13 +24,14 @@
 
 ## Scenarios
 
-https://app.lucidchart.com/documents/view/b270d1f2-5d2a-4c36-bde5-e84e1b48919b
+![Asset flow](https://app.lucidchart.com/publicSegments/view/21c14319-73c6-4bb4-9d5f-e71a11a58321/image.png)
 
-### Backoffice Scenarios
+#### Asset Management
 
-#### Assign an image to a product (using DAM integration)
+1. Asset is uploaded to DAM
+2. DAM may perform transformations
 
-This is a future desired scenario, provided here for better understanding of the future picture.
+#### Assign an image to a product
 
 1. Admin opens product edit page
 2. Admin uses asset picker UI (provided as part of DAM integration) to select necessary image
@@ -38,17 +39,28 @@ This is a future desired scenario, provided here for better understanding of the
   * Image is linked to the product as provided by DAM
   * Image path relative to DAM base URL is stored as image path
   * Asset is assigned to the product in DAM
-
-#### Assign an image to a category
-
-Similar to the product edit scenario
-
-### Store-Front Scenarios
+4. Asset relation is synced to Storefront service
 
 #### Display an image on product details or products list page
 
-1. Client (GraphQL server) requests product details (including images) from the SF application.
-2. SF application returns full image URL of the original image
+1. User opens PDP (product details page)
+2. PWA application loads and requests product details from GraphQL application
+3. GraphQL application requests product details (including asset URLs) from the SF service.
+4. SF service returns full image URL of the original image
+5. PWA application fetches asset from the CDN by the provided URL
+   * PWA may include transformation parameters
+6. CDN returns the asset
+   * The asset is requested from origin if necessary. Origin may perform necessary transformations
+   * CDN may perform necessary transformations
+   
+Asset transformation is responsibility of either DAM or CDN, depending on the system setup.
+Both services may provide some level of transformations.
+CDN usually provides more basic transformations (resize, rotation, crop, etc), while DAM may provide more smart transformations (e.g., smart crop).
+Client application (PWA) does not care which part is performing transformations, it must only follow supported URL format when including transformation parameters.
+
+In first stage (and until further necessary) it is assumed that client application (PWA) is responsible for knowing format of transformed image URL, and so client developer should have knowledge of which DAM/CDN it works with.
+
+As a more smart step, backend application can provide information necessary for URL formatting.
 
 ## Synchronization from Backoffice to Store-Front
 
@@ -58,15 +70,15 @@ Similar to the product edit scenario
 2. Store-Front is not responsible for physical images. This is responsibility of DAM (which can be a specialized DAM or Magento Back office). 
 2. Image URLs support image transformation by parameters (e.g., `https://some.domain.com/media/catalog/product/1/2/3.jpg?w=100&h=100`)
    1. Image transformation is performed by CDN. The URLs passed from the Backoffice to Store-Front are CDN-based.
-   2. Image transformation can be done by web server on the Magento side (e.g., Store-Front), but this looks less efficient than using a CDN. Benefits of this approach are not clear. Such scenario is assumed useful for development scenarios only.
+   2. Image transformation can be done by web server on the Magento side (e.g., Store-Front), but this looks less efficient than using a CDN. Benefits of this approach are not clear. Such scenario is assumed useful for development scenarios. [Images Upload Configuration](./img/images-upload-config.png) allows to cap image size, which makes the issue less critical less critical. 
 3. Image types (`small`, `thumbnail`, etc) are included in the information stored on Store-Front side.
-
 
 ### Questions:
 
 1. Do we sync full image URL to SF or provide Base CDN URL as configuration for the store?
    1. Full URLs as part of product data: full reindex will be required in case CDN URL changes.
    2. Base CDN URL as a store configuration + relative asset path as part of product data: added complexity of the SF App due to additional knowledge about CDN/Media Base URLs (especially in case multiple should be supported).
+   3. What do wee do with secure/unsecure URLs in case of full URL?
 
 ## Dependencies
 
