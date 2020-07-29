@@ -1,6 +1,6 @@
 # Catalog Images
 
-## Asset Management - High-Level Vision
+## Asset Delivery - High-Level Vision
 
 ### Terminology
 
@@ -9,6 +9,7 @@
 * [DAM (Digital Asset Management)](https://en.wikipedia.org/wiki/Digital_asset_management) - a system responsible for asset management (store, create, update, delete, organize)
 * [CDN (Content delivery network)](https://en.wikipedia.org/wiki/Content_delivery_network) - a system responsible for content delivery. In scope of this document, for delivery of images and video.
    * CDN may be part of DAM (if DAM provides public URLs for assets), or DAM can be integrated with CDN
+* **Asset delivery** - providing publicly available URL for the asset. Usually involves CDN. This is different from asset management, which focuses on the admin side of interactions with the assets, while delivery is the cliend side of it.
 * **Image transformation** - resizing, rotation, watermarking and other automated transformations on an original image.
    * Image transformation is responsibility of either DAM or CDN. This includes resizing, rotation, watermarking and so on.
    * Client should be able to fetch transformed images by its original URL with additional parameters
