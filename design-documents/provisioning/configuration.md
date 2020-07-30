@@ -101,26 +101,27 @@ As already mentioned the data structure is related to the existing database decl
 
 Therefore a virtual type of `Magento\Framework\Config\Reader\Filesystem` will be defined which has a ` Magento\Framework\Config\ConverterInterface` which is responsible for merging the XML files.
 
-There is also a field `is_mutable` which defines if the declared data can be changed by the admin. The following explains the behavior:
+#### Possibility of admin side changes
 
-* `is_mutable` is not defined:
-  * new entity is installed
-  * checkbox is unchecked
-  * admin can change the entity (after checking the checkbox)
-  * won't overwrite admin side manual created entities until checkbox is unchecked
-* `is_mutable = false`:
-  * new entity is installed
-  * checkbox does not exist
-  * admin can't change the entity
-  * will overwrite admin side manual created entities
+The admin should still be allowed to change certain data from admin side. And some data shouldn't be changed by admin.
+
+Therefore there is a field `is_mutable` which defines if the declared data can be changed by the admin. There is a checkbox on admin side which can be unchecked to change the data. This is similar to the "use system value" in the store configuration. The following explains the behavior:
+
+|                         | `is_mutable = true`                 | `is_mutable = false` |
+| ------------------------| ----------------------------------- | -------------------- |
+| new entity is installed | yes                                 | yes                  |
+| checkbox on admin side  | exists and initially checked        | not visible          |
+| admin can change entity | yes                                 | no                   |
+| save btn                | disabled (until checkbox unchecked) | disabled             |
+| delete btn              | disabled (until checkbox unchecked) | disabled             |
+
+The `is_mutable` flag is always `false` in a default behavior, that would mean if it is not explicitly mentioned by XML, the admin can not change the entity.
+
+If XML with the same attribute code will be created (because it was created by admin first) it will take over all responsibilities to a code side and will be then managed like attribute created by XML declaration.
+
+**Optional behaviour:** If admin unchecked the checkbox and changes the entity, the data can be restored if the admin checks the checkbox again. The data from XML delcaration will then restore the entity. This behaviour is optional as it is not really necessary regarding a provisioning functionality, but of course nice to have.
 
 #### Example: Attribute behavior
- - "**is_mutable**" flag is checkbox at the attribute grid and at attribute edit page
- - Attributes which created from Admin panel is not maintainable by xml (no dumping, "**is_mutable**" flag is not shown but has true value in database) until xml with the same attribute code will be created and "**is_mutable**" will be unchecked
- - "**is_mutable**" flag is responsible for defining maintenance responsibilities:
-   - **true** responsibility on Admin panel side switchable from admin
-   - **false** responsibility on code side switchable from admin
-   - **locked** - responsibility on code side and not switchable from admin
 ```
 <?xml version="1.0"?>
 <!--
@@ -145,31 +146,6 @@ There is also a field `is_mutable` which defines if the declared data can be cha
     </customer>
 </attributes>
 ```
-## Created by XML
-- Default `"is_mutable"=false` and this property is optional for attribute xml node
-- Fully managed by admin panel
-- If xml with the same attribute code will be created - it will take over all responsibilities to a code side and will be then managed like attribute created by XML declaration
-
-| is_mutable in XML->       | `is_mutable` not defined          | `is_mutable="false"` |
-| ------------------------- | --------------------------------- | -------------------- |
-| DB value for `is_mutable` | true/false (default false)        | locked               |
-| checkbox                  | unchecked                         | not existing         |
-| checkbox changeable       | true                              | not existing         |
-| save btn                  | disabled (until checkbox checked) | disabled             |
-| delete btn                | disabled (until checkbox checked) | disabled             |
-| data patch changes        | can apply                         | will be overwritten  |
-
-
-## Created by admin (xml declaration doesn't exists):
-- Fully managed by admin panel
-- If xml with the same attribute code will be created - it will take over all responsibilities to a code side and will be then managed like attribute created by XML declaration
-
-* DB value for `is_mutable`: true
-* checkbox: hidden
-* checkbox changeable: false
-* save btn: enabled
-* delete btn: enabled
-* data patch changes: can apply
 
 #### Example: Store Scopes behavior
 We can define a `stores.xml` file on project scope like the following:
@@ -231,14 +207,17 @@ We can define a `stores.xml` file on project scope like the following:
 Changing or deleting configuration is a challenging task, especially for all the relations and true identifier of an entity (i.e. store code vs. autoincrement id). Every configuration type module should therefore define the identifier on its own, dependent on which configuration type it supports.
 
 Example: Create and update store:
-- The store/website/store group is identified by its code
-- All other data than the code can be changed => will lead to an update
-- If the code has to change: delete entity and create new one
+
+* The store/website/store group is identified by its code
+* All other data than the code can be changed => will lead to an update
+* If the code has to change: delete entity and create new one
 
 Deletions must be done explicit similar how you explicitly deactivate a plugin with `disabled = true`. This allows for proper merging of the XML files.
 
 Example Delete store:
-- A `deleted=true` flag should be provided
+
+* A `deleted=true` flag should be provided
+
 ```xml
 <store code="default"
        website_code="base"
