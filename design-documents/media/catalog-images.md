@@ -25,35 +25,36 @@
 
 ![Asset flow](https://app.lucidchart.com/publicSegments/view/21c14319-73c6-4bb4-9d5f-e71a11a58321/image.png)
 
+Detailed steps of the asset flow are described below.
+
 ### Asset Management
 
-1. Asset is uploaded to DAM
-2. DAM may perform transformations
+1. Step 1: Asset is uploaded to DAM
+2. Step 2: DAM may perform transformations
 
 ### Assign an image to a product
 
-1. Admin opens product edit page
-2. Admin uses asset picker UI (provided as part of DAM integration) to select necessary image
-3. Admin clicks "Save"
+1. Step 3: Admin opens product edit page
+2. Step 4: Admin selects necessary image using asset picker UI (provided as part of DAM integration) and saves the product
    * Image is linked to the product as provided by DAM
    * Image path relative to DAM base URL is stored as image path
    * Asset is assigned to the product in DAM
-4. Asset relation is synced to Storefront service in a form of full URL to the asset, as part of product data
+3. Step 5: Asset relation is synced to Storefront service in a form of full URL to the asset, as part of product data
    * URL to the **original** image is synced
    * Each asset may also include specialized type: `thumbnail`, `small`, etc. The type is not related to the image size or quality and only helps the client understand where the image is supposed to be displayed
    * The asset itself is not synced to the Storefront and is stored in its original location (in the system responsible for its management: either external DAM or Magento Back Admin)
 
 ### Display an image on product details or products list page
 
-1. User opens PDP (product details page)
-2. PWA application loads and requests product details from GraphQL application
-3. GraphQL application requests product details (including asset URLs) from the SF service.
-4. SF service returns full image URL of the **original** image
-5. PWA application fetches asset from the CDN by the provided URL
+1. Step 6: User opens PDP (product details page)
+2. Step 7: PWA application loads and requests product details from GraphQL application
+3. Step 8: GraphQL application requests product details (including asset URLs) from the SF service.
+   * SF service returns full image URL of the **original** image
+5. Step 9: PWA application fetches asset from the CDN by the provided URL
    * PWA may include transformation parameters
-6. CDN returns the asset
-   * The asset is requested from origin if necessary. Origin may perform necessary transformations
-   * CDN may perform necessary transformations
+6. Step 10 (optional): CDN fetches the asset from the origin, if not cached
+7. Step 11 (optional): Origin (DAM) may perform necessary transformations
+8. Step 12 (optional): CDN may perform necessary transformations
    
 #### Asset Transformations
 
