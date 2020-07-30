@@ -91,21 +91,38 @@ group, only this customer group should be present in event and price calculation
 
 ![Integration option 1](pricing/integration-option1.png)
 
+Pros:
+- Simplicity
+- Use existing Magento EAV and catalog rule storages
+
+Cons:
+- Hard to reuse `Catalog Rules` functionality with third-party PIMs
+
 #### Other integration options
 
 __All calculations in message broker__
 
 ![Integration option 2](pricing/integration-option2.png)
 
-Notes:
-- This approach makes MB stateful. It will hold EAV information that will be used by price rule calculations.
+Pros:
+- Easy to integrate `Catalog Rule` functionality with third-party PIMs
+
+Cons:
+- Stateful message broker (includes EAV data, catalog rules and matched product cache)
+- One more copy of catalog will take some system resources
+- Dependencies between asynchronous tasks in message broker. Not necessary a bad thing, but definitely introduces additional complexity
 
 __All calculations in storefront__
 
 ![Integration option 3](pricing/integration-option3.png)
 
-Notes:
+Pros:
 - Storefront will handle `cart rule` functionality, so probably we may reuse the same services for catalog rules.
+
+Cons:
+- Storefront is designed to be lightweight. Additional functionality there may reduce performance of storefront.
+
+Notes:
 - It's possible to isolate catalog rule calculations and move only them on storefront, other calculations could be done in MB
 
 
