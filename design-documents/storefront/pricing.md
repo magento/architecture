@@ -83,12 +83,31 @@ The following diagram shows the pricing structure for a given product, website a
   - Monolith calculates prices based on the cache (product matches)
   - Message broker store prices in price book
 
-
 Price calculations should be done on the monolith side (see appendix for calculation details). These calculations should 
 be made in runtime based on raw data from the database.
 The critical part is to have very granular price detection mechanism which should be firing `price_changed` events for 
 specific websites, customer groups, products and sub-products. Example: if product price was changed for single customer 
 group, only this customer group should be present in event and price calculations must be done also for single customer group only.
+
+![Integration option 1](pricing/integration-option1.png)
+
+#### Other integration options
+
+__All calculations in message broker__
+
+![Integration option 2](pricing/integration-option2.png)
+
+Notes:
+- This approach makes MB stateful. It will hold EAV information that will be used by price rule calculations.
+
+__All calculations in storefront__
+
+![Integration option 3](pricing/integration-option3.png)
+
+Notes:
+- Storefront will handle `cart rule` functionality, so probably we may reuse the same services for catalog rules.
+- It's possible to isolate catalog rule calculations and move only them on storefront, other calculations could be done in MB
+
 
 ### Price book API
 
@@ -177,6 +196,7 @@ service PriceBook {
     rpc delete(PriceBookDeleteInput) returns (PriceBookDeleteResult);
     rpc assignProducts(PriceBookInput) returns (PriceBookAssignProductsResult);
     rpc unassignProducts(UnassignProducts) returns (PriceBookUnassignProductsResult);
+    rpc getPrices(GetPricesInput) returns (GetPricesOutput);
 }
 ```
 
