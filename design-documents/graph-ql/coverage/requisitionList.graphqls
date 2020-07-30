@@ -42,9 +42,18 @@ type RequisitionList @doc(description: "Requisition List Type") {
     id: ID! @doc(description: "Unique Identifier of Requisition List")
     name: String! @doc(description: "Name of the list")
     description: String @doc(description: "Description of the list")
-    items: [RequisitionListItemInterface] @doc(description: "Items in the list")
+    items(
+        currentPage: Int = 1,
+        pageSize: Int = 20
+    ): RequistionListItems
     items_count: Int! @doc(description: "Number of items in list")
     updated_at: String @doc(description: "Latest Activity")
+}
+
+type RequistionListItems {
+    items: [RequisitionListItemInterface] @doc(description: "Requisition List items list")
+    page_info: SearchResultPageInfo
+    total_pages: Int @doc(description: "total count of req list items")
 }
 
 interface RequisitionListItemInterface @doc(description: "Interface type for Requisition List Item") {
@@ -165,7 +174,8 @@ input RequisitionListItemsInput {
 
 input UpdateRequisitionListItemsInput {
     item_id: ID! @doc(description: "unique ID of Requisition List Item")
-    customizable_options: [CustomizableOptionInput]
+    selected_options: [String!] @doc(description: "selected option ID")
+    entered_options: [EnteredOptionInput!] @doc(description: "entered Options ID")
     quantity: Float
 }
 
