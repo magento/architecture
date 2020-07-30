@@ -56,7 +56,7 @@ Detailed steps of the asset flow are described below.
 7. Step 11 (optional): Origin (DAM) may perform necessary transformations
 8. Step 12 (optional): CDN may perform necessary transformations
    
-#### Asset Transformations
+## Asset Transformations
 
 Asset transformation is responsibility of either DAM or CDN, depending on the system setup.
 Both services may provide some level of transformations.
@@ -70,6 +70,55 @@ Image transformation can be done by web server on the Magento side (e.g., Store-
 In the first phase, this is not going to be supported.
 This may cause performance issues on pages with many assets loaded (such as product listing), but it is assumed that production systems should use CDN with image transformation support.
 Scenario with no CDN is assumed to be a development workflow and loading unresized images is considered less critical in this situation, especially assuming [Images Upload Configuration](./img/images-upload-config.png) allows to cap image size.
+
+### Magento Supported Image Transformations
+
+Magento supports the following transformations for images:
+
+1. resize
+2. rotate
+3. watermark
+4. set/change quality
+5. set background
+
+See `\Magento\Catalog\Model\Product\Image` for details.
+
+### Fastly Image Transformations
+
+Fastly provides image transformation features with [Fastly IO](https://www.fastly.com/io):
+
+1. Convert format
+2. Rotation
+3. Crop
+4. Trim
+5. Padding
+6. Set background color
+7. Image overlay
+8. Change brightness
+9. Change contrast
+10. Change saturation
+11. Sharpen
+12. Blur
+13. Set quality
+14. Montage (Combine up to four images into a single displayed image.)
+
+See https://docs.fastly.com/en/guides/image-optimization-api for detailed supported parameters.
+
+Provided features fully cover Magento capabilities.
+Watermarking can be implemented using Overlay functionality.
+Overlay must be specified via `x-fastly-imageopto-overlay` header rather than via a URL parameter, which allows the server control it. 
+To make sure UX is acceptable, the workflow should be described in more details, taking into account Magento scopes.
+
+### AEM Assets Image Transformations
+
+AEM Assets work in integration with Dynamic Media (DM) to deliver asstes, and DM provides asset transformation capabilities.
+DM uses Akamai as CDN. Does it provide additional image transformation capabilities? Are those even needed taking into account that MD provides broad range of features?
+
+https://docs.adobe.com/content/help/en/experience-manager-65/assets/dynamic/managing-image-presets.html
+https://docs.adobe.com/content/help/en/dynamic-media-developer-resources/image-serving-api/image-serving-api/http-protocol-reference/command-reference/c-command-reference.html
+
+Watermarking - https://docs.adobe.com/content/help/en/experience-manager-65/assets/administer/watermarking.html
+Scoping?
 
 ## Risks
 
