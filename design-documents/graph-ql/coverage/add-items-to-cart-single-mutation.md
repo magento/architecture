@@ -31,7 +31,7 @@ Each product may have options. Option can be of 2 types (see example below):
     ]
 ```
 
-We can consider "Selected Option" and "ID for Entered Option" as a globally unique identifier. They meet the criteria:
+We can consider "Selected Option" and "ID for Entered Option" as a unique identifier. They meet the criteria:
 
 - "Selected Option" represents option value, while "ID for Entered Option" represents option
 - Must be unique across different options
