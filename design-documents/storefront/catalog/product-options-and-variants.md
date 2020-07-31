@@ -335,7 +335,6 @@ As an input our API has to accept option values which were selected by a shopper
 With the response API has to return:
 * List of options and option values that remains avaialble.
 * List of images & videos that should be used on PDP.
-* List of price identifiers to request actual prices from the price service.
 * List of products that were exactly matched by the selected options.
 ```proto
 message OptionSelection
