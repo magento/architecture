@@ -71,15 +71,16 @@ In the first phase, this is not going to be supported.
 This may cause performance issues on pages with many assets loaded (such as product listing), but it is assumed that production systems should use CDN with image transformation support.
 Scenario with no CDN is assumed to be a development workflow and loading unresized images is considered less critical in this situation, especially assuming [Images Upload Configuration](./img/images-upload-config.png) allows to cap image size.
 
+Note: watermarking is a special case of asset transformation. See next section for its coverage.
+
 ### Magento Supported Image Transformations
 
 Magento supports the following transformations for images:
 
 1. resize
 2. rotate
-3. watermark
-4. set/change quality
-5. set background
+3. set/change quality
+4. set background
 
 See `\Magento\Catalog\Model\Product\Image` for details.
 
@@ -93,32 +94,77 @@ Fastly provides image transformation features with [Fastly IO](https://www.fastl
 4. Trim
 5. Padding
 6. Set background color
-7. Image overlay
-8. Change brightness
-9. Change contrast
-10. Change saturation
-11. Sharpen
-12. Blur
-13. Set quality
-14. Montage (Combine up to four images into a single displayed image.)
+7. Change brightness
+8. Change contrast
+9. Change saturation
+10. Sharpen
+11. Blur
+12. Set quality
+13. Montage (Combine up to four images into a single displayed image.)
 
 See https://docs.fastly.com/en/guides/image-optimization-api for detailed supported parameters.
 
 Provided features fully cover Magento capabilities.
-Watermarking can be implemented using Overlay functionality.
-Overlay must be specified via `x-fastly-imageopto-overlay` header rather than via a URL parameter, which allows the server control it. 
-To make sure UX is acceptable, the workflow should be described in more details, taking into account Magento scopes.
 
 ### AEM Assets Image Transformations
 
 AEM Assets work in integration with Dynamic Media (DM) to deliver asstes, and DM provides asset transformation capabilities.
 DM uses Akamai as CDN. Does it provide additional image transformation capabilities? Are those even needed taking into account that MD provides broad range of features?
 
+1. DefaultImage - it allows the client to specify default image. Might be useful for placeholder im
+
 https://docs.adobe.com/content/help/en/experience-manager-65/assets/dynamic/managing-image-presets.html
 https://docs.adobe.com/content/help/en/dynamic-media-developer-resources/image-serving-api/image-serving-api/http-protocol-reference/command-reference/c-command-reference.html
 
-Watermarking - https://docs.adobe.com/content/help/en/experience-manager-65/assets/administer/watermarking.html
+## Watermarking
+
+Watermarking is a special case of image transformation.
+It is special in a way that the **server** decides when and which watermark to apply.
+All other transformations are initiated by the client.
+
+### Watermarking in Magento
+
+Applied during image transformations.
+See `\Magento\Catalog\Model\Product\Image` for details.
+
+### Watermarking by Fastly
+
+See "Overlay" in https://docs.fastly.com/en/guides/image-optimization-api
+
+Overlay must be specified via `x-fastly-imageopto-overlay` header rather than via a URL parameter, which allows the server control it. 
+To make sure UX is acceptable, the workflow should be described in more details, taking into account Magento scopes.
+
+### Watermarking with AEM Assets
+
+Watermarking 
+- DM - https://docs.adobe.com/content/help/en/experience-manager-65/assets/administer/watermarking.html
+- Akamai - https://blogs.akamai.com/2019/10/watermarking-a-content-owners-mark-to-prevent-piracy.html
+   - requires integration with a watermark provider (confirm it is the only option with Akamai)
+
 Scoping?
+
+## Placeholder Asset
+
+What should happen when requested asset is not available?
+Use cases:
+
+1. The asset has been removed/renamed, and the change is not synced to Storefront service yet
+2. The asset has been removed/renamed by mistake or due to server issues
+
+While we can hope that such things should not happen, it still should not be the visitor fault and there should be a good handling of such situations.
+Currently, Magento handles it by loading a placeholder image.
+
+With new architecture, CDN or DAM should be able to provide such a placeholder.
+
+TBD: check how this can be supported with Fastly, AEM Assets/DM, Akamai. 
+
+### Fastly
+
+### AEM Assets + DM
+
+DefaultImage - allows client to specify default image.
+
+See https://docs.adobe.com/content/help/en/dynamic-media-developer-resources/image-serving-api/image-serving-api/http-protocol-reference/command-reference/c-command-reference.html
 
 ## Risks
 
