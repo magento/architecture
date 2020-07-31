@@ -129,6 +129,7 @@ message ProductOption {
 message ProductVariant {
     repeated string optionValueId = 1;
     string id = 2;
+    int32 weight = 3;
     string productIdentifierInPricing = 500; #*
     string productIdentifierInInventory = 600; #*
 }
@@ -146,38 +147,11 @@ The example proposed to show the relations and operations that we have in the do
 ```sql
 create table products (
     object_id char(36) not null,
-    name varchar(128) not null,
+    data json not null,
     primary key (object_id)
 );
 ```
 Table `products` stores registry of products.
-```sql
-
-create table product_options (
-    option_id char(36) not null,
-    object_id char(36) not null,
-    label varchar(64),
-    primary key (option_id)
-);
-
-alter table product_options
-    add foreign key fk_product_options_object_id (object_id) references products(object_id);
-```
-Table `product_options`  - represents registry of characteristics that allows customization,
-                     for instance, for apparel items, it could be "Color" and "Size".  
-```sql
-create table product_option_values (
-    value_id char(36) not null,
-    option_id char(36) not null,
-    label varchar(64) not null,
-    primary key (value_id)
-);
-
-alter table product_option_values
-    add foreign key fk_product_options_product_id (option_id) references product_options(option_id);
-```
-Table `product_option_values` - actual values that could be used to customize products, categorized by options.
-
 
 ```sql
 create table product_variant_matrix (
@@ -195,46 +169,79 @@ alter table product_variant_matrix
 Field `product_variant_matrix.weight` - says how many options should match to match the whole variant.
 
 The following script models data from the picture above.
-Starting here I will use fancy values for primary keys instead of UUID to make further scripts more readable.
-I assume that the human eye cannot efficiently analyze tens UUID signatures.
+
 ```sql
-insert into products (object_id, name)
-values ('t-shirt', 'T-Shirt');
-insert into product_options (option_id, object_id, label)
+set @product_data :=  '
+{
+  "id": "t-shirt",
+  "options": {
+    "color": {
+      "label": "Color",
+      "values": {
+        "red": {
+          "label": "Red"
+        },
+        "green": {
+          "label": "Green"
+        }
+      }
+    },
+    "size" : {
+      "label": "Size",
+      "values": {
+        "m": {
+          "label": "M"
+        },
+        "l": {
+          "label": "L"
+        }
+      }
+    }
+  }
+}
+';
+
+insert into products (object_id, data) values ('t-shirt', @product_data);
+
+insert into product_variant_matrix (value, object_id, weight)
 values
-       ('t-shirt/color', 't-shirt', 'Color'),
-       ('t-shirt/size', 't-shirt', 'Size')
+       ('t-shirt:options.size.values.l', 'l-red', 2), ('t-shirt:options.color.values.red', 'l-red', 2),
+       ('t-shirt:options.size.values.m', 'm-red', 2), ('t-shirt:options.color.values.red', 'm-red', 2),
+       ('t-shirt:options.size.values.m', 'm-green', 2), ('t-shirt:options.color.values.green', 'm-green', 2)
 ;
-insert into product_option_values (value_id, option_id, label)
-values
-       ('t-shirt/color/red', 't-shirt/color', 'Red'),
-       ('t-shirt/color/green', 't-shirt/color', 'Green'),
-       ('t-shirt/size/l', 't-shirt/size', 'L'),
-       ('t-shirt/size/m', 't-shirt/size', 'M')
-;
-insert into product_variant_matrix (value_id, object_id, weight)
-values
-       ('t-shirt/size/l', 'l-red', 2), ('t-shirt/color/red', 'l-red', 2),
-       ('t-shirt/size/m', 'm-red', 2), ('t-shirt/color/red', 'm-red', 2),
-       ('t-shirt/size/m', 'm-green', 2), ('t-shirt/color/green', 'm-green', 2);
 ```
 
 So far, all looks pretty nice with such an approach product may return information for all available options with the single request.
 ```sql
-mysql> select p.name, po.label as option_label, pov.label as option_value_label
-    -> from products p
-    -> inner join product_options po on p.object_id = po.object_id
-    -> inner join product_option_values pov on po.option_id = pov.option_id
-    -> where p.object_id = 't-shirt';
-+---------+--------------+--------------------+
-| name    | option_label | option_value_label |
-+---------+--------------+--------------------+
-| T-Shirt | Color        | Green              |
-| T-Shirt | Size         | L                  |
-| T-Shirt | Size         | M                  |
-| T-Shirt | Color        | Red                |
-+---------+--------------+--------------------+
-4 rows in set (0.01 sec)
+mysql> select
+    ->     json_pretty(data->>'$.options.*') as options
+    -> from products p where p.object_id = 't-shirt'\G
+*************************** 1. row ***************************
+options: [
+  {
+    "label": "Size",
+    "values": {
+      "l": {
+        "label": "L"
+      },
+      "m": {
+        "label": "M"
+      }
+    }
+  },
+  {
+    "label": "Color",
+    "values": {
+      "red": {
+        "label": "Red"
+      },
+      "green": {
+        "label": "Green"
+      }
+    }
+  }
+]
+1 row in set (0.00 sec)
 ```
 
 Let's assume that we have chosen one option value from the list.
@@ -242,15 +249,16 @@ Starting this point we can look into variants to analyze remaining options.
 From the proposed example, we have chosen "Size": "M".
 
 ```sql
-mysql> select object_id, value_id, weight
+mysql> select
+    ->     object_id, value, weight
     -> from product_variant_matrix
-    -> where value_id in ('t-shirt/size/m');
-+-----------+----------+--------+
-| object_id | value_id | weight |
-+-----------+----------+--------+
-| m-green   | m        |      2 |
-| m-red     | m        |      2 |
-+-----------+----------+--------+
+    -> where value in ('t-shirt:options.size.values.m');
++-----------+-------------------------------+--------+
+| object_id | value                         | weight |
++-----------+-------------------------------+--------+
+| m-green   | t-shirt:options.size.values.m |      2 |
+| m-red     | t-shirt:options.size.values.m |      2 |
++-----------+-------------------------------+--------+
 2 rows in set (0.01 sec)
 ```
 
@@ -262,29 +270,48 @@ which means that we can request the remaining options,
 that correspond to our current selection.
 
 ```sql
-select distinct value_id
-from product_variant_matrix pvm
-where pvm.object_id in ('m-green', 'm-red') and value_id not in ('t-shirt/size/m');
+mysql> select distinct value
+    -> from product_variant_matrix pvm
+    -> where pvm.object_id in ('m-green', 'm-red')
+    ->   and value not in ('t-shirt:options.size.values.m');
++------------------------------------+
+| value                              |
++------------------------------------+
+| t-shirt:options.color.values.green |
+| t-shirt:options.color.values.red   |
++------------------------------------+
+2 rows in set (0.01 sec)
 ```
 
 The remaining option values could be found in values assigned to the matched variants minus values that we selected at the previous step.
 
 ```sql
-mysql> select p.name, po.label as option_label, pov.label as option_value_label
-    -> from products p
-    -> inner join product_options po on p.object_id = po.object_id
-    -> inner join product_option_values pov on po.option_id = pov.option_id
-    -> where p.object_id = 't-shirt' and pov.value_id in ('t-shirt/color/red', 't-shirt/color/green');
-+---------+--------------+--------------------+
-| name    | option_label | option_value_label |
-+---------+--------------+--------------------+
-| T-Shirt | Color        | Green              |
-| T-Shirt | Color        | Red                |
-+---------+--------------+--------------------+
-2 rows in set (0.00 sec)
+mysql> select
+    ->     json_pretty(
+    ->         json_extract(
+    ->             data,
+    ->             '$.options.color.label',
+    ->             '$.options.color.values.green',
+    ->             '$.options.color.values.red'
+    ->         )
+    ->     ) as options
+    -> from products\G
+*************************** 1. row ***************************
+options: [
+  "Color",
+  {
+    "label": "Green"
+  },
+  {
+    "label": "Red"
+  }
+]
+1 row in set (0.00 sec)
 ```
 
-*Note: To achieve more advanced behavior, the variants could be "uneven" inside the single product. For instance, you would like to track only t-shirts XL: size separately for some reason (a different price or stock). The example above focused on covering the main case scenario. Still, the approach, overall, is meant to support extending the logic of resolving option values onto a variant under the hood.*
+*Note: To achieve more advanced behavior, the variants could be "uneven" inside the single product.
+ They may have different weight.
+ For instance, you would like to track only t-shirts XL: size separately for some reason (a different price or stock). The example above focused on covering the main case scenario. Still, the approach, overall, is meant to support extending the logic of resolving option values onto a variant under the hood.*
 ![](https://app.lucidchart.com/publicSegments/view/de9972a8-f630-4400-aacb-d3d9858862cf/image.png)
 
 ### Storefront API
@@ -310,6 +337,23 @@ With the response API has to return:
 * List of images & videos that should be used on PDP.
 * List of price identifiers to request actual prices from the price service.
 * List of products that were exactly matched by the selected options.
+```proto
+message OptionSelection
+{
+    string productId = 1;
+    repeated string values = 2; 
+}
+message OptionResponse {
+    repeated ProductOption options = 1;
+    repeated MediaGallery gallery = 2;
+    repeated ProductVarinat matchedVariants = 3;
+}
+
+service SearchService {
+  rpc GetOptions(OptionSelection) returns (OptionResponse);
+}
+```
+
 
 ## Proposal cross references
 
