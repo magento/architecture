@@ -357,9 +357,15 @@ service SearchService {
 ## Other ways to customize products
 
 This document distinguishes product customization made through a shopper input from options.
-The shopper input based customization has a different structure often coupled with input type (text, image, amount). It does not have variants, can not be associated with product or inventory, association with the price made on a completely different level than options do.
+The shopper input based customization has a different structure often coupled with input type (text, image, amount).
+It does not have variants, can not be associated with product or inventory, association with the price made on a completely different level than options do.
 
-I was not able to find similar features in Shopify or Commerce tools, Shopify allows to install custom extensions to add this behavior. I believe that such limitation caused by the complexity of expressing such customizations through the variants, the way how these systems manage options.  
+I was not able to find similar features in Shopify or Commerce tools, Shopify allows to install custom extensions to add this behavior.
+I believe that such limitation caused by the complexity of expressing such customizations through the variants, the way how these systems manage options.  
+
+From my standpoint, that means that idea to segregate options and customization based on a shopper input on two different entities makes sense.
+It could significantly simplify the structure of Magento catalog.
+The same how it worked for checkout APIs.
 
 ## Proposal cross references
 
