@@ -37,22 +37,6 @@ Both of approaches could be used together.
 
 Example: configurable product with customizable option.
 
-
-## Competitors analysis
-During my research, I analyzed documentation on how options are covered by the competitors.
-commercetools and Shopify attack this domain with product variants that represent all the possible options.
-Despite the domain simplification by reducing the number of entities both systems constrained with the size of a product which makes it impossible to compose complex business cases that we frequently may face in the Magento ecosystem.
-
-[Commercetools: Modeling Products](https://docs.commercetools.com/product-modeling-products)
-
-[Shopify: Variants](https://help.shopify.com/en/manual/products/variants)
-
-Bigcommerce has a more complex option representation then Shopify or Commercetools.
-in some way, I would compare their options features with Magento 2 x functionalities.
-Bigcommerce segregates options from variants and allows to associate intersection of options with a new product, and as a result, I believe, struggles from the same disease as Magento does - redundancy in the variant data.
-
-[Bigcommerce: Product Options](https://support.bigcommerce.com/s/article/Options-SKUs-Rules)
-
 ## Goals
 
 * Eliminate hard dependency on prices from options to make possible use promotions and B2B prices for customizable options, bundle, and downloadable products.
@@ -85,7 +69,6 @@ So, a variant can request data from the different domains if such data assigned.
 Such a decision brings us unseen before the level of the flexibility, since there is no difference between product price and variant price, and as the consequence variant price, could be included in B2B pricing.
 
 We do not have such behaviors either Magento 1 or 2 and as a result, the whole layer of product types such as bundle and downloadable do not support B2B prices or special prices for options.
-Great gap especially taking into account that [Shopify supports advanced price management for variants](https://help.shopify.com/en/manual/sell-online/wholesale/channel/price-lists-customers#choose-a-price-list-type).
 
 The link on a product that exists in the same domain could be done through the shared ID, which as for me makes sense since I can see a possible scenario when variation that initially had only a price will be "promoted" to a product. For example due to integration reasons, to pass additional attributes data along with variant to Google Merchant Center.
 
@@ -359,9 +342,6 @@ service SearchService {
 This document distinguishes product customization made through a shopper input from options.
 The shopper input based customization has a different structure often coupled with input type (text, image, amount).
 It does not have variants, can not be associated with product or inventory, association with the price made on a completely different level than options do.
-
-I was not able to find similar features in Shopify or Commerce tools, Shopify allows to install custom extensions to add this behavior.
-I believe that such limitation caused by the complexity of expressing such customizations through the variants, the way how these systems manage options.  
 
 From my standpoint, that means that idea to segregate options and customization based on a shopper input on two different entities makes sense.
 It could significantly simplify the structure of Magento catalog.
