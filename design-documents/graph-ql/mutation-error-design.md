@@ -1,6 +1,6 @@
 # Mutation Error Design
 
-Mutations are _the_ single way to trigger side-effects in a GraphQL API. Side-effects are where the large majority of our errors are going to happen, as a result of changing some underlying data.
+Mutations are _the_ single way to modify application state in a GraphQL API. Mutations are where the large majority of our errors are going to happen, as a result of changing some underlying data.
 
 Today, the Magento 2 GraphQL schema does not do a great job of describing what could go wrong as a result of running a mutation. We should fix that!
 
@@ -14,7 +14,7 @@ type Mutation {
 }
 ```
 
-This schema only describes one side-effect that can happen as a result of adding an item to the cart: it succeeds! But some things can go wrong when adding an item to the cart, and we know what many of those things are:
+This schema only describes one the happy path of adding an item to the cart. But some things can go wrong when adding an item to the cart, and we know what many of those things are:
 
 - Item went out of stock since the product page was loaded
 - Merchant disabled the product since the product page was loaded
@@ -42,8 +42,9 @@ This has some problems:
 1. It's unreasonable to expect a UI developer to exercise every possible input to a resolver to find the error states manually
 2. These errors are not enforced by the schema, so they're not versioned with the schema.
 3. If the UI wants to customize the message for a specific error state, they'd have to match on the exact response string, because there's no concept of error codes
+4. Internationalization becomes challenging because the error states/strings are not known ahead of time
 
-Until recently, we didn't need to think quite as carefully about modeling errors and versioning them, because we owned the single reference theme for the application (Luma). In the world of headless UIs, it's critical that our errors are versioned and discoverable.
+In the world of headless UIs, it's going to be critical for our errors to be discoverable, translatable, and versioned
 
 ## Solution: Design Mutation errors into the schema
 
