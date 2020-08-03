@@ -91,30 +91,40 @@ Fastly provides image transformation features with [Fastly IO](https://www.fastl
 1. Convert format
 2. Rotation
 3. Crop
-4. Trim
-5. Padding
-6. Set background color
-7. Change brightness
-8. Change contrast
-9. Change saturation
-10. Sharpen
-11. Blur
-12. Set quality
-13. Montage (Combine up to four images into a single displayed image.)
+4. Set background color
+5. Set quality
+6. Montage (Combine up to four images into a single displayed image.)
 
-See https://docs.fastly.com/en/guides/image-optimization-api for detailed supported parameters.
+and others. See https://docs.fastly.com/en/guides/image-optimization-api for detailed supported parameters.
 
 Provided features fully cover Magento capabilities.
 
 ### AEM Assets Image Transformations
 
-AEM Assets work in integration with Dynamic Media (DM) to deliver asstes, and DM provides asset transformation capabilities.
-DM uses Akamai as CDN. Does it provide additional image transformation capabilities? Are those even needed taking into account that MD provides broad range of features?
+AEM Assets work in integration with Dynamic Media (DM) to deliver assets, and DM provides asset transformation capabilities.
+DM uses Akamai as CDN. Does it provide additional image transformation capabilities? Are those even needed taking into account that DM provides broad range of features?
 
-1. DefaultImage - it allows the client to specify default image. Might be useful for placeholder im
+1. DefaultImage - it allows the client to specify default image. Might be useful for placeholder implementation.
+2. Resize: crop, scale, size, etc
+3. Rotate and flip
+4. Quality
+5. Background color
+6. Change image format
 
-https://docs.adobe.com/content/help/en/experience-manager-65/assets/dynamic/managing-image-presets.html
-https://docs.adobe.com/content/help/en/dynamic-media-developer-resources/image-serving-api/image-serving-api/http-protocol-reference/command-reference/c-command-reference.html
+and many others.
+See [Dynamic Media Image Serving and Rendering API - Command reference](https://docs.adobe.com/content/help/en/dynamic-media-developer-resources/image-serving-api/image-serving-api/http-protocol-reference/command-reference/c-command-reference.html) for more details.
+
+Also, [Image Presets](https://docs.adobe.com/content/help/en/experience-manager-65/assets/dynamic/managing-image-presets.html) with image adjustments can be created in advance and then requested by the client.
+
+In addition, Akamai CDN provides ability to setup [Image Manager Policies](https://learn.akamai.com/pdf/ImageManager-CS.pdf) with the following parameters:
+
+1. Background color
+2. Crop
+3. Resize
+4. Rotate
+5. Scale
+
+and others.
 
 ## Watermarking
 
@@ -138,10 +148,17 @@ To make sure UX is acceptable, the workflow should be described in more details,
 
 Watermarking 
 - DM - https://docs.adobe.com/content/help/en/experience-manager-65/assets/administer/watermarking.html
-- Akamai - https://blogs.akamai.com/2019/10/watermarking-a-content-owners-mark-to-prevent-piracy.html
-   - requires integration with a watermark provider (confirm it is the only option with Akamai)
 
 Scoping?
+
+#### Watermarking with Akamai
+
+Akamai CDN also provides Watermarking feature using their [Image Manager policies](https://learn.akamai.com/pdf/ImageManager-CS.pdf).
+Watermark can be applied to images based on client or server-based rules.
+Potentially this may help implement Magento-style scoping for watermark images.
+
+Also, see [WATERMARKING: A CONTENT OWNER'S MARK TO PREVENT PIRACY](https://blogs.akamai.com/2019/10/watermarking-a-content-owners-mark-to-prevent-piracy.html).
+Looks like, it requires integration with a watermark provider.
 
 ## Placeholder Asset
 
