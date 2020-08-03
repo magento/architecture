@@ -1,8 +1,42 @@
 # Catalog Images
 
-## Asset Delivery - High-Level Vision
+The document provides the vision for the desired state of assets management in Magento.
+It covers currently existing managed Magento environments, or the ones envisioned in the future:
 
-### Terminology
+* Magento Cloud with Fastly CDN
+* Magento Cloud + AEM Assets as DAM provider
+   * Including Dynamic Media with Akamai CDN
+   
+Disclaimer: Other types of setup (e.g., on-prem + different CDN/DAM) can be supported in the similar fashion.
+Current document just covers the above systems in more details to not grow in size exponentially.
+There is no intention to limit usage of other types of setup.
+
+- [Terminology](#terminology)
+- [Scenarios](#scenarios)
+  * [Asset Management](#asset-management)
+  * [Assign an image to a product](#assign-an-image-to-a-product)
+  * [Display an image on product details or products list page](#display-an-image-on-product-details-or-products-list-page)
+- [Asset Transformations](#asset-transformations)
+  * [Magento: Image Transformations](#magento-image-transformations)
+  * [Fastly: Image Transformations](#fastly-image-transformations)
+  * [AEM Assets: Image Transformations](#aem-assets-image-transformations)
+- [Watermarking](#watermarking)
+  * [Magento: Watermarking](#magento-watermarking)
+  * [Fastly: Watermarking](#fastly-watermarking)
+  * [AEM Assets: Watermarking](#aem-assets-watermarking)
+    + [Watermarking with Akamai](#watermarking-with-akamai)
+- [Placeholders](#placeholders)
+  * [Magento: Placeholders](#magento-placeholders)
+  * [Fastly: Placeholders](#fastly-placeholders)
+  * [AEM Assets: Placeholders](#aem-assets-placeholders)
+- [Risks](#risks)
+  * [Sync full image URL from Magento Admin to Store Front](#sync-full-image-url-from-magento-admin-to-store-front)
+  * [Full offload of image transformations to DAM/CDN](#full-offload-of-image-transformations-to-dam-cdn)
+  * [Storefront application provides only original URL](#storefront-application-provides-only-original-url)
+- [Questions](#questions)
+- [Breaking Changes](#breaking-changes)
+
+## Terminology
 
 * **Asset** - anything that exists in a binary format and comes with the right to use.
    * **Image**, **video** are types of assets
@@ -73,7 +107,7 @@ Scenario with no CDN is assumed to be a development workflow and loading unresiz
 
 Note: watermarking is a special case of asset transformation. See next section for its coverage.
 
-### Magento Supported Image Transformations
+### Magento: Image Transformations
 
 Magento supports the following transformations for images:
 
@@ -84,7 +118,7 @@ Magento supports the following transformations for images:
 
 See `\Magento\Catalog\Model\Product\Image` for details.
 
-### Fastly Image Transformations
+### Fastly: Image Transformations
 
 Fastly provides image transformation features with [Fastly IO](https://www.fastly.com/io):
 
@@ -99,7 +133,7 @@ and others. See https://docs.fastly.com/en/guides/image-optimization-api for det
 
 Provided features fully cover Magento capabilities.
 
-### AEM Assets Image Transformations
+### AEM Assets: Image Transformations
 
 AEM Assets work in integration with Dynamic Media (DM) to deliver assets, and DM provides asset transformation capabilities.
 DM uses Akamai as CDN. Does it provide additional image transformation capabilities? Are those even needed taking into account that DM provides broad range of features?
@@ -132,19 +166,19 @@ Watermarking is a special case of image transformation.
 It is special in a way that the **server** decides when and which watermark to apply.
 All other transformations are initiated by the client.
 
-### Watermarking in Magento
+### Magento: Watermarking
 
 Applied during image transformations.
 See `\Magento\Catalog\Model\Product\Image` for details.
 
-### Watermarking by Fastly
+### Fastly: Watermarking
 
 See "Overlay" in https://docs.fastly.com/en/guides/image-optimization-api
 
 Overlay must be specified via `x-fastly-imageopto-overlay` header rather than via a URL parameter, which allows the server control it. 
 To make sure UX is acceptable, the workflow should be described in more details, taking into account Magento scopes.
 
-### Watermarking with AEM Assets
+### AEM Assets: Watermarking
 
 Watermarking 
 - [AEM Assets Watermarking](https://docs.adobe.com/content/help/en/experience-manager-65/assets/administer/watermarking.html)
@@ -160,7 +194,7 @@ Potentially this may help implement Magento-style scoping for watermark images.
 Also, see [WATERMARKING: A CONTENT OWNER'S MARK TO PREVENT PIRACY](https://blogs.akamai.com/2019/10/watermarking-a-content-owners-mark-to-prevent-piracy.html).
 Looks like, it requires integration with a watermark provider.
 
-## Placeholder Asset
+## Placeholders
 
 What should happen when requested asset is not available?
 Use cases:
@@ -175,9 +209,14 @@ With new architecture, CDN or DAM should be able to provide such a placeholder.
 
 TBD: check how this can be supported with Fastly, AEM Assets/DM, Akamai. 
 
-### Fastly
+### Magento: Placeholders
 
-### AEM Assets + DM
+Magento validates whether the file is present on the disk at the moment of URL generation, and provides URL to a placeholder image if the file is absent.
+This limits the system to using local storage for the assets, and makes it difficult to fetch images from external DAM systems.
+
+### Fastly: Placeholders
+
+### AEM Assets: Placeholders
 
 DefaultImage - allows client to specify default image.
 
@@ -244,7 +283,7 @@ url = origUrl + '?' + transformationParams[width] + '=100&' + transformationPara
 > https://my.dam.com/catalog/product/my/product.jpg?w=100&h=100&q=80
 ```
 
-## Questions:
+## Questions
 
 1. Do we sync full image URL to SF or provide Base CDN URL as configuration for the store?
    1. What do wee do with secure/unsecure URLs in case of full URL?
