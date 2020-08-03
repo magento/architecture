@@ -147,7 +147,7 @@ To make sure UX is acceptable, the workflow should be described in more details,
 ### Watermarking with AEM Assets
 
 Watermarking 
-- DM - https://docs.adobe.com/content/help/en/experience-manager-65/assets/administer/watermarking.html
+- [AEM Assets Watermarking](https://docs.adobe.com/content/help/en/experience-manager-65/assets/administer/watermarking.html)
 
 Scoping?
 
