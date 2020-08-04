@@ -1,12 +1,30 @@
 
-## Domain Overview
+## Overview
 
-Magento allows customizing a product before adding the product to the cart.
-Customization happens through the customizable options defined by the merchant.
-Options can represent customization, other products, digital goods so on.
+Product options are a powerful instrument that allows a shopper to customize and (or) personalize a product before adding the product to the cart. 
 
-All Magento product types represented through the options.
+Introduction of the storefront API brings us a unique opportunity to revisit the options management, address the existing limitation, and address known issues:
 
+* Reduce redundancy caused by variants matrix creation. Magento creates variant and simple product for each intersection of options and option values selected to represent the configurable product. Not all the cases in real require a product creation, so extracting the variant as an entity could reduce system load caused by the number of products. 
+
+* Allow to set up a dependency between the different options of a simple product based on previously selected option values. 
+Currently, simple and bundle products do not support dependencies between option values.
+An example, bundle product that represents a computer in your store may need to correlate the list of the available motherboards with the socket of the selected processor.
+
+* Support grouped B2B prices at the options level. There is no way to specify a special price for a customer group for simple, downloadable,  and some of the bundled options of the product.
+
+* Although all the options which represent product variants are pretty similar and most of them have similar properties, the options not generalized in Magento. As a result, it makes the option management more complicated, and for some cases such as option displaying, causes frontend rendering logic duplication. The ultimate goal after the options API revision is to build a generalized view that should to significantly reduce the complexity of the options domain for the storefront application.
+
+### Taxonomy of the options
+
+Due to their origin and structure options segregates on two main subtypes.
+
+***Product Option Variants*** & ***Shopper Input Options***.
+
+The first subtype - ***Product Option Variants***, is much often used and represents product configuration, which was predefined by a merchant.  And so, product customization could be described by the selection of these predefined options, which, in their turn, creates product variants, where each variant represents the selection of one or many option values.
+This document will be focused on the first subtype, Product Option Variants, it just briefly covers the reasons for the options separation, due to the intention do not overload this document with information about the domain.
+
+*Note: Most of the logic that we use to associate with  Magento product types (configurable, bundle, downloadable, etc) in fact is the logic of the different options.*
 
 ### Definitions
 
