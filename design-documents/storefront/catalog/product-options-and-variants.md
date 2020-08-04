@@ -1,5 +1,5 @@
 
-## Overview
+## Document purpose
 
 Product options are a powerful instrument that allows a shopper to customize and (or) personalize a product before adding the product to the cart. 
 
@@ -19,10 +19,12 @@ An example, bundle product that represents a computer in your store may need to 
 
 Due to their origin and structure options segregates on two main subtypes.
 
-***Product Option Variants*** & ***Shopper Input Options***.
+**Product Option Variants** & **Shopper Input Options**.
 
-The first subtype - ***Product Option Variants***, is much often used and represents product configuration, which was predefined by a merchant.  And so, product customization could be described by the selection of these predefined options, which, in their turn, creates product variants, where each variant represents the selection of one or many option values.
+* The first subtype - **Product Option Variants**, is much often used and represents product configuration, which was predefined by a merchant.  And so, product customization could be described by the selection of these predefined options, which, in their turn, creates product variants, where each variant represents the selection of one or many option values.
 This document will be focused on the first subtype, Product Option Variants, it just briefly covers the reasons for the options separation, due to the intention do not overload this document with information about the domain.
+
+* Another subtype **Shopper Input Option**s represent an approach to personalizing a product before adding it to the cart by adding custom images, entering text so on. Gift Cards with customer-defined amounts could be treated as one of the cases the Shopper Input Options. These subtype of options do not provide any predefined values, it provides constraints for the input instead like, max number of symbols, a range for amount, or allowed extensions for files. Shopper Input options do not have variants, could not be associated with a product or inventory record, but may have a reference on price. Due to the excessive list of differences from product options variants, this option subtype is out of the document. The document just points out that the options segregation by the mentioned above criteria should happen, especially to respect checkout API that we released recently. Anyway, Shopper Input Options should have their own representation as a product top-level property.
 
 *Note: Most of the logic that we use to associate with  Magento product types (configurable, bundle, downloadable, etc) in fact is the logic of the different options.*
 
@@ -37,8 +39,8 @@ Option value could by display label, also one or may values could be pre-selecte
 Depends on the business scenario, a particular product variant could be linked with an existing product,
 with a price, or an inventory record, or no be linked to any.
 Even with no entities associated with the variant, it still has great value for a catalog because the presence of the variant says that such composition of options and their values described by the variant makes sense so that it can be purchased.
-   
-### Actual usages
+
+## Actual usages
 
 The application distinguishes two approaches to manage options:
 
@@ -54,16 +56,6 @@ Examples: bundle product, customizable product, downloadable products.
 Both of approaches could be used together.
 
 Example: configurable product with customizable option.
-
-## Goals
-
-* Eliminate hard dependency on prices from options to make possible use promotions and B2B prices for customizable options, bundle, and downloadable products.
-* Eliminate variants redundancy
-    * Catalog should not have a variant per each option values combination, only if necessary.
-    * Catalog should not create a product per variant if this product never used.
-* Hide the variant matrix from storefront client, use it only in the context of operations.
-* Align a similar option with a single data structure to manage them together.
-
 
 ## Modeling Options and Variants Data Objects
 
