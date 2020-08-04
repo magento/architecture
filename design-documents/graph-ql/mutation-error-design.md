@@ -14,7 +14,7 @@ type Mutation {
 }
 ```
 
-This schema only describes one the happy path of adding an item to the cart. But some things can go wrong when adding an item to the cart, and we know what many of those things are:
+This schema only describes the happy path of adding an item to the cart. But some things can go wrong when adding an item to the cart, and we know what many of those things are:
 
 - Item went out of stock since the product page was loaded
 - Merchant disabled the product since the product page was loaded
