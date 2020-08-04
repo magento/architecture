@@ -1,0 +1,13 @@
+type Mutation {
+    generateCustomerTokenAsAdmin(input: GenerateCustomerTokenAsAdminInput!): GenerateCustomerTokenAsAdminOutput
+}
+
+input GenerateCustomerTokenAsAdminInput
+{
+    customer_email: String!
+}
+
+type GenerateCustomerTokenAsAdminOutput
+{
+    customer_token: String!
+}
