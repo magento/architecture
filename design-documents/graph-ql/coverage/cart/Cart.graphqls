@@ -13,7 +13,7 @@ type CartQueryOutput {
 type Cart {
     id: ID! @doc(description: "The ID of the cart.") @deprecated(reason: "use uid")
     uid: ID! @doc(description: "The unique ID of the cart.")
-    items: [CartItemInterface]
+    items: [CartItemInterface] @deprecated(reason: "The `items` field is deprecated. Use `items_v2` instead.")
     items_v2(
         currentPage: Int = 1 @doc(description: "current page of the customer cart items. default is 1")
         pageSize: Int = 20 @doc(description: "page size for the customer cart items. default is 20")

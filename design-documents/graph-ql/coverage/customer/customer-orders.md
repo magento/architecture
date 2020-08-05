@@ -67,7 +67,7 @@ type CustomerOrder {
     order_date: String! @doc("date when the order was placed")
     status: String! @doc("current status of the order")
     number: String! @doc("sequential order number")
-    items: [OrderItemInterface] @doc("collection of all the items purchased")
+    items: [OrderItemInterface] @doc("collection of all the items purchased") @deprecated("The `items` field is derecated. Use `items_v2` instead.")
     items_v2(
              currentPage: Int = 1 @doc("current page of the customer order item list. default is 1")
              pageSize: Int = 20 @doc("page size for the customer orders item list. default is 20")
