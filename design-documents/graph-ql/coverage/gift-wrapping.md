@@ -119,11 +119,11 @@ The following gift options need to be whitelisted in the `storeConfig` query. Se
     <system>
         <section id="sales">
             <group id="gift_options">
-                <field id="wrapping_allow_order" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="allow_gift_wrapping_on_order" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Allow Gift Wrapping on Order Level</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="wrapping_allow_items" translate="label" type="select" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="allow_gift_wrapping_on_order_items" translate="label" type="select" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Allow Gift Wrapping for Order Items</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
