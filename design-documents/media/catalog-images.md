@@ -24,7 +24,6 @@ There is no intention to limit usage of other types of setup.
   * [Magento: Watermarking](#magento-watermarking)
   * [Fastly: Watermarking](#fastly-watermarking)
   * [AEM Assets: Watermarking](#aem-assets-watermarking)
-    + [Watermarking with Akamai](#watermarking-with-akamai)
 - [Placeholders](#placeholders)
   * [Magento: Placeholders](#magento-placeholders)
   * [Fastly: Placeholders](#fastly-placeholders)
@@ -148,17 +147,7 @@ DM uses Akamai as CDN. Does it provide additional image transformation capabilit
 and many others.
 See [Dynamic Media Image Serving and Rendering API - Command reference](https://docs.adobe.com/content/help/en/dynamic-media-developer-resources/image-serving-api/image-serving-api/http-protocol-reference/command-reference/c-command-reference.html) for more details.
 
-Also, [Image Presets](https://docs.adobe.com/content/help/en/experience-manager-65/assets/dynamic/managing-image-presets.html) with image adjustments can be created in advance and then requested by the client.
-
-In addition, Akamai CDN provides ability to setup [Image Manager Policies](https://learn.akamai.com/pdf/ImageManager-CS.pdf) with the following parameters:
-
-1. Background color
-2. Crop
-3. Resize
-4. Rotate
-5. Scale
-
-and others.
+In addition, [Image Presets](https://docs.adobe.com/content/help/en/experience-manager-65/assets/dynamic/managing-image-presets.html) with image adjustments can be created in advance and then requested by the client.
 
 ## Watermarking
 
@@ -185,40 +174,54 @@ Watermarking
 
 Scoping?
 
-#### Watermarking with Akamai
-
-Akamai CDN also provides Watermarking feature using their [Image Manager policies](https://learn.akamai.com/pdf/ImageManager-CS.pdf).
-Watermark can be applied to images based on client or server-based rules.
-Potentially this may help implement Magento-style scoping for watermark images.
-
-Also, see [WATERMARKING: A CONTENT OWNER'S MARK TO PREVENT PIRACY](https://blogs.akamai.com/2019/10/watermarking-a-content-owners-mark-to-prevent-piracy.html).
-Looks like, it requires integration with a watermark provider.
-
 ## Placeholders
 
-What should happen when requested asset is not available?
-Use cases:
+Placeholders are used in the following cases:
 
-1. The asset has been removed/renamed, and the change is not synced to Storefront service yet
-2. The asset has been removed/renamed by mistake or due to server issues
+1. A product has no image assigned to it.
+2. An image assigned to the product is unavailable (due to delays caused by distributed architecture or accidentally) 
 
-While we can hope that such things should not happen, it still should not be the visitor fault and there should be a good handling of such situations.
-Currently, Magento handles it by loading a placeholder image.
+Expectations from the placeholder delivery:
 
-With new architecture, CDN or DAM should be able to provide such a placeholder.
+1. Client application can distinguish a placeholder from a real product image. This gives the client an ability to control what (if anything) should be displayed as placeholder.
+2. Placeholder image should be possible to cache on the client side and reuse in different places.
+3. If possible, the system (Magento?) should provide placeholder URL, so the client can use it if desired (not all clients may want to use admin-configured placeholders).
 
-TBD: check how this can be supported with Fastly, AEM Assets/DM, Akamai. 
+Based on the above, Catalog service should not handle placeholders and try to provide them if product image is absent.
+Instead, product image data should be empty, and system configuration GraphQL API should provide URL for placeholders by type.
+To fully support external DAM systems, it should be possible to specify placeholder URLs in Magento system configuration, in addition to existing "upload file" option.
+Configuration API should return full URL to the placeholder when requested by the client. This can be:
+
+1. URL pointing to Magento application for default placeholder image (example: `https://static.base.url/catalog/product/placeholder.jpg`)
+2. URL pointing to uploaded placeholder (example: `https://media.base.url/catalog/product/placeholder.jpg`)
+3. URL pointing to external DAM/CDN (example: `https://external.dam.com/my-magento/catalog/product/placeholder.jpg`)
+
+The client should not assume the placeholder base URL is the same as Media Base URL.
+It is responsibility of the client application to handle situation where an image assigned to a product is absent in the storage and handle this situation gracefully.
 
 ### Magento: Placeholders
 
-Magento validates whether the file is present on the disk at the moment of URL generation, and provides URL to a placeholder image if the file is absent.
-This limits the system to using local storage for the assets, and makes it difficult to fetch images from external DAM systems.
+Magento allows to specify a placeholder image for each type of the product image (base, small, thumbnail, swatch) per store view.
 
-### Fastly: Placeholders
+Magento validates whether the file is present on the disk at the moment of URL generation, and provides URL to a placeholder image if the file is absent.
+This covers two different use cases:
+
+1. The image has never been specified for the product, so there is no image available and no file is actually validated for presence.
+2. The imaghe has been assigned to the product, but then has disappeared from the storage (due to a mistake, failure or otherwise). 
+
+Existing behavior limits the system to using local storage for the assets as it has a hard dependency on the local file system, and makes it difficult to fetch images from external DAM systems.
+As mentioned before, placeholder URLs should be supported.
 
 ### AEM Assets: Placeholders
 
-DefaultImage - allows client to specify default image.
+When integrating with AEM Assets or another external DAM system:
+
+1. Content author uploads and publishes placeholder asset in the DAM system
+2. Magento admin references the published placeholder URL in Magento system configuration
+3. Client application requests the placeholder URL via Magento GraphQL API to place where a product image can't be loaded
+
+In addition, Dynamic Media supports "DefaultImage", which allows the client to specify default image.
+This can be used as another fallback path in case an image is absent.
 
 See https://docs.adobe.com/content/help/en/dynamic-media-developer-resources/image-serving-api/image-serving-api/http-protocol-reference/command-reference/c-command-reference.html
 
