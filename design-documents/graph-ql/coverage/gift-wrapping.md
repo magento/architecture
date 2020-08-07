@@ -196,15 +196,18 @@ type CartItemUpdateInput {
     gift_wrapping_id: ID @doc(description: "The unique identifier of the gift wrapping to be used for the cart item")
     gift_message: GiftMessageInput @doc(description: "Gift message details for the cart item")
 }
-type RemoveItemFromCartInput {
-    gift_wrapping_id: ID @doc(description: "The unique identifier of the gift wrapping to be used for removing from the cart item")
-}
 
 type Mutation {
-    setGiftOptionsOnCart(cart_id: String!, gift_message: GiftMessageInput, gift_wrapping_id: ID, gift_receipt_included: Boolean, printed_card_included: Boolean): SetGiftOptionsOnCartOutput @doc(description: "Set gift options like gift wrapping or gift message for the entire cart")
-    removeGiftOptionsOnCart(cart_id: String!, gift_wrapping_id: ID, gift_receipt_included: Boolean, printed_card_included: Boolean): RemoveGiftOptionsOnCartOutput @doc(description: "Remove gift options gift wrapping for the entire cart")
+    setGiftOptionsOnCart(input: SetGiftOptionsOnCartInput): SetGiftOptionsOnCartOutput @doc(description: "Set gift options like gift wrapping or gift message for the entire cart")
 }
 
+input SetGiftOptionsOnCartInput{
+     cart_id: String! @doc(description:"The unique ID that identifies the shopper's cart")
+     gift_message: GiftMessageInput @doc(description: "Gift message details for the cart")
+     gift_wrapping_id: ID @doc(description: "The unique identifier of the gift wrapping to be used for the cart")
+     printed_card_included: Boolean! @doc(description: "Whether customer requested printed card for the cart")
+     gift_receipt_included: Boolean! @doc(description: "Whether customer requested gift receipt for the cart")
+}
 
 ###### End: Extending existing types ######
 
@@ -213,12 +216,10 @@ type Mutation {
 type SetGiftOptionsOnCartOutput {
     cart: Cart! @doc(description: "The modified cart object")
 }
-type RemoveGiftOptionsOnCartOutput {
-    cart: Cart! @doc(description: "The modified cart object")
-}
 
 
-type GiftMessageInput {
+
+input GiftMessageInput {
     to: String! @doc(description: "Recepient name")
     from: String! @doc(description: "Sender name")
     message: String! @doc(description: "Gift message text")
