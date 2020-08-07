@@ -252,6 +252,7 @@ There are multiple layers which provide customization capabilities:
 * Index customizations
 * Global settings
 
+
 Sometimes the same part of the query could be customized on multiple levels. In this case, more specific conflicting 
 customization wins. Example: the size of results could be specified for the whole index and for a specific query. In 
 this case, query level customization will be applied. More detailed explanation:
