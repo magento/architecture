@@ -1,0 +1,36 @@
+type Customer {
+    purchase_orders(filter: PurchaseOrdersFilterInput, currentPage: Int = 1, pageSize: Int = 20): PurchaseOrders
+}
+
+input PurchaseOrdersFilterInput {
+    status: PurchaseOrderStatus
+    createdBy: FilterStringTypeInput
+    createdDate: FilterRangeTypeInput
+}
+
+type PurchaseOrders {
+    items: [PurchaseOrder]!
+    page_info: SearchResultPageInfo
+    total_count: Int
+}
+
+type PurchaseOrder {
+    uid: ID!
+    number: String!
+    order: CustomerOrder
+    created_at: String!
+    created_by: String!
+    status: PurchaseOrderStatus!
+    total: Money!
+}
+
+enum PurchaseOrderStatus {
+    PENDING
+    APPROVAL_REQUIRED
+    APPROVED
+    ORDER_IN_PROGRESS
+    ORDER_PLACED
+    ORDER_FAILED
+    REJECTED
+    CANCELED
+}

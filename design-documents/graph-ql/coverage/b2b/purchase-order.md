@@ -2,14 +2,105 @@
 
 ### View "My Purchase Orders" list
 
+```graphql
+{
+  customer {
+    purchase_orders(
+      filter: {createdBy: {eq: "Active User Name"}}, 
+      currentPage: 1, 
+      pageSize: 10
+    ) {
+      items {
+        uid
+        number
+        order {
+          number
+        }
+        created_at
+        created_by
+        status
+        total {
+          currency
+          value
+        }
+      }
+      total_count
+      page_info {
+        current_page
+        page_size
+        total_pages
+      }
+    }
+  }
+}
+```
 ### View "Requires My Approval" list of purchase orders
 
-Should support pagination.
- 
+```graphql
+{
+  customer {
+    purchase_orders(
+      filter: {status: APPROVAL_REQUIRED},
+      currentPage: 1, 
+      pageSize: 10
+    ) {
+      items {
+        uid
+        number
+        order {
+          number
+        }
+        created_at
+        created_by
+        status
+        total {
+          currency
+          value
+        }
+      }
+      total_count
+      page_info {
+        current_page
+        page_size
+        total_pages
+      }
+    }
+  }
+}
+``` 
 ### View "Company Purchase Orders" list
 
-Should support pagination.
-
+```graphql
+{
+  customer {
+    purchase_orders(
+      currentPage: 1, 
+      pageSize: 10
+    ) {
+      items {
+        uid
+        number
+        order {
+          number
+        }
+        created_at
+        created_by
+        status
+        total {
+          currency
+          value
+        }
+      }
+      total_count
+      page_info {
+        current_page
+        page_size
+        total_pages
+      }
+    }
+  }
+}
+```
 ### View purchase order details
 
 Should support pagination.
