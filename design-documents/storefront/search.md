@@ -278,3 +278,77 @@ message Settings {
     // ... other search settings
 }
 ```
+
+## Scenarios
+- Autocomplete (Separate functionality)
+  - Popular search terms, products, categories, attributes (Autocomplete in layered navigation filters)
+  - Maximum number of popular search terms to display in autocomplete results. (settings)
+  - Maximum number of products to display in autocomplete results.(settings)
+  - Maximum number of product attributes to display in autocomplete results.(settings)
+  - Maximum number of categories to display in autocomplete results.(settings)
+- Spellchecking (Separate functionality)
+  - Search Fuzziness Configuration
+    - Enable Fuzziness(settings)
+    - Fuzziness Value. Allowed values "1", "2" or "AUTO".(settings)
+    - Fuzziness Prefix Length(settings)
+    - Max Expansion(settings)
+  - Enable Phonetic Search(settings)
+    - Phonetic Search Configuration - The Phonetic Analysis plugin provides token filters which convert tokens to their phonetic representation using Soundex, Metaphone, and a variety of other algorithms.https://www.elastic.co/guide/en/elasticsearch/plugins/master/analysis-phonetic.html (settings)
+- Optimizer Rules (rules)
+  - Per Store View (rules)
+  - Model (static/dynamic) (rules)
+  - Active from (rules)
+  - Active to (rules)
+  - Request type (rules)
+  - Boost value (%) => Rule (rules, attribute DSL)
+  - "Boost all products that are in stock", "Boost all new products", "Boost men products" (settings)
+- Preview (Staging)
+- Customizing product Sorting. (Rules, middleware)
+  - Using the Search Optimizers
+  - Manual sorting of products in a category
+  - Manual sorting of products for a given search query
+- Relevance Configuration (settings)
+  - Fulltext Base Settings
+    - Minimum Should Match 100%
+    - Tie Breaker
+  - Phrase Match Configuration
+    - Enable Boost on Phrase Match
+    - Phrase Match Boost Value
+  - Cutoff Frequency Configuration
+    - Cutoff Frequency. A number between 0 and 1. Used as automatic stopwords detection threshold.
+- Thesaurus (Settings, Separate functionality)
+  - Synonym: standard synonym feature, let you contribute a list of terms which are synonyms of each others. (Separate functionality)
+  - Expansions: this kind of thesaurus allows to expand all search for a given term to an other list of terms one query to the engine, with a boolean structure
+  - Thesaurus Configuration
+  - General Configuration
+    - Max Allowed Rewrites 2
+  - Synonyms Configuration
+    - Enable Synonyms Search
+    - Synonyms Weight Divider 10
+  - Query Expansions Configuration
+    - Enable Search Expansions
+    - Concepts Weight Divider 10
+- Attributes (Entity DSL)
+  - Use in Search
+  - Search Weight
+  - Used in spellcheck
+  - Display in autocomplete (depends on Use in Search Results Layered Navigation)
+  - Visible in Advanced Search (with results, with no result)
+  - Use in Layered Navigation (is_filterable => aggregatable)
+  - Use in Search Results Layered Navigation
+  - Used for Sorting in Product Listing (sortable)
+- Faceting configuration(rules, settings)
+  - Facet coverage rate 90% [Ex: Brand facet will be displayed only if 90% of the product have a brand.]
+  - Max number of values returned by a facet query.
+  - Facet sort order [Result Count, Admin Sort, Name, Relevance]
+  - Faceting configuration by category (Layered Navigation Filters)
+    - Fallback on base
+    - Display Mode [always hidden, always display, auto]
+    - Facet coverage rate
+    - Facet max. size
+    - Sort Order
+    - Pinned
+    - Facted/attribute sorting
+    - Using Sliders for Custom attributes
+- Analytics(separate functionality)
+- ES settings(settings)
