@@ -41,7 +41,6 @@ type GiftCardCartItem {
 }
 
 type SalesItemInterface {
-    gift_wrapping: GiftWrapping @doc(description: "The selected gift wrapping for the order item")
     gift_message: GiftMessage @doc(description: "The entered gift message for the order item")
 }
 
