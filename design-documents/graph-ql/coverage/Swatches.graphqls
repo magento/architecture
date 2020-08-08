@@ -1,0 +1,19 @@
+type ConfigurableProductOptionsValues {
+    swatch_data: SwatchDataInterface @doc(description: "Swatch data for configurable product option")
+}
+
+interface SwatchDataInterface {
+    value: String @doc(description: "Value of swatch item (HEX color code, image link or textual value)")
+}
+
+type ImageSwatchData implements SwatchDataInterface {
+    thumbnail: String @doc(description: "Thumbnail swatch image URL")
+}
+
+type TextSwatchData implements SwatchDataInterface {
+
+}
+
+type ColorSwatchData implements SwatchDataInterface {
+
+}
