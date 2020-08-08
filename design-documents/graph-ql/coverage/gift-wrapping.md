@@ -48,7 +48,6 @@ interface OrderItemInterface {
     gift_wrapping: GiftWrapping @resolver(class: "Magento\\GiftWrappingGraphQl\\Model\\Resolver\\Order\\Item\\GiftWrapping") @doc(description: "The selected gift wrapping for the order item")
 }
 
-
 type CustomerOrder {
     gift_wrapping: GiftWrapping @doc(description: "The selected gift wrapping for the order")
     printed_card_included: Boolean! @doc(description: "Whether customer requested printed card for the order")
@@ -215,8 +214,6 @@ input SetGiftOptionsOnCartInput{
 type SetGiftOptionsOnCartOutput {
     cart: Cart! @doc(description: "The modified cart object")
 }
-
-
 
 input GiftMessageInput {
     to: String! @doc(description: "Recepient name")
