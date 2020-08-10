@@ -112,14 +112,14 @@
 The query should allow to fetch the following data:
  - Items with pagination
  - Basic details
- - Approval Flow
- - Comments
- - History Log
  - Totals
  - Shipping Address
  - Billing Address
  - Payment Method
  - Shipping Method
+ - Comments
+ - History Log
+ - Approval Flow
  
 ```graphql
 {
@@ -230,9 +230,24 @@ The query should allow to fetch the following data:
         }
         telephone
       }
+      comments(currentPage: 2, pageSize: 10) {
+        page_info {
+          current_page
+          page_size
+          total_pages
+        }
+        total_count
+        items {
+          uid
+          creation_date_and_time
+          author
+          text
+        }
+      }
     }
   }
 }
+
 ```
 
 ### Add items to cart from purchase order
