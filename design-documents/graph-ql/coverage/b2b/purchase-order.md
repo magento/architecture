@@ -16,12 +16,14 @@
         order {
           number
         }
-        created_at
+        purchase_order_date
         created_by
         status
         total {
-          currency
-          value
+          grand_total {
+            currency
+            value
+          }
         }
       }
       total_count
@@ -50,12 +52,14 @@
         order {
           number
         }
-        created_at
+        purchase_order_date
         created_by
         status
         total {
-          currency
-          value
+          grand_total {
+            currency
+            value
+          }
         }
       }
       total_count
@@ -83,12 +87,14 @@
         order {
           number
         }
-        created_at
+        purchase_order_date
         created_by
         status
         total {
-          currency
-          value
+          grand_total {
+            currency
+            value
+          }
         }
       }
       total_count
@@ -103,19 +109,123 @@
 ```
 ### View purchase order details
 
-#### Items
-
-Should support pagination.
-
-#### Basic details
-#### Approval Flow
-#### Comments
-#### History Log
-#### Totals
-#### Shipping Address
-#### Billing Address
-#### Payment Method
-#### Shipping Method
+The query should allow to fetch the following data:
+ - Items with pagination
+ - Basic details
+ - Approval Flow
+ - Comments
+ - History Log
+ - Totals
+ - Shipping Address
+ - Billing Address
+ - Payment Method
+ - Shipping Method
+ 
+```graphql
+{
+  customer {
+    purchase_order(uid: "abc234hsasdfa") {
+      uid
+      created_by
+      purchase_order_date
+      number
+      order {
+        number
+      }
+      status
+      total {
+        subtotal {
+          currency
+          value
+        }
+        estimated_taxes {
+          amount {
+            currency
+            value
+          }
+          rate
+          title
+        }
+        grand_total {
+          currency
+          value
+        }
+        shipping_handling {
+          total_amount {
+            currency
+            value
+          }
+        }
+      }
+      items {
+        uid
+        product_name
+        product_sku
+        product_url_key
+        product_type
+        product_sale_price {
+          currency
+          value
+        }
+        quantity
+        selected_options {
+          uid
+          value
+        }
+        entered_options {
+          uid
+          value
+        }
+        discounts {
+          amount {
+            currency
+            value
+          }
+          label
+        }
+      }
+      payment_methods {
+        name
+        type
+        additional_data {
+          name
+          value
+        }
+      }
+      billing_address {
+        firstname
+        lastname
+        street
+        city
+        region {
+          region
+        }
+        postcode
+        country {
+          full_name_locale
+        }
+        telephone
+      }
+      carrier
+      shipping_method
+      shipping_address {
+        firstname
+        lastname
+        street
+        city
+        region {
+          region
+        }
+        postcode
+        country {
+          full_name_locale
+        }
+        telephone
+      }
+    }
+  }
+}
+```
 
 ### Add items to cart from purchase order
 

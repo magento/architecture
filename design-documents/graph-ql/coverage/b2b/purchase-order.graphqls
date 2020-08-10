@@ -1,5 +1,6 @@
 type Customer {
     purchase_orders(filter: PurchaseOrdersFilterInput, currentPage: Int = 1, pageSize: Int = 20): PurchaseOrders
+    purchase_order(uid: ID!): PurchaseOrder
 }
 
 input PurchaseOrdersFilterInput {
@@ -68,4 +69,9 @@ enum PurchaseOrderStatus {
     ORDER_FAILED
     REJECTED
     CANCELED
+}
+
+type CustomerAddress {
+    # This field must be added to the CustomerAddress type definition directly in CustomerGraphQl module
+    country: Country @doc(description: "The customer's country")
 }
