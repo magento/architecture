@@ -157,31 +157,39 @@ The query should allow to fetch the following data:
           }
         }
       }
-      items {
-        uid
-        product_name
-        product_sku
-        product_url_key
-        product_type
-        product_sale_price {
-          currency
-          value
+      items(currentPage: 1, pageSize: 10) {
+        total_count
+        page_info {
+          current_page
+          page_size
+          total_pages
         }
-        quantity
-        selected_options {
+        items {
           uid
-          value
-        }
-        entered_options {
-          uid
-          value
-        }
-        discounts {
-          amount {
+          product_name
+          product_sku
+          product_url_key
+          product_type
+          product_sale_price {
             currency
             value
           }
-          label
+          quantity
+          selected_options {
+            uid
+            value
+          }
+          entered_options {
+            uid
+            value
+          }
+          discounts {
+            amount {
+              currency
+              value
+            }
+            label
+          }
         }
       }
       payment_methods {
