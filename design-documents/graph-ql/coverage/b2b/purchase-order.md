@@ -103,8 +103,6 @@
 ```
 ### View purchase order details
 
-Should support pagination.
-
 #### Items
 
 Should support pagination.
@@ -153,6 +151,11 @@ Should support pagination.
 ### Update approval rule
 
 ### Delete approval rule
+
+
+## Implementation details
+
+The purchase order GraphQL schema depends on Sales and Customer GraphQL schemas.
 
 
 
