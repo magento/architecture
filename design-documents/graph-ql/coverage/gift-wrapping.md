@@ -41,8 +41,11 @@ type GiftCardCartItem {
 }
 
 type SalesItemInterface {
-    gift_wrapping: GiftWrapping @doc(description: "The selected gift wrapping for the order item")
     gift_message: GiftMessage @doc(description: "The entered gift message for the order item")
+}
+
+interface OrderItemInterface {
+    gift_wrapping: GiftWrapping @resolver(class: "Magento\\GiftWrappingGraphQl\\Model\\Resolver\\Order\\Item\\GiftWrapping") @doc(description: "The selected gift wrapping for the order item")
 }
 
 type CustomerOrder {
@@ -56,23 +59,38 @@ type CartPrices {
     gift_options: GiftOptionsPrices @doc(description: "The list of prices for the selected gift options")
 }
 
-type SalesTotalsInterface {
-    gift_options: GiftOptionsPrices @doc(description: "The list of prices for the selected gift options")
-}
 ###### End: Extending existing types ######
 
 
-###### Begin: Defining new types ######
-type GiftWrapping {
-    id: ID! @doc(description: "Gift wrapping unique identifier")
-    design: String! @doc(description: "Gift wrapping design name")
-    price: Money! @doc(description: "Gift wrapping price")
-    image: GiftWrappingImage! @doc(description: "Gift wrapping preview image")
+###### StoreConfig ######
+type StoreConfig {
+    allow_gift_wrapping_on_order: String @doc(description: "Allow Gift Wrapping on Order Level")
+    allow_gift_wrapping_on_order_items: String @doc(description: "Allow Gift Wrapping for Order Items")
+    allow_gift_receipt: String @doc(description: "Allow Gift Receipt")
+    allow_printed_card: String @doc(description: "Allow Printed Card")
+    printed_card_price: String @doc(description: "Default Price for Printed Card")
+    cart_gift_wrapping: String @doc(description: "Display Gift Wrapping Prices")
+    cart_printed_card: String @doc(description: "Display Printed Card Prices")
+    sales_gift_wrapping: String @doc(description: "Display Gift Wrapping Prices")
+    sales_printed_card: String @doc(description: "Display Printed Card Prices")
 }
+###### End ######
+
+
+
+
+###### Begin: Defining new types ######
 
 type GiftWrappingImage {
     label: String! @doc(description: "Gift wrapping preview image label")
     url: String! @doc(description: "Gift wrapping preview image URL")
+}
+
+type GiftWrapping {
+    id: ID! @doc(description: "Gift wrapping unique identifier")
+    design: String! @doc(description: "Gift wrapping design name")
+    price: Money! @doc(description: "Gift wrapping price")
+    image: GiftWrappingImage @doc(description: "Gift wrapping preview image")
 }
 
 type GiftOptionsPrices {
@@ -99,11 +117,11 @@ The following gift options need to be whitelisted in the `storeConfig` query. Se
     <system>
         <section id="sales">
             <group id="gift_options">
-                <field id="wrapping_allow_order" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="allow_gift_wrapping_on_order" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Allow Gift Wrapping on Order Level</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="wrapping_allow_items" translate="label" type="select" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="allow_gift_wrapping_on_order_items" translate="label" type="select" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Allow Gift Wrapping for Order Items</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
@@ -178,8 +196,17 @@ type CartItemUpdateInput {
 }
 
 type Mutation {
-    setGiftOptionsOnCart(cart_id: String!, gift_message: GiftMessageInput, gift_wrapping_id: ID, gift_receipt_included: Boolean, printed_card_included: Boolean): SetGiftOptionsOnCartOutput @doc(description: "Set gift options like gift wrapping or gift message for the entire cart")
+    setGiftOptionsOnCart(input: SetGiftOptionsOnCartInput): SetGiftOptionsOnCartOutput @doc(description: "Set gift options like gift wrapping or gift message for the entire cart")
 }
+
+input SetGiftOptionsOnCartInput{
+     cart_id: String! @doc(description:"The unique ID that identifies the shopper's cart")
+     gift_message: GiftMessageInput @doc(description: "Gift message details for the cart")
+     gift_wrapping_id: ID @doc(description: "The unique identifier of the gift wrapping to be used for the cart")
+     printed_card_included: Boolean! @doc(description: "Whether customer requested printed card for the cart")
+     gift_receipt_included: Boolean! @doc(description: "Whether customer requested gift receipt for the cart")
+}
+
 ###### End: Extending existing types ######
 
 
@@ -188,8 +215,8 @@ type SetGiftOptionsOnCartOutput {
     cart: Cart! @doc(description: "The modified cart object")
 }
 
-type GiftMessageInput {
-    to: String! @doc(description: "Recipient name")
+input GiftMessageInput {
+    to: String! @doc(description: "Recepient name")
     from: String! @doc(description: "Sender name")
     message: String! @doc(description: "Gift message text")
 }
