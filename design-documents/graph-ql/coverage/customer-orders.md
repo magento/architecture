@@ -72,7 +72,7 @@ type CustomerOrder {
     invoices: [Invoice] @doc("invoice list for the order")
     credit_memos: [CreditMemo] @doc("credit memo list for the order")
     shipments: [OrderShipment] @doc("shipment list for the order")
-    payment_methods: [PaymentMethod] @doc("payment details for the order")
+    payment_methods: [OrderPaymentMethod] @doc("payment details for the order")
     shipping_address: OrderAddress @doc("shipping address for the order")
     billing_address: OrderAddress @doc("billing address for the order")
     carrier: String @doc("shipping carrier for the order delivery")
