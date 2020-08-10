@@ -151,7 +151,7 @@ type GiftCardItem {
 
 @doc("Represents order item options like selected or entered")
 type OrderItemOption {
-    id: ID! @doc("name of the option")
+    label: String! @doc("name of the option")
     value: String! @doc("value of the option")
 }
 ```
