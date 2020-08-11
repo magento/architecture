@@ -257,6 +257,14 @@ The query should allow to fetch the following data:
           description
         }
       }
+      approval_flow {
+        items {
+          uid
+          status
+          title
+          description
+        }
+      }
     }
   }
 }
