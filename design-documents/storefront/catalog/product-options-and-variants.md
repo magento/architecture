@@ -159,7 +159,6 @@ alter table product_variant_matrix
 ```
 
 `product_variant_matrix` - Stores the correlation between option values and variants, by using this correlation, we can say which of option combination is real.
-Field `product_variant_matrix.weight` - says how many options should match to match the whole variant.
 
 The following script models data from the picture above.
 
@@ -196,11 +195,11 @@ set @product_data :=  '
 
 insert into products (object_id, data) values ('t-shirt', @product_data);
 
-insert into product_variant_matrix (value, object_id, weight)
+insert into product_variant_matrix (value, object_id)
 values
-       ('t-shirt:options.size.values.l', 'l-red', 2), ('t-shirt:options.color.values.red', 'l-red', 2),
-       ('t-shirt:options.size.values.m', 'm-red', 2), ('t-shirt:options.color.values.red', 'm-red', 2),
-       ('t-shirt:options.size.values.m', 'm-green', 2), ('t-shirt:options.color.values.green', 'm-green', 2)
+       ('t-shirt:options.size.values.l', 'l-red'), ('t-shirt:options.color.values.red', 'l-red'),
+       ('t-shirt:options.size.values.m', 'm-red'), ('t-shirt:options.color.values.red', 'm-red'),
+       ('t-shirt:options.size.values.m', 'm-green'), ('t-shirt:options.color.values.green', 'm-green')
 ;
 ```
 
@@ -242,9 +241,12 @@ Starting this point we can look into variants to analyze remaining options.
 From the proposed example, we have chosen "Size": "M".
 
 ```sql
-mysql> select
-    ->     object_id, value, weight
-    -> from product_variant_matrix
+mysql> select t.*
+    -> from (
+    ->     select
+    ->         object_id, value, count(1) over (partition by object_id) as weight
+    ->     from product_variant_matrix
+    -> ) as t
     -> where value in ('t-shirt:options.size.values.m');
 +-----------+-------------------------------+--------+
 | object_id | value                         | weight |
@@ -252,7 +254,8 @@ mysql> select
 | m-green   | t-shirt:options.size.values.m |      2 |
 | m-red     | t-shirt:options.size.values.m |      2 |
 +-----------+-------------------------------+--------+
-2 rows in set (0.01 sec)
+2 rows in set (0.00 sec)
+
 ```
 
 As you may see, our selection has matched two variants.
@@ -332,7 +335,6 @@ With the response API has to return:
 ```proto
 message OptionSelection
 {
-    string productId = 1;
     repeated string values = 2; 
 }
 message OptionResponse {
