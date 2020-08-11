@@ -244,10 +244,22 @@ The query should allow to fetch the following data:
           text
         }
       }
+      history_log(currentPage: 1, pageSize: 10) {
+        page_info {
+          current_page
+          page_size
+          total_pages
+        }
+        total_count
+        items {
+          uid
+          date_and_time
+          description
+        }
+      }
     }
   }
 }
-
 ```
 
 ### Add items to cart from purchase order

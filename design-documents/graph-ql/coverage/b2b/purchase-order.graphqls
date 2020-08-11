@@ -23,13 +23,14 @@ type PurchaseOrder {
     created_by: String! @doc(description: "The name of the user who created the purchase order")
     status: PurchaseOrderStatus! @doc(description: "The current status of the purcahse order")
     total: PurchaseOrderTotal @doc(description: "Contains details about the calculated totals for the purchase order")
-    items(currentPage: Int = 1, pageSize: Int = 20): PurchaseOrderItems @doc(description: "Items that belong to the purchase order")
     comments(currentPage: Int = 1, pageSize: Int = 20): PurchaseOrderComments @doc(description: "Purchase order comments")
     payment_methods: [PaymentMethod] @doc(description: "Payment details for the purchase order")
     shipping_address: CustomerAddress @doc(description: "The shipping address for the purchase order")
     billing_address: CustomerAddress @doc(description: "The billing address for the purchase order")
     carrier: String @doc(description: "The shipping carrier for the purchase order delivery")
     shipping_method: String @doc(description: "The delivery method for the purchase order")
+    items(currentPage: Int = 1, pageSize: Int = 20): PurchaseOrderItems @doc(description: "Items that belong to the purchase order")
+    history_log(currentPage: Int = 1, pageSize: Int = 20): PurchaseOrderHistoryLog @doc(description: "The log of the events related to the purchase order")
 }
 
 type PurchaseOrderComments {
@@ -39,10 +40,22 @@ type PurchaseOrderComments {
 }
 
 type PurchaseOrderComment {
-    uid: ID!
+    uid: ID! @doc(description: "Unique identifier of the comment.")
     creation_date_and_time: String! @doc(description: "The date and time when the comment was created")
     author: String! @doc(description: "The name of the user who left the comment")
     text: String! @doc(description: "The text of the comment")
+}
+
+type PurchaseOrderHistoryLog {
+    items: [PurchaseOrderHistoryItem]!
+    page_info: SearchResultPageInfo
+    total_count: Int
+}
+
+type PurchaseOrderHistoryItem {
+    uid: ID! @doc(description: "Unique identifier of the purchase rder history item.")
+    date_and_time: String! @doc(description: "The date and time when the event happened.")
+    description: String! @doc(description: "Description of the event.")
 }
 
 type PurchaseOrderItems {
