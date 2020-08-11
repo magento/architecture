@@ -122,7 +122,6 @@ message ProductOption {
 message ProductVariant {
     repeated string optionValueId = 1;
     string id = 2;
-    int32 weight = 3;
     string productIdentifierInPricing = 500; #*
     string productIdentifierInInventory = 600; #*
 }
@@ -150,7 +149,6 @@ Table `products` stores registry of products.
 create table product_variant_matrix (
     value_id char(36) not null,
     object_id char(36) not null,
-    weight tinyint not null,
     primary key (value_id, object_id)
 );
 
@@ -306,7 +304,7 @@ options: [
 ```
 
 *Note: To achieve more advanced behavior, the variants could be "uneven" inside the single product.
- They may have different weight.
+ They may have different "weight".
  For instance, you would like to track only t-shirts XL: size separately for some reason (a different price or stock). The example above focused on covering the main case scenario. Still, the approach, overall, is meant to support extending the logic of resolving option values onto a variant under the hood.*
 ![](https://app.lucidchart.com/publicSegments/view/de9972a8-f630-4400-aacb-d3d9858862cf/image.png)
 
