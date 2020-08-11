@@ -59,7 +59,7 @@ type PurchaseOrderComments {
 
 type PurchaseOrderComment {
     uid: ID! @doc(description: "Unique identifier of the comment.")
-    creation_date_and_time: String! @doc(description: "The date and time when the comment was created")
+    timestamp: String! @doc(description: "The date and time when the comment was created")
     author: String! @doc(description: "The name of the user who left the comment")
     text: String! @doc(description: "The text of the comment")
 }
@@ -72,7 +72,7 @@ type PurchaseOrderHistoryLog {
 
 type PurchaseOrderHistoryItem {
     uid: ID! @doc(description: "Unique identifier of the purchase rder history item.")
-    date_and_time: String! @doc(description: "The date and time when the event happened.")
+    timestamp: String! @doc(description: "The date and time when the event happened.")
     description: String! @doc(description: "Description of the event.")
 }
 
@@ -93,7 +93,7 @@ type PurchaseOrderTotal @doc(description: "Contains details about the sales tota
     shipping_handling: ShippingHandling @doc(description: "Contains details about the shipping and handling costs for the purchase purchase order")
 }
 
-type PurchaseOrderItem @doc(description: "Purchase order item details") {
+interface PurchaseOrderItemInterface @doc(description: "Purchase order item details") {
     uid: ID! @doc(description: "The unique identifier of the purchase order item")
     product_name: String @doc(description: "The name of the base product")
     product_sku: String! @doc(description: "The SKU of the base product")
@@ -103,11 +103,21 @@ type PurchaseOrderItem @doc(description: "Purchase order item details") {
     discounts: [Discount] @doc(description: "The final discount information for the product")
     selected_options: [PurchaseOrderItemOption] @doc(description: "The selected options for the base product, such as color or size")
     entered_options: [PurchaseOrderItemOption] @doc(description: "The entered option for the base product, such as a logo or image")
-    quantity: Float @doc(description: "The number of units for this item")
+    quantity: Float! @doc(description: "The number of units for this item")
 }
 
-type PurchaseOrderItemOption @doc(description: "Represents purcahse order item options like selected or entered") {
-    uid: ID! @doc(description: "The name of the option")
+type PurchaseOrderItem implements PurchaseOrderItemInterface {
+
+}
+
+type PurchaseOrderBundleItem implements PurchaseOrderItemInterface {
+    parent_product_sku: String! @doc(description: "SKU of the bundle itself")
+    parent_product_quantity: Float! @doc(description: "Quantity of the bundle itself")
+}
+
+type PurchaseOrderItemOption @doc(description: "Represents purcahse order item options") {
+    uid: ID! @doc(description: "The unique ID of the option")
+    label: String! @doc(description: "The label of the option")
     value: String! @doc(description: "The value of the option")
 }
 
@@ -125,4 +135,9 @@ enum PurchaseOrderStatus {
 type CustomerAddress {
     # This field must be added to the CustomerAddress type definition directly in CustomerGraphQl module
     country: Country @doc(description: "The customer's country")
+}
+
+type CartItemInput {
+    # This field must be added to the CartItemInput type definition directly in QuoteGraphQl module
+    parent_quantity: Float @doc(description: "Parent quantity can be used when adding complex product to cart. For example bundle products")
 }

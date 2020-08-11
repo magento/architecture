@@ -177,10 +177,12 @@ The query should allow to fetch the following data:
           quantity
           selected_options {
             uid
+            label
             value
           }
           entered_options {
             uid
+            label
             value
           }
           discounts {
@@ -239,7 +241,7 @@ The query should allow to fetch the following data:
         total_count
         items {
           uid
-          creation_date_and_time
+          timestamp
           author
           text
         }
@@ -253,7 +255,7 @@ The query should allow to fetch the following data:
         total_count
         items {
           uid
-          date_and_time
+          timestamp
           description
         }
       }
@@ -271,6 +273,112 @@ The query should allow to fetch the following data:
 ```
 
 ### Add items to cart from purchase order
+
+Get details about purchase items order items that need to be added to cart:
+
+```graphql
+{
+  customer {
+    purchase_order(uid: "abc234hsasdfa") {
+      uid
+      items(currentPage: 1, pageSize: 1000) {
+        items {
+          uid
+          product_sku
+          quantity
+          selected_options {
+            uid
+          }
+          entered_options {
+            uid
+            value
+          }
+        }
+      }
+    }
+  }
+}
+``` 
+
+Using the results from the previous request, execute the following mutation to add items to cart. This will work for all product types except for bundle.
+
+```graphql
+mutation {
+  addProductsToCart(
+    cartId: "existing-cart-id-id", 
+    cartItems: [
+      {
+        sku: "simple-hat", 
+        quantity: 2, 
+        selected_options: [
+          "hash based on custom option for the select type goes here"
+        ], 
+        entered_options: [
+          {
+            uid: "hash from custom phrase option ID", 
+            value: "Custom Hat"
+          }
+        ]
+      }
+    ]
+  ) {
+    cart {
+      items {
+        id
+      }
+    }
+  }
+}
+```
+
+Bundle product is added to cart by specifying `parent_sku` and `parent_quantity`.
+`CartItemInput` needs to be extended with a new field `parent_quantity` directly in `QuoteGraphQl` module.
+
+```graphql
+mutation {
+  addProductsToCart(
+    cartId: "existing-cart-id-id", 
+    cartItems: [
+      {
+        sku: "fan-kit-hat", 
+        parent_sku: "fan-kit",
+        quantity: 2, 
+        parent_quantity: 3,
+        selected_options: [
+          "hash based on custom option for the select type goes here. Must be identical for all bundle children"
+        ], 
+        entered_options: [
+          {
+            uid: "hash based on custom phrase option goes here. Must be identical for all bundle children", 
+            value: "Custom Text"
+          }
+        ]
+      },
+      {
+        sku: "fan-kit-scarf", 
+        parent_sku: "fan-kit",
+        quantity: 1, 
+        parent_quantity: 3,
+         selected_options: [
+          "hash based on custom option for the select type goes here. Must be identical for all bundle children"
+        ], 
+        entered_options: [
+          {
+            uid: "hash based on custom phrase option goes here. Must be identical for all bundle children", 
+            value: "Custom Text"
+          }
+        ]
+      }
+    ]
+  ) {
+    cart {
+      items {
+        id
+      }
+    }
+  }
+}
+```
 
 ### Add purchase order comment
 
