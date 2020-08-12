@@ -77,7 +77,7 @@ type PurchaseOrderHistoryItem {
 }
 
 type PurchaseOrderItems {
-    items: [PurchaseOrderItem]!
+    items: [PurchaseOrderItemInterface]!
     page_info: SearchResultPageInfo
     total_count: Int
 }

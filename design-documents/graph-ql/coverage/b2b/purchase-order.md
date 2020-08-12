@@ -293,6 +293,10 @@ Get details about purchase items order items that need to be added to cart:
             uid
             value
           }
+          ... on PurchaseOrderBundleItem {
+            parent_product_sku
+            parent_product_quantity
+          }
         }
       }
     }
