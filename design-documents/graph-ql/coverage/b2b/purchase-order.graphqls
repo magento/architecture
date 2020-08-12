@@ -1,3 +1,44 @@
+type Mutation {
+    addPurchaseOrderComment(input: AddPurchaseOrderCommentInput!): AddPurchaseOrderCommentOutput
+    approvePurchaseOrder(input: ApprovePurchaseOrderInput!): ApprovePurchaseOrderOutput
+    cancelPurchaseOrder(input: CancelPurchaseOrderInput!): CancelPurchaseOrderOutput
+    rejectPurchaseOrder(input: RejectPurchaseOrderInput!): RejectPurchaseOrderOutput
+}
+
+input ApprovePurchaseOrderInput {
+    purchase_order_uid: ID!
+}
+
+type ApprovePurchaseOrderOutput {
+    purchase_order: PurchaseOrder
+}
+
+input CancelPurchaseOrderInput {
+    purchase_order_uid: ID!
+}
+
+type CancelPurchaseOrderOutput {
+    purchase_order: PurchaseOrder
+}
+
+input RejectPurchaseOrderInput {
+    purchase_order_uid: ID!
+}
+
+type RejectPurchaseOrderOutput {
+    purchase_order: PurchaseOrder
+}
+
+input AddPurchaseOrderCommentInput {
+    purchase_order_uid: ID!
+    comment: String!
+}
+
+type AddPurchaseOrderCommentOutput {
+    purchase_order: PurchaseOrder
+    comment: PurchaseOrderComment
+}
+
 type Customer {
     purchase_orders(filter: PurchaseOrdersFilterInput, currentPage: Int = 1, pageSize: Int = 20): PurchaseOrders
     purchase_order(uid: ID!): PurchaseOrder
@@ -32,6 +73,13 @@ type PurchaseOrder {
     items(currentPage: Int = 1, pageSize: Int = 20): PurchaseOrderItems @doc(description: "Items that belong to the purchase order")
     history_log(currentPage: Int = 1, pageSize: Int = 20): PurchaseOrderHistoryLog @doc(description: "The log of the events related to the purchase order")
     approval_flow: PurchaseOrderApprovalFlow @doc(description: "The log of the events related to the purchase order approval flow")
+    available_actions: [PurchaseOrderAction] @doc(description: "Purcahse order actions available to the customer. Can be used to display action buttons on the client")
+}
+
+enum PurchaseOrderAction {
+    REJECT
+    CANCEL
+    APPROVE
 }
 
 type PurchaseOrderApprovalFlow {

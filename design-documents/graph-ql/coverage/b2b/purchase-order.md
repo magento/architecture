@@ -120,6 +120,7 @@ The query should allow to fetch the following data:
  - Comments
  - History Log
  - Approval Flow
+ - Available actions (actions, customer can execute on purchase order)
  
 ```graphql
 {
@@ -267,6 +268,7 @@ The query should allow to fetch the following data:
           description
         }
       }
+      available_actions
     }
   }
 }
@@ -386,13 +388,67 @@ mutation {
 
 ### Add purchase order comment
 
+In the mutation response, it is possible to request just created comment, or the whole purchase order, depending on the client needs.
+
+```graphql
+mutation {
+  addPurchaseOrderComment(
+    input: {
+      purchase_order_uid: "h2l1k23gpw", 
+      comment: "Purchase order comment"
+    }
+  ) {
+    comment {
+      uid
+      author
+      text
+      timestamp
+    }
+    purchase_order {
+      uid
+    }
+  }
+}
+```
+
 ### Reject purchase order
+
+```graphql
+mutation {
+  rejectPurchaseOrder(input: {purchase_order_uid: "asdghwl324a"}) {
+    purchase_order {
+      uid
+      status
+    }
+  }
+}
+```
 
 ### Cancel purchase order
 
+```graphql
+mutation {
+  cancelPurchaseOrder(input: {purchase_order_uid: "asdghwl324a"}) {
+    purchase_order {
+      uid
+      status
+    }
+  }
+}
+```
+
 ### Approve purchase order
 
-### Get a list of available actions
+```graphql
+mutation {
+  approvePurchaseOrder(input: {purchase_order_uid: "asdghwl324a"}) {
+    purchase_order {
+      uid
+      status
+    }
+  }
+}
+```
 
 ### Store config
  
