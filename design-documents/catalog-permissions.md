@@ -21,9 +21,7 @@ Below is the example of how data looks like for 2 customer groups.
 
 ```json
 {
-	// part of product or category data
 	"permissions": {
-		// id of customer group
 		"1": {
 			"is_visible": "true",
 			"allow_display_prices": "true",
@@ -52,7 +50,7 @@ Here is how synchronization of data might look like.
 
 API of the Catalog Lists service.
 
-```json
+```
 syntax = "proto3";
 
 // Request
@@ -109,7 +107,7 @@ GET catalog-export/category-product/product-relation?ids[0]=1&ids[1]=2
 
 API to update catalogs for categories and products.
 
-```json
+```
 syntax = "proto3";
 
 message CatalogProductRelation {
@@ -211,11 +209,10 @@ When category assignment change we need to publish event that we need to sync ca
 {
 	"meta": {
 		"type": "catalog.product.relation.updated"
-	}
+	},
 	"data": {
 		"relations": [
 			{
-				// Array of products in category
 				"10": [1, 2],
 				"15": [1, 2, 3]
 			}
