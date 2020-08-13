@@ -191,6 +191,9 @@ As we could have anchor categories, we need to publish events for child categori
 
 ### Option 2 - Add index to Message broker (alternative)
 
+![Catalog permissions sync stateless message broker](catalog-permissions/catalog-permissions-sync-statefull-message-broker.png)
+
+
 If we publish only event that permissions for category updated and expect message broker to calculate permissions for child categories and products that belong to these categories, we would have to request data that didn't change for categories and products unless we have index on message broker side.
 
 Calculations for example 1
