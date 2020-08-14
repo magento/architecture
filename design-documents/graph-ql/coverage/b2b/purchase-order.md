@@ -452,10 +452,18 @@ mutation {
 
 ### Store config
  
-Consider combining the following settings and exposing as a single field:
-- Check if purchase order is enabled on global level
+The following settings and combined and exposed as a single customer field:
+- If purchase order is enabled on global level
 - If purchase order enabled on company level
-- If comapnies are enabled on global level
+- If companies are enabled on global level
+
+```graphql
+{
+  customer {
+    purchase_orders_enabled
+  }
+}
+```
 
 ### View a list of approval rules
 

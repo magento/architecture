@@ -42,6 +42,7 @@ type AddPurchaseOrderCommentOutput {
 type Customer {
     purchase_orders(filter: PurchaseOrdersFilterInput, currentPage: Int = 1, pageSize: Int = 20): PurchaseOrders
     purchase_order(uid: ID!): PurchaseOrder
+    purchase_orders_enabled: Boolean! @doc(description: "Whether purchase orders functionality is enabled for current customer. Takes into account global and company-level settings.")
 }
 
 input PurchaseOrdersFilterInput {
