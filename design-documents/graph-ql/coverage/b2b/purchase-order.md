@@ -467,7 +467,32 @@ The following settings and combined and exposed as a single customer field:
 
 ### View a list of approval rules
 
-Should support pagination.
+```graphql
+{
+  customer {
+    purchase_order_approval_rules(
+      currentPage: 1,
+      pageSize: 10
+    ) {
+      items {
+        uid
+        name
+        status
+        type
+        created_by
+        applies_to
+        approver
+      }
+      total_count
+      page_info {
+        current_page
+        page_size
+        total_pages
+      }
+    }
+  }
+}
+```
 
 ### View approval rule details
 

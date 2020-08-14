@@ -40,8 +40,9 @@ type AddPurchaseOrderCommentOutput {
 }
 
 type Customer {
-    purchase_orders(filter: PurchaseOrdersFilterInput, currentPage: Int = 1, pageSize: Int = 20): PurchaseOrders
-    purchase_order(uid: ID!): PurchaseOrder
+    purchase_orders(filter: PurchaseOrdersFilterInput, currentPage: Int = 1, pageSize: Int = 20): PurchaseOrders @doc(description: "A list of purchase orders visible to the customer")
+    purchase_order(uid: ID!): PurchaseOrder @doc(description: "Purchase order details")
+    purchase_order_approval_rules(currentPage: Int = 1, pageSize: Int = 20): PurchaseOrderApprovalRules @doc(description: "A list of purchase order approval rules visible to the customer")
     purchase_orders_enabled: Boolean! @doc(description: "Whether purchase orders functionality is enabled for current customer. Takes into account global and company-level settings.")
 }
 
@@ -55,6 +56,33 @@ type PurchaseOrders {
     items: [PurchaseOrder]!
     page_info: SearchResultPageInfo
     total_count: Int
+}
+
+type PurchaseOrderApprovalRules {
+    items: [PurchaseOrderApprovalRule]!
+    page_info: SearchResultPageInfo
+    total_count: Int
+}
+
+type PurchaseOrderApprovalRule {
+    uid: ID! @doc(description: "Unique identifier for the purcahse order approval rule")
+    name: String! @doc(description: "Name of the purcahse order approval rule")
+    status: PurchaseOrderApprovalRuleStatus! @doc(description: "Status of the purcahse order approval rule")
+    type: PurchaseOrderApprovalRuleType! @doc(description: "Type of the purcahse order approval rule")
+    created_by: String! @doc(description: "The name of the user who created the purcahse order approval rule")
+    applies_to: String! @doc(description: "The name of the user(s) affected by the the purcahse order approval rule")
+    approver: String! @doc(description: "The name of the user who needs to approve purchase orders that trigger the approval rule")
+}
+
+enum PurchaseOrderApprovalRuleStatus {
+    ENABLED
+    DISABLED
+}
+
+enum PurchaseOrderApprovalRuleType {
+    ORDER_TOTAL
+    SHIPPING_COST
+    NUMBER_OF_SKUS
 }
 
 type PurchaseOrder {
