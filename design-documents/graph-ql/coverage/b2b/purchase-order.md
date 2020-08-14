@@ -496,6 +496,34 @@ The following settings and combined and exposed as a single customer field:
 
 ### View approval rule details
 
+```graphql
+{
+  customer {
+    purchase_order_approval_rule(uid: "abc2710fsdlfh") {
+      uid
+      name
+      status
+      type
+      created_by
+      applies_to
+      approver
+      condition {
+        operator
+        ... on PurchaseOrderApprovalRuleConditionAmount {
+          amount {
+            value
+            currency
+          }
+        }
+        ... on PurchaseOrderApprovalRuleConditionQuantity {
+          quantity
+        }
+      }
+    }
+  }
+}
+```
+
 ### Create new approval rule
 
 #### Get list of "Applies to" users
