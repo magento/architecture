@@ -209,14 +209,19 @@ enum PurchaseOrderApprovalFlowItemStatus {
 type PurchaseOrderComments {
     items: [PurchaseOrderComment]!
     page_info: SearchResultPageInfo
-    total_count: Int
+    total_count: Int!
 }
 
 type PurchaseOrderComment {
     uid: ID! @doc(description: "Unique identifier of the comment.")
     timestamp: String! @doc(description: "The date and time when the comment was created")
-    author: String! @doc(description: "The name of the user who left the comment")
+    author: PurchaseOrderCommentAuthor! @doc(description: "The name of the user who left the comment")
     text: String! @doc(description: "The text of the comment")
+}
+
+type PurchaseOrderCommentAuthor {
+    firstname: String! @doc(description: "First name of the user who left the purchase order comment")
+    lastname: String! @doc(description: "Last name of the user who left the purchase order comment")
 }
 
 type PurchaseOrderHistoryLog {
@@ -292,7 +297,7 @@ type CustomerAddress {
     country: Country @doc(description: "The customer's country")
 }
 
-type CartItemInput {
+input CartItemInput {
     # This field must be added to the CartItemInput type definition directly in QuoteGraphQl module
     parent_quantity: Float @doc(description: "Parent quantity can be used when adding complex product to cart. For example bundle products")
 }

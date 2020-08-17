@@ -243,7 +243,10 @@ The query should allow to fetch the following data:
         items {
           uid
           timestamp
-          author
+          author {
+            firstname
+            lastname
+          }           
           text
         }
       }
@@ -400,7 +403,10 @@ mutation {
   ) {
     comment {
       uid
-      author
+      author {
+        firstname
+        lastname
+      }   
       text
       timestamp
     }
