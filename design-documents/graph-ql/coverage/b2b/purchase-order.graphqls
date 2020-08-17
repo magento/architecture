@@ -44,7 +44,14 @@ type Customer {
     purchase_order(uid: ID!): PurchaseOrder @doc(description: "Purchase order details")
     purchase_order_approval_rules(currentPage: Int = 1, pageSize: Int = 20): PurchaseOrderApprovalRules @doc(description: "A list of purchase order approval rules visible to the customer")
     purchase_order_approval_rule(uid: ID!): PurchaseOrderApprovalRule @doc(description: "Purchase order approval rule details")
+    purchase_order_approval_rule_metadata: PurchaseOrderApprovalRuleMetadata @doc(description: "Purchase order approval rule metadata which is can be used for rule edit form rendering")
     purchase_orders_enabled: Boolean! @doc(description: "Whether purchase orders functionality is enabled for current customer. Takes into account global and company-level settings")
+}
+
+type PurchaseOrderApprovalRuleMetadata {
+    available_applies_to: [String]! @doc(description: "A list of B2B user roles that the rule can be applied to")
+    available_condition_currencies: [CurrencyEnum]! @doc(description: "A list of currencies that can be used to create approval rules based on ammounts, for example shipping cost rules")
+    available_requires_approval_from: [String]! @doc(description: "A list of B2B user roles that can be specified as approvers for the approval rules")
 }
 
 input PurchaseOrdersFilterInput {

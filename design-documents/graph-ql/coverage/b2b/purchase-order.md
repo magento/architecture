@@ -526,9 +526,19 @@ The following settings and combined and exposed as a single customer field:
 
 ### Create new approval rule
 
-#### Get list of "Applies to" users
+To render the rule creation and update forms, some metadata is required:
 
-#### Get list of "Requires approval from" users
+```graphql
+{
+  customer {
+    purchase_order_approval_rule_metadata {
+      available_applies_to
+      available_requires_approval_from
+      available_condition_currencies 
+    }
+  }
+}
+```
 
 ### Update approval rule
 
