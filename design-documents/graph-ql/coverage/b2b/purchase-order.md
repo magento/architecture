@@ -532,9 +532,49 @@ To render the rule creation and update forms, some metadata is required:
 {
   customer {
     purchase_order_approval_rule_metadata {
-      available_applies_to
-      available_requires_approval_from
+      available_applies_to {
+        id
+        name
+      }
+      available_requires_approval_from {
+        id
+        name
+      }
       available_condition_currencies 
+    }
+  }
+}
+```
+
+Create a new rule with the condition based on shipping cost. In the response it is possible to request the rule just created, or a list of all rules available to the current user for viewing.
+
+```graphql
+mutation {
+  createPurchaseOrderApprovalRule(
+    input: {
+      approval_rule: {
+        name: "Junior Buyer Orders"
+		description: "The rule applies to junior buyers"
+        applies_to: ["vah234gwy3"]
+        type: SHIPPING_COST
+        condition: {
+          operator: MORE_THAN_OR_EQUAL_TO
+        	amount: {
+            currency: USD
+            value: 1000.50
+          }
+        }
+        requires_approval_from: ["ghwldsfh237s", "fhsk23h49kl"]
+      }
+    }
+  ) {
+    approval_rule {
+      uid
+    }
+    approval_rules(currentPage: 1, pageSize: 10) {
+      items {
+        uid
+      }
     }
   }
 }
@@ -542,12 +582,58 @@ To render the rule creation and update forms, some metadata is required:
 
 ### Update approval rule
 
+Similarly to creation of the rule, metadata for the form rendering needs to be fetched first.
+
+The next mutation demonstrates updating of an existing rule with the condition based on the number of SKUs.
+
+```graphql
+mutation {
+  updatePurchaseOrderApprovalRule(
+    input: {
+      approval_rule_uid: "gasdgfhwlr234sdfla"
+      approval_rule: {
+        name: "Junior Buyer Orders"
+		description: "The rule applies to junior buyers"
+        applies_to: ["vah234gwy3"]
+        type: NUMBER_OF_SKUS
+        condition: {
+          operator: MORE_THAN
+        	quantity: 100
+        }
+        requires_approval_from: ["ghwldsfh237s"]
+      }
+    }
+  ) {
+    approval_rule {
+      uid
+    }
+    approval_rules(currentPage: 1, pageSize: 10) {
+      items {
+        uid
+      }
+    }
+  }
+}
+```
+
 ### Delete approval rule
 
+```graphql
+mutation {
+  deletePurchaseOrderApprovalRule(
+    input: {
+      approval_rule_uid: "gabh572kfhs"
+    }
+  ) {
+    approval_rules(currentPage: 1, pageSize: 10) {
+      items {
+        uid
+      }
+    }
+  }
+}
+```
 
 ## Implementation details
 
 The purchase order GraphQL schema depends on Sales and Customer GraphQL schemas.
-
-
-

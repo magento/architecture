@@ -4,7 +4,8 @@ type Mutation {
     cancelPurchaseOrder(input: CancelPurchaseOrderInput!): CancelPurchaseOrderOutput @doc(description: "Cancel purchase order")
     rejectPurchaseOrder(input: RejectPurchaseOrderInput!): RejectPurchaseOrderOutput @doc(description: "Reject purchase order")
     createPurchaseOrderApprovalRule(input: CreatePurchaseOrderApprovalRuleInput!): CreatePurchaseOrderApprovalRuleOutput @doc(description: "Create purchase order approval rule")
-    updatePurchaseOrderApprovalRule(input: UpdatePurchaseOrderApprovalRuleInput!): UpdatePurchaseOrderApprovalRuleOutput @doc(description: "Update purchase order approval rule")
+    updatePurchaseOrderApprovalRule(input: UpdatePurchaseOrderApprovalRuleInput!): UpdatePurchaseOrderApprovalRuleOutput @doc(description: "Update existing purchase order approval rule")
+    deletePurchaseOrderApprovalRule(input: DeletePurchaseOrderApprovalRuleInput!): DeletePurchaseOrderApprovalRuleOutput @doc(description: "Delete existing purchase order approval rule")
 }
 
 type CreatePurchaseOrderApprovalRuleOutput {
@@ -17,6 +18,10 @@ type UpdatePurchaseOrderApprovalRuleOutput {
     approval_rules(currentPage: Int = 1, pageSize: Int = 20): PurchaseOrderApprovalRules @doc(description: "A list of purchase order approval rules visible to the customer")
 }
 
+type DeletePurchaseOrderApprovalRuleOutput {
+    approval_rules(currentPage: Int = 1, pageSize: Int = 20): PurchaseOrderApprovalRules @doc(description: "A list of purchase order approval rules visible to the customer")
+}
+
 input CreatePurchaseOrderApprovalRuleInput {
     approval_rule: PurchaseOrderApprovalRuleInput! @doc(description: "Purchase order approval rule data")
 }
@@ -26,13 +31,17 @@ input UpdatePurchaseOrderApprovalRuleInput {
     approval_rule: PurchaseOrderApprovalRuleInput! @doc(description: "Purchase order approval rule data")
 }
 
+input DeletePurchaseOrderApprovalRuleInput {
+    approval_rule_uid: ID! @doc(description: "Purchase order approval rule ID")
+}
+
 input PurchaseOrderApprovalRuleInput {
     name: String! @doc(description: "Purchase order approval rule name")
     description: String @doc(description: "Purchase order approval rule description")
-    applies_to: [String!]! @doc(description: "A list of B2B user roles to which this purchase order approval rule should be applied")
+    applies_to: [ID]! @doc(description: "A list of B2B user roles to which this purchase order approval rule should be applied. In case when empty array is provided, the rule will be applied to all user roles in the system, including those created in the future")
     type: PurchaseOrderApprovalRuleType! @doc(description: "Purchase order approval rule type")
     condition: CreatePurchaseOrderApprovalRuleConditionInput! @doc(description: "Purchase order approval rule condition")
-    requires_approval_from: [String!]! @doc(description: "A list of B2B user roles that can approve this purchase order approval rule")
+    requires_approval_from: [ID!]! @doc(description: "A list of B2B user roles that can approve this purchase order approval rule")
 }
 
 input CreatePurchaseOrderApprovalRuleConditionInput {
@@ -90,15 +99,15 @@ type Customer {
 }
 
 type PurchaseOrderApprovalRuleMetadata {
-    available_applies_to: [String]! @doc(description: "A list of B2B user roles that the rule can be applied to")
+    available_applies_to: [CompanyRole]! @doc(description: "A list of B2B user roles that the rule can be applied to")
     available_condition_currencies: [CurrencyEnum]! @doc(description: "A list of currencies that can be used to create approval rules based on ammounts, for example shipping cost rules")
-    available_requires_approval_from: [String]! @doc(description: "A list of B2B user roles that can be specified as approvers for the approval rules")
+    available_requires_approval_from: [CompanyRole]! @doc(description: "A list of B2B user roles that can be specified as approvers for the approval rules")
 }
 
 input PurchaseOrdersFilterInput {
-    status: PurchaseOrderStatus
-    createdBy: FilterStringTypeInput
-    createdDate: FilterRangeTypeInput
+    status: PurchaseOrderStatus @doc(description: "Filter by the status of the purchase order")
+    createdBy: FilterStringTypeInput @doc(description: "Filter by the name of the user who created the purchase order")
+    createdDate: FilterRangeTypeInput @doc(description: "Filter by the creation date of the purchase order")
 }
 
 type PurchaseOrders {
