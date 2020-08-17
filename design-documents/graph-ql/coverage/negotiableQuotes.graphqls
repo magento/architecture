@@ -172,7 +172,7 @@ enum NegotiableQuoteCommentCreatorType {
 type NegotiableQuote {
     id: ID!
     name: String!
-    items: [NegotiableQuoteItem!]
+    items: [CartItemInterface!]
     # Attachment Support is dependent on headless File Upload design
     # attachments: [AttachmentContent]
     comments: [NegotiableQuoteComment!]
@@ -196,11 +196,6 @@ enum NegotiableQuoteStatus {
     CLOSED
     DECLINED
     EXPIRED
-}
-
-type NegotiableQuoteItem @doc(description: "A line item on a Negotiable Quote") {
-    id: ID! @doc(description: "ID of the line item (not product) in a Negotiable Quote")
-    item: CartItemInterface @doc(description: "Product assigned to line item, with selected configurations")
 }
 
 input NegotiableQuoteFilterInput {
@@ -247,8 +242,8 @@ type NegotiableQuoteHistoryChanges {
 
 # Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L40-L73
 type NegotiableQuoteHistoryStatusChange {
-    old_status: NegotiableQuoteStatus @doc(description: "Will be null for the first history entry on a Negotiable Quote")
-    new_status: NegotiableQuoteStatus!
+    old_status: String @doc(description: "Will be null for the first history entry on a Negotiable Quote")
+    new_status: String! @doc(description: "Negotiable Quote History New Status.")
 }
 
 # Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L48
