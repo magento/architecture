@@ -1,6 +1,6 @@
 ## Use cases
 
-# Admin user obtains customer token
+### Admin user obtains customer token
 
 Admin user is expected to be authenticated using admin token. While there is no GraphQL Mutation for retrieving the admin token, REST should be used (see [example](https://devdocs.magento.com/guides/v2.4/graphql/queries/index.html#staging)).
 
@@ -18,7 +18,11 @@ mutation {
 }
 ```
 
-### Additional requirements
+### Customer can manage and view "Allow remote shopping assistance" flag
+
+This flag should be added to `Customer`, `CustomerCreateInput` and `CustomerUpdateInput`.
+
+## Additional requirements
  1.  A new `LoginAsCustomerGraphQL` module should be created. 
  2. `Magento_LoginAsCustomer::login` permission must be declared in `LoginAsCustomer` module.
  3. The following store config settings must be honored, but should not be exposed as part of `StoreConfig` GraphQL query:
@@ -26,7 +30,7 @@ mutation {
 <login_as_customer>
     <general>
         <enabled>0</enabled>
-        <authentication_data_expiration_time>60</authentication_data_expiration_time>
     </general>
 </login_as_customer>
 ```
+ 4. Customer field `allow_remote_shopping_assistance` must be taken into account

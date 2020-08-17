@@ -11,3 +11,18 @@ type GenerateCustomerTokenAsAdminOutput
 {
     customer_token: String!
 }
+
+type Customer
+{
+    allow_remote_shopping_assistance: Boolean!
+}
+
+input CustomerCreateInput
+{
+    allow_remote_shopping_assistance: Boolean
+}
+
+input CustomerUpdateInput
+{
+    allow_remote_shopping_assistance: Boolean
+}
