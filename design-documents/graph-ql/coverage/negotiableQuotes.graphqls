@@ -242,8 +242,8 @@ type NegotiableQuoteHistoryChanges {
 
 # Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L40-L73
 type NegotiableQuoteHistoryStatusChange {
-    old_status: String @doc(description: "Will be null for the first history entry on a Negotiable Quote")
-    new_status: String! @doc(description: "Negotiable Quote History New Status.")
+    old_status: NegotiableQuoteStatus @doc(description: "Will be null for the first history entry on a Negotiable Quote")
+    new_status: NegotiableQuoteStatus! @doc(description: "Negotiable Quote History New Status.")
 }
 
 # Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L48
@@ -261,8 +261,8 @@ type NegotiableQuoteHistoryCommentChange {
 
 # Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L259-L294
 type NegotiableQuoteHistoryTotalChange {
-    old_price: Money!
-    new_price: Money!
+    old_price: Money
+    new_price: Money
 }
 
 # Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L74-L103
