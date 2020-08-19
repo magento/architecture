@@ -174,7 +174,18 @@ type DeleteCompanyTeamOutput @doc(description: "Delete company team output data 
 }
 
 type CreateCompanyOutput @doc(description: "Create company output data schema.") {
-    company: Company! @doc(description: "New company instance.")
+    company: CompanyOutput! @doc(description: "Create company output instance.")
+}
+
+type CompanyOutput {
+    id: ID! @doc(description: "Company id.")
+    name: String @doc(description: "Company name.")
+    email: String @doc(description: "Company email address.")
+    legal_name: String @doc(description: "Company legal name.")
+    vat_id: String @doc(description: "Company VAT/TAX id.")
+    reseller_id: String @doc(description: "Company re-seller id.")
+    legal_address: CompanyLegalAddress! @doc(description: "An object containing Company legal address data.")
+    company_admin: Customer! @doc(description: "An object containing Company Administrator information.")
 }
 
 type UpdateCompanyOutput @doc(description: "Update company output data schema.")  {
@@ -208,7 +219,6 @@ type DeleteCompanyRoleOutput @doc(description: "Delete company role output data 
 type UpdateCompanyStructureOutput @doc(description: "Update company structure output data schema.") {
     company: Company! @doc(description: "Updated company instance.")
 }
-
 
 input CompanyCreateInput @doc(description: "Defines the Company input data schema for creating a new entity."){
     company_name: String! @doc(description: "Company name. Required.")
