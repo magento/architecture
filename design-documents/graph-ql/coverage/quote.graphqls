@@ -328,7 +328,8 @@ type VirtualCartItem implements CartItemInterface @doc(description: "Virtual Car
 }
 
 interface CartItemInterface @typeResolver(class: "Magento\\QuoteGraphQl\\Model\\Resolver\\CartItemTypeResolver") {
-    id: String!
+    id: String! @deprecated(reason: "Use CartItemInterface.uid instead")
+    uid: ID! @doc(description: "Unique identifier for a Cart Item")
     quantity: Float!
     prices: CartItemPrices @resolver(class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\CartItemPrices")
     product: ProductInterface!
