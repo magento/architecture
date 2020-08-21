@@ -11,7 +11,10 @@ type Query {
     ): Products
     @resolver(class: "Magento\\CatalogGraphQl\\Model\\Resolver\\Products") @doc(description: "The products query searches for products that match the criteria specified in the search and filter attributes.") @cache(cacheIdentity: "Magento\\CatalogGraphQl\\Model\\Resolver\\Product\\Identity")
     category (
-     id: Int @doc(description: "Id of the category.")
+    # Implementation Note: The resolver should accept either `id` or `categoryInterfaceUID`,
+    # but _must_ return an error when both fields are provided in a request
+     id: Int @deprecated(reason: "Use the `categoryInterfaceUID` argument instead")
+     categoryInterfaceUID: ID @doc(description: "Unique identifier from objects implementing `CategoryInterface`")
     ): CategoryTree
     @resolver(class: "Magento\\CatalogGraphQl\\Model\\Resolver\\CategoryTree") @doc(description: "The category query searches for categories that match the criteria specified in the search and filter attributes.") @deprecated(reason: "Use 'categoryList' query instead of 'category' query") @cache(cacheIdentity: "Magento\\CatalogGraphQl\\Model\\Resolver\\Category\\CategoryTreeIdentity")
     categoryList(
