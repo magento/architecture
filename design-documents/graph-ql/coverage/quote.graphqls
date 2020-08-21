@@ -244,7 +244,7 @@ type BillingCartAddress implements CartAddressInterface {
     customer_notes: String @deprecated (reason: "The field is used only in shipping address")
 }
 
-type CartItemQuantity @doc(description:"Deprecated: `cart_items` field of `ShippingCartAddress` returns now  `CartItemInterface` instead of `CartItemQuantity`") {
+type CartItemQuantity @deprecated(description:"Deprecated: `cart_items` field of `ShippingCartAddress` returns now  `CartItemInterface` instead of `CartItemQuantity`") {
     cart_item_id: Int! @deprecated(reason: "`cart_items` field of `ShippingCartAddress` returns now `CartItemInterface` instead of `CartItemQuantity`")
     quantity: Float! @deprecated(reason: "`cart_items` field of `ShippingCartAddress` returns now `CartItemInterface` instead of `CartItemQuantity`")
 }
