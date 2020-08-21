@@ -73,7 +73,10 @@ input UpdateCartItemsInput {
 }
 
 input CartItemUpdateInput {
-    cart_item_id: Int!
+    # Implementation Note: The resolver should accept either `cart_item_id` or `cart_item_uid`,
+    # but _must_ return an error when both fields are provided in a request
+    cart_item_id: Int! @deprecated(reason: "Use `CartItemUpdateInput.cart_item_uid` instead")
+    cart_item_uid: ID! @doc(description: "Unique Identifier from objects implementing `CartItemInterface`")
     quantity: Float
     customizable_options: [CustomizableOptionInput!]
 }
