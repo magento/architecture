@@ -267,7 +267,8 @@ interface CategoryInterface @typeResolver(class: "Magento\\CatalogGraphQl\\Model
 }
 
 type Breadcrumb @doc(description: "Breadcrumb item."){
-    category_id: Int @doc(description: "Category ID.")
+    category_id: Int @deprecated(reason: "Use the `category_interface_uid` field instead")
+    category_interface_uid: ID! @doc(description: "Unique identifier from objects implementing CategoryInterface")
     category_name: String @doc(description: "Category name.")
     category_level: Int @doc(description: "Category level.")
     category_url_key: String @doc(description: "Category URL key.")
