@@ -42,11 +42,6 @@ type Mutation {
         input: RemoveNegotiableQuoteItemsInput!
     ): RemoveNegotiableQuoteItemsOutput @doc(description: "Remove 1 or more products from a Negotiable Quote")
 
-    # Covers "buyer can add items" of https://devdocs.magento.com/guides/v2.4/b2b/negotiable-update.html#add-a-new-quote-item-to-the-negotiable-quote
-    addNegotiableQuoteItems(
-        input: AddNegotiableQuoteItemsInput!
-    ): AddNegotiableQuoteItemsOutput @doc(description: "Add 1 or more products to a Negotiable Quote")
-
     # Covers first half of https://docs.magento.com/user-guide/customers/account-dashboard-quotes.html#cancel-a-quote-request
     closeNegotiableQuotes(
         input: CloseNegotiableQuotesInput!
