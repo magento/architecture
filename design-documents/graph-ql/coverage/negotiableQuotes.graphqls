@@ -111,7 +111,7 @@ input CloseNegotiableQuotesInput {
 }
 
 type CloseNegotiableQuotesOutput {
-    closed_quotes: [NegotiableQuote]! @doc(description: "Quotes that were just closed")
+    closed_quotes: [NegotiableQuote!] @doc(description: "Quotes that were just closed")
     negotiable_quotes(
         filter: NegotiableQuoteFilterInput,
         pageSize: Int = 20,
