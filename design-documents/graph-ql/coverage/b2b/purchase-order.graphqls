@@ -1,5 +1,6 @@
 type Mutation {
     addPurchaseOrderComment(input: AddPurchaseOrderCommentInput!): AddPurchaseOrderCommentOutput @doc(description: "Add a comment to an existing purchase order")
+    validatePurchaseOrder(input: ValidatePurchaseOrderInput!): ValidatePurchaseOrderOutput @doc(description: "Validate purchase order")
     approvePurchaseOrder(input: ApprovePurchaseOrderInput!): ApprovePurchaseOrderOutput @doc(description: "Approve purchase order")
     cancelPurchaseOrder(input: CancelPurchaseOrderInput!): CancelPurchaseOrderOutput @doc(description: "Cancel purchase order")
     rejectPurchaseOrder(input: RejectPurchaseOrderInput!): RejectPurchaseOrderOutput @doc(description: "Reject purchase order")
@@ -40,6 +41,7 @@ input PurchaseOrderApprovalRuleInput {
     description: String @doc(description: "Purchase order approval rule description")
     applies_to: [ID]! @doc(description: "A list of B2B user roles to which this purchase order approval rule should be applied. In case when empty array is provided, the rule will be applied to all user roles in the system, including those created in the future")
     type: PurchaseOrderApprovalRuleType! @doc(description: "Purchase order approval rule type")
+    status: PurchaseOrderApprovalRuleStatus! @doc(description: "Purchase order approval rule status")
     condition: CreatePurchaseOrderApprovalRuleConditionInput! @doc(description: "Purchase order approval rule condition")
     requires_approval_from: [ID!]! @doc(description: "A list of B2B user roles that can approve this purchase order approval rule")
 }
@@ -53,6 +55,14 @@ input CreatePurchaseOrderApprovalRuleConditionInput {
 input CreatePurchaseOrderApprovalRuleConditionAmountInput {
     value: Float! @doc(description: "Purchase order approval rule condition ammount value")
     currency: CurrencyEnum! @doc(description: "Purchase order approval rule condition ammount currency")
+}
+
+input ValidatePurchaseOrderInput {
+    purchase_order_uid: ID!
+}
+
+type ValidatePurchaseOrderOutput {
+    purchase_order: PurchaseOrder
 }
 
 input ApprovePurchaseOrderInput {
@@ -186,6 +196,7 @@ type PurchaseOrder {
 enum PurchaseOrderAction {
     REJECT
     CANCEL
+    VALIDATE
     APPROVE
 }
 
@@ -239,7 +250,7 @@ type PurchaseOrderHistoryItem {
 type PurchaseOrderItems {
     items: [PurchaseOrderItemInterface]!
     page_info: SearchResultPageInfo
-    total_count: Int
+    total_count: Int!
 }
 
 type PurchaseOrderTotal @doc(description: "Contains details about the sales total amounts used to calculate the final price") {
@@ -258,7 +269,6 @@ interface PurchaseOrderItemInterface @doc(description: "Purchase order item deta
     product_name: String @doc(description: "The name of the base product")
     product_sku: String! @doc(description: "The SKU of the base product")
     product_url_key: String @doc(description: "URL key of the base product")
-    product_type: String @doc(description: "The type of product, such as simple, configurable, or bundle")
     product_sale_price: Money! @doc(description: "The sale price of the base product, including selected options")
     discounts: [Discount] @doc(description: "The final discount information for the product")
     selected_options: [PurchaseOrderItemOption] @doc(description: "The selected options for the base product, such as color or size")
@@ -279,6 +289,7 @@ type PurchaseOrderItemOption @doc(description: "Represents purcahse order item o
     uid: ID! @doc(description: "The unique ID of the option")
     label: String! @doc(description: "The label of the option")
     value: String! @doc(description: "The value of the option")
+    sort_order: Int! @doc(description: "The sort order of the option")
 }
 
 enum PurchaseOrderStatus {
