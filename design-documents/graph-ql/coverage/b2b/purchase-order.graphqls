@@ -38,7 +38,7 @@ input DeletePurchaseOrderApprovalRuleInput {
 input PurchaseOrderApprovalRuleInput {
     name: String! @doc(description: "Purchase order approval rule name")
     description: String @doc(description: "Purchase order approval rule description")
-    applies_to: [ID]! @doc(description: "A list of B2B user roles to which this purchase order approval rule should be applied. In case when empty array is provided, the rule will be applied to all user roles in the system, including those created in the future")
+    applies_to: [ID!]! @doc(description: "A list of B2B user roles to which this purchase order approval rule should be applied. In case when empty array is provided, the rule will be applied to all user roles in the system, including those created in the future")
     type: PurchaseOrderApprovalRuleType! @doc(description: "Purchase order approval rule type")
     condition: CreatePurchaseOrderApprovalRuleConditionInput! @doc(description: "Purchase order approval rule condition")
     requires_approval_from: [ID!]! @doc(description: "A list of B2B user roles that can approve this purchase order approval rule")
@@ -214,7 +214,7 @@ type PurchaseOrderComments {
 
 type PurchaseOrderComment {
     uid: ID! @doc(description: "Unique identifier of the comment.")
-    timestamp: String! @doc(description: "The date and time when the comment was created")
+    created_at: String! @doc(description: "The date and time when the comment was created")
     author: PurchaseOrderCommentAuthor! @doc(description: "The name of the user who left the comment")
     text: String! @doc(description: "The text of the comment")
 }
@@ -232,7 +232,7 @@ type PurchaseOrderHistoryLog {
 
 type PurchaseOrderHistoryItem {
     uid: ID! @doc(description: "Unique identifier of the purchase rder history item.")
-    timestamp: String! @doc(description: "The date and time when the event happened.")
+    created_at: String! @doc(description: "The date and time when the event happened.")
     description: String! @doc(description: "Description of the event.")
 }
 
