@@ -17,4 +17,5 @@ type ConfigurableOptionAvailableForSelection @doc(description: "Configurable opt
 # Configurable option value type has to be extended to include ID which can be used to uniquely identify the option value across the system. This is consistent with proposal of single mutation for add-to-cart
 type ConfigurableProductOptionsValues {
     uid: ID!
+    is_available_for_selection: Boolean!
 }
