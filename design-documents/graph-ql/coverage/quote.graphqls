@@ -73,20 +73,40 @@ input UpdateCartItemsInput {
 }
 
 input CartItemUpdateInput {
-    # Implementation Note: The resolver should accept either `cart_item_id` or `cart_item_uid`,
-    # but _must_ return an error when both fields are provided in a request
-    cart_item_id: Int! @deprecated(reason: "Use `CartItemUpdateInput.cart_item_uid` instead")
-    cart_item_uid: ID! @doc(description: "Unique Identifier from objects implementing `CartItemInterface`")
+    # Implementation Note: For back-compat reasons, the following rules should be applied to
+    # a resolver handling `CartItemUpdateInput` (see https://github.com/magento/architecture/pull/424)
+    #
+    # 1. Either `cart_item_id` or `cart_item_uid` _must_ be provided. If both are absent, raise
+    #    a field error advising the client that `cart_item_uid` is required
+    # 2. If _both_ `cart_item_id` and `cart_item_uid` are provided, raise a field error advising
+    #    the client to only use `cart_item_uid`
+    #
+    # GraphQL does not provide a way for an `input` field to allow use of only 1 field or another,
+    # which is why we're enforcing non-nullability in the resolver, instead of via the schema language.
+    # When `cart_item_id` is removed in a future version, we can mark `cart_item_uid` as non-nullable
+    # with minimal disruption
+    cart_item_id: Int @deprecated(reason: "Use the `cart_item_uid` field instead")
+    cart_item_uid: ID @doc(description: "Required field. Unique Identifier from objects implementing `CartItemInterface`")
     quantity: Float
     customizable_options: [CustomizableOptionInput!]
 }
 
 input RemoveItemFromCartInput {
     cart_id: String!
-    # Implementation Note: The resolver should accept either `cart_item_id` or `cart_item_uid`,
-    # but _must_ return an error when both fields are provided in a request
-    cart_item_id: Int! @deprecated(reason: "Use `RemoveItemFromCartInput.cart_item_uid` instead")
-    cart_item_uid: ID! @doc(description: "Unique Identifier from objects implementing `CartItemInterface`")
+    # Implementation Note: For back-compat reasons, the following rules should be applied to
+    # a resolver handling `RemoveItemFromCartInput` (see https://github.com/magento/architecture/pull/424)
+    #
+    # 1. Either `cart_item_id` or `cart_item_uid` _must_ be provided. If both are absent, raise
+    #    a field error advising the client that `cart_item_uid` is required
+    # 2. If _both_ `cart_item_id` and `cart_item_uid` are provided, raise a field error advising
+    #    the client to only use `cart_item_uid`
+    #
+    # GraphQL does not provide a way for an `input` field to allow use of only 1 field or another,
+    # which is why we're enforcing non-nullability in the resolver, instead of via the schema language.
+    # When `cart_item_id` is removed in a future version, we can mark `cart_item_uid` as non-nullable
+    # with minimal disruption
+    cart_item_id: Int @deprecated(reason: "Use the `cart_item_uid` field instead")
+    cart_item_uid: ID @doc(description: "Required field. Unique Identifier from objects implementing `CartItemInterface`")
 }
 
 input SetShippingAddressesOnCartInput {
