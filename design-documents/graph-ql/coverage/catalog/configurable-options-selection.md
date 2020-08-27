@@ -18,6 +18,7 @@ User navigates to the configurable product page. Option values available for sel
           label
           values {
             uid
+            is_available_for_selection
             value_index
             label
             swatch_data {
@@ -101,7 +102,8 @@ Then the product data along with available selections can be requested in a sing
           attribute_code
           label
           values {
-            uid 
+            uid
+            is_available_for_selection
             value_index
             label
             swatch_data {
