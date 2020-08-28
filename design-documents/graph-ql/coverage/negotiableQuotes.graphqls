@@ -103,7 +103,7 @@ type DeleteNegotiableQuotesOutput {
         filter: NegotiableQuoteFilterInput,
         pageSize: Int = 20,
         currentPage: Int = 1
-    ): NegotiableQuotesOutput @resolver(class: "\\Magento\\NegotiableQuoteGraphQl\\Model\\Resolver\\GetNegotiableQuotes") @doc(description: "List of negotiable quotes available to customer")
+    ): NegotiableQuotesOutput @doc(description: "List of negotiable quotes available to customer")
 }
 
 input CloseNegotiableQuotesInput {
