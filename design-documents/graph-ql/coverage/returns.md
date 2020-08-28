@@ -212,7 +212,7 @@ mutation {
   requestReturn(
     input: {
       order_id: 12345
-      customer_custom_email: "returnemail@magento.com"
+      contact_email: "returnemail@magento.com"
       items: [
         {
           order_item_id: "absdfj2l3415", 

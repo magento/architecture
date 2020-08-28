@@ -14,7 +14,7 @@ type Mutation {
 
 input RequestReturnInput {
     order_id: ID!
-    customer_custom_email: String!
+    contact_email: String
     items: [RequestReturnItemInput!]!
     comment_text: String
 }
