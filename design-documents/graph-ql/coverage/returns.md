@@ -211,7 +211,7 @@ Existing schema of `Attribute` and `AttributeOption` must be extended to provide
 mutation {
   requestReturn(
     input: {
-      order_id: 000000001
+      order_id: 12345
       contact_email: "returnemail@magento.com"
       items: [
         {
