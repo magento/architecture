@@ -42,3 +42,17 @@ type Query {
     ): String
 }
 ```
+
+## Top-level Fields on Query and Mutation
+
+Top-level fields on Query and Mutation should always be _camelCase_.
+
+```
+type Query {
+    twoWords: TwoWords
+}
+
+type Mutation {
+    twoWords(input: TwoWordsInput!): TwoWordsOutput
+}
+```
