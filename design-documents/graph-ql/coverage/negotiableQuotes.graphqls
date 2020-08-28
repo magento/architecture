@@ -99,7 +99,11 @@ type DeleteNegotiableQuotesOutput {
     # Implementation Note: We don't make the deleted quotes accessible
     # because "deleted" means they're hidden from the storefront UI. They will
     # still be visible (and labeled as deleted) for a Seller in the admin
-    quote: Boolean
+    negotiableQuotes(
+        filter: NegotiableQuoteFilterInput,
+        pageSize: Int = 20,
+        currentPage: Int = 1
+    ): NegotiableQuotesOutput @resolver(class: "\\Magento\\NegotiableQuoteGraphQl\\Model\\Resolver\\GetNegotiableQuotes") @doc(description: "List of negotiable quotes available to customer")
 }
 
 input CloseNegotiableQuotesInput {
@@ -108,6 +112,12 @@ input CloseNegotiableQuotesInput {
 
 type CloseNegotiableQuotesOutput {
     closed_quotes: [NegotiableQuote!] @doc(description: "Quotes that were just closed")
+    #optionally display all negotiable quotes
+    negotiableQuotes(
+        filter: NegotiableQuoteFilterInput,
+        pageSize: Int = 20,
+        currentPage: Int = 1
+    ): NegotiableQuotesOutput @doc(description: "A (optionally filtered) list of Negotiable Quotes viewable by the logged-in customer")
 }
 
 input RemoveNegotiableQuoteItemsInput {
