@@ -13,7 +13,7 @@ Visibility for categories and products determined by the following options
 
 Catalog permission settings looks like this and applied on the category level.
 
-![Catalog permissions management](catalog-permissions/catalog-permissions-management.png)
+![Catalog permissions management](./catalog-permissions/catalog-permissions-management.png)
 
 Category permissions set on the website and category level and applied to products in the category.
 
@@ -46,7 +46,7 @@ More information on catalogs [here](https://wiki.corp.magento.com/pages/viewpage
 
 Here is how synchronization of data might look like.
 
-![Catalog permissions sync stateless message broker](catalog-permissions/catalog-permissions-sync-stateless-message-broker.png)
+![Catalog permissions sync stateless message broker](./catalog-permissions/catalog-permissions-sync-stateless-message-broker.png)
 
 API of the Catalog Lists service.
 
@@ -134,7 +134,7 @@ service CatalogService {
 Example 1
 There are 3 categories A, B, C. Categories B and C are subcategories of A. Category B configured to inherit permissions, category C configured to allow access to all customer groups. Category A has been configured to allow access to all customer groups. Products belongs to all categories. Then permissions changes for category A to disallow access for all customer groups.
 
-![Example 1](catalog-permissions/example-1.png)
+![Example 1](./catalog-permissions/example-1.png)
 
 Example 2
 
@@ -191,7 +191,7 @@ As we could have anchor categories, we need to publish events for child categori
 
 ### Option 2 - Add index to Message broker (alternative)
 
-![Catalog permissions sync stateless message broker](catalog-permissions/catalog-permissions-sync-statefull-message-broker.png)
+![Catalog permissions sync stateless message broker](./catalog-permissions/catalog-permissions-sync-statefull-message-broker.png)
 
 
 If we publish only event that permissions for category updated and expect message broker to calculate permissions for child categories and products that belong to these categories, we would have to request data that didn't change for categories and products unless we have index on message broker side.
