@@ -1,0 +1,7 @@
+type ProductPrice {
+    msrp: Money #added in msrp module
+}
+
+type StoreConfig {
+    msrp_enabled: String! @doc(description: "Returns the status of MSRP functionality in the storefront: enabled/disabled.")
+}
