@@ -10,24 +10,25 @@ type ComparableItem {
 
 type ComparableAttribute {
     code: String! @doc(description: "Attribute code ")
-    title: String! @doc(description: "Addibute display title")
+    title: String! @doc(description: "Attribute display title")
 }
 
 type CompareList {
-    list_id: ID! @doc(description: " Compare list id")
+    list_id: ID! @doc(description: "Compare list id")
     items: [ComparableItem] @doc(description: "Comparable products")
     attributes: [ComparableAttribute] @doc(description: "Comparable attributes, provides codes and titles for the attributes")
 }
 
 type Customer {
-    compare_list: CompareList @doc(description: "Active customers compare list")
+    compareList(id: ID): [CompareList] @doc(description: "Active customers compare list") #id is optional. Introduces the possibility of more than 1 compare list.
 }
 
 type Query {
-    compareList(id: ID!): CompareList @doc(description: "Compare list")
+    compareList(id: ID!): [CompareList] @doc(description: "Compare list")
 }
 
 type Mutation {
+    createCompareList(items: [ID!]): CompareList @doc(description: "Creates a new compare list. For a logged in user, the created list is assigned to the user")
     addItemsToCompareList(
         id: ID!
         items: [ID!]
