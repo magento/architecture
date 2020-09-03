@@ -92,7 +92,7 @@ preconfigured at the backoffice.
 
 ## Removing stale comparison list
 * Introduce a mutation to removeComparisonList(id: ID!): Boolean, which clients can use to remove the list once the session expires
-* A cron job
+* A cron job to remove staled entries beyond certain time.
 
 ![compare-list.graphqls](compare-list/compare-list.png)
 
