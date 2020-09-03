@@ -7,7 +7,8 @@ type ProductPrice {
     regular_price: Money!
     final_price: Money!
     discount: ProductDiscount
-    fixed_product_taxes: [FixedProductTax]
+    fixed_product_taxes: [FixedProductTax] #added in Weee module
+    msrp: Money #added in msrp module
 }
 
 type FixedProductTax {
