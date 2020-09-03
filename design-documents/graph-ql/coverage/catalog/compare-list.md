@@ -118,7 +118,7 @@ This dependency can be solved by managing the compare list state in a new table
 ```
 catalog_compare_list
 ------------------------------------------------------------------------------
-| entity_id (int) (primary)| customer_id (int) (nullable)(indexed)| product_ids (json) (non nullable)| store_id (int) (non nullable)| last_modfied (date)
+| entity_id (int) (primary)| customer_id (int) (nullable)(indexed)| product_ids (json) (non nullable)| store_id (int) (non nullable)| last_modfied (date) | additional_data (json) (nullable)
 ==============================================================================
 ```
 * On first client request, a row will be populated with an entity_id, server generated masked_id, customer_id (? if logged in), product_id and store_id.
