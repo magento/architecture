@@ -14,30 +14,35 @@ type ComparableAttribute {
 }
 
 type CompareList {
-    list_id: ID! @doc(description: "Compare list id")
+    uid: ID! @doc(description: "Compare list id")
     items: [ComparableItem] @doc(description: "Comparable products")
     attributes: [ComparableAttribute] @doc(description: "Comparable attributes, provides codes and titles for the attributes")
 }
 
 type Customer {
-    compareList(id: ID): [CompareList] @doc(description: "Active customers compare list") #id is optional. Introduces the possibility of more than 1 compare list.
+    compareList(uid: ID): [CompareList] @doc(description: "Active customers compare list") #id is optional. Introduces the possibility of more than 1 compare list.
 }
 
 type Query {
-    compareList(id: ID!): [CompareList] @doc(description: "Compare list")
+    compareList(uid: ID!): CompareList @doc(description: "Compare list")
 }
 
 type Mutation {
-    createCompareList(items: [ID!]): CompareList @doc(description: "Creates a new compare list. For a logged in user, the created list is assigned to the user")
+    createCompareList(input: CreateCompareListInput): CompareList @doc(description: "Creates a new compare list. For a logged in user, the created list is assigned to the user")
     addItemsToCompareList(
-        id: ID!
+        uid: ID!,
         items: [ID!]
     ): CompareList
     removeItemsFromCompareList(
-        id: ID!
+        uid: ID!,
         items: [ID!]
     ): CompareList
-    assignCompareListToCustomer(customerId: ID!, listId: ID!): Boolean
+    assignCompareListToCustomer(customerId: ID!, uid: ID!): Boolean!
+    deleteCompareList(uid: ID!): Boolean!
+}
+
+input CreateCompareListInput {
+    items: [ID!]
 }
 
 schema {
