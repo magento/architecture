@@ -48,9 +48,9 @@ A queue is considered a "match" (and therefore overrules the prior `exchange.bin
 
 ### Sample Configurations
 
-- [A Simple Configuration](./#a-simple-configuration)
-- [First-Class Queue Priority](./#first-class-queue-prioritization)
-- [Queue-Connection Mismatch](./#queue-connection-mismatch)
+- [A Simple Configuration](#a-simple-configuration)
+- [First-Class Queue Priority](#first-class-queue-priority)
+- [Queue-Connection Mismatch](#queue-connection-mismatch)
 
 #### A Simple Configuration
 
