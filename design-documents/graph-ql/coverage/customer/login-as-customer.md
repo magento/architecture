@@ -4,6 +4,9 @@
 
 Admin user is expected to be authenticated using admin token. While there is no GraphQL Mutation for retrieving the admin token, REST should be used (see [example](https://devdocs.magento.com/guides/v2.4/graphql/queries/index.html#staging)).
 
+Login as Customer link should contain short-lived and valid once token
+Application can exchange this token via POST request to the REST endpoint to receive admin authentication token which can be used to obtain customer authentication token using GraphQL `generateCustomerTokenAsAdmin` query.
+
 Admin bearer token must be provided in the `Authorization` header along with the following mutation. The admin user associated with that token must have `Login as Customer` (`Magento_LoginAsCustomer::login`) permissions. As usual, the store context is determined based on `Store` header in the request.
 
 ```graphql
