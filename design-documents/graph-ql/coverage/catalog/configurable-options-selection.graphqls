@@ -10,12 +10,12 @@ type ConfigurableOptionsSelectionMetadata @doc(description: "Metadata correspond
 }
 
 type ConfigurableOptionAvailableForSelection @doc(description: "Configurable option available for further selection based on current selection.") {
-    available_value_ids: [ID!]! @doc(description: "Configurable option values available for further selection.")
+    option_value_uids: [ID!]! @doc(description: "Configurable option values available for further selection.")
     attribute_code: String! @doc(description: "Attribute code that uniquely identifies configurable option.")
 }
 
 # Configurable option value type has to be extended to include ID which can be used to uniquely identify the option value across the system. This is consistent with proposal of single mutation for add-to-cart
 type ConfigurableProductOptionsValues {
-    id: ID!
+    uid: ID!
     is_available_for_selection: Boolean!
 }
