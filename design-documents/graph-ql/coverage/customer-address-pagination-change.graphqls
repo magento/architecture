@@ -8,7 +8,7 @@ type Customer {
 }
 
 type CustomerAddresses {
-    items: [CustomerAddress] @doc(description: "Customer Address List")
+    items: [CustomerAddress]! @doc(description: "List of customer address")
     page_info: SearchResultPageInfo
-    total_count: Int
+    total_count: Int!
 }

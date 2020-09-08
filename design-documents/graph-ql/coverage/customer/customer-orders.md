@@ -71,7 +71,7 @@ type CustomerOrder {
     items_v2(
              currentPage: Int = 1 @doc("current page of the customer order item list. default is 1")
              pageSize: Int = 20 @doc("page size for the customer orders item list. default is 20")
-             ): OrderItems! @doc("collection of all the items purchased with pagination")
+    ): OrderItems! @doc("Collection of all of the purchased items")
     total: OrderTotal @doc("total amount details for the order")
     invoices: [Invoice] @doc("invoice list for the order")
     credit_memos: [CreditMemo] @doc("credit memo list for the order")
@@ -96,9 +96,9 @@ The order items will be paginated.
 ```graphql
 @doc("Grpahql Order Item Output Wrapper")
 type OrderItems {
-    items: [OrderItem]  @doc("collection of customer orders items that contains individual order item details.")
+    items: [OrderItem]!  @doc("List of orders items")
     page_info: SearchResultPageInfo
-    total_count: Int
+    total_count: Int!
 }
 ```
 

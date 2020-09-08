@@ -17,7 +17,7 @@ type Cart {
     items_v2(
         currentPage: Int = 1 @doc(description: "current page of the customer cart items. default is 1")
         pageSize: Int = 20 @doc(description: "page size for the customer cart items. default is 20")
-    ): CartItems! @doc(description: "collection of all the items purchased")
+    ): CartItems! @doc(description: "Cart items")
     applied_coupons: [AppliedCoupon] @doc(description:"An array of `AppliedCoupon` objects. Each object contains the `code` text attribute, which specifies the coupon code. By default Magento supports only one coupon.")
     email: String
     shipping_addresses: [ShippingCartAddress]!
@@ -30,9 +30,9 @@ type Cart {
 }
 
 type CartItems {
-    items: [CartItemInterface] @doc(description: "Cart items list")
+    items: [CartItemInterface]! @doc(description: "Cart items list")
     page_info: SearchResultPageInfo
-    total_count: Int
+    total_count: Int!
 }
 
 type AvailablePaymentMethod {
