@@ -364,7 +364,7 @@ It is critical to have ability to avoid the hash generation on the client, that 
 }
 ```
 
-#### Getting details wishlist item which needs to be added to gift registry
+#### Getting details about wishlist item which needs to be added to gift registry
 
 Note that if the item is not fully configured, the user must be redirected to the product page to complete selections before the item can be added to the gift registry.
 

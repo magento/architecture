@@ -178,7 +178,7 @@ In case when the facet filter was used on the category page, for example to sear
   products(filter: {category_id: {eq: "shorts category ID"}}) {
     items {
       name
-			sku
+	  sku
       ... on ConfigurableProduct {
         configurable_options_selection_metadata(
           selectedConfigurableOptionValues: ["hash from selected red color option compatible with single mutation"]
