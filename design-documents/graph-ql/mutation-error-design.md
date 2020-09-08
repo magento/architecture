@@ -74,7 +74,7 @@ type AddItemToCartOutput {
     # can still get the entire state of the cart post-mutation
     cart: Cart
     # can directly access errors that a shopper should be notified about
-    addItemUserErrors: [AddItemUserError!]!
+    add_item_user_errors: [AddItemUserError!]!
 }
 
 type AddItemUserError {
@@ -104,7 +104,7 @@ mutation {
             }
         }
 
-        addItemUserErrors {
+        add_item_user_errors {
             message
             type
         }
@@ -118,7 +118,7 @@ mutation {
         "cart": {
             // cart data here
         },
-        "addItemUserErrors": [{
+        "add_item_user_errors": [{
             "message": "Item 'cool-hat' not added to cart (Out of Stock)",
             "type": "OUT_OF_STOCK"
         }]
@@ -150,5 +150,5 @@ Instead, you would likely have your `addItemToCart` function return something th
 
 ## Open Questions
 
-1. Should we be consistent with the field name that represents these first-class errors? `userErrors` vs something like `addToCartUserErrors`
+1. Should we be consistent with the field name that represents these first-class errors? `user_errors` vs something like `add_to_cart_user_errors`
 2. Should there be a basic interface that mutations should implement to enforce the pattern of returning a list of user errors?
