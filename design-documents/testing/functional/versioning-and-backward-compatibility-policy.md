@@ -82,6 +82,8 @@ It MAY include minor and patch level changes. Patch and minor version MUST be re
 |Metadata|`<operation>` added|MINOR
 | |`<operation>` removed|MAJOR
 | |`<operation>` changed|MINOR
+| |`<operation>` child element added|MINOR
+| |`<operation>` child element removed|MAJOR
 |Page|`<page>` added|MINOR
 | |`<page>` removed|MAJOR
 | |`<page>` `<section>` added|MINOR
