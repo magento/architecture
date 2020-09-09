@@ -4,7 +4,7 @@ type Query {
     # in a company can see quotes belonging to their
     # employees. If `Customer.negotiable_quotes` is desirable for buyer's
     # that aren't managers, we can always add that on
-    negotiableQuote(id: ID!): NegotiableQuote @doc(description: "Get a buyer's NegotiableQuote by ID")
+    negotiableQuote(iud: ID!): NegotiableQuote @doc(description: "Get a buyer's NegotiableQuote by ID")
     negotiableQuotes(
         filter: NegotiableQuoteFilterInput,
         pageSize: Int = 20,
@@ -153,7 +153,7 @@ input AddNegotiableQuoteCommentInput {
 }
 
 type NegotiableQuoteComment {
-    id: ID!
+    uid: ID!
     created_at: String!
     author: NegotiableQuoteUser!
     creator_type: NegotiableQuoteCommentCreatorType!
@@ -166,7 +166,7 @@ enum NegotiableQuoteCommentCreatorType {
 }
 
 type NegotiableQuote {
-    id: ID!
+    uid: ID!
     name: String!
     items: [CartItemInterface!]
     # Attachment Support is dependent on headless File Upload design
@@ -200,7 +200,7 @@ input NegotiableQuoteFilterInput {
 }
 
 type NegotiableQuoteHistoryEntry {
-    id: ID!
+    uid: ID!
     author: NegotiableQuoteUser!
     change_type: NegotiableQuoteHistoryEntryChangeType!
     created_at: String
