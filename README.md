@@ -15,14 +15,6 @@ As a result, the `master` branch must contain content approved by Magento archit
 * [Approved proposals](https://github.com/magento/architecture/pulls?utf8=%E2%9C%93&q=is%3Apr+is%3Amerged+) are represented by merged PRs.
 * [Declined proposals](https://github.com/magento/architecture/pulls?utf8=%E2%9C%93&q=is%3Apr+is%3Aunmerged+is%3Aclosed) are represented by closed (not merged) PRs.
 
-## Glossary
-
-author
-: a Magento core engineer, or any community member
-
-facilitator
-: a Magento architect who makes sure the process is followed (Olga Koplyova @buskamuza)
-
 ## The Workflow
 
 1. Fork the repository and add or edit a document in your branch.
@@ -48,7 +40,6 @@ Contributions are expected from Magento core engineers mostly, although the comm
 
 * Review the entire document by specified due date (if any)
    * If it is impossible, find a replacement
-   * Contact the facilitator in case you can't find a replacement
    * If the due date is unreasonable for the size of the document, agree on another due date with the author
 * Include a detailed feedback
    * Ensure the feedback is objective
@@ -60,24 +51,3 @@ The implementation process is out of scope in this project.
 After approval of the document, a new discussion may be raised basing on the issues occurred during implementation.
 It is also possible in case of new informational updates that discover hidden sides of the future implementation.
 If it is the case, a new PR should be opened to update existing document. The PR should include explained reasons for the proposed change.
-
-## Architectural Discussions
-
-Architectural Discussions are public meetings open to anyone and taking place on a regular basis (**bi-weekly**). Topics for the Architectural Discussions should be proposed in advance. If no topics are proposed prior to the meeting, it may be canceled.
-
-### Meeting notes and topics
-
-Meeting notes and topics are available as [meeting notes issues](https://github.com/magento/architecture/issues?q=is%3Aissue+is%3Aopen+label%3A%22meeting+notes%22).
-
-Prior to November 14th, 2018, meeting minutes are available at sidebar of the [wiki](https://github.com/magento/architecture/wiki)
-
-### How to propose a topic?
-
-To propose a topic:
-1. Find an issue for the next available date in the list of [meeting notes issues](https://github.com/magento/architecture/issues?q=is%3Aissue+is%3Aopen+label%3A%22meeting+notes%22)
-  1. Add your topic as a comment in format described in the issue
-2. If there is no such issue, please create one from the "Meeting Notes" template
-  1. Calculate the date based on the last meeting note. Don't worry if the date is incorrect, one of the  maintainers will fix it if necessary. Just make sure that it is a future date, so it's not missed
-  1. Add your topic as a comment in format described in the issue template
-  
-During the meeting, expect that the topics will be discussed in the order they are requested. Also, the discussions may be interrupted if requested time elapses. Please, include time for the discussion in the requested duration for your topic.
