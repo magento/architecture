@@ -72,12 +72,12 @@ type CustomerOrder {
     invoices: [Invoice] @doc("invoice list for the order")
     credit_memos: [CreditMemo] @doc("credit memo list for the order")
     shipments: [OrderShipment] @doc("shipment list for the order")
-    payment_methods: [PaymentMethod] @doc("payment details for the order")
+    payment_methods: [OrderPaymentMethod] @doc("payment details for the order")
     shipping_address: OrderAddress @doc("shipping address for the order")
     billing_address: OrderAddress @doc("billing address for the order")
     carrier: String @doc("shipping carrier for the order delivery")
     shipping_method: String @doc("shipping method for the order")
-    comments: [CommentItem] @doc("comments on the order")
+    comments: [SalesCommentItem] @doc("comments on the order")
 }
 ```
 
@@ -114,13 +114,6 @@ type BundleOrderItem implements OrderItemInterface {
     bundle_options: [ItemSelectedBundleOption] @doc("A list of bundle options that are assigned to the bundle product")
 }
 
-type GiftCardOrderItem implements OrderItemInterface {
-    gift_card_amount: Money! @doc("Amount of value on gift card")
-    gift_card_sender: String @doc("Name of gift card sender")
-    gift_card_recipient: String @doc("Name of gift card recipient")
-    gift_card_message: String @doc("Message accompanying gift card")
-}
-
 type ItemSelectedBundleOption {
     id: ID! @doc(description: "The unique identifier of the option")
     label: String! @doc(description: "The label of the option")
@@ -135,9 +128,30 @@ type ItemSelectedBundleOptionValue {
     price: Money! @doc("Option value price. price for single quantity")
 }
 
+type DownloadableOrderItem implements OrderItemInterface {
+    downloadable_links: [DownloadableItemsLinks] @doc(description: "A list of downloadable links that are ordered from the downloadable product")
+}
+
+type DownloadableItemsLinks @doc(description: "DownloadableProductLinks defines characteristics of a downloadable product") {
+    title: String @doc(description: "The display name of the link")
+    sort_order: Int @doc(description: "A number indicating the sort order")
+    uid: ID! @doc(description: "A string that encodes option details.")
+}
+
+type GiftCardOrderItem implements OrderItemInterface {
+    gift_card: GiftCardItem @doc(description: "Selected gift card properties for an order item")
+}
+type GiftCardItem {
+    sender_name: String @doc(description: "Entered gift card sender name")
+    sender_email: String @doc(description: "Entered gift card sender email")
+    recipient_name: String @doc(description: "Entered gift card recipient name")
+    recipient_email: String @doc(description: "Entered gift card recipient email")
+    message: String @doc(description: "Entered gift card message intended for the recipient")
+}
+
 @doc("Represents order item options like selected or entered")
 type OrderItemOption {
-    id: String! @doc("name of the option")
+    label: String! @doc("name of the option")
     value: String! @doc("value of the option")
 }
 ```
@@ -147,7 +161,7 @@ To provide more customization for different payment solutions, the payment metho
 
 ```graphql
 @doc("Payment method used to pay for the order")
-type PaymentMethod {
+type OrderPaymentMethod {
     name: String! @doc("payment method name for e.g Braintree, Authorize etc.")
     type: String! @doc("payment method type used to pay for the order for e.g Credit Card, PayPal etc.")
     additional_data: [KeyValue] @doc("additional data per payment method type")
@@ -179,7 +193,11 @@ type ShippingHandling {
     amount_including_tax: Money @doc("shipping amount including tax")
     amount_excluding_tax: Money @doc("shipping amount excluding tax")
     taxes: [TaxItem] @doc("shipping taxes details")
-    discounts: [Discount] @doc("The applied discounts to the shipping)
+    discounts: [ShippingDiscount] @doc("The applied discounts to the shipping)
+}
+
+type ShippingDiscount @doc(description:"Defines an individual shipping discount. This discount can be applied to shipping.") {
+    amount: Money! @doc(description:"The amount of the discount")
 }
 
 @doc("Tax item details")
@@ -201,7 +219,7 @@ type Invoice {
     number: String! @doc("sequential invoice number")
     total: InvoiceTotal @doc("invoice total amount details")
     items: [InvoiceItemInterface] @doc("invoiced product details")
-    comments: [CommentItem] @doc("comments on the invoice")
+    comments: [SalesCommentItem] @doc("comments on the invoice")
 }
 
 @doc("Invoice item details")
@@ -222,6 +240,14 @@ type BundleInvoiceItem implements InvoiceItemInterface {
     bundle_options: [ItemSelectedBundleOption] @doc("A list of bundle options that are assigned to the bundle product")
 }
 
+type DownloadableInvoiceItem implements InvoiceItemInterface {
+    downloadable_links: [DownloadableItemsLinks] @doc(description: "A list of downloadable links that are invoiced from the downloadable product")
+}
+
+type GiftCardInvoiceItem implements InvoiceItemInterface {
+    gift_card: GiftCardItem @doc(description: "Selected gift card properties for an invoice item")
+}
+
 @doc("Invoice total amount details")
 type InvoiceTotal {
     subtotal: Money! @doc("subtotal amount excluding, shipping, discounts and tax")
@@ -238,16 +264,16 @@ type InvoiceTotal {
 ## Refund Type Schema
 
 The credit memo entity will have the similar to the order and invoice schema:
-The `id` will be a `base64_encode_encode(increment_id)` which in future can be replaced by UUID.
+The `id` will be a `base64encode(increment_id)` which in future can be replaced by UUID.
 
 ```graphql
 @doc("Credit memo details")
 type CreditMemo {
     id: ID! @doc("the ID of the credit memo, used for API purposes")
     number: String! @doc("sequential credit memo number")
-    items: [CreditMemoItem] @doc("items refunded")
+    items: [CreditMemoItemInterface] @doc("items refunded")
     total: CreditMemoTotal @doc("refund total amount details")
-    comments: [CommentItem] @doc("comments on the credit memo")
+    comments: [SalesCommentItem] @doc("comments on the credit memo")
 }
 
 @doc("Credit memo item details")
@@ -266,6 +292,14 @@ type CreditMemoItem implements CreditMemoItemInterface {
 
 type BundleCreditMemoItem implements CreditMemoIntemInterface {
     bundle_options: [ItemSelectedBundleOption]
+}
+
+type DownloadableCreditMemoItem implements CreditMemoItemInterface {
+    downloadable_links: [DownloadableItemsLinks] @doc(description: "A list of downloadable links that are refunded from the downloadable product")
+}
+
+type GiftCardCreditMemoItem implements CreditMemoItemInterface {
+    gift_card: GiftCardItem @doc(description: "Selected gift card properties for a credit memo item")
 }
 
 @doc("Credit memo price details")
@@ -287,8 +321,8 @@ type OrderShipment {
     id: ID! @doc("the ID of the shipment, used for API purposes")
     number: String! @doc("sequential credit shipment number")
     tracking: [ShipmentTracking] @doc("shipment tracking details")
-    items: [ShipmentItem] @doc("items included in the shipment")
-    comments: [CommentItem] @doc("comments on the shipment")
+    items: [ShipmentItemInterface] @doc("items included in the shipment")
+    comments: [SalesCommentItem] @doc("comments on the shipment")
 }
 
 @doc("Order shipment item details")
@@ -308,6 +342,10 @@ type BundleShipmentItem implements ShipmentItemInterface {
     bundle_options: [ItemSelectedBundleOption]
 }
 
+type GiftCardShipmentItem implements ShipmentItemInterface {
+    gift_card: GiftCardItem @doc(description: "Selected gift card properties for a shipment item")
+}
+
 @doc("Order shipment tracking details")
 type ShipmentTracking {
     title: String! @doc("shipment tracking title")
@@ -316,10 +354,9 @@ type ShipmentTracking {
 }
 ```
 
-
-## CommentItem type
+## SalesCommentItem type
 ```graphql
-type CommentItem {
+type SalesCommentItem {
     timestamp: String! @doc("The timestamp of the comment")
     message: String! @doc("the comment message")
 }
@@ -345,8 +382,6 @@ type OrderAddress @doc(description: "OrderAddress contains detailed information 
     suffix: String @doc(description: "A value such as Sr., Jr., or III")
     vat_id: String @doc(description: "The customer's Value-added tax (VAT) number (for corporate customers)")
 }
-
-
 ```
 
 ## Additional Types
