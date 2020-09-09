@@ -22,7 +22,7 @@ type CompanyCreditOperation {
     type: CompanyCreditOperationType! @doc(description: "The type of the company credit operation")
     amount: Money @doc(description: "The amount fo the company credit operation")
     balance: CompanyCredit! @doc(description: "Credit balance after the company credit operation")
-    purchase_order: String @doc(description: "Purchase order number associated with the company credit operation")
+    custom_reference_number: String @doc(description: "Purchase order number associated with the company credit operation")
     updated_by: CompanyCreditOperationUser! @doc(description: "The user submitting the company credit operation")
 }
 
@@ -53,7 +53,7 @@ enum CompanyCreditOperationUserType {
 
 input CompanyCreditHistoryFilterInput {
     operation_type: CompanyCreditOperationType @doc(description: "Enum filter by the type of the company credit operation")
-    purchase_order: String @doc(description: "Free text filter by the purchase order number associated with the company credit operation")
+    custom_reference_number: String @doc(description: "Free text filter by the purchase order number associated with the company credit operation")
     updated_by: String @doc(description: "Free text filter by the name of the person submitting the company credit operation")
 }
 ###### End: Defining new types ######
