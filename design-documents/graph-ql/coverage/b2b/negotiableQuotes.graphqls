@@ -4,7 +4,7 @@ type Query {
     # in a company can see quotes belonging to their
     # employees. If `Customer.negotiable_quotes` is desirable for buyer's
     # that aren't managers, we can always add that on
-    negotiableQuote(id: ID!): NegotiableQuote @doc(description: "Get a buyer's NegotiableQuote by ID")
+    negotiableQuote(iud: ID!): NegotiableQuote @doc(description: "Get a buyer's NegotiableQuote by ID")
     negotiableQuotes(
         filter: NegotiableQuoteFilterInput,
         pageSize: Int = 20,
@@ -41,11 +41,6 @@ type Mutation {
     removeNegotiableQuoteItems(
         input: RemoveNegotiableQuoteItemsInput!
     ): RemoveNegotiableQuoteItemsOutput @doc(description: "Remove 1 or more products from a Negotiable Quote")
-
-    # Covers "buyer can add items" of https://devdocs.magento.com/guides/v2.4/b2b/negotiable-update.html#add-a-new-quote-item-to-the-negotiable-quote
-    addNegotiableQuoteItems(
-        input: AddNegotiableQuoteItemsInput!
-    ): AddNegotiableQuoteItemsOutput @doc(description: "Add 1 or more products to a Negotiable Quote")
 
     # Covers first half of https://docs.magento.com/user-guide/customers/account-dashboard-quotes.html#cancel-a-quote-request
     closeNegotiableQuotes(
@@ -116,12 +111,13 @@ input CloseNegotiableQuotesInput {
 }
 
 type CloseNegotiableQuotesOutput {
-    closed_quotes: [NegotiableQuote]! @doc(description: "Quotes that were just closed")
+    closed_quotes: [NegotiableQuote!] @doc(description: "Quotes that were just closed")
+    #optionally display all negotiable quotes
     negotiable_quotes(
         filter: NegotiableQuoteFilterInput,
         pageSize: Int = 20,
         currentPage: Int = 1
-    ): NegotiableQuotesOutput @doc(description: A (optionally filtered) list of Negotiable Quotes viewable by the logged-in customer")
+    ): NegotiableQuotesOutput @doc(description: "A (optionally filtered) list of Negotiable Quotes viewable by the logged-in customer")
 }
 
 input RemoveNegotiableQuoteItemsInput {
@@ -157,7 +153,7 @@ input AddNegotiableQuoteCommentInput {
 }
 
 type NegotiableQuoteComment {
-    id: ID!
+    uid: ID!
     created_at: String!
     author: NegotiableQuoteUser!
     creator_type: NegotiableQuoteCommentCreatorType!
@@ -170,9 +166,9 @@ enum NegotiableQuoteCommentCreatorType {
 }
 
 type NegotiableQuote {
-    id: ID!
+    uid: ID!
     name: String!
-    items: [NegotiableQuoteItem!]
+    items: [CartItemInterface!]
     # Attachment Support is dependent on headless File Upload design
     # attachments: [AttachmentContent]
     comments: [NegotiableQuoteComment!]
@@ -198,18 +194,13 @@ enum NegotiableQuoteStatus {
     EXPIRED
 }
 
-type NegotiableQuoteItem @doc(description: "A line item on a Negotiable Quote") {
-    id: ID! @doc(description: "ID of the line item (not product) in a Negotiable Quote")
-    item: CartItemInterface @doc(description: "Product assigned to line item, with selected configurations")
-}
-
 input NegotiableQuoteFilterInput {
     ids: FilterEqualTypeInput @doc(description: "Filter by Negotiable Quote ID(s)")
     name: FilterMatchTypeInput @doc(description: "Filter by Negotiable Quote name")
 }
 
 type NegotiableQuoteHistoryEntry {
-    id: ID!
+    uid: ID!
     author: NegotiableQuoteUser!
     change_type: NegotiableQuoteHistoryEntryChangeType!
     created_at: String
@@ -248,7 +239,7 @@ type NegotiableQuoteHistoryChanges {
 # Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L40-L73
 type NegotiableQuoteHistoryStatusChange {
     old_status: NegotiableQuoteStatus @doc(description: "Will be null for the first history entry on a Negotiable Quote")
-    new_status: NegotiableQuoteStatus!
+    new_status: NegotiableQuoteStatus! @doc(description: "Negotiable Quote History New Status.")
 }
 
 # Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L48
@@ -266,8 +257,8 @@ type NegotiableQuoteHistoryCommentChange {
 
 # Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L259-L294
 type NegotiableQuoteHistoryTotalChange {
-    old_price: Money!
-    new_price: Money!
+    old_price: Money
+    new_price: Money
 }
 
 # Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L74-L103

@@ -17,7 +17,7 @@ User navigates to the configurable product page. Option values available for sel
           attribute_code
           label
           values {
-            id
+            uid
             is_available_for_selection
             value_index
             label
@@ -29,8 +29,8 @@ User navigates to the configurable product page. Option values available for sel
         }
         configurable_options_selection_metadata {
           options_available_for_selection {
+            option_value_uids
             attribute_code
-            available_value_ids
           }
           media_gallery {
             url
@@ -55,11 +55,11 @@ The images and videos relevant for the selection are also updated.
     items {
       ... on ConfigurableProduct {
         configurable_options_selection_metadata(
-          selectedConfigurableOptionValues: ["hash from selected option value"]
+          selectedConfigurableOptionValues: ["hash from selected option value compatible with single mutation"]
         ) {
           options_available_for_selection {
+            option_value_uids
             attribute_code
-            available_value_ids
           }
           media_gallery {
             url
@@ -102,8 +102,8 @@ Then the product data along with available selections can be requested in a sing
           attribute_code
           label
           values {
-            id
-            is_available_for_selection    
+            uid
+            is_available_for_selection
             value_index
             label
             swatch_data {
@@ -113,11 +113,11 @@ Then the product data along with available selections can be requested in a sing
           }
         }
         configurable_options_selection_metadata(
-          selectedConfigurableOptionValues: ["hash from selected option value", "hash from another option value"]
+          selectedConfigurableOptionValues: ["hash from selected option value compatible with single mutation", "hash from another option value compatible with single mutation"]
         ) {
           options_available_for_selection {
+            option_value_uids
             attribute_code
-            available_value_ids
           }
           media_gallery {
             url
@@ -145,11 +145,11 @@ After the user makes final selection, the corresponding simple product data beco
     items {
       ... on ConfigurableProduct {
         configurable_options_selection_metadata(
-          selectedConfigurableOptionValues: ["hash from selected option value", "hash from another option value"]
+          selectedConfigurableOptionValues: ["hash from selected option value compatible with single mutation", "hash from another option value compatible with single mutation"]
         ) {
           options_available_for_selection {
+            option_value_uids
             attribute_code
-            available_value_ids
           }
           media_gallery {
             url
@@ -178,14 +178,14 @@ In case when the facet filter was used on the category page, for example to sear
   products(filter: {category_id: {eq: "shorts category ID"}}) {
     items {
       name
-			sku
+	  sku
       ... on ConfigurableProduct {
         configurable_options_selection_metadata(
-          selectedConfigurableOptionValues: ["hash from selected red color option"]
+          selectedConfigurableOptionValues: ["hash from selected red color option compatible with single mutation"]
         ) {
           options_available_for_selection {
+            option_value_uids
             attribute_code
-            available_value_ids
           }
           media_gallery {
             url
