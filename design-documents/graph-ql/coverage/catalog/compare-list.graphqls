@@ -14,7 +14,7 @@ type ComparableAttribute {
 }
 
 type CompareList {
-    list_id: ID! @doc(description: " Compare list id")
+    uid: ID! @doc(description: " Compare list unique id")
     items: [ComparableItem] @doc(description: "Comparable products")
     attributes: [ComparableAttribute] @doc(description: "Comparable attributes, provides codes and titles for the attributes")
 }
@@ -24,19 +24,19 @@ type Customer {
 }
 
 type Query {
-    compareList(id: ID!): CompareList @doc(description: "Compare list")
+    compareList(uid: ID!): CompareList @doc(description: "Compare list")
 }
 
 type Mutation {
     addItemsToCompareList(
-        id: ID!
+        uid: ID!
         items: [ID!]
     ): CompareList
     removeItemsFromCompareList(
-        id: ID!
+        uid: ID!
         items: [ID!]
     ): CompareList
-    assignCompareListToCustomer(listId: ID!): Boolean
+    assignCompareListToCustomer(listUid: ID!): Boolean
 }
 
 schema {
