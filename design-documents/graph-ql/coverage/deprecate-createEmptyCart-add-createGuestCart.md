@@ -28,7 +28,7 @@ Because the UI knows if it has a token for a customer, `Query.cart` should be us
 type Mutation {
 +    createGuestCart(
 +        input: CreateGuestCartInput
-+    ): CreateCartOutput @doc(description: "Create a new shopping cart")
++    ): CreateGuestCartOutput @doc(description: "Create a new shopping cart")
     createEmptyCart(
         input: createEmptyCartInput
 +    ): String @deprecated(reason: "Use `Mutation.createGuestCart`, or `Query.cart` for logged-in shoppers")
@@ -36,7 +36,7 @@ type Mutation {
 }
 
 +input CreateGuestCartInput {
-+    cart_id: String @doc(description: "Optional client-generated ID")
++    cart_uid: ID @doc(description: "Optional client-generated ID")
 +}
 +
 +type CreateGuestCartOutput {
