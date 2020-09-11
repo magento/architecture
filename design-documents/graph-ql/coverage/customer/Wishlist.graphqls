@@ -1,9 +1,12 @@
 type Mutation {
-    createWishlist(name: String!): ID # Multiple wishlists Commerce functionality
-    removeWishlist(id: ID!): Boolean # Commerce fucntionality - in Opens Source we assume customer always has one wishlist
+    createWishlist(name: String!, visibility: WishlistVisibilityEnum!): CreateWishlistOutput # Multiple wishlists Commerce functionality
+    deleteWishlist(wishlistId: ID!): Boolean # Commerce fucntionality - in Opens Source we assume customer always has one wishlist
     addProductsToWishlist(wishlistId: ID!, wishlistItems: [WishlistItemInput!]!): AddProductsToWishlistOutput
     removeProductsFromWishlist(wishlistId: ID!, wishlistItemsIds: [ID!]!): RemoveProductsFromWishlistOutput
     updateProductsInWishlist(wishlistId: ID!, wishlistItems: [WishlistItemUpdateInput!]!): UpdateProductsInWishlistOutput
+    copyProductsToWishlist(wishlistId: ID!, wishlistItems: [WishlistItemCopyInput!]!): UpdateProductsInWishlistOutput  @doc(description: "Copy a product to the wish list")
+    moveProductsToWishlist(wishlistId: ID!, wishlistItems: [WishlistItemMoveInput!]!): UpdateProductsInWishlistOutput  @doc(description: "Move products from one wish list to another")
+    updateWishlist(wishlistId: ID!, name: String, visibility: WishlistVisibilityEnum): UpdateWishlistOutput @doc(description: "Change the name and visibility of the specified wish list")
 }
 
 type Customer {
@@ -23,8 +26,9 @@ type Wishlist {
 }
 
 input WishlistItemUpdateInput {
-    wishlist_item_id: ID
+    wishlist_item_id: ID!
     quantity: Float
+    description: String
     selected_options: [ID!]
     entered_options: [EnteredOptionInput!]
 }
@@ -42,8 +46,8 @@ type UpdateProductsInWishlistOutput {
 }
 
 input WishlistItemInput {
-    sku: String
-    quantity: Float
+    sku: String!
+    quantity: Float!
     parent_sku: String,
     parent_quantity: Float,
     selected_options: [ID!]
@@ -86,5 +90,37 @@ type GiftCardWishlistItem implements WishlistItemInterface {
     recipient_email: String
     amount: SelectedGiftCardAmount
     message: String
+}
+
+enum WishlistVisibilityEnum @doc(description: "This enumeration defines the wish list visibility types") {
+    PUBLIC
+    PRIVATE
+}
+
+type CreateWishlistOutput {
+    uid: ID! @doc(description: "The ID of the new wish list")
+    name: String! @doc(description: "The wish list name")
+    visibility: WishlistVisibilityEnum! @doc(description: "The wish list visibility")
+}
+
+input WishlistItemCopyInput {
+    wishlist_item_id: ID! @doc(description: "The ID of the item to be copied")
+    quantity: Float @doc(description: "The quantity of this item to copy to the destination wish list. This value can't be greater than the quantity in the source wish list.")
+}
+
+input WishlistItemMoveInput {
+    wishlist_item_id: ID! @doc(description: "The ID of the item to be moved")
+    quantity: Float @doc(description: "The quantity of this item to move to the destination wish list. This value can't be greater than the quantity in the source wish list.")
+}
+
+type UpdateWishlistOutput {
+    uid: ID! @doc(description: "The ID of the updated wish list")
+    name: String! @doc(description: "The wish list name")
+    visibility: WishlistVisibilityEnum! @doc(description: "The wish list visibility")
+}
+
+type StoreConfig {
+    maximum_number_of_wishlists: String @doc(description: "If multiple wish lists are enabled, the maximum number of wish lists the customer can have")
+    enable_multiple_wishlists: String @doc(description: "Indicates whether customers can have multiple wish lists. Possible values: 1 (Yes) and 0 (No)")
 }
 
