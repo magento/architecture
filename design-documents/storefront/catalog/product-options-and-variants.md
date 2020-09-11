@@ -509,3 +509,5 @@ on the manufacturer. proof https://www.walmart.com/search/?query=tshirt*
 the number of such variants is unpredictable,
 and could significantly affect store performance.*
 
+@see `rpc:GetProductVariants`
+
