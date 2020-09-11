@@ -80,7 +80,9 @@ Such a decision brings us unseen before the level of the flexibility, since ther
 
 We do not have such behaviors either Magento 1 or 2 and as a result, the whole layer of product types such as bundle and downloadable do not support B2B prices or special prices for options.
 
-The link on a product that exists in the same domain could be done through the shared ID, which as for me makes sense since I can see a possible scenario when variation that initially had only a price will be "promoted" to a product. For example due to integration reasons, to pass additional attributes data along with variant to Google Merchant Center.
+In most cases, the product variant of configurable and bundle products may represent the child product, and via versa.
+But it does not mean that two different variants can not reference the same product. For instance, two different bundle products may contain the same product, refer to the same inventory but have different prices.
+
 
 ### Enhanced option values
 
@@ -122,6 +124,7 @@ message ProductOption {
 message ProductVariant {
     repeated string optionValueId = 1;
     string id = 2;
+    string productId = 3;
     string productIdentifierInPricing = 500; #*
     string productIdentifierInInventory = 600; #*
 }
