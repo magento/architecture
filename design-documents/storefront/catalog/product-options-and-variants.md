@@ -356,3 +356,118 @@ This proposal continues the idea of product options unification and aligned with
 * [Single mutation for adding products to cart](https://github.com/magento/architecture/blob/master/design-documents/graph-ql/coverage/add-items-to-cart-single-mutation.md)
 * [Configurable options selection](https://github.com/magento/architecture/blob/master/design-documents/graph-ql/coverage/catalog/configurable-options-selection.md)
 * [Gift Registry](https://github.com/magento/architecture/blob/master/design-documents/graph-ql/coverage/gift-registry.md)
+
+
+## Question & Answers 
+
+### How to express two configurable products that share the same attribute set?
+
+*Comment: Although this case natively supported by Magento,
+it could be less common than we used to think since the two regular t-shorts
+from Walmart will have different sets of values for sizes and colors depends
+on the manufacturer. proof https://www.walmart.com/search/?query=tshirt*
+
+
+#### Product #1 
+```json
+{
+  "id": "a82deb7a-dee7-48e7-ab34-75026e576fab",
+  "name": "Fruit of the Loom Men's Short Sleeve Assorted Crew T-Shirt",
+  "options": {
+    "color": {
+      "label": "Color",
+      "values": {
+        "red": {
+          "label": "Red"
+        },
+        "green": {
+          "label": "Green"
+        }
+      }
+    },
+    "size" : {
+      "label": "Size",
+      "values": {
+        "m": {
+          "label": "M"
+        },
+        "l": {
+          "label": "L"
+        }
+      }
+    }
+  }
+}
+```
+
+#### Product 1 variants
+```json
+[
+  {
+    "variantId": "500d0366-777f-4a45-92b6-8e5197ce9992",
+    "optionValueIds": [
+      "a82deb7a-dee7-48e7-ab34-75026e576fab:color/red", "a82deb7a-dee7-48e7-ab34-75026e576fab:size/l"
+    ],
+    "productId": "8b6be8b0-2e21-4763-806c-f383a8591d21"
+  },
+  {
+    "variantId": "b843e139-aa04-44d0-a9a7-b439a17ce941",
+    "optionValueIds": [
+      "a82deb7a-dee7-48e7-ab34-75026e576fab:color/green", "a82deb7a-dee7-48e7-ab34-75026e576fab:size/m"
+    ],
+    "productId": "96a5a8ed-7cfe-4626-be29-f60fe0bf7b33"
+  }
+]
+```
+
+#### Product 2
+```json
+{
+  "id": "747d8c9b-e5fc-437a-8263-271dd8352976",
+  "name": "George Men's Assorted Crew T-Shirt",
+  "options": {
+    "color": {
+      "label": "Color",
+      "values": {
+        "red": {
+          "label": "Red"
+        },
+        "green": {
+          "label": "Green"
+        }
+      }
+    },
+    "size" : {
+      "label": "Size",
+      "values": {
+        "m": {
+          "label": "M"
+        },
+        "l": {
+          "label": "L"
+        }
+      }
+    }
+  }
+}
+```
+
+#### Product 2 variants
+```json
+[
+  {
+    "variantId": "edbb59fb-f303-4970-9f03-889e71374a90",
+    "optionValueIds": [
+      "747d8c9b-e5fc-437a-8263-271dd8352976:color/green", "747d8c9b-e5fc-437a-8263-271dd8352976:size/l"
+    ],
+    "productId": "7f4db047-604f-41ce-8998-a015f578e023"
+  },
+  {
+    "variantId": "2c865d16-1723-49a3-8fd1-9b46613b5c12",
+    "optionValueIds": [
+      "747d8c9b-e5fc-437a-8263-271dd8352976:color/red", "747d8c9b-e5fc-437a-8263-271dd8352976:size/m"
+    ],
+    "productId": "8eab9d67-791a-4c34-bc30-8bd034856ee2"
+  }
+]
+```
