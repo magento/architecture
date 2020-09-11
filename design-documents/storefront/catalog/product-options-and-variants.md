@@ -324,6 +324,8 @@ As were mentioned previously, options belong to a product, full options list can
 
 Variants do not expose at the storefront but help to filter options after one or several variants were selected.
 
+
+
 Such behavior was recently [approved for configurable product](https://github.com/magento/architecture/pull/394).
 And since the most complex part of designing API was done the main thing we have to do in the scope of this 
 chapter - generalize the behavior to support not only configurable products.
@@ -334,7 +336,9 @@ With the response API has to return:
 * List of images & videos that should be used on PDP.
 * List of products that were exactly matched by the selected options.
 ```proto
-message OptionSelection
+syntax = "proto3";
+
+message OptionSelectionRequest
 {
     repeated string values = 2; 
 }
@@ -344,8 +348,35 @@ message OptionResponse {
     repeated ProductVarinat matchedVariants = 3;
 }
 
-service SearchService {
+service OptionSearchService {
   rpc GetOptions(OptionSelection) returns (OptionResponse);
+}
+
+```
+
+In the perfect world, variants should not appear at the presentation level. Still, the storefront lies under the presentation, so it has to provide a way to retrieve variants depends on the scenario efficiently.
+So far, we can imagine the following cases:
+* match the variants which correspond, and do not contradict, the merchant selection - such API. 
+* match the variants which exactly matched with merchant selection.
+* get all variants which contain at least one of merchant selection. 
+* get all variants that belong to a product. This method is code-sugar for the previous one because all the product variants could be retrieved by using the previous method in case of passing all the options values which belong to the product.
+
+```proto
+syntax = "proto3";
+
+message VariantResponse {
+    repeated ProductVarinat matchedVariants = 3;
+}
+
+message ProductRequest {
+    string productId = 1;
+}
+
+service VaraintSearchService {
+  rpc GetVariantsMatch(OptionSelection) returns (VariantResponse);
+  rpc GetVariantsExactlyMatch(OptionSelection) returns (VariantResponse);
+  rpc GetVariantsInclude(OptionSelection) returns (VariantResponse);
+  rpc GetProductVariants(ProductRequest) returns (VariantResponse);
 }
 ```
 
@@ -471,3 +502,10 @@ on the manufacturer. proof https://www.walmart.com/search/?query=tshirt*
   }
 ]
 ```
+
+## How to return all variants for the product
+
+*Comment: A client should never request all the variants within a single call
+the number of such variants is unpredictable,
+and could significantly affect store performance.*
+
