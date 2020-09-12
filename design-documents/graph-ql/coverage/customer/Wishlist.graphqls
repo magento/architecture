@@ -27,9 +27,9 @@ type Wishlist {
 }
 
 type WishlistItems {
-    items: [WishlistItemInterface]
+    items: [WishlistItemInterface]!
     page_info: SearchResultPageInfo
-    total_count: Int
+    total_count: Int!
 }
 
 input WishlistItemUpdateInput {
@@ -97,4 +97,3 @@ type GiftCardWishlistItem implements WishlistItemInterface {
     amount: SelectedGiftCardAmount
     message: String
 }
-
