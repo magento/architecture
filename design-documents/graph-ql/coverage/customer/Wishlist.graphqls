@@ -19,7 +19,7 @@ type Wishlist {
     items_v3(
         currentPage: Int = 1 @doc(description: "current page of the customer wishlist items. default is 1")
         pageSize: Int = 20 @doc(description: "page size for the customer wishlist items. default is 20")
-    ): WishlistItems @doc(description: "An array of items in the customer's wishlist")
+    ): WishlistItems! @doc(description: "An array of items in the customer's wishlist")
     items_count: Int
     sharing_code: String
     updated_at: String
