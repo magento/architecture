@@ -4,7 +4,7 @@ type Customer {
     addresses_v2(
         currentPage: Int = 1 @doc(description: "current page of the customer address list. default is 1")
         pageSize: Int = 10 @doc(description: "page size for the customer address list. default is 10")
-    ): CustomerAddresses
+    ): CustomerAddresses!
 }
 
 type CustomerAddresses {
