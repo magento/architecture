@@ -20,7 +20,7 @@ type CompareList {
 }
 
 type Customer {
-    compareList(uid: ID): [CompareList] @doc(description: "Active customers compare list") #id is optional. Introduces the possibility of more than 1 compare list.
+    compare_list: CompareList @doc(description: "Active customers compare list")
 }
 
 type Query {
@@ -37,12 +37,12 @@ type Mutation {
         uid: ID!,
         items: [ID!]
     ): CompareList
-    assignCompareListToCustomer(customerId: ID!, uid: ID!): Boolean!
+    assignCompareListToCustomer(uid: ID!): CompareList
     deleteCompareList(uid: ID!): Boolean!
 }
 
 input CreateCompareListInput {
-    items: [ID!]
+    products: [ID!]
 }
 
 schema {
