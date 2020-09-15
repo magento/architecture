@@ -122,7 +122,7 @@ message ProductOption {
 }
 
 message ProductVariant {
-    repeated string optionValueId = 1;
+    repeated string optionValues = 1;
     string id = 2;
     string productId = 3;
     string productIdentifierInPricing = 500; #*
@@ -340,6 +340,7 @@ syntax = "proto3";
 
 message OptionSelectionRequest
 {
+    string storeViewId = 1;
     repeated string values = 2; 
 }
 message OptionResponse {
@@ -363,13 +364,14 @@ So far, we can imagine the following cases:
 
 ```proto
 syntax = "proto3";
-
+productId
 message VariantResponse {
     repeated ProductVarinat matchedVariants = 3;
 }
 
 message ProductRequest {
     string productId = 1;
+    string storeViewId = 2;
 }
 
 service VaraintSearchService {
