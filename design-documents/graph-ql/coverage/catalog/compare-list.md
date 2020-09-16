@@ -126,4 +126,4 @@ catalog_compare_list
 and adding list_id field to catalog_compare_item table.
 
 * encoded list_id will be used for client communications # \Magento\Framework\Math\Random::getUniqueHash can be used for hashes
-* For visitorsa created via GraphQl, session will be null.
+* For visitors created via GraphQl, session will be null.
