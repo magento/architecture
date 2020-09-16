@@ -29,23 +29,30 @@ type Query {
 
 type Mutation {
     createCompareList(input: CreateCompareListInput): CompareList @doc(description: "Creates a new compare list. For a logged in user, the created list is assigned to the user")
-    addItemsToCompareList(
-        uid: ID!,
-        items: [ID!]
+    addProductsToCompareList(
+        input: AddProductsToCompareListInput
     ): CompareList
-    removeItemsFromCompareList(
-        uid: ID!,
-        items: [ID!]
+    removeProductsFromCompareList(
+        input: RemoveProductsFromCompareListInput
     ): CompareList
-    assignCompareListToCustomer(uid: ID!): CompareList
-    deleteCompareList(uid: ID!): Boolean!
+    assignCompareListToCustomer(uid: ID!): CompareList # Customer token needs to be passed
+    deleteCompareList(uid: ID!): DeleteCompareListOutput
 }
 
 input CreateCompareListInput {
-    products: [ID!]
+    products: [ID!]!
 }
 
-schema {
-    query: Query,
-    mutation: Mutation
+input AddProductsToCompareListInput {
+    uid: ID!,
+    products: [ID!]!
+}
+
+input RemoveProductsFromCompareListInput {
+    uid: ID!,
+    products: [ID!]!
+}
+
+type DeleteCompareListOutput {
+    result: Boolean!
 }
