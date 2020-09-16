@@ -40,7 +40,7 @@ type Mutation {
 }
 
 input CreateCompareListInput {
-    products: [ID!]!
+    products: [ID!]
 }
 
 input AddProductsToCompareListInput {
