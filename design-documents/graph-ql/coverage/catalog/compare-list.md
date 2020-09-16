@@ -103,13 +103,13 @@ preconfigured at the backoffice.
   
 Guest compare list business logic not implemented yet. Additional development required.
 
-## Current limitations
+## DB changes
 
-Existing table structure for compare list
+To the existing table structure for compare list, list_id will be added
 ```
 catalog_compare_item
 ------------------------------------------------------------------------------
-| catalog_compare_item_id | visitor_id | customer_id | product_id | store_id |
+| catalog_compare_item_id | visitor_id | customer_id | product_id | store_id | list_id
 ==============================================================================
 ```
 
@@ -124,3 +124,4 @@ catalog_compare_list
 and adding list_id field to catalog_compare_item table.
 
 * encoded list_id will be used for client communications
+* For the visitor ids created via GrahQl session will be null.
