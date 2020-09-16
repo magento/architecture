@@ -8,7 +8,9 @@ Use createCompareList mutation to create a new compare list. The server should c
 ```graphql
 {
     mutation {
-        createCompareList(items: ["100123", "234567", "874321"]) #items optional
+        createCompareList(input: {
+            products: ["123", "456"]
+        }) #products optional
     } {
         list_id
         items {
@@ -117,11 +119,11 @@ This dependency can be solved by managing the compare list state in a new table
 ```
 catalog_compare_list
 ------------------------------------------------------------------------------
-| list_id (varchar) (primary)| additional_data (json) (nullable)
+| list_id (varchar) (primary)| visitor_id | customer_id
 ==============================================================================
 ```
 
 and adding list_id field to catalog_compare_item table.
 
-* encoded list_id will be used for client communications
-* For the visitor ids created via GrahQl session will be null.
+* encoded list_id will be used for client communications # \Magento\Framework\Math\Random::getUniqueHash can be used for hashes
+* For visitorsa created via GraphQl, session will be null.
