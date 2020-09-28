@@ -13,7 +13,11 @@ type CartQueryOutput {
 type Cart {
     id: ID! @doc(description: "The ID of the cart.") @deprecated(reason: "use uid")
     uid: ID! @doc(description: "The unique ID of the cart.")
-    items: [CartItemInterface]
+    items: [CartItemInterface] @deprecated(reason: "The `items` field is deprecated. Use `items_v2` instead.")
+    items_v2(
+        currentPage: Int = 1 @doc(description: "current page of the customer cart items. default is 1")
+        pageSize: Int = 20 @doc(description: "page size for the customer cart items. default is 20")
+    ): CartItems! @doc(description: "Cart items")
     applied_coupons: [AppliedCoupon] @doc(description:"An array of `AppliedCoupon` objects. Each object contains the `code` text attribute, which specifies the coupon code. By default Magento supports only one coupon.")
     email: String
     shipping_addresses: [ShippingCartAddress]!
@@ -23,6 +27,12 @@ type Cart {
     prices: CartPrices
     total_quantity: Float!
     is_virtual: Boolean!
+}
+
+type CartItems {
+    items: [CartItemInterface]! @doc(description: "Cart items list")
+    page_info: SearchResultPageInfo
+    total_count: Int!
 }
 
 type AvailablePaymentMethod {
