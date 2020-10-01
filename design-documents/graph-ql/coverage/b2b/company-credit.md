@@ -13,7 +13,7 @@ type Company {
 ###### Begin: Defining new types ######
 type CompanyCreditHistory {
     items: [CompanyCreditOperation]! @doc(description: "An array of company credit operations")
-    page_info: SearchResultPageInfo! @doc(description: "Metadata for pagination rendering")
+    page_info: SearchResultPageInfo @doc(description: "Metadata for pagination rendering")
     total_count: Int! @doc(description: "The number of the company credit operations matching the specified filter")
 }
 
@@ -21,7 +21,7 @@ type CompanyCreditOperation {
     uid: ID!  @doc(description: "Unique identifier")
     date: String! @doc(description: "The date of the company credit operation")
     type: CompanyCreditOperationType! @doc(description: "The type of the company credit operation")
-    amount: Money @doc(description: "The amount fo the company credit operation")
+    amount: Money! @doc(description: "The amount fo the company credit operation")
     balance: CompanyCredit! @doc(description: "Credit balance after the company credit operation")
     custom_reference_number: String @doc(description: "Custom reference number associated with the company credit operation")
     updated_by: CompanyCreditOperationUser! @doc(description: "The user submitting the company credit operation")
