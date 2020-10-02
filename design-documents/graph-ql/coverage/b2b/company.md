@@ -24,7 +24,7 @@ type Company @doc(description: "Company entity output data schema.") {
     name: String @doc(description: "Company name.")
     email: String @doc(description: "Company email address.")
     legal_name: String @doc(description: "Company legal name.")
-    vat_id: String @doc(description: "Company VAT/TAX id.")
+    vat_tax_id: String @doc(description: "Company VAT/TAX id.")
     reseller_id: String @doc(description: "Company re-seller id.")
     legal_address: CompanyLegalAddress @doc(description: "Company legal address.")
     company_admin: Customer @doc(description: "An object containing information about Company Administrator.")
@@ -74,14 +74,14 @@ type CompanySalesRepresentative @doc(description: "Company sales representative 
 }
 
 type CompanyUsers @doc(description: "Output data schema for an object returned by a Company users search query.") {
-    items: [Customer] @doc(description: "An array of 'CompanyUser' objects that match the specified search criteria.")
-    total_count: Int @doc(description: "The number of objects returned.")
+    items: [Customer]! @doc(description: "An array of 'CompanyUser' objects that match the specified search criteria.")
+    total_count: Int! @doc(description: "The number of objects returned.")
     page_info: SearchResultPageInfo @doc(description: "Pagination meta data.")
 }
 
 type CompanyRoles @doc(description: "Output data schema for an object returned by a Company roles search query.") {
-    items: [CompanyRole] @doc(description: "A list of company roles that match the specified search criteria.")
-    total_count: Int @doc(description: "The total number of objects matching the specified filter.")
+    items: [CompanyRole]! @doc(description: "A list of company roles that match the specified search criteria.")
+    total_count: Int! @doc(description: "The total number of objects matching the specified filter.")
     page_info: SearchResultPageInfo @doc(description: "Pagination meta data.")
 }
 
@@ -95,24 +95,24 @@ type CompanyRole @doc(description: "Company role output data schema returned in 
 type CompanyAclResource @doc(description: "Output data schema for an object with Role permission resource information.") {
     uid: ID! @doc(description: "ACL resource id.")
     text: String @doc(description: "ACL resource label.")
-    sortOrder: Int @doc(description: "ACL resource sort order.")
+    sort_order: Int @doc(description: "ACL resource sort order.")
     children: [CompanyAclResource!] @doc(description: "An array of sub-resources.")
 }
 
 type CompanyRoleNameCheckResponse @doc(description: "Response object schema for a role name validation query.") {
-    isNameValid: Boolean @doc(description: "Role name validation result")
+    is_name_valid: Boolean @doc(description: "Role name validation result")
 }
 
 type CompanyUserEmailCheckResponse @doc(description: "Response object schema for a Company User email validation query.") {
-    isEmailValid: Boolean @doc(description: "Email validation result")
+    is_email_valid: Boolean @doc(description: "Email validation result")
 }
 
 type CompanyAdminEmailCheckResponse @doc(description: "Response object schema for a Company Admin email validation query.") {
-    isEmailValid: Boolean @doc(description: "Email validation result")
+    is_email_valid: Boolean @doc(description: "Email validation result")
 }
 
 type CompanyEmailCheckResponse @doc(description: "Response object schema for a Company email validation query.") {
-    isEmailValid: Boolean @doc(description: "Email validation result")
+    is_email_valid: Boolean @doc(description: "Email validation result")
 }
 
 union CompanyStructureEntity = CompanyTeam | Customer
