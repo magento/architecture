@@ -152,15 +152,15 @@ type Mutation {
 }
 
 type RemoveRequisitionListItemsOutput {
-    requisition_list : RequisitionList
+    list : RequisitionList
 }
 
 type UpdateRequisitionListItemsOutput {
-    requisition_list : RequisitionList
+    list : RequisitionList
 }
 
 type AddProductsToRequisitionListOutput {
-    requisition_list : RequisitionList
+    list : RequisitionList
 }
 
 input RequisitionListFilterInput {
