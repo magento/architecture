@@ -10,7 +10,7 @@ type ComparableItem {
 
 type ComparableAttribute {
     code: String! @doc(description: "Attribute code ")
-    title: String! @doc(description: "Attribute display title")
+    label: String! @doc(description: "Attribute label")
 }
 
 type CompareList {
