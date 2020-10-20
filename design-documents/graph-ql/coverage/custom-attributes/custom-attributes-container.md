@@ -13,13 +13,16 @@ To account for dynamic nature of EAV attributes and the need of "getting all fie
 ```graphql
 type CustomAttribute {
     code: String!
-    value: [String]! # We want to account fo attributes that have single (text, dropdown) and multiple values (checkbox, multiselect)
+    values: [String]! # We want to account fo attributes that have single (text, dropdown) and multiple values (checkbox, multiselect)
 }
+```
 
-# We could also make value complex type to be able add more fields in the future
+We could also make value complex type to be able add more fields in the future, but this doesn't seem necessary at this point.
+
+```graphql
 type CustomAttribute {
     code: String!
-    value: [CustomAttributeValue]!
+    values: [CustomAttributeValue]!
 }
 
 type CustomAttributeValue {
@@ -34,16 +37,12 @@ type CustomAttributeInterface {
     code: String!
 }
 
-type CustomAttribute extends CustomAttributeInterface {
-    value: CustomAttributeValue!
-}
-
-type CustomAttributeMulti extends CustomAttributeInterface {
-    values: [CustomAttributeValue]!
-}
-
-type CustomAttributeValue {
+type SingleValueCustomAttribute extends CustomAttributeInterface {
     value: String!
+}
+
+type MultipleValuesCustomAttribute extends CustomAttributeInterface {
+    values: [String]!
 }
 ```
 
