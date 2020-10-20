@@ -1,6 +1,6 @@
 type Mutation {
     createWishlist(name: String!): ID # Multiple wishlists Commerce functionality
-    removeWishlist(id: ID!): Boolean # Commerce fucntionality - in Opens Source we assume customer always has one wishlist
+    removeWishlist(uid: ID!): Boolean # Commerce fucntionality - in Opens Source we assume customer always has one wishlist
     addProductsToWishlist(wishlistId: ID!, wishlistItems: [WishlistItemInput!]!): AddProductsToWishlistOutput
     removeProductsFromWishlist(wishlistId: ID!, wishlistItemsIds: [ID!]!): RemoveProductsFromWishlistOutput
     updateProductsInWishlist(wishlistId: ID!, wishlistItems: [WishlistItemUpdateInput!]!): UpdateProductsInWishlistOutput
@@ -8,12 +8,12 @@ type Mutation {
 
 type Customer {
     wishlist: Wishlist! @deprecated(reason: "Use `Customer.wishlists` or `Customer.wishlist_v2") 
-    wishlist_v2(id: ID!): Wishlist # This query will be added in the ce
+    wishlist_v2(uid: ID!): Wishlist # This query will be added in the ce
     wishlists: [Wishlist!]! @doc(description: "Customer wishlists are limited to a max of 1 wishlist in Magento Open Source") # This query will be added in the ce
 }
 
 type Wishlist {
-    id: ID
+    uid: ID
     items: [WishlistItem] @deprecated(reason: "Use field `items_v2` from type `Wishlist` instead")
     items_v2: [WishlistItemInterface] @doc(description: "An array of items in the customer's wishlist")
     items_count: Int
@@ -51,7 +51,7 @@ input WishlistItemInput {
 }
 
 interface WishlistItemInterface {
-    id: ID
+    uid: ID
     quantity: Float
     description: String
     added_at: String
