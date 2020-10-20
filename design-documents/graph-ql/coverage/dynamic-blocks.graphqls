@@ -1,26 +1,19 @@
 type DynamicBlock {
     uid: ID!
-    name: String!
     content: String!
 }
 
-type DynamicBlocks {
-    items: [DynamicBlock]!
-    page_info: SearchResultPageInfo
-    total_count: Int!
-}
-
-# We don't need is_enabled, locations, ga_creative, catalog_price_rule_ids, cart_price_rules_ids, locations on storefront
+# We don't need name, is_enabled, locations, ga_creative, catalog_price_rule_ids, cart_price_rules_ids, locations on storefront
 
 type DynamicBlocksFilterInput {
     type: DynamicBlockTypeEnum!
     locations: [DynamicBlockLocationEnum!] # Blocks for all locations will be displayed if not supplied
     rotation_mode: DynamicBlockRotationModeEnum!
-    dynamic_block_uids: [Int!] # Only makes sense when DynamicBlockTypeEnum is set to SPECIFIED
+    dynamic_block_uids: [ID!] # Only makes sense when DynamicBlockTypeEnum is set to SPECIFIED
 }
 
 type DynamicBlocksOutput {
-    dynamic_blocks: DynamicBlocks!
+    items: [DynamicBlock]!
 }
 
 enum DynamicBlockTypeEnum {
