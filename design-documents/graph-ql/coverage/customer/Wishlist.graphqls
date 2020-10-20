@@ -92,7 +92,7 @@ type GiftCardOptions {
     sender_email: String!
     recipient_name: String
     recipient_email: String
-    amount: SelectedGiftCardAmount
+    amount: Amount
     message: String
 }
 
