@@ -8,7 +8,7 @@ One workaround for "getting all fields" is based on schema introspection, it all
 
 # Proposed solution
 
-To account for dynamic nature of EAV attributes and the need of "getting all fields" in product search queries,we can introduce `custom_attributes: [CustomAttribute]!` container. 
+To account for dynamic nature of EAV attributes and the need of "getting all fields" in product search queries, we can introduce `custom_attributes: [CustomAttribute]!` container (recommended approach). 
 
 ```graphql
 type CustomAttribute {
@@ -30,7 +30,7 @@ type CustomAttributeValue {
 }
 ```
 
-Alternative approach would be is to introduce an interface `custom_attributes: [CustomAttributeInterface]!`.
+Alternative approach would be is to introduce an interface `custom_attributes: [CustomAttributeInterface]!`, but it seems more complicated.
 
 ```graphql
 type CustomAttributeInterface {
