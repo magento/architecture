@@ -6,13 +6,24 @@ type ConfigurableProduct {
 
 type ConfigurableOptionsSelectionMetadata @doc(description: "Metadata corresponding to the configurable options selection.")
 {
-    options_available_for_selection: [ConfigurableProductOptions!] @doc(description: "Configurable options available for further selection based on current selection.")
+    options_available_for_selection: [ConfigurableProductOption!] @doc(description: "Configurable options available for further selection based on current selection.")
     media_gallery: [MediaGalleryInterface!] @doc(description: "Product images and videos corresponding to the specified configurable options selection.")
     variant: SimpleProduct @doc(description: "Variant represented by the specified configurable options selection. It is expected to be null, until selections are made for each configurable option.")
 }
 
-# Configurable option value type has to be extended to include ID which can be used to uniquely identify the option value across the system. This is consistent with proposal of single mutation for add-to-cart
-type ConfigurableProductOptionsValues {
+type ConfigurableProductOption {
     uid: ID!
-    is_available_for_selection: Boolean! # when display OOS is enabled, if the variant selection is OOS, this will return false.
+    attribute_code: String!
+    attribute_uid: ID!
+    label: String!
+    position: Int!
+    values: [ConfigurableProductOptionValue!]
+}
+
+type ConfigurableProductOptionValue {
+    uid: ID!
+    is_available: Boolean! # when display OOS is enabled, if the variant selection is OOS, this will return false.
+    is_default: Boolean!
+    label: String!
+    swatch: SwatchDataInterface
 }
