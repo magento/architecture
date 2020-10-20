@@ -8,11 +8,41 @@ One workaround for "getting all fields" is based on schema introspection, it all
 
 # Proposed solution
 
-To account for dynamic nature of EAV attributes and the need of "getting all fields" in product search queries, `custom_attributes: [CustomAttribute]!` container will be introduced. 
+To account for dynamic nature of EAV attributes and the need of "getting all fields" in product search queries,we can introduce `custom_attributes: [CustomAttribute]!` container. 
 
 ```graphql
 type CustomAttribute {
     code: String!
+    value: [String]! # We want to account fo attributes that have single (text, dropdown) and multiple values (checkbox, multiselect)
+}
+
+# We could also make value complex type to be able add more fields in the future
+type CustomAttribute {
+    code: String!
+    value: [CustomAttributeValue]!
+}
+
+type CustomAttributeValue {
+    value: String!
+}
+```
+
+Alternative approach would be is to introduce an interface `custom_attributes: [CustomAttributeInterface]!`.
+
+```graphql
+type CustomAttributeInterface {
+    code: String!
+}
+
+type CustomAttribute extends CustomAttributeInterface {
+    value: CustomAttributeValue!
+}
+
+type CustomAttributeMulti extends CustomAttributeInterface {
+    values: [CustomAttributeValue]!
+}
+
+type CustomAttributeValue {
     value: String!
 }
 ```
