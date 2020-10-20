@@ -120,6 +120,7 @@ union CompanyStructureEntity = CompanyTeam | Customer
 type CompanyStructureItem @doc(description: "Company Team and Customer structure") {
     uid: ID! @doc(description: "ID of the item in the hierarchy")
     parent_id: ID @doc(description: "ID of the parent item in the hierarchy")
+    structure_id: ID! @doc(description: "ID of the company structure")
     entity: CompanyStructureEntity
 }
 
@@ -131,6 +132,7 @@ type CompanyTeam @doc(description: "Company Team entity output data schema.") {
     uid: ID! @doc(description: "Team id.")
     name: String @doc(description: "Team name.")
     description: String @doc(description: "Team description.")
+    structure_id: ID! @doc(description: "ID of the company structure")
 }
 
 input CompanyUsersFilterInput @doc(description: "Defines the input filters for a Company Users query") {
@@ -315,5 +317,6 @@ type Customer {
     team: CompanyTeam @doc(description: "Company User team data.")
     telephone: String @doc(description: "Company User phone number.")
     status: CompanyUserStatusEnum @doc(description: "Company User status.")
+    structure_id: ID! @doc(description: "ID of the company structure")
 }
 ```
