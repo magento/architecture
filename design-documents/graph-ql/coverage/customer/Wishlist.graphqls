@@ -14,12 +14,22 @@ type Customer {
 
 type Wishlist {
     uid: ID
-    items: [WishlistItem] @deprecated(reason: "Use field `items_v2` from type `Wishlist` instead")
-    items_v2: [WishlistItemInterface] @doc(description: "An array of items in the customer's wishlist")
+    items: [WishlistItem] @deprecated(reason: "Use field `items_v3` from type `Wishlist` instead")
+    items_v2: [WishlistItemInterface] @doc(description: "An array of items in the customer's wishlist") @deprecated(reason: "Use field `items_v3` from type `Wishlist` instead")
+    items_v3(
+        currentPage: Int = 1 @doc(description: "current page of the customer wishlist items. default is 1")
+        pageSize: Int = 20 @doc(description: "page size for the customer wishlist items. default is 20")
+    ): WishlistItems! @doc(description: "An array of items in the customer's wishlist")
     items_count: Int
     sharing_code: String
     updated_at: String
     name: String @doc(description: "Avaialble in Commerce edition only")
+}
+
+type WishlistItems {
+    items: [WishlistItemInterface]!
+    page_info: SearchResultPageInfo
+    total_count: Int!
 }
 
 input WishlistItemUpdateInput {
@@ -87,4 +97,3 @@ type GiftCardWishlistItem implements WishlistItemInterface {
     amount: SelectedGiftCardAmount
     message: String
 }
-

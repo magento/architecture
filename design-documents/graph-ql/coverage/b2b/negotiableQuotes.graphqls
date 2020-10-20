@@ -4,12 +4,12 @@ type Query {
     # in a company can see quotes belonging to their
     # employees. If `Customer.negotiable_quotes` is desirable for buyer's
     # that aren't managers, we can always add that on
-    negotiableQuote(iud: ID!): NegotiableQuote @doc(description: "Get a buyer's NegotiableQuote by ID")
+    negotiableQuote(uid: ID!): NegotiableQuote @doc(description: "Get a buyer's negotiable quote by ID")
     negotiableQuotes(
         filter: NegotiableQuoteFilterInput,
         pageSize: Int = 20,
         currentPage: Int = 1
-    ): NegotiableQuotesOutput @doc(description: "A (optionally filtered) list of Negotiable Quotes viewable by the logged-in customer")
+    ): NegotiableQuotesOutput @doc(description: "A (optionally filtered) list of negotiable quotes viewable by the logged-in customer")
 }
 
 type NegotiableQuotesOutput {
@@ -25,17 +25,17 @@ type Mutation {
     # https://docs.magento.com/user-guide/sales/quote-request.html
     requestNegotiableQuote(
         input: RequestNegotiableQuoteInput!
-    ): RequestNegotiableQuoteOutput @doc(description: "Request a new Negotiable Quote for a buyer")
+    ): RequestNegotiableQuoteOutput @doc(description: "Request a new negotiable quote for a buyer")
 
     # Covers "Add your Comment" section of https://docs.magento.com/user-guide/customers/account-dashboard-quotes-negotiate.html#shipping-information
     addNegotiableQuoteComment(
         input: AddNegotiableQuoteCommentInput!
-    ): AddNegotiableQuoteCommentOutput @doc(description: "Append a new comment from the buyer to a Negotiable Quote")
+    ): AddNegotiableQuoteCommentOutput @doc(description: "Append a new comment from the buyer to a negotiable quote")
 
     # https://docs.magento.com/user-guide/customers/account-dashboard-quotes-negotiate.html#change-the-quantity
     updateNegotiableQuoteQuantities(
         input: UpdateNegotiableQuoteQuantitiesInput!
-    ): UpdateNegotiableQuoteItemsQuantityOutput @doc(description: "Change the quantity of 1 or more items already in a NegotiableQuote")
+    ): UpdateNegotiableQuoteItemsQuantityOutput @doc(description: "Change the quantity of 1 or more items already in a negotiable quote")
 
     # Covers "Delete Line Item" section of https://docs.magento.com/user-guide/customers/account-dashboard-quotes-negotiate.html#tabbed-sections
     removeNegotiableQuoteItems(
@@ -45,18 +45,18 @@ type Mutation {
     # Covers first half of https://docs.magento.com/user-guide/customers/account-dashboard-quotes.html#cancel-a-quote-request
     closeNegotiableQuotes(
         input: CloseNegotiableQuotesInput!
-    ): CloseNegotiableQuotesOutput @doc(description: "Mark a Negotiable Quote as closed, leaving it visible in the storefront")
+    ): CloseNegotiableQuotesOutput @doc(description: "Mark a negotiable quote as closed, leaving it visible in the storefront")
 
     # Covers second half of https://docs.magento.com/user-guide/customers/account-dashboard-quotes.html#cancel-a-quote-request
     deleteNegotiableQuotes(
         input: DeleteNegotiableQuotesInput!
-    ): DeleteNegotiableQuotesOutput @doc(description: "Delete a Negotiable Quote, removing it from the display in the storefront")
+    ): DeleteNegotiableQuotesOutput @doc(description: "Delete a negotiable quote, removing it from the display in the storefront")
 
     # Covers "Select Existing Address" in https://docs.magento.com/user-guide/customers/account-dashboard-quotes-negotiate.html#shipping-information
     # "New Address" flow is covered by Mutation.createCustomerAddress
     setNegotiableQuoteShippingAddress(
         input: SetNegotiableQuoteShippingAddressInput!
-    ): SetNegotiableQuoteShippingAddressOutput @doc(description: "Assign one of buyers' existing addresses to a Negotiable Quote")
+    ): SetNegotiableQuoteShippingAddressOutput @doc(description: "Assign one of buyers' existing addresses to a negotiable quote")
 
     # Pending decision on design of file upload (design doc still pending decisions)
     # addNegotiableQuoteFiles(
@@ -85,14 +85,14 @@ type SetNegotiableQuoteShippingAddressOutput {
 }
 
 input AddNegotiableQuoteItemsInput {
-    quote_id: ID! @doc(description: "ID from a NegotiableQuote object")
+    quote_id: ID! @doc(description: "ID from a negotiable quote object")
     # Implementation Note: This *should* be compatible with the new, single
     # add to cart mutation. https://github.com/magento/architecture/blob/master/design-documents/graph-ql/coverage/AddProductsToCart.graphqls
     cart_items: [CartItemInput!]!
 }
 
 input DeleteNegotiableQuotesInput {
-    quote_ids: [ID!]! @doc(description: "A List of IDs obtained from NegotiableQuote types")
+    quote_ids: [ID!]! @doc(description: "A List of IDs obtained from negotiable quote types")
 }
 
 type DeleteNegotiableQuotesOutput {
@@ -107,7 +107,7 @@ type DeleteNegotiableQuotesOutput {
 }
 
 input CloseNegotiableQuotesInput {
-    quote_ids: [ID!]! @doc(description: "A List of IDs from NegotiableQuote objects")
+    quote_ids: [ID!]! @doc(description: "A List of IDs from negotiable quote objects")
 }
 
 type CloseNegotiableQuotesOutput {
@@ -117,7 +117,7 @@ type CloseNegotiableQuotesOutput {
         filter: NegotiableQuoteFilterInput,
         pageSize: Int = 20,
         currentPage: Int = 1
-    ): NegotiableQuotesOutput @doc(description: "A (optionally filtered) list of Negotiable Quotes viewable by the logged-in customer")
+    ): NegotiableQuotesOutput @doc(description: "A (optionally filtered) list of negotiable quotes viewable by the logged-in customer")
 }
 
 input RemoveNegotiableQuoteItemsInput {
@@ -195,8 +195,8 @@ enum NegotiableQuoteStatus {
 }
 
 input NegotiableQuoteFilterInput {
-    ids: FilterEqualTypeInput @doc(description: "Filter by Negotiable Quote ID(s)")
-    name: FilterMatchTypeInput @doc(description: "Filter by Negotiable Quote name")
+    ids: FilterEqualTypeInput @doc(description: "Filter by negotiable quote ID(s)")
+    name: FilterMatchTypeInput @doc(description: "Filter by negotiable quote name")
 }
 
 type NegotiableQuoteHistoryEntry {
@@ -238,8 +238,8 @@ type NegotiableQuoteHistoryChanges {
 
 # Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L40-L73
 type NegotiableQuoteHistoryStatusChange {
-    old_status: NegotiableQuoteStatus @doc(description: "Will be null for the first history entry on a Negotiable Quote")
-    new_status: NegotiableQuoteStatus! @doc(description: "Negotiable Quote History New Status.")
+    old_status: NegotiableQuoteStatus @doc(description: "Will be null for the first history entry on a negotiable quote")
+    new_status: NegotiableQuoteStatus! @doc(description: "Negotiable quote history new status.")
 }
 
 # Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L48
@@ -276,8 +276,8 @@ type NegotiableQuoteHistoryProductsChange {
 # Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L132-L146
 type NegotiableQuoteHistoryProductsRemovedChange {
     # Open Question: Should `removed_from_catalog` ID type represent the SKU or the product id?
-    removed_from_catalog: [ID!] @doc(description: "List of product skus removed from Seller's catalog")
-    removed_from_quote: [ProductInterface!] @doc(description: "List of products removed by a Buyer or Seller")
+    removed_from_catalog: [ID!] @doc(description: "List of product skus removed from seller's catalog")
+    removed_from_quote: [ProductInterface!] @doc(description: "List of products removed by a buyer or seller")
 }
 
 # Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L148-L169
@@ -323,7 +323,7 @@ type UpdateNegotiableQuoteItemsQuantityOutput {
 # Implementation Note: We don't want to expose the `Customer` object of the Seller to the client, and we don't
 # have much of a permissions model in the storefront to limit access by field. We're using a limited view
 # instead, excluding the ID because a Seller's ID shouldn't be exposed to the client.
-type NegotiableQuoteUser @doc(description: "A limited view of a Buyer or Seller in the Negotiable Quote Process") {
+type NegotiableQuoteUser @doc(description: "A limited view of a Buyer or Seller in the negotiable quote process") {
     firstname: String!
     lastname: String!
 }
