@@ -84,6 +84,10 @@ type BundleWishlistItem implements WishlistItemInterface {
 }
 
 type GiftCardWishlistItem implements WishlistItemInterface {
+    gift_card_options: GiftCardOptions!
+}
+
+type GiftCardOptions {
     sender_name: String!
     sender_email: String!
     recipient_name: String
