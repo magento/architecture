@@ -6,7 +6,7 @@ type ConfigurableProduct {
 
 type ConfigurableOptionsSelectionMetadata @doc(description: "Metadata corresponding to the configurable options selection.")
 {
-    options_available_for_selection: [ConfigurableProductOption!] @doc(description: "Configurable options available for further selection based on current selection.")
+    configurable_options: [ConfigurableProductOption!] @doc(description: "Configurable options available for further selection based on current selection.")
     media_gallery: [MediaGalleryInterface!] @doc(description: "Product images and videos corresponding to the specified configurable options selection.")
     variant: SimpleProduct @doc(description: "Variant represented by the specified configurable options selection. It is expected to be null, until selections are made for each configurable option.")
 }
