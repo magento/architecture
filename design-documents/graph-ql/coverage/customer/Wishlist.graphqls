@@ -88,11 +88,12 @@ type GiftCardWishlistItem implements WishlistItemInterface {
 }
 
 type GiftCardOptions {
-    sender_name: String!
-    sender_email: String!
+    sender_name: String
+    sender_email: String
     recipient_name: String
     recipient_email: String
     amount: Money
+    custom_giftcard_amount: Money
     message: String
 }
 
