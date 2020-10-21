@@ -18,7 +18,7 @@ type CompanyCreditHistory {
 }
 
 type CompanyCreditOperation {
-    uid: ID!  @doc(description: "Unique identifier")
+    uid: ID!  @doc(description: "Unique identifier") # id of the log entry
     date: String! @doc(description: "The date of the company credit operation")
     type: CompanyCreditOperationType! @doc(description: "The type of the company credit operation")
     amount: Money! @doc(description: "The amount fo the company credit operation")
