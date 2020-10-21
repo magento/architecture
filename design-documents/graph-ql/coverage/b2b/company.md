@@ -13,10 +13,10 @@ Delete mutations return a field indicating success or failure. In the case of fa
 ```graphql
 type Query {
     company: Company  @doc(description: "Company assigned to the currently authenticated user")
-    checkCompanyEmail(email: String!): CompanyEmailCheckResponse  @doc(description: "Check if an email is valid for company registration")
-    checkCompanyAdminEmail(email: String!): CompanyAdminEmailCheckResponse  @doc(description: "Check if an email is valid for company admin registration")
-    checkCompanyUserEmail(email: String!): CompanyUserEmailCheckResponse  @doc(description: "Check if an email is valid for company user registration")
-    checkCompanyRoleName(name: String!): CompanyRoleNameCheckResponse  @doc(description: "Check if a role name is valid for company")
+    isCompanyEmailAvailable(email: String!): IsCompanyEmailAvailableOutput @doc(description: "Check if an email is valid for company registration")
+    isCompanyAdminEmailAvailable(email: String!): IsCompanyAdminEmailAvailableOutput @doc(description: "Check if an email is valid for company admin registration")
+    isCompanyUserEmailAvailable(email: String!): IsCompanyUserEmailAvailableOutput @doc(description: "Check if an email is valid for company user registration")
+    isCompanyRoleNameAvailable(name: String!): IsCompanyRoleNameAvailableOutput @doc(description: "Check if a role name is valid for company")
 }
 
 type Company @doc(description: "Company entity output data schema.") {
@@ -99,20 +99,20 @@ type CompanyAclResource @doc(description: "Output data schema for an object with
     children: [CompanyAclResource!] @doc(description: "An array of sub-resources.")
 }
 
-type CompanyRoleNameCheckResponse @doc(description: "Response object schema for a role name validation query.") {
-    is_name_valid: Boolean @doc(description: "Role name validation result")
+type IsCompanyRoleNameAvailableOutput @doc(description: "Response object schema for a role name validation query.") {
+    is_role_name_available: Boolean! @doc(description: "Role name validation result")
 }
 
-type CompanyUserEmailCheckResponse @doc(description: "Response object schema for a Company User email validation query.") {
-    is_email_valid: Boolean @doc(description: "Email validation result")
+type IsCompanyUserEmailAvailableOutput @doc(description: "Response object schema for a Company User email validation query.") {
+    is_email_available: Boolean! @doc(description: "Email validation result")
 }
 
-type CompanyAdminEmailCheckResponse @doc(description: "Response object schema for a Company Admin email validation query.") {
-    is_email_valid: Boolean @doc(description: "Email validation result")
+type IsCompanyAdminEmailAvailableOutput @doc(description: "Response object schema for a Company Admin email validation query.") {
+    is_email_available: Boolean! @doc(description: "Email validation result")
 }
 
-type CompanyEmailCheckResponse @doc(description: "Response object schema for a Company email validation query.") {
-    is_email_valid: Boolean @doc(description: "Email validation result")
+type IsCompanyEmailAvailableOutput @doc(description: "Response object schema for a Company email validation query.") {
+    is_email_available: Boolean! @doc(description: "Email validation result")
 }
 
 union CompanyStructureEntity = CompanyTeam | Customer
@@ -208,7 +208,6 @@ type DeleteCompanyRoleOutput @doc(description: "Delete company role output data 
 type UpdateCompanyStructureOutput @doc(description: "Update company structure output data schema.") {
     company: Company! @doc(description: "Updated company instance.")
 }
-
 
 input CompanyCreateInput @doc(description: "Defines the Company input data schema for creating a new entity."){
     company_name: String! @doc(description: "Company name. Required.")
