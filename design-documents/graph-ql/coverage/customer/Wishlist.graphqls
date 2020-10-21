@@ -125,7 +125,6 @@ type UpdateWishlistOutput {
 }
 
 type StoreConfig {
-    maximum_number_of_wishlists: String @doc(description: "If multiple wish lists are enabled, the maximum number of wish lists the customer can have")
+    maximum_number_of_wishlists: Int @doc(description: "If multiple wish lists are enabled, the maximum number of wish lists the customer can have")
     enable_multiple_wishlists: String @doc(description: "Indicates whether customers can have multiple wish lists. Possible values: 1 (Yes) and 0 (No)")
 }
-
