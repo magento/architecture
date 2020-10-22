@@ -27,7 +27,6 @@ PWA will receive similar JavaScript component definition that can be parsed to e
     dynamic_blocks(input: {type: SPECIFIED, locations: [CONTENT], rotation_mode: RANDOM, dynamic_block_uids: [1, 2]}) {
         items {
             uid
-            name
             content {
                 html
             }
