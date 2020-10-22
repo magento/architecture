@@ -15,7 +15,6 @@ type ConfigurableProductOption {
     uid: ID!
     attribute_code: String!
     label: String!
-    sort_order: Int!
     values: [ConfigurableProductOptionValue!]
 }
 
