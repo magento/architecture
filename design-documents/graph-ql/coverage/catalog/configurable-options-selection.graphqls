@@ -1,5 +1,5 @@
 type ConfigurableProduct {
-    configurable_product_options_selection(configurableOptionValues: [ID!]): ConfigurableProductOptionsSelection @doc(description: "Specified configurable product options selection")
+    configurable_product_options_selection(configurableOptionValueUids: [ID!]): ConfigurableProductOptionsSelection @doc(description: "Specified configurable product options selection")
     variants: [ConfigurableVariant] @deprecated(reason: "Use configurable_options_selection_metadata instead.") @doc(description: "An array of variants of products") @resolver(class: "Magento\\ConfigurableProductGraphQl\\Model\\Resolver\\ConfigurableVariant")
     configurable_options: [ConfigurableProductOptions] @deprecated(reason: "Use configurable_options_selection_metadata instead.") @doc(description: "An array of linked simple product items") @resolver(class: "Magento\\ConfigurableProductGraphQl\\Model\\Resolver\\Options")
 }
