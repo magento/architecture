@@ -1,9 +1,15 @@
 type DynamicBlock {
     uid: ID!
-    content: String!
+    content: ComplexTextValue!
 }
 
 # We don't need name, is_enabled, locations, ga_creative, catalog_price_rule_ids, cart_price_rules_ids, locations on storefront
+
+type DynamicBlocks {
+    items: [DynamicBlock]!
+    page_info: SearchResultPageInfo
+    total_count: Int!
+}
 
 type DynamicBlocksFilterInput {
     type: DynamicBlockTypeEnum!
@@ -13,7 +19,7 @@ type DynamicBlocksFilterInput {
 }
 
 type DynamicBlocksOutput {
-    items: [DynamicBlock]!
+    dynamic_blocks: DynamicBlocks!
 }
 
 enum DynamicBlockTypeEnum {

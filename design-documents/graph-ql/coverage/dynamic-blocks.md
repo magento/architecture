@@ -28,7 +28,9 @@ PWA will receive similar JavaScript component definition that can be parsed to e
         items {
             uid
             name
-            content
+            content {
+                html
+            }
         }
         page_info {
             current_page
