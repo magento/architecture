@@ -22,7 +22,7 @@ type ConfigurableProductOption {
 
 type ConfigurableProductOptionValue {
     uid: ID!
-    is_available: Boolean! # when display OOS is enabled, if the variant selection is OOS, this will return false.
+    is_available: Boolean! # When display out of stock is enabled, if the option value is out of stock, this will return false
     is_default: Boolean!
     label: String!
     swatch: SwatchDataInterface
