@@ -86,6 +86,7 @@ input CreateGiftRegistryInput {
     privacy_settings: GiftRegistryPrivacySettings!
     status: GiftRegistryStatus!
     shipping_address: GiftRegistryShippingAddressInput
+    registrants: [AddGiftRegistryRegistrantInput!]!
     dynamic_attributes: [GiftRegistryDynamicAttributeInput]
 }
 

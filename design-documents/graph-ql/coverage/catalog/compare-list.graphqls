@@ -11,7 +11,7 @@ type ComparableAttribute {
 }
 
 type CompareList {
-    uid: ID! @doc(description: "Compare list id")
+    uid: ID! @doc(description: " Compare list unique id")
     items: [ComparableItem] @doc(description: "Comparable products")
     attributes: [ComparableAttribute] @doc(description: "Comparable attributes, provides codes and titles for the attributes")
 }

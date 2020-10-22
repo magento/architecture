@@ -20,7 +20,7 @@ type Query {
 }
 
 type Company @doc(description: "Company entity output data schema.") {
-    id: ID! @doc(description: "Company id.")
+    uid: ID! @doc(description: "Company id.")
     name: String @doc(description: "Company name.")
     email: String @doc(description: "Company email address.")
     legal_name: String @doc(description: "Company legal name.")
@@ -35,18 +35,18 @@ type Company @doc(description: "Company entity output data schema.") {
         pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. Defaults to 20."),
         currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
     ): CompanyUsers @doc(description: "Information about the company users.")
-    user(id: ID!): Customer @doc(description: "Returns company user by id.")
+    user(uid: ID!): Customer @doc(description: "Returns company user by id.")
     roles(
         pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. Optional. Defaults to 20."),
         currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
     ): CompanyRoles!  @doc(description: "Returns the list of defined roles at Company.")
-    role(id: ID!): CompanyRole  @doc(description: "Returns company role by id.")
+    role(uid: ID!): CompanyRole  @doc(description: "Returns company role by id.")
     acl_resources: [CompanyAclResource]  @doc(description: "Returns the list of all permission resources.")
     structure(
         root_id: ID = 0 @doc(description: "Tree depth to begin query")
         depth: Int = 10 @doc(description: "Specifies how deeply results are fetched")
     ): CompanyStructure @doc(description: "Company structure of teams and customers in depth-first order")
-    team(id: ID!): CompanyTeam  @doc(description: "Returns company team data by id.")
+    team(uid: ID!): CompanyTeam  @doc(description: "Returns company team data by id.")
 }
 
 type CompanyLegalAddress @doc(description: "Company legal address output data schema.") {
@@ -59,7 +59,7 @@ type CompanyLegalAddress @doc(description: "Company legal address output data sc
 }
 
 type CompanyAdmin @doc(description: "Company Administrator (Customer with corresponding privileges) output data schema.") {
-    id: ID! @doc(description: "Company Administrator's id.")
+    uid: ID! @doc(description: "Company Administrator's id.")
     email: String @doc(description: "Company Administrator email address.")
     firstname: String @doc(description: "Company Administrator first name.")
     lastname: String @doc(description: "Company Administrator last name.")
@@ -86,14 +86,14 @@ type CompanyRoles @doc(description: "Output data schema for an object returned b
 }
 
 type CompanyRole @doc(description: "Company role output data schema returned in response to a query by Role id.") {
-    id: ID! @doc(description: "Role id.")
+    uid: ID! @doc(description: "Role id.")
     name: String @doc(description: "Role name.")
     users_count: Int @doc(description: "Total number of Users with such Role within Company Structure.")
     permissions: [CompanyAclResource] @doc(description: "A list of permission resources defined for a Role.")
 }
 
 type CompanyAclResource @doc(description: "Output data schema for an object with Role permission resource information.") {
-    id: ID! @doc(description: "ACL resource id.")
+    uid: ID! @doc(description: "ACL resource id.")
     text: String @doc(description: "ACL resource label.")
     sortOrder: Int @doc(description: "ACL resource sort order.")
     children: [CompanyAclResource!] @doc(description: "An array of sub-resources.")
@@ -118,7 +118,7 @@ type CompanyEmailCheckResponse @doc(description: "Response object schema for a C
 union CompanyStructureEntity = CompanyTeam | Customer
 
 type CompanyStructureItem @doc(description: "Company Team and Customer structure") {
-    id: ID! @doc(description: "ID of the item in the hierarchy")
+    uid: ID! @doc(description: "ID of the item in the hierarchy")
     parent_id: ID @doc(description: "ID of the parent item in the hierarchy")
     entity: CompanyStructureEntity
 }
@@ -128,7 +128,7 @@ type CompanyStructure {
 }
 
 type CompanyTeam @doc(description: "Company Team entity output data schema.") {
-    id: ID! @doc(description: "Team id.")
+    uid: ID! @doc(description: "Team id.")
     name: String @doc(description: "Team name.")
     description: String @doc(description: "Team description.")
 }
@@ -151,14 +151,14 @@ type Mutation {
     updateCompany(input: CompanyUpdateInput!): UpdateCompanyOutput  @doc(description:"Update Company information.")
     createCompanyUser(input: CompanyUserCreateInput!): CreateCompanyUserOutput  @doc(description:"Create new Company User (Customer assigned to Company).")
     updateCompanyUser(input: CompanyUserUpdateInput!): UpdateCompanyUserOutput  @doc(description:"Update Company User information.")
-    deleteCompanyUser(id: ID!): DeleteCompanyUserOutput  @doc(description:"Delete Company User by ID.")
+    deleteCompanyUser(uid: ID!): DeleteCompanyUserOutput  @doc(description:"Delete Company User by ID.")
     createCompanyRole(input: CompanyRoleCreateInput!): CreateCompanyRoleOutput  @doc(description:"Create new Company role.")
     updateCompanyRole(input: CompanyRoleUpdateInput!): UpdateCompanyRoleOutput  @doc(description:"Update Company role data.")
-    deleteCompanyRole(id: ID!): DeleteCompanyRoleOutput  @doc(description:"Delete Company Role by ID.")
+    deleteCompanyRole(uid: ID!): DeleteCompanyRoleOutput  @doc(description:"Delete Company Role by ID.")
     updateCompanyStructure(input: CompanyStructureUpdateInput!): UpdateCompanyStructureOutput  @doc(description:"Update Company Structure element's parent node assignment.")
     createCompanyTeam(input: CompanyTeamCreateInput!): CreateCompanyTeamOutput  @doc(description:"Create Company Team.")
     updateCompanyTeam(input: CompanyTeamUpdateInput!): UpdateCompanyTeamOutput  @doc(description:"Update Company Team data.")
-    deleteCompanyTeam(id: ID!): DeleteCompanyTeamOutput  @doc(description:"Delete Company Team entity by ID.")
+    deleteCompanyTeam(uid: ID!): DeleteCompanyTeamOutput  @doc(description:"Delete Company Team entity by ID.")
 }
 
 type CreateCompanyTeamOutput @doc(description: "Create company team output data schema.") {
@@ -267,7 +267,7 @@ input CompanyUserCreateInput @doc(description: "Defines the input data schema fo
 }
 
 input CompanyUserUpdateInput @doc(description: "Defines the input data schema for updating an existing Customer - Company user.") {
-    id: ID! @doc(description: "Company user's ID (Customer ID). Required.")
+    uid: ID! @doc(description: "Company user's ID (Customer ID). Required.")
     role_id: ID @doc(description: "Company user's role ID.")
     status: Int @doc(description: "Company user's status ID.")
     job_title: String @doc(description: "Company user's job title.")
@@ -283,7 +283,7 @@ input CompanyRoleCreateInput @doc(description: "Defines the input data schema fo
 }
 
 input CompanyRoleUpdateInput @doc(description: "Defines the input data schema for updating an existing Company role.") {
-    id: ID! @doc(description: "Role ID. Required.")
+    uid: ID! @doc(description: "Role ID. Required.")
     name: String @doc(description: "Role name.")
     permissions: [String!] @doc(description: "A list of Role permission resources. Array value for a field, if provided, should consist only of string values.")
 }
@@ -300,7 +300,7 @@ input CompanyTeamCreateInput @doc(description: "Defines the input data schema fo
 }
 
 input CompanyTeamUpdateInput @doc(description: "Defines the input data schema for updating an existing Company team.") {
-    id: ID! @doc(description: "Team ID. Required.")
+    uid: ID! @doc(description: "Team ID. Required.")
     name: String @doc(description: "Team name.")
     description: String @doc(description: "Team description.")
 }

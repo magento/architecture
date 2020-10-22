@@ -3,7 +3,7 @@ type Query {
 }
 
 input CartQueryInput {
-    cart_id: String!
+    cart_id: ID!
 }
 
 type CartQueryOutput {
@@ -11,8 +11,13 @@ type CartQueryOutput {
 }
 
 type Cart {
-    id: ID! @doc(description: "The ID of the cart.")
-    items: [CartItemInterface]
+    id: ID! @doc(description: "The ID of the cart.") @deprecated(reason: "use uid")
+    uid: ID! @doc(description: "The unique ID of the cart.")
+    items: [CartItemInterface] @deprecated(reason: "The `items` field is deprecated. Use `items_v2` instead.")
+    items_v2(
+        currentPage: Int = 1 @doc(description: "current page of the customer cart items. default is 1")
+        pageSize: Int = 20 @doc(description: "page size for the customer cart items. default is 20")
+    ): CartItems! @doc(description: "Cart items")
     applied_coupons: [AppliedCoupon] @doc(description:"An array of `AppliedCoupon` objects. Each object contains the `code` text attribute, which specifies the coupon code. By default Magento supports only one coupon.")
     email: String
     shipping_addresses: [ShippingCartAddress]!
@@ -22,6 +27,12 @@ type Cart {
     prices: CartPrices
     total_quantity: Float!
     is_virtual: Boolean!
+}
+
+type CartItems {
+    items: [CartItemInterface]! @doc(description: "Cart items list")
+    page_info: SearchResultPageInfo
+    total_count: Int!
 }
 
 type AvailablePaymentMethod {
@@ -36,7 +47,8 @@ type SelectedPaymentMethod {
 }
 
 interface CartItemInterface @typeResolver(class: "Magento\\QuoteGraphQl\\Model\\Resolver\\CartItemTypeResolver") {
-    id: String!
+    id: String! @deprecated(reason: "use uid")
+    uid: ID! @doc(description: "The unique ID of the cart item.")
     quantity: Float!
     prices: CartItemPrices
     product: ProductInterface!
@@ -74,8 +86,9 @@ type GiftCardCartItem implements CartItemInterface {
 
 type SelectedConfigurableOption {
     # Hash which includes option ID, option type and slected values. Can be used to move configurable product to wishlist or gift registry
-    id_v2: ID!
-    id: Int!
+    id_v2: ID! @deprecated(reason: "use uid")
+    id: Int! @deprecated(reason: "use uid")
+    uid: ID! @doc(description: "The unique ID of the cart.")
     option_label: String!
     value_id: Int!
     value_label: String!
@@ -83,7 +96,8 @@ type SelectedConfigurableOption {
 
 type DownloadableProductLink @doc(description: "Defines characteristics of a downloadable product") {
     # Hash based on option type and slected link. Can be used to move downloadable product to wishlist or gift registry
-    id: ID!
+    id: ID! @deprecated(reason: "use uid")
+    uid: ID! @doc(description: "The unique ID of the cart.")
     title: String @doc(description: "The display name of the link")
     sort_order: Int @doc(description: "A number indicating the sort order")
     price: Float @doc(description: "The price of the downloadable product")
@@ -97,14 +111,16 @@ type DownloadableProductSamples @doc(description: "DownloadableProductSamples de
 }
 
 type SelectedBundleOption {
-    id: Int!
+    id: Int! @deprecated(reason: "use uid")
+    uid: ID! @doc(description: "The unique ID of the cart.")
     label: String!
     type: String!
     values: [SelectedBundleOptionValue!]!
 }
 
 type SelectedBundleOptionValue {
-    id: Int!
+    id: Int! @deprecated(reason: "use uid")
+    uid: ID! @doc(description: "The unique ID of the cart.")
     label: String!
     price: Float!
     quantity: Float!
@@ -113,8 +129,9 @@ type SelectedBundleOptionValue {
 
 type SelectedCustomizableOption {
     # Hash which includes option ID, option type and slected values. Can be used to move a product to wishlist or gift registry
-    id_v2: ID!
-    id: Int!
+    id_v2: ID! @deprecated(reason: "use uid")
+    id: Int!  @deprecated(reason: "use uid")
+    uid: ID! @doc(description: "The unique ID of the selected option.")
     label: String!
     is_required: Boolean!
     values: [SelectedCustomizableOptionValue!]!
@@ -122,7 +139,8 @@ type SelectedCustomizableOption {
 }
 
 type SelectedCustomizableOptionValue {
-    id: Int!
+    id: Int! @deprecated(reason: "use uid")
+    uid: ID! @doc(description: "The unique ID of the selected option.")
     label: String!
     value: String!
     price: CartItemSelectedOptionValuePrice!
@@ -136,7 +154,8 @@ type CartItemSelectedOptionValuePrice {
 
 type SelectedGiftCardAmount {
     # Hash from the type of the option and value
-    id: ID!
+    id: ID! @deprecated(reason: "use uid")
+    uid: ID! @doc(description: "The unique ID of the selected option.")
     value: Money!
 }
 
