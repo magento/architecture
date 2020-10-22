@@ -14,7 +14,6 @@ type ConfigurableProductOptionsSelection @doc(description: "Metadata correspondi
 type ConfigurableProductOption {
     uid: ID!
     attribute_code: String!
-    attribute_uid: ID!
     label: String!
     sort_order: Int!
     values: [ConfigurableProductOptionValue!]
