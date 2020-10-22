@@ -1,16 +1,13 @@
 type ComparableItem {
-    productId: ID! @doc(description: "Product Id")
-    name: String! @doc(description: "Product name")
-    sku: String! @doc(description: "Product SKU")
-    priceRange: ProductPriceRange! @doc(description: "Product prices")
-    canonical_url: String @doc(description: "Product URL")
-    images: [ProductImage]! @doc(description: "Product Images")
-    values: [ProductAttribute]! @doc(description: "Product comparable attributes")
+    uid: ID!
+    product: ProductInterface!
+    attributes: [ProductAttribute]! @doc(description: "Product comparable attributes")
 }
 
 type ComparableAttribute {
+    uid: ID!
     code: String! @doc(description: "Attribute code ")
-    title: String! @doc(description: "Addibute display title")
+    label: String! @doc(description: "Attribute label")
 }
 
 type CompareList {
@@ -28,18 +25,31 @@ type Query {
 }
 
 type Mutation {
-    addItemsToCompareList(
-        uid: ID!
-        items: [ID!]
+    createCompareList(input: CreateCompareListInput): CompareList @doc(description: "Creates a new compare list. For a logged in user, the created list is assigned to the user")
+    addProductsToCompareList(
+        input: AddProductsToCompareListInput
     ): CompareList
-    removeItemsFromCompareList(
-        uid: ID!
-        items: [ID!]
+    removeProductsFromCompareList(
+        input: RemoveProductsFromCompareListInput
     ): CompareList
-    assignCompareListToCustomer(listUid: ID!): Boolean
+    assignCompareListToCustomer(uid: ID!): CompareList # Customer token needs to be passed
+    deleteCompareList(uid: ID!): DeleteCompareListOutput
 }
 
-schema {
-    query: Query,
-    mutation: Mutation
+input CreateCompareListInput {
+    products: [ID!]
+}
+
+input AddProductsToCompareListInput {
+    uid: ID!,
+    products: [ID!]!
+}
+
+input RemoveProductsFromCompareListInput {
+    uid: ID!,
+    products: [ID!]!
+}
+
+type DeleteCompareListOutput {
+    result: Boolean!
 }
