@@ -12,14 +12,15 @@ type ConfigurableProductOptionsSelection @doc(description: "Metadata correspondi
 }
 
 type ConfigurableProductOption {
-    uid: ID!
+    uid: ID! 
     attribute_code: String!
     label: String!
     values: [ConfigurableProductOptionValue!]
 }
 
 type ConfigurableProductOptionValue {
-    uid: ID!
+    uid: ID! # Encoding of this uid should respect encode_algm(format: configurable/<attribute-id>/<value_index>)
+             # refer to https://github.com/magento/architecture/blob/master/design-documents/graph-ql/coverage/cart/add-items-to-cart-single-mutation.md#single-mutation-for-adding-products-to-cart
     is_available: Boolean! # When display out of stock is enabled, if the option value is out of stock, this will return false
     is_default: Boolean!
     label: String!
