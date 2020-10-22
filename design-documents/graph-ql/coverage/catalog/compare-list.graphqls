@@ -1,7 +1,7 @@
 type ComparableItem {
     uid: ID!
     product: ProductInterface!
-    attributes: [Attribute]! @doc(description: "Product comparable attributes")
+    attributes: [ProductAttribute]! @doc(description: "Product comparable attributes")
 }
 
 type ComparableAttribute {
