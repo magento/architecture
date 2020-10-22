@@ -1,12 +1,12 @@
 type Mutation {
-    createWishlist(name: String!, visibility: WishlistVisibilityEnum!): CreateWishlistOutput # Multiple wishlists Commerce functionality
-    deleteWishlist(wishlistId: ID!): Boolean # Commerce fucntionality - in Opens Source we assume customer always has one wishlist
+    createWishlist(input: CreateWishlistInput!): CreateWishlistOutput # Multiple wishlists Commerce functionality
+    deleteWishlist(wishlistId: ID!): DeleteWishlistOutput # Commerce fucntionality - in Opens Source we assume customer always has one wishlist
     addProductsToWishlist(wishlistId: ID!, wishlistItems: [WishlistItemInput!]!): AddProductsToWishlistOutput
     removeProductsFromWishlist(wishlistId: ID!, wishlistItemsIds: [ID!]!): RemoveProductsFromWishlistOutput
     updateProductsInWishlist(wishlistId: ID!, wishlistItems: [WishlistItemUpdateInput!]!): UpdateProductsInWishlistOutput
-    copyProductsToWishlist(wishlistId: ID!, wishlistItems: [WishlistItemCopyInput!]!): UpdateProductsInWishlistOutput  @doc(description: "Copy a product to the wish list")
-    moveProductsToWishlist(wishlistId: ID!, wishlistItems: [WishlistItemMoveInput!]!): UpdateProductsInWishlistOutput  @doc(description: "Move products from one wish list to another")
-    updateWishlist(wishlistId: ID!, name: String, visibility: WishlistVisibilityEnum): UpdateWishlistOutput @doc(description: "Change the name and visibility of the specified wish list")
+    copyProductsBetweenWishlists(sourceUid: ID!, destinationUid: ID!, wishlistItems: [WishlistItemCopyInput!]!): CopyProductsBetweenWishlistsOutput  @doc(description: "Copy a product to the wish list")
+    moveProductsBetweenWishlists(sourceUid: ID!, destinationUid: ID!, wishlistItems: [WishlistItemMoveInput!]!): MoveProductsBetweenWishlistsOutput  @doc(description: "Move products from one wish list to another")
+    updateWishlist(input: UpdateWishlistInput!): UpdateWishlistOutput @doc(description: "Change the name and visibility of the specified wish list")
 }
 
 type Customer {
@@ -23,6 +23,18 @@ type Wishlist {
     sharing_code: String
     updated_at: String
     name: String @doc(description: "Avaialble in Commerce edition only")
+    visibility: WishlistVisibilityEnum!
+}
+
+input CreateWishlistInput {
+    name: String!
+    visibility: WishlistVisibilityEnum!
+}
+
+input UpdateWishlistInput {
+    wishlistId: ID!
+    name: String
+    visibility: WishlistVisibilityEnum
 }
 
 input WishlistItemUpdateInput {
@@ -103,9 +115,12 @@ enum WishlistVisibilityEnum @doc(description: "This enumeration defines the wish
 }
 
 type CreateWishlistOutput {
-    uid: ID! @doc(description: "The ID of the new wish list")
-    name: String! @doc(description: "The wish list name")
-    visibility: WishlistVisibilityEnum! @doc(description: "The wish list visibility")
+    wishlist: Wishlist
+}
+
+type DeleteWishlistOutput {
+    status: Boolean!
+    wishlists: [Wishlist!]!
 }
 
 input WishlistItemCopyInput {
@@ -119,9 +134,17 @@ input WishlistItemMoveInput {
 }
 
 type UpdateWishlistOutput {
-    uid: ID! @doc(description: "The ID of the updated wish list")
-    name: String! @doc(description: "The wish list name")
-    visibility: WishlistVisibilityEnum! @doc(description: "The wish list visibility")
+    wishlist: Wishlist
+}
+
+type CopyProductsBetweenWishlistsOutput {
+    source_wishlist: Wishlist!
+    destination_wishlist: Wishlist!
+}
+
+type MoveProductsBetweenWishlistsOutput {
+    source_wishlist: Wishlist!
+    destination_wishlist: Wishlist!
 }
 
 type StoreConfig {
