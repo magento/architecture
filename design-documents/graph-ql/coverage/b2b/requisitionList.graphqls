@@ -121,7 +121,7 @@ type Mutation {
 
     removeRequisitionListItems(
         uid: ID!, @doc(description: "unique Id of requisition list")
-        items: [ID!]! @doc(description: "unique Ids of Items to be removed from requisition list")
+        itemUids: [ID!]! @doc(description: "unique Ids of Items to be removed from requisition list")
     ): RemoveRequisitionListItemsOutput @doc(description: "Remove Items in requisition list")
 
     updateRequisitionListItems(
