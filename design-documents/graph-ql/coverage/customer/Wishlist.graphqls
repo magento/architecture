@@ -4,8 +4,8 @@ type Mutation {
     addProductsToWishlist(wishlistId: ID!, wishlistItems: [WishlistItemInput!]!): AddProductsToWishlistOutput
     removeProductsFromWishlist(wishlistId: ID!, wishlistItemsIds: [ID!]!): RemoveProductsFromWishlistOutput
     updateProductsInWishlist(wishlistId: ID!, wishlistItems: [WishlistItemUpdateInput!]!): UpdateProductsInWishlistOutput
-    copyProductsBetweenWishlists(sourceUid: ID!, destinationUid: ID!, wishlistItems: [WishlistItemCopyInput!]!): CopyProductsBetweenWishlistsOutput  @doc(description: "Copy a product to the wish list")
-    moveProductsBetweenWishlists(sourceUid: ID!, destinationUid: ID!, wishlistItems: [WishlistItemMoveInput!]!): MoveProductsBetweenWishlistsOutput  @doc(description: "Move products from one wish list to another")
+    copyProductsBetweenWishlists(sourceWishlistUid: ID!, destinationWishlistUid: ID!, wishlistItems: [WishlistItemCopyInput!]!): CopyProductsBetweenWishlistsOutput  @doc(description: "Copy a product to the wish list")
+    moveProductsBetweenWishlists(sourceWishlistUid: ID!, destinationWishlistUid: ID!, wishlistItems: [WishlistItemMoveInput!]!): MoveProductsBetweenWishlistsOutput  @doc(description: "Move products from one wish list to another")
     updateWishlist(input: UpdateWishlistInput!): UpdateWishlistOutput @doc(description: "Change the name and visibility of the specified wish list")
 }
 
@@ -50,6 +50,7 @@ type AddProductsToWishlistOutput {
 }
 
 type RemoveProductsFromWishlistOutput {
+    status: Boolean!
     wishlist: Wishlist!
 }
 
