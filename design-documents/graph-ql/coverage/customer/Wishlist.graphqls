@@ -1,6 +1,6 @@
 type Mutation {
     createWishlist(input: CreateWishlistInput!): CreateWishlistOutput # Multiple wishlists Commerce functionality
-    deleteWishlist(wishlistId: ID!): DeleteWishlistOutput # Commerce fucntionality - in Opens Source we assume customer always has one wishlist
+    deleteWishlist(wishlistUid: ID!): DeleteWishlistOutput # Commerce fucntionality - in Opens Source we assume customer always has one wishlist
     addProductsToWishlist(wishlistId: ID!, wishlistItems: [WishlistItemInput!]!): AddProductsToWishlistOutput
     removeProductsFromWishlist(wishlistId: ID!, wishlistItemsIds: [ID!]!): RemoveProductsFromWishlistOutput
     updateProductsInWishlist(wishlistId: ID!, wishlistItems: [WishlistItemUpdateInput!]!): UpdateProductsInWishlistOutput
