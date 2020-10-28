@@ -17,7 +17,7 @@
 #
 # 3. In requistion list view, `renameRequistionList` mutatation can be used to rename the list
 #
-# 4. In requistion list view, one can edit items quantity, options etc or remove items with `removeRequisitionListItems` and
+# 4. In requistion list view, one can edit items quantity, options etc or remove items with `deleteRequisitionListItems` and
 # `updateRequisitionListItems` mutation
 #
 # 5. In requistion list view, select requistion list items and move them , copy them to different requistion list with
@@ -104,46 +104,46 @@ type Mutation {
         description: String @doc(description: "description For the list")
     ): CreateRequisitionListOutput @doc(description: "Create Empty Requisition List")
 
-    renameRequisitionList(
-        uid: ID!, @doc(description: "unique Id of requisition list")
+    updateRequisitionList(
+        requisitionListUid: ID!, @doc(description: "unique Id of requisition list")
         name: String!, @doc(description: "new name for list")
         description: String @doc(description: "new description For the List")
-    ): RenameRequisitionListOutput @doc(description: "Rename a requisition list and change description")
+    ): UpdateRequisitionListOutput @doc(description: "Rename a requisition list and change description")
 
     deleteRequisitionList(
-        uid: ID! @doc(description: "unique Id of requisition list")
+        requisitionListUid: ID! @doc(description: "unique Id of requisition list")
     ): DeleteRequisitionListOutput @doc(description: "Delete a requisition list with Id")
 
     addProductsToRequisitionList(
-        uid: ID!, @doc(description: "unique Id of requisition list")
+        requisitionListUid: ID!, @doc(description: "unique Id of requisition list")
         items: [RequisitionListItemsInput!]! @doc(description: "Products to be added to requisition list")
     ): AddProductsToRequisitionListOutput @doc(description: "Add items to requisition list")
 
-    removeRequisitionListItems(
-        uid: ID!, @doc(description: "unique Id of requisition list")
-        items: [ID!]! @doc(description: "unique Ids of Items to be removed from requisition list")
-    ): RemoveRequisitionListItemsOutput @doc(description: "Remove Items in requisition list")
+    deleteRequisitionListItems(
+        requisitionListUid: ID!, @doc(description: "unique Id of requisition list")
+        requisitionListItemUids: [ID!]! @doc(description: "unique Ids of Items to be deleted from requisition list")
+    ): DeleteRequisitionListItemsOutput @doc(description: "Remove Items in requisition list")
 
     updateRequisitionListItems(
-        uid: ID!, @doc(description: "unique Id of requisition list")
+        requisitionListUid: ID!, @doc(description: "unique Id of requisition list")
         items: [UpdateRequisitionListItemsInput!]! @doc(description: "Items to be updated from requisition list")
     ): UpdateRequisitionListItemsOutput @doc(description: "Update Items in requisition list")
 
     addRequisitionListItemsToCart(
-        listUid: ID!, @doc(description: "unique Id of requisition list")
-        itemUids: [ID!]! @doc(description: "selected requisition list items that are to be added")
+        requisitionListUid: ID!, @doc(description: "unique Id of requisition list")
+        requisitionListItemUids: [ID!]! @doc(description: "selected requisition list items that are to be added")
     ): AddRequisitionListItemsToCartOutput @doc(description: "Add Requisition List Items To Customer Cart")
 
     copyItemsBetweenRequisitionLists(
-        sourceUid: ID!, @doc(description: "unique Id of source requisition list")
-        destinationUid: ID,  @doc(description: "unique Id of destination requisition list") # If null new requisition list will be created
-        itemUids: [ID!]! @doc(description:  "selected requisition list items that are to be copied from source")
+        sourceRequisitionListUid: ID!, @doc(description: "unique Id of source requisition list")
+        destinationRequisitionListUid: ID,  @doc(description: "unique Id of destination requisition list") # If null new requisition list will be created
+        requisitionListItemUids: [ID!]! @doc(description:  "selected requisition list items that are to be copied from source")
     ): CopyItemsBetweenRequisitionListsOutput @doc(description: "Copy Items from Requisition List to another requisition list")
 
     moveItemsBetweenRequisitionLists(
-        sourceUid: ID!, @doc(description: "unique Id of source requisition list")
-        destinationUid: ID, @doc(description: "unique Id of destination requisition list") # If null new requisition list will be created
-        itemUids: [ID!]! @doc(description: "selected requisition list items that are to be moved from source")
+        sourceRequisitionListUid: ID!, @doc(description: "unique Id of source requisition list")
+        destinationRequisitionListUid: ID, @doc(description: "unique Id of destination requisition list") # If null new requisition list will be created
+        requisitionListItemUids: [ID!]! @doc(description: "selected requisition list items that are to be moved from source")
     ): MoveItemsBetweenRequisitionListsOutput @doc(description: "Move Items from Requisition List to another requisition List")
 
     clearCustomerCart(
@@ -151,20 +151,21 @@ type Mutation {
     ): ClearCustomerCartOutput @doc(description: "Clears the cart items")
 }
 
-type RemoveRequisitionListItemsOutput {
-    list : RequisitionList
+type DeleteRequisitionListItemsOutput {
+    status: Boolean!
+    list: RequisitionList
 }
 
 type UpdateRequisitionListItemsOutput {
-    list : RequisitionList
+    list: RequisitionList
 }
 
 type AddProductsToRequisitionListOutput {
-    list : RequisitionList
+    list: RequisitionList
 }
 
 input RequisitionListFilterInput {
-    uids: FilterEqualTypeInput, @doc(description: "Filter Customer Requisition lists with an requisition list ID or list of requisition list IDs")
+    requisitionListUid: FilterEqualTypeInput, @doc(description: "Filter Customer Requisition lists with an requisition list ID or list of requisition list IDs")
     name: FilterMatchTypeInput @doc(description: "Filter by display name of the Requisition list")
 }
 
@@ -172,13 +173,13 @@ input RequisitionListItemsInput {
     sku: String!
     quantity: Float
     parent_sku: String
-    selected_options: [String!] @doc(description: "selected option ID")
+    selected_options: [ID!] @doc(description: "selected option ID")
     entered_options: [EnteredOptionInput!] @doc(description: "entered Options ID")
 }
 
 input UpdateRequisitionListItemsInput {
-    item_id: ID! @doc(description: "unique ID of Requisition List Item")
-    selected_options: [String!] @doc(description: "selected option ID")
+    requisitionListItemUid: ID! @doc(description: "unique ID of Requisition List Item")
+    selected_options: [ID!] @doc(description: "selected option ID")
     entered_options: [EnteredOptionInput!] @doc(description: "entered Options ID")
     quantity: Float
 }
@@ -187,12 +188,13 @@ type CreateRequisitionListOutput {
     list: RequisitionList
 }
 
-type RenameRequisitionListOutput {
+type UpdateRequisitionListOutput {
     list: RequisitionList
 }
 
 type DeleteRequisitionListOutput {
-    requisition_list : RequisitionList
+    status: Boolean!
+    requisition_list: RequisitionList
 }
 
 type AddRequisitionListItemsToCartOutput {
@@ -200,12 +202,12 @@ type AddRequisitionListItemsToCartOutput {
 }
 
 type CopyItemsBetweenRequisitionListsOutput {
-    list : RequisitionList  @doc(description:  "Destination Requisition List")# since source requisition list is not mutated it is not part of the output
+    list: RequisitionList @doc(description:  "Destination Requisition List")# since source requisition list is not mutated it is not part of the output
 }
 
 type MoveItemsBetweenRequisitionListsOutput {
-    source : RequisitionList @doc(description:  "Source Requisition List")
-    destination : RequisitionList @doc(description: "Destination Requisition List")
+    source: RequisitionList @doc(description:  "Source Requisition List")
+    destination: RequisitionList @doc(description: "Destination Requisition List")
 }
 
 type ClearCustomerCartOutput {
