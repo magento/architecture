@@ -115,7 +115,7 @@ enum WishlistVisibilityEnum @doc(description: "This enumeration defines the wish
 }
 
 type CreateWishlistOutput {
-    wishlist: Wishlist
+    wishlist: Wishlist!
 }
 
 type DeleteWishlistOutput {
