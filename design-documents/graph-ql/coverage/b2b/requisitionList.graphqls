@@ -15,9 +15,9 @@
 #
 # 2. In requistion list view, `exportRequisitionList` query will generate a CSV file with particular requistion list data
 #
-# 3. In requistion list view, `renameRequistionList` mutatation can be used to rename the list
+# 3. In requistion list view, `updateRequistionList` mutatation can be used to update or rename the list
 #
-# 4. In requistion list view, one can edit items quantity, options etc or remove items with `deleteRequisitionListItems` and
+# 4. In requistion list view, one can edit items quantity, options etc or delete items with `deleteRequisitionListItems` and
 # `updateRequisitionListItems` mutation
 #
 # 5. In requistion list view, select requistion list items and move them , copy them to different requistion list with
@@ -122,7 +122,7 @@ type Mutation {
     deleteRequisitionListItems(
         requisitionListUid: ID!, @doc(description: "unique Id of requisition list")
         requisitionListItemUids: [ID!]! @doc(description: "unique Ids of Items to be deleted from requisition list")
-    ): DeleteRequisitionListItemsOutput @doc(description: "Remove Items in requisition list")
+    ): DeleteRequisitionListItemsOutput @doc(description: "Delete Items in requisition list")
 
     updateRequisitionListItems(
         requisitionListUid: ID!, @doc(description: "unique Id of requisition list")
