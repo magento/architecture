@@ -110,6 +110,10 @@ type GiftCardOptions {
     message: String
 }
 
+type GroupedProductWishlistItem implements WishlistItemInterface {
+    grouped_products: [GroupedProductItem!]!
+}
+
 enum WishlistVisibilityEnum @doc(description: "This enumeration defines the wish list visibility types") {
     PUBLIC
     PRIVATE
