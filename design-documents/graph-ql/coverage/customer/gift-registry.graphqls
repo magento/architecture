@@ -70,7 +70,6 @@ input UpdateGiftRegistryItemInput {
 
 input UpdateGiftRegistryInput {
     event_name: String
-    type_id: String
     message: String
     privacy_settings: GiftRegistryPrivacySettings
     status: GiftRegistryStatus
