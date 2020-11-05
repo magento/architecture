@@ -6,9 +6,9 @@ type Mutation {
     updateProductsInWishlist(wishlistId: ID!, wishlistItems: [WishlistItemUpdateInput!]!): UpdateProductsInWishlistOutput
     copyProductsBetweenWishlists(sourceWishlistUid: ID!, destinationWishlistUid: ID!, wishlistItems: [WishlistItemCopyInput!]!): CopyProductsBetweenWishlistsOutput  @doc(description: "Copy a product to the wish list")
     moveProductsBetweenWishlists(sourceWishlistUid: ID!, destinationWishlistUid: ID!, wishlistItems: [WishlistItemMoveInput!]!): MoveProductsBetweenWishlistsOutput  @doc(description: "Move products from one wish list to another")
-    updateWishlist( wishlistId: ID!, input: UpdateWishlistInput!): UpdateWishlistOutput @doc(description: "Change the name and visibility of the specified wish list")
+    updateWishlist( wishlistUid: ID!, input: UpdateWishlistInput!): UpdateWishlistOutput @doc(description: "Change the name and visibility of the specified wish list")
     addWishlistItemsToCart(
-        wishlistId: ID!, @doc(description: "unique Id of wishlist")
+        wishlistUid: ID!, @doc(description: "unique Id of wishlist")
         wishlistItemUids: [ID!] @doc(description: "Optional param. selected wish list items that are to be added")
     ): AddWishlistItemsToCartOutput @doc(description: "Add Requisition List Items To Customer Cart")
 }
