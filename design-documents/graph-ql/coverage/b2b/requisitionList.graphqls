@@ -124,13 +124,18 @@ type Mutation {
         input: UpdateRequisitionListInput
     ): UpdateRequisitionListOutput @doc(description: "Rename a requisition list and change description")
 
+    updateRequisitionListItems(
+        requisitionListUid: ID!, @doc(description: "unique Id of requisition list")
+        requisitionListItems: [UpdateRequisitionListItemsInput!]! @doc(description: "Items to be updated from requisition list")
+    ): UpdateRequisitionListItemsOutput @doc(description: "Update Items in requisition list")
+
     deleteRequisitionList(
         requisitionListUid: ID! @doc(description: "unique Id of requisition list")
     ): DeleteRequisitionListOutput @doc(description: "Delete a requisition list with Id")
 
     addProductsToRequisitionList(
         requisitionListUid: ID!, @doc(description: "unique Id of requisition list")
-        items: [RequisitionListItemsInput!]! @doc(description: "Products to be added to requisition list")
+        requisitionListItems: [RequisitionListItemsInput!]! @doc(description: "Products to be added to requisition list")
     ): AddProductsToRequisitionListOutput @doc(description: "Add items to requisition list")
 
     deleteRequisitionListItems(
@@ -156,7 +161,7 @@ type Mutation {
     ): MoveItemsBetweenRequisitionListsOutput @doc(description: "Move Items from Requisition List to another requisition List")
 
     clearCustomerCart(
-	    cartUid: String! @doc(description: "masked Cart Id")
+        cartUid: String! @doc(description: "masked Cart Id")
     ): ClearCustomerCartOutput @doc(description: "Clears the cart items")
 }
 
@@ -204,7 +209,6 @@ input RequisitionListItemsInput {
 }
 
 input UpdateRequisitionListItemsInput {
-    requisitionListItemUid: ID! @doc(description: "unique ID of Requisition List Item")
     selected_options: [ID!] @doc(description: "selected option ID")
     entered_options: [EnteredOptionInput!] @doc(description: "entered Options ID")
     quantity: Float
