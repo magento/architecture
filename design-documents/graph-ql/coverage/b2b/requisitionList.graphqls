@@ -59,22 +59,38 @@ type RequistionListItems {
 interface RequisitionListItemInterface @doc(description: "Interface type for Requisition List Item") {
     uid: ID! @doc(description:"Unique Identifier of Requisition List Item")
     product: ProductInterface!
-    qty: Float! @doc(description: "Quantity added")
+    quantity: Float! @doc(description: "Quantity added")
+    customizable_options: [SelectedCustomizableOption] @doc(description: "custom Option selected")
 }
 
-type DefaultRequisitionListItem implements RequisitionListItemInterface
+type SimpleRequisitionListItem implements RequisitionListItemInterface
 @doc(description: "Requisition List Item Implementation that for Simple and Virtual Products") {
-    uid: ID! @doc(description: "Unique Identifier of Requisition List Item")
-    product: ProductInterface!
-    qty: Float! @doc(description:  "Quantity added")
-    customizable_options: [SelectedCustomizableOption] @doc(description: "custom Option selected")
+}
+
+type GiftCardRequisitionListItem implements RequisitionListItemInterface
+@doc(description: "Requisition List Item Implementation that for GiftCard Products") {
+    gift_card_options: GiftCardOptions!
+}
+
+type GiftCardOptions {
+    sender_name: String
+    sender_email: String
+    recipient_name: String
+    recipient_email: String
+    amount: Money
+    custom_giftcard_amount: Money
+    message: String
+}
+
+type GroupedProductRequisitionListItem implements RequisitionListItemInterface {
+    grouped_products: [GroupedProductItem!]!
 }
 
 type DownloadableRequisitionListItem implements RequisitionListItemInterface
 @doc(description: "Requisition List Item Implementation that for Downloadable Products") {
     uid: ID! @doc(description: "Unique Identifier of Requisition List Item")
     product: ProductInterface!
-    qty: Float! @doc(description: "Quantity added")
+    quantity: Float! @doc(description: "Quantity added")
     customizable_options: [SelectedCustomizableOption] @doc(description:  "custom Option selected")
     links: [DownloadableProductLinks] @doc(description: "DownloadableProductLinks defines characteristics of a downloadable product")
     samples: [DownloadableProductSamples] @doc(description:  "DownloadableProductSamples defines characteristics of a downloadable product")
@@ -84,7 +100,7 @@ type BundleRequisitionListItem implements RequisitionListItemInterface
 @doc(description: "Requisition List Item Implementation that for Bundle Products") {
     uid: ID! @doc(description: "Unique Identifier of Requisition List Item")
     product: ProductInterface!
-    qty: Float! @doc(description: "Quantity added")
+    quantity: Float! @doc(description: "Quantity added")
     customizable_options: [SelectedCustomizableOption] @doc(description: "custom Option selected")
     bundle_options: [SelectedBundleOption]! @doc(description: "selected bundle options")
 }
@@ -93,21 +109,19 @@ type ConfigurableRequisitionListItem implements RequisitionListItemInterface
 @doc(description: "Requisition List Item Implementation that for Configurable Products") {
     uid: ID! @doc(description:  "Unique Identifier of Requisition List Item")
     product: ProductInterface!
-    qty: Float! @doc(description: "Quantity added")
+    quantity: Float! @doc(description: "Quantity added")
     customizable_options: [SelectedCustomizableOption] @doc(description: "custom Option selected")
     configurable_options: [SelectedConfigurableOption] @doc(description: "Configurable options selected")
 }
 
 type Mutation {
     createRequisitionList(
-        name: String!, @doc(description: "name for the list")
-        description: String @doc(description: "description For the list")
+        input: CreateRequisitionListInput
     ): CreateRequisitionListOutput @doc(description: "Create Empty Requisition List")
 
     updateRequisitionList(
         requisitionListUid: ID!, @doc(description: "unique Id of requisition list")
-        name: String!, @doc(description: "new name for list")
-        description: String @doc(description: "new description For the List")
+        input: UpdateRequisitionListInput
     ): UpdateRequisitionListOutput @doc(description: "Rename a requisition list and change description")
 
     deleteRequisitionList(
@@ -124,26 +138,21 @@ type Mutation {
         requisitionListItemUids: [ID!]! @doc(description: "unique Ids of Items to be deleted from requisition list")
     ): DeleteRequisitionListItemsOutput @doc(description: "Delete Items in requisition list")
 
-    updateRequisitionListItems(
-        requisitionListUid: ID!, @doc(description: "unique Id of requisition list")
-        items: [UpdateRequisitionListItemsInput!]! @doc(description: "Items to be updated from requisition list")
-    ): UpdateRequisitionListItemsOutput @doc(description: "Update Items in requisition list")
-
     addRequisitionListItemsToCart(
         requisitionListUid: ID!, @doc(description: "unique Id of requisition list")
-        requisitionListItemUids: [ID!]! @doc(description: "selected requisition list items that are to be added")
+        requisitionListItemUids: [ID!] @doc(description: "selected requisition list items that are to be added. Not providing this parameter will all items from req. list to the cart")
     ): AddRequisitionListItemsToCartOutput @doc(description: "Add Requisition List Items To Customer Cart")
 
     copyItemsBetweenRequisitionLists(
         sourceRequisitionListUid: ID!, @doc(description: "unique Id of source requisition list")
         destinationRequisitionListUid: ID,  @doc(description: "unique Id of destination requisition list") # If null new requisition list will be created
-        requisitionListItemUids: [ID!]! @doc(description:  "selected requisition list items that are to be copied from source")
+        requisitionListItem: CopyItemsBetweenRequisitionListsInput
     ): CopyItemsBetweenRequisitionListsOutput @doc(description: "Copy Items from Requisition List to another requisition list")
 
     moveItemsBetweenRequisitionLists(
         sourceRequisitionListUid: ID!, @doc(description: "unique Id of source requisition list")
         destinationRequisitionListUid: ID, @doc(description: "unique Id of destination requisition list") # If null new requisition list will be created
-        requisitionListItemUids: [ID!]! @doc(description: "selected requisition list items that are to be moved from source")
+        requisitionListItem: MoveItemsBetweenRequisitionListsInput
     ): MoveItemsBetweenRequisitionListsOutput @doc(description: "Move Items from Requisition List to another requisition List")
 
     clearCustomerCart(
@@ -151,17 +160,35 @@ type Mutation {
     ): ClearCustomerCartOutput @doc(description: "Clears the cart items")
 }
 
+type CreateRequisitionListInput {
+    name: String! @doc(description: "name for the list")
+    description: String @doc(description: "description For the list")
+}
+
+type UpdateRequisitionListInput {
+    name: String! @doc(description: "new name for list")
+    description: String @doc(description: "new description For the List")
+}
+
+type CopyItemsBetweenRequisitionListsInput  {
+    requisitionListItemUids: [ID!]! @doc(description:  "selected requisition list items that are to be copied from source")
+}
+
+type MoveItemsBetweenRequisitionListsInput  {
+    requisitionListItemUids: [ID!]! @doc(description: "selected requisition list items that are to be moved from source")
+}
+
 type DeleteRequisitionListItemsOutput {
     status: Boolean!
-    list: RequisitionList
+    requisiton_list: RequisitionList
 }
 
 type UpdateRequisitionListItemsOutput {
-    list: RequisitionList
+    requisiton_list: RequisitionList
 }
 
 type AddProductsToRequisitionListOutput {
-    list: RequisitionList
+    requisiton_list: RequisitionList
 }
 
 input RequisitionListFilterInput {
@@ -171,8 +198,7 @@ input RequisitionListFilterInput {
 
 input RequisitionListItemsInput {
     sku: String!
-    quantity: Float
-    parent_sku: String
+    quantity: Float!
     selected_options: [ID!] @doc(description: "selected option ID")
     entered_options: [EnteredOptionInput!] @doc(description: "entered Options ID")
 }
@@ -185,11 +211,11 @@ input UpdateRequisitionListItemsInput {
 }
 
 type CreateRequisitionListOutput {
-    list: RequisitionList
+    requisiton_list: RequisitionList
 }
 
 type UpdateRequisitionListOutput {
-    list: RequisitionList
+    requisiton_list: RequisitionList
 }
 
 type DeleteRequisitionListOutput {
@@ -198,18 +224,32 @@ type DeleteRequisitionListOutput {
 }
 
 type AddRequisitionListItemsToCartOutput {
+    status: Boolean!
+    add_requisition_list_items_to_cart_user_errors: [AddRequisitionListItemToCartUserError]!
     cart: Cart # since requisition list is not mutated it is not part of the output
 }
 
+type AddRequisitionListItemToCartUserError {
+    message: String!
+    type: AddRequisitionListItemToCartUserErrorType!
+}
+
+enum AddRequisitionListItemToCartUserErrorType {
+    OUT_OF_STOCK
+    MAX_QTY_FOR_USER
+    NOT_AVAILABLE
+}
+
 type CopyItemsBetweenRequisitionListsOutput {
-    list: RequisitionList @doc(description:  "Destination Requisition List")# since source requisition list is not mutated it is not part of the output
+    requisiton_list: RequisitionList @doc(description:  "Destination Requisition List")# since source requisition list is not mutated it is not part of the output
 }
 
 type MoveItemsBetweenRequisitionListsOutput {
-    source: RequisitionList @doc(description:  "Source Requisition List")
-    destination: RequisitionList @doc(description: "Destination Requisition List")
+    source_requisiton_list: RequisitionList @doc(description:  "Source Requisition List")
+    destination_requisiton_list: RequisitionList @doc(description: "Destination Requisition List")
 }
 
 type ClearCustomerCartOutput {
+    status: Boolean!
     cart: Cart
 }
