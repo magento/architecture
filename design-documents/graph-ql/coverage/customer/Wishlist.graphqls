@@ -49,6 +49,12 @@ input UpdateWishlistInput {
     visibility: WishlistVisibilityEnum
 }
 
+type WishlistItems {
+    items: [WishlistItemInterface]!
+    page_info: SearchResultPageInfo
+    total_count: Int!
+}
+
 input WishlistItemUpdateInput {
     wishlist_item_id: ID!
     quantity: Float

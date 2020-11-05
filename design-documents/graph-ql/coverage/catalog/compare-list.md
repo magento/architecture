@@ -1,11 +1,28 @@
 # Use cases
 
-## Guest scenario 
+## User scenario (Guest/ Logged in) 
 
-* A buyer can create a new compare list for the selected 
-products by calling mutation `addItemsToCompareList` with 
-the list of product ids and ID which will identify the list.
-Compare list ID is client generated identifier.
+Use createCompareList mutation to create a new compare list. The server should create a new list with the items added and return the list_id. The clients can use this list_id for futher operations.
+
+# Create Compare List
+```graphql
+{
+    mutation {
+        createCompareList(input: {
+            products: ["123", "456"]
+        }) #products optional
+    } {
+        list_id
+        items {
+          sku
+        }
+    }
+}
+```
+* For a guest user, new list will be created
+* For a logged in user, exisiting list_id will be returned 
+
+
 ```graphql
 {
     mutation {
@@ -29,10 +46,11 @@ Compare list ID is client generated identifier.
 }
 ```
 * If the registered customer does not have an active list then null will be returned.
-This means the client has to generate and send a new ID if the compare list functionality requested.
 
-* If the buyer calls addItemsToCompareList with a new ID the previous list will be abandoned. 
-For the registered user an active compare list will be replaced with a new one. 
+```
+assignCompareListToCustomer(uid: ID!): CompareList 
+```
+mutation can be used to assign a guest compare list to a registered customer.
 
 * A buyer can modify the existing list by calling mutation: 
   * `addItemsToCompareList` to add new items to compare list.
@@ -74,6 +92,10 @@ preconfigured at the backoffice.
 
 * Compare list could be assigned to the registered customer after login or account creation. 
 
+## Removing stale comparison list
+* Introduce a mutation to removeComparisonList(id: ID!): Boolean, which clients can use to remove the list once the session expires
+* A cron job to remove staled entries beyond certain time.
+
 ![compare-list.graphqls](compare-list/compare-list.png)
 
 # Non functional requirements:
@@ -83,3 +105,25 @@ preconfigured at the backoffice.
   
 Guest compare list business logic not implemented yet. Additional development required.
 
+## DB changes
+
+To the existing table structure for compare list, list_id will be added
+```
+catalog_compare_item
+------------------------------------------------------------------------------
+| catalog_compare_item_id | visitor_id | customer_id | product_id | store_id | list_id
+==============================================================================
+```
+
+This dependency can be solved by managing the compare list state in a new table
+```
+catalog_compare_list
+------------------------------------------------------------------------------
+| list_id (varchar) (primary)| visitor_id | customer_id
+==============================================================================
+```
+
+and adding list_id field to catalog_compare_item table.
+
+* encoded list_id will be used for client communications # \Magento\Framework\Math\Random::getUniqueHash can be used for hashes
+* For visitors created via GraphQl, session will be null.
