@@ -3,7 +3,7 @@
 
 type Query {
     currency: Currency @resolver(class: "Magento\\DirectoryGraphQl\\Model\\Resolver\\Currency") @doc(description: "The currency query returns information about store currency.") @cache(cacheable: false)
-    countries: [Country] @resolver(class: "Magento\\DirectoryGraphQl\\Model\\Resolver\\Countries") @doc(description: "The countries query provides information for all countries.") @cache(cacheable: false)
+    countries: [Country] @resolver(class: "Magento\\DirectoryGraphQl\\Model\\Resolver\\Countries") @doc(description: "The countries query provides information for all countries. Sorted by Top Destination and locale specific country name.") @cache(cacheable: false)
     country (id: String): Country @resolver(class: "Magento\\DirectoryGraphQl\\Model\\Resolver\\Country") @doc(description: "The countries query provides information for a single country.") @cache(cacheable: false)
 }
 
@@ -25,15 +25,24 @@ type ExchangeRate {
 
 type Country {
     id: String
-    two_letter_abbreviation: String
-    three_letter_abbreviation: String
-    full_name_locale: String
-    full_name_english: String
-    available_regions: [Region]
+    two_letter_abbreviation: String @doc(description: "Country code according to ISO 3166-1 alpha-2")
+    three_letter_abbreviation: String @doc(description: "Country code according to ISO 3166-1 alpha-3") 
+    name: String @doc(description: "Name of the country in the locale of the current store") 
+    full_name_locale: String @deprecated(reason: "Use `name`") 
+    full_name_english: String @deprecated(reason: "Use `name`")
+    region_required: Boolean @doc(description: "Is a the region for this country") 
+    postcode_required: Boolean @doc(description: "Is a postcode required for this country") 
+    eu: Boolean @doc(description: "Country is a member of the European Union") 
+    available_regions: [Region] @doc(description: "Only returns regions if region_required StoreConfig.allow_optional_state is set. Sorted by localized name.") 
 }
 
 type Region {
     id: Int
-    code: String
-    name: String
+    code: String @doc(description: "Retuns the region code if a region has a code, else returns the non localized name") 
+    name: String @doc(description: "Locale specific region name.") 
+}
+
+type StoreConfig {
+    default_country: String @doc(description: "Default country used for country fields") 
+    allow_optional_state: String @doc(description: "Allow a customer to enter a state when it isn't required for a country") 
 }
