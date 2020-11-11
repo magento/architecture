@@ -139,7 +139,7 @@ type CustomAttribute {
 
 type ReturnComment {
     uid: ID! @doc(description: "Comment ID.")
-    author: String! @doc(description: "The full name of the the author who posted the comment.")
+    author_name: String! @doc(description: "The name of the author who posted the comment.")
     created_at: String! @doc(description: "The date and time when the comment was posted.")
     text: String! @doc(description: "The comment text.")
 }
