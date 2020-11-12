@@ -704,8 +704,8 @@ The following query returns enough data to add product to cart or wishlist.
 ### Gift registry owner removes items from an existing gift registry
 
 ```graphql
-mutation RemoveGiftRegistryItem($giftRegistryUid: ID!, $itemIds: [ID!]!) {
-  removeGiftRegistryItems(giftRegistryUid: $giftRegistryUid, itemIds: $itemIds) {
+mutation RemoveGiftRegistryItem($giftRegistryUid: ID!, $itemUids: [ID!]!) {
+  removeGiftRegistryItems(giftRegistryUid: $giftRegistryUid, itemUids: $itemUids) {
     gift_registry {
       items {
         uid

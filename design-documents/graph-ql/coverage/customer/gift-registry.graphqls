@@ -22,12 +22,12 @@ type Mutation {
     removeGiftRegistry(giftRegistryUid: ID!): RemoveGiftRegistryOutput
 
     addGiftRegistryItems(giftRegistryUid: ID!, items: [AddGiftRegistryItemInput!]!): AddGiftRegistryItemsOutput
-    removeGiftRegistryItems(giftRegistryUid: ID!, itemIds: [ID!]!): RemoveGiftRegistryItemsOutput
+    removeGiftRegistryItems(giftRegistryUid: ID!, itemUids: [ID!]!): RemoveGiftRegistryItemsOutput
     updateGiftRegistryItems(giftRegistryUid: ID!, items: [UpdateGiftRegistryItemInput!]!): UpdateGiftRegistryItemsOutput
 
     addGiftRegistryRegistrants(giftRegistryUid: ID!, registrants: [AddGiftRegistryRegistrantInput!]!): AddGiftRegistryRegistrantsOutput
     updateGiftRegistryRegistrants(giftRegistryUid: ID!, registrants: [UpdateGiftRegistryRegistrantInput!]!): UpdateGiftRegistryRegistrantsOutput
-    removeGiftRegistryRegistrants(giftRegistryUid: ID!, registrantIds: [ID!]!): RemoveGiftRegistryRegistrantsOutput
+    removeGiftRegistryRegistrants(giftRegistryUid: ID!, registrantUids: [ID!]!): RemoveGiftRegistryRegistrantsOutput
 
     shareGiftRegistry(giftRegistryUid: ID!, sender: ShareGiftRegistrySenderInput!, invitees: [ShareGiftRegistryInviteeInput!]!): ShareGiftRegistryOutput
 }
