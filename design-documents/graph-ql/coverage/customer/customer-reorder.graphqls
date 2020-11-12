@@ -1,5 +1,5 @@
 type Mutation {
-    reorderItems(orderId: ID!): ReorderItemsOutput! @doc(description: "Add all items from the registered customer's order to his shopping cart.")
+    reorderItems(orderUid: ID!): ReorderItemsOutput! @doc(description: "Add all items from the registered customer's order to his shopping cart.")
 }
 
 # For errors in queries we can rely on the specification and its implementation in Webonyx:
