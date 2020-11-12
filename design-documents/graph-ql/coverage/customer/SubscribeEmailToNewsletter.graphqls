@@ -3,7 +3,7 @@ type Mutation {
 }
 
 type SubscribeEmailToNewsletterOutput {
-    status: SubscriptionStatusesEnum @doc(description: "Returns a status of subscription")
+    status: SubscriptionStatusesEnum @doc(description: "Returns a status of newsletter subscription")
 }
 
 enum SubscriptionStatusesEnum {
