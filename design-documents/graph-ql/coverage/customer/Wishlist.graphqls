@@ -1,9 +1,9 @@
 type Mutation {
     createWishlist(input: CreateWishlistInput!): CreateWishlistOutput # Multiple wishlists Commerce functionality
     deleteWishlist(wishlistUid: ID!): DeleteWishlistOutput # Commerce fucntionality - in Opens Source we assume customer always has one wishlist
-    addProductsToWishlist(wishlistId: ID!, wishlistItems: [WishlistItemInput!]!): AddProductsToWishlistOutput 
-    removeProductsFromWishlist(wishlistId: ID!, wishlistItemsIds: [ID!]!): RemoveProductsFromWishlistOutput
-    updateProductsInWishlist(wishlistId: ID!, wishlistItems: [WishlistItemUpdateInput!]!): UpdateProductsInWishlistOutput
+    addProductsToWishlist(wishlistUid: ID!, wishlistItems: [WishlistItemInput!]!): AddProductsToWishlistOutput 
+    removeProductsFromWishlist(wishlistUid: ID!, wishlistItemsIds: [ID!]!): RemoveProductsFromWishlistOutput
+    updateProductsInWishlist(wishlistUid: ID!, wishlistItems: [WishlistItemUpdateInput!]!): UpdateProductsInWishlistOutput
     copyProductsBetweenWishlists(sourceWishlistUid: ID!, destinationWishlistUid: ID!, wishlistItems: [WishlistItemCopyInput!]!): CopyProductsBetweenWishlistsOutput  @doc(description: "Copy a product to the wish list")
     moveProductsBetweenWishlists(sourceWishlistUid: ID!, destinationWishlistUid: ID!, wishlistItems: [WishlistItemMoveInput!]!): MoveProductsBetweenWishlistsOutput  @doc(description: "Move products from one wish list to another")
     updateWishlist( wishlistUid: ID!, input: UpdateWishlistInput!): UpdateWishlistOutput @doc(description: "Change the name and visibility of the specified wish list")
@@ -20,14 +20,12 @@ type Customer {
 }
 
 type Wishlist {
-<<<<<<< customer-files-uid-update
     uid: ID
-    items: [WishlistItem] @deprecated(reason: "Use field `items_v3` from type `Wishlist` instead")
-    items_v2: [WishlistItemInterface] @doc(description: "An array of items in the customer's wishlist") @deprecated(reason: "Use field `items_v3` from type `Wishlist` instead")
-    items_v3(
-        currentPage: Int = 1 @doc(description: "current page of the customer wishlist items. default is 1")
-        pageSize: Int = 20 @doc(description: "page size for the customer wishlist items. default is 20")
-    ): WishlistItems! @doc(description: "An array of items in the customer's wishlist")
+    items: [WishlistItem] @deprecated(reason: "Use field `items_v2` from type `Wishlist` instead")
+    items_v2(
+        currentPage: Int = 1,
+        pageSize: Int = 20
+    ): WishlistItems @doc(description: "An array of items in the customer's wishlist")
     items_count: Int
     sharing_code: String
     updated_at: String
@@ -58,7 +56,7 @@ type WishlistItems {
 }
 
 input WishlistItemUpdateInput {
-    wishlist_item_id: ID!
+    wishlist_item_uid: ID!
     quantity: Float
     description: String
     selected_options: [ID!]
@@ -165,12 +163,12 @@ type DeleteWishlistOutput {
 }
 
 input WishlistItemCopyInput {
-    wishlist_item_id: ID! @doc(description: "The ID of the item to be copied")
+    wishlist_item_uid: ID! @doc(description: "The ID of the item to be copied")
     quantity: Float @doc(description: "The quantity of this item to copy to the destination wish list. This value can't be greater than the quantity in the source wish list.")
 }
 
 input WishlistItemMoveInput {
-    wishlist_item_id: ID! @doc(description: "The ID of the item to be moved")
+    wishlist_item_uid: ID! @doc(description: "The ID of the item to be moved")
     quantity: Float @doc(description: "The quantity of this item to move to the destination wish list. This value can't be greater than the quantity in the source wish list.")
 }
 
@@ -192,4 +190,3 @@ type StoreConfig {
     maximum_number_of_wishlists: Int @doc(description: "If multiple wish lists are enabled, the maximum number of wish lists the customer can have")
     enable_multiple_wishlists: Boolean @doc(description: "Indicates whether customers can have multiple wish lists.")
 }
-
