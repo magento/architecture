@@ -25,7 +25,7 @@ There are still a few core integrations (Offline payments and PayPal), also some
 The desired state for 2.4 Magento release:
  
 - Core integrations do not use `AbstractMethod` (old integrations marked as deprecated).
-- All related to `AbsractMethod` infrastructure code is marked as deprecated (which not marked yet)
+- All related to `AbstractMethod` infrastructure code is marked as deprecated (which not marked yet)
 - All appropriate methods/functions trigger `E_DEPRECATED` warning (https://devdocs.magento.com/guides/v2.3/contributor-guide/backward-compatible-development/#deprecation).
 
 
