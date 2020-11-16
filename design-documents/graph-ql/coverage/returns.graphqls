@@ -106,7 +106,7 @@ type Return @doc(description: "Customer return") {
     uid: ID!
     number: String! @doc(description: "Human-readable return number")
     order: CustomerOrder @doc(description: "The order associated with the return.")
-    creation_at: String! @doc(description: "The date when the return was requested.")
+    created_at: String! @doc(description: "The date when the return was requested.")
     customer: ReturnCustomer! @doc(description: "The data for the customer who created the return request")
     status: ReturnStatus @doc(description: "Return status.")
     shipping: ReturnShipping @doc(description: "Shipping information for the return.")
