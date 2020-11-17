@@ -44,13 +44,13 @@ type ProductReviewRatingsMetadata {
 }
 
 type ProductReviewRatingMetadata {
-    id: String! @doc(description: "Base 64 encoded rating id.")
+    uid: ID! @doc(description: "Base 64 encoded rating uid.")
     name: String! @doc(description: "The review rating name for example quality, price")
     values: [ProductReviewRatingValueMetadata!]! @doc(description: "List of product review ratings sorted based on position.")
 }
 
 type ProductReviewRatingValueMetadata {
-    value_id: String! @doc(description: "Base 64 encoded rating value id.")
+    value_uid: ID! @doc(description: "Base 64 encoded rating value uid.")
     value: String! @doc(description: "e.g Good, Perfect, 3, 4, 5")
 }
 
@@ -71,6 +71,6 @@ input CreateProductReviewInput {
 }
 
 type ProductReviewRatingInput {
-    id: String! @doc(description: "Base 64 encoded rating id.")
-    value_id: String! @doc(description: "Base 64 encoded rating value id.")
+    uid: ID! @doc(description: "Base 64 encoded rating uid.")
+    value_uid: ID! @doc(description: "Base 64 encoded rating value uid.")
 }
