@@ -14,7 +14,6 @@ type DynamicBlocks {
 input DynamicBlocksFilterInput {
     type: DynamicBlockTypeEnum!
     locations: [DynamicBlockLocationEnum!] # Blocks for all locations will be displayed if not supplied
-    rotation_mode: DynamicBlockRotationModeEnum!
     dynamic_block_uids: [ID!] # Only makes sense when DynamicBlockTypeEnum is set to SPECIFIED
 }
 
@@ -30,13 +29,6 @@ enum DynamicBlockLocationEnum {
     FOOTER
     LEFT
     RIGHT
-}
-
-enum DynamicBlockRotationModeEnum {
-    NO_ROTATION @doc(description: "Display all.")
-    RANDOM
-    SERIES
-    SHUFFLE
 }
 
 type Query {
