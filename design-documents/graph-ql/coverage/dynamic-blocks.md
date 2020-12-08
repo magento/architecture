@@ -24,7 +24,11 @@ PWA will receive similar JavaScript component definition that can be parsed to e
 
 ```graphql
 {
-    dynamic_blocks(input: {type: SPECIFIED, locations: [CONTENT], rotation_mode: RANDOM, dynamic_block_uids: [1, 2]}) {
+    dynamic_blocks(
+      input: {type: SPECIFIED, locations: [CONTENT], dynamic_block_uids: ["MQ==", "Mg=="]}
+      pageSize:10
+      currentPage: 1
+    ) {
         items {
             uid
             content {

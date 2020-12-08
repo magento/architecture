@@ -11,15 +11,11 @@ type DynamicBlocks {
     total_count: Int!
 }
 
-type DynamicBlocksFilterInput {
+input DynamicBlocksFilterInput {
     type: DynamicBlockTypeEnum!
     locations: [DynamicBlockLocationEnum!] # Blocks for all locations will be displayed if not supplied
     rotation_mode: DynamicBlockRotationModeEnum!
     dynamic_block_uids: [ID!] # Only makes sense when DynamicBlockTypeEnum is set to SPECIFIED
-}
-
-type DynamicBlocksOutput {
-    dynamic_blocks: DynamicBlocks!
 }
 
 enum DynamicBlockTypeEnum {
@@ -44,5 +40,9 @@ enum DynamicBlockRotationModeEnum {
 }
 
 type Query {
-    dynamic_blocks(input: DynamicBlocksFilterInput): DynamicBlocksOutput
+    dynamic_blocks(
+        input: DynamicBlocksFilterInput
+        pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. The default is 20")
+        currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1"),
+    ): DynamicBlocks!
 }
