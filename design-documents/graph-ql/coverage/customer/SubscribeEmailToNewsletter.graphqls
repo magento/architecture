@@ -7,7 +7,7 @@ type SubscribeEmailToNewsletterOutput {
 }
 
 enum SubscriptionStatusesEnum {
-    NOT_ACTIVE
+    INACTIVE
     SUBSCRIBED
     UNSUBSCRIBED
     UNCONFIRMED
