@@ -108,7 +108,7 @@ type Customer @doc(description: "Customer defines the customer name and address 
 
 type CustomerAddress @doc(description: "CustomerAddress contains detailed information about a customer's billing and shipping addresses"){
     uid: ID @doc(description: "The ID assigned to the address object")
-    customer_iid: ID @doc(description: "The customer ID") @deprecated(reason: "customer_id is not needed as part of CustomerAddress, address ID (id) is unique identifier for the addresses.")
+    customer_uid: ID @doc(description: "The customer ID") @deprecated(reason: "customer_id is not needed as part of CustomerAddress, address ID (id) is unique identifier for the addresses.")
     region: CustomerAddressRegion @doc(description: "An object containing the region name, region code, and region ID")
     region_uid: ID @doc(description: "The unique ID for a pre-defined region") @deprecated(reason: "Use `region` instead.")
     country_id: String @doc(description: "The customer's country") @deprecated(reason: "Use `country_code` instead.")
