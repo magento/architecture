@@ -786,7 +786,7 @@
 # Manually created extension attributes
 
 Even though extension attributes PHP classes/interfaces were not supposed to be created manually, we have several such occurrences.
-It is preferable to remove these classes/interfaces because they block extensibility of the parent interfaces.
+It is preferable to remove these classes/interfaces because they block extensibility of the base interfaces.
 Motivation for having these overrides should be analyzed in each case separately. For example, `inventory/InventoryApi/Api/Data/StockExtension.php` was overridden to resolve incorrect code generation during Magento installation (Valerii Naida can provide more details).
 
 1. inventory/InventoryApi/Api/Data/StockExtension.php
@@ -795,3 +795,49 @@ Motivation for having these overrides should be analyzed in each case separately
 1. magento2b2b/app/code/Magento/PurchaseOrderRule/Api/Data/AppliedRuleApproverExtensionInterface.php
 1. magento2b2b/app/code/Magento/PurchaseOrderRule/Api/Data/AppliedRuleExtensionInterface.php
 1. magento2b2b/app/code/Magento/PurchaseOrderRule/Api/Data/RuleExtensionInterface.php
+
+# Factories for API classes/interfaces
+
+1. app/code/Magento/Catalog/Block/Product/ImageFactory.php
+1. app/code/Magento/Catalog/Model/Product/Type/Price/Factory.php
+1. app/code/Magento/Config/Block/System/Config/Form/Field/Factory.php
+1. app/code/Magento/Config/Block/System/Config/Form/Fieldset/Factory.php
+1. app/code/Magento/Customer/Model/Metadata/FormFactory.php
+1. app/code/Magento/ImportExport/Model/Export/Factory.php
+1. app/code/Magento/Quote/Model/Quote/Address/RateCollectorInterfaceFactory.php
+1. app/code/Magento/Quote/Model/Quote/Address/TotalFactory.php
+1. app/code/Magento/Sales/Model/Order/CreditmemoFactory.php
+1. app/code/Magento/Sales/Model/ResourceModel/Order/Collection/Factory.php
+1. app/code/Magento/Ui/Component/Form/Fieldset/Factory.php
+1. lib/internal/Magento/Framework/Acl/AclResourceFactory.php
+1. lib/internal/Magento/Framework/AclFactory.php
+1. lib/internal/Magento/Framework/Amqp/ConfigFactory.php
+1. lib/internal/Magento/Framework/Api/ExtensionAttribute/JoinDataInterfaceFactory.php
+1. lib/internal/Magento/Framework/Api/Search/DocumentFactory.php
+1. lib/internal/Magento/Framework/Api/Search/SearchCriteriaFactory.php
+1. lib/internal/Magento/Framework/App/Config/ValueFactory.php
+1. lib/internal/Magento/Framework/Config/Data/ConfigDataFactory.php
+1. lib/internal/Magento/Framework/Config/ViewFactory.php
+1. lib/internal/Magento/Framework/Controller/Result/JsonFactory.php
+1. lib/internal/Magento/Framework/DB/Adapter/Pdo/MysqlFactory.php
+1. lib/internal/Magento/Framework/DB/Ddl/TriggerFactory.php
+1. lib/internal/Magento/Framework/Data/FormFactory.php
+1. lib/internal/Magento/Framework/Data/Tree/NodeFactory.php
+1. lib/internal/Magento/Framework/Data/TreeFactory.php
+1. lib/internal/Magento/Framework/DataObject/Factory.php
+1. lib/internal/Magento/Framework/Event/ObserverFactory.php
+1. lib/internal/Magento/Framework/EventFactory.php
+1. lib/internal/Magento/Framework/File/UploaderFactory.php
+1. lib/internal/Magento/Framework/Filesystem/Directory/ReadFactory.php
+1. lib/internal/Magento/Framework/Mail/TransportInterfaceFactory.php
+1. lib/internal/Magento/Framework/Message/CollectionFactory.php
+1. lib/internal/Magento/Framework/Module/Setup/MigrationFactory.php
+1. lib/internal/Magento/Framework/Setup/Declaration/Schema/Diff/DiffFactory.php
+1. lib/internal/Magento/Framework/ValidatorFactory.php
+1. lib/internal/Magento/Framework/View/Asset/File/FallbackContextFactory.php
+1. lib/internal/Magento/Framework/View/Asset/FileFactory.php
+1. lib/internal/Magento/Framework/View/Layout/Generator/ContextFactory.php
+1. lib/internal/Magento/Framework/View/Layout/Reader/ContextFactory.php
+1. lib/internal/Magento/Framework/View/Page/ConfigFactory.php
+1. magento2ee/app/code/Magento/VisualMerchandiser/Model/Rules/Factory.php
+1. magento2ee/app/code/Magento/VisualMerchandiser/Model/Sorting/Factory.php
