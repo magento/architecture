@@ -1,3 +1,12 @@
+# Auto-generated code
+1. Auto generated code needs to be marked as @api:
+   1. \Magento\Framework\Api\Code\Generator\ExtensionAttributesInterfaceFactoryGenerator
+   1. \Magento\Framework\Api\Code\Generator\ExtensionAttributesInterfaceGenerator
+   1. \Magento\Framework\Api\Code\Generator\ExtensionAttributesGenerator
+   1. \Magento\Framework\MessageQueue\Code\Generator\RemoteServiceGenerator
+1. Factories generated for @api entities must also be marked as @api. Factories for non-@api must not be marked as @api
+   1. \Magento\Framework\ObjectManager\Code\Generator\Factory
+
 # Interfaces to be marked as is
 
 1. adobe-ims/AdobeImsApi/Api/LogInInterface.php
@@ -280,7 +289,6 @@
 1. app/code/Magento/Wishlist/Model/AuthenticationStateInterface.php
 1. app/code/Magento/Wishlist/Model/ResourceModel/Item/Product/CollectionBuilderInterface.php
 1. app/code/Magento/Wishlist/Model/Wishlist/BuyRequest/BuyRequestDataProviderInterface.php
-1. inventory/InventoryApi/Api/Data/StockExtensionInterface.php
 1. inventory/InventoryApi/Model/IsProductAssignedToStockInterface.php
 1. inventory/InventoryCatalogApi/Model/SourceItemsProcessorInterface.php
 1. inventory/InventoryInStorePickupGraphQl/Model/Resolver/PickupLocations/SearchRequest/ResolverInterface.php
@@ -609,7 +617,6 @@
 1. lib/internal/Magento/Framework/Webapi/CustomAttribute/PreprocessorInterface.php
 1. lib/internal/Magento/Framework/Webapi/CustomAttribute/ServiceTypeListInterface.php
 1. lib/internal/Magento/Framework/Webapi/Rest/Request/DeserializerInterface.php
-1. magento2-page-builder/app/code/Magento/PageBuilder/Api/Data/TemplateExtensionInterface.php
 1. magento2-page-builder/app/code/Magento/PageBuilder/Api/Data/TemplateInterface.php
 1. magento2-page-builder/app/code/Magento/PageBuilder/Api/Data/TemplateSearchResultsInterface.php
 1. magento2-page-builder/app/code/Magento/PageBuilder/Api/TemplateRepositoryInterface.php
@@ -662,11 +669,8 @@
 1. magento2b2b/app/code/Magento/PurchaseOrder/Model/ProcessorInterface.php
 1. magento2b2b/app/code/Magento/PurchaseOrder/Model/Validator/ActionReady/ValidatorInterface.php
 1. magento2b2b/app/code/Magento/PurchaseOrder/Model/Validator/ValidatorInterface.php
-1. magento2b2b/app/code/Magento/PurchaseOrderRule/Api/Data/AppliedRuleApproverExtensionInterface.php
 1. magento2b2b/app/code/Magento/PurchaseOrderRule/Api/Data/AppliedRuleApproverSearchResultsInterface.php
-1. magento2b2b/app/code/Magento/PurchaseOrderRule/Api/Data/AppliedRuleExtensionInterface.php
 1. magento2b2b/app/code/Magento/PurchaseOrderRule/Api/Data/AppliedRuleSearchResultsInterface.php
-1. magento2b2b/app/code/Magento/PurchaseOrderRule/Api/Data/RuleExtensionInterface.php
 1. magento2b2b/app/code/Magento/PurchaseOrderRule/Api/Data/RuleSearchResultsInterface.php
 1. magento2b2b/app/code/Magento/PurchaseOrderRule/Model/Rule/ConditionInterface.php
 1. magento2b2b/app/code/Magento/PurchaseOrderRule/Model/Rule/ValidateInterface.php
@@ -773,3 +777,21 @@
 1. app/code/Magento/Quote/Model/GuestCart/GuestShippingMethodManagementInterface.php: Interface with the same name exists in /Api/ scope, which is confusing. Need to refactor somehow to eliminate confusion and then mark as @api in 2.5. Deprecate in 2.4
 1. app/code/Magento/Quote/Model/ShippingMethodManagementInterface.php: Interface with the same name exists in /Api/ scope, which is confusing. Need to refactor somehow to eliminate confusion and then mark as @api in 2.5. Deprecate in 2.4
 1. app/code/Magento/MediaGalleryUi/Model/InsertImageDataInterface.php: This interface should be extracted to a separate module together with GetInsertImageData and GetInsertImageContent services and marked as API
+
+# Exceptions that need to be marked as API
+1. app/code/Magento/Checkout/Api/Exception/PaymentProcessingRateLimitExceededException.php
+1. app/code/Magento/SalesRule/Api/Exception/CodeRequestLimitException.php
+1. magento2ee/app/code/Magento/GiftCardAccount/Api/Exception/TooManyAttemptsException.php
+
+# Manually created extension attributes
+
+Even though extension attributes PHP classes/interfaces were not supposed to be created manually, we have several such occurrences.
+It is preferable to remove these classes/interfaces because they block extensibility of the parent interfaces.
+Motivation for having these overrides should be analyzed in each case separately. For example, `inventory/InventoryApi/Api/Data/StockExtension.php` was overridden to resolve incorrect code generation during Magento installation (Valerii Naida can provide more details).
+
+1. inventory/InventoryApi/Api/Data/StockExtension.php
+1. inventory/InventoryApi/Api/Data/StockExtensionInterface.php
+1. magento2-page-builder/app/code/Magento/PageBuilder/Api/Data/TemplateExtensionInterface.php
+1. magento2b2b/app/code/Magento/PurchaseOrderRule/Api/Data/AppliedRuleApproverExtensionInterface.php
+1. magento2b2b/app/code/Magento/PurchaseOrderRule/Api/Data/AppliedRuleExtensionInterface.php
+1. magento2b2b/app/code/Magento/PurchaseOrderRule/Api/Data/RuleExtensionInterface.php
