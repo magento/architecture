@@ -1,16 +1,21 @@
 type Customer {
-    gift_registry_list: [GiftRegistry]
+    gift_registries: [GiftRegistry]
     gift_registry(uid: ID!): GiftRegistry
 }
 
 type Query {
     giftRegistryTypes: [GiftRegistryType] @doc(description: "Get a list of available gift registry types")
-    giftRegistrySearch(
-        registrantFirstname: String!,
-        registrantLastname: String!,
-        giftRegistryTypeUid: ID,
-        searchableDynamicAttributes: [GiftRegistryDynamicAttributeInput] @doc(description: "For select attributes ID should be provided expected. For range search, '_from' and '_to' suffixes can be added to the attribute code. For text attributes provide value for exact matching.")
-    ): [GiftRegistry] @doc(description: "Gift registry search by registrant name and additional searchable attributes.")
+    giftRegistryEmailSearch(
+        email: String! @doc(description: "The registrant's email")
+    ): [GiftRegistrySearchResult] @doc(description: "Search for gift registries by specifying a registrant email address")
+    giftRegistryIdSearch(
+        giftRegistryUid: String! @doc(description: "The ID of the gift registry")
+    ): [GiftRegistrySearchResult] @doc(description: "Search for gift registries by specifying a registry URL key")
+    giftRegistryTypeSearch(
+        firstName: String! @doc(description: "The first name of the registrant")
+        lastName: String! @doc(description: "The last name of the registrant")
+        typeUid: String @doc(description: "The type UID of the registry")
+    ): [GiftRegistrySearchResult] @doc(description: "Search for gift registries by specifying the registrant name and registry type ID")
     giftRegistry(giftRegistryUid: ID!): GiftRegistry @doc(description: "This query is intended for guests and some fields of GiftRegistry will not be availalbe")
 }
 
@@ -30,6 +35,15 @@ type Mutation {
     removeGiftRegistryRegistrants(giftRegistryUid: ID!, registrantUids: [ID!]!): RemoveGiftRegistryRegistrantsOutput
 
     shareGiftRegistry(giftRegistryUid: ID!, sender: ShareGiftRegistrySenderInput!, invitees: [ShareGiftRegistryInviteeInput!]!): ShareGiftRegistryOutput
+}
+
+type GiftRegistrySearchResult {
+    gift_registry_uid: ID! @doc(description: "The URL key of the gift registry")
+    name: String!
+    event_title: String! @doc(description: "The title given to the event")
+    type: String @doc(description: "The type of event being held")
+    location: String @doc(description: "The location of the event")
+    event_date: String @doc(description: "The date of the event")
 }
 
 input ShareGiftRegistryInviteeInput
@@ -302,8 +316,8 @@ enum GiftRegistryDynamicAttributeGroup {
 
 type GiftRegistryRegistrant {
     uid: ID!
-    first_name: String!
-    last_name: String!
+    firstname: String!
+    lastname: String!
     email: String! @doc(description: "Accessible to the registry owner only")
     dynamic_attributes: [GiftRegistryRegistrantDynamicAttribute]
 }
