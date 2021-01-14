@@ -34,6 +34,7 @@ type Attribute {
     attribute_type: String
     entity_type: String
     input_type: String
+    is_required: Bolean!
 }
 
 type AttributeOption {

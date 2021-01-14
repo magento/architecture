@@ -134,7 +134,7 @@ type ReturnItem {
 type CustomAttribute {
     uid: ID!
     label: String!
-    value: String! @doc(description: "JSON encoded value of the attribute.")
+    values: [String]! @doc(description: "JSON encoded value of the attribute.")
 }
 
 type ReturnComment {
