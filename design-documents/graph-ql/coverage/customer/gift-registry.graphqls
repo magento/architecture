@@ -253,16 +253,16 @@ type GiftRegistry {
 }
 
 interface GiftRegistryItemInterface {
-    uid: String!
+    uid: ID!
     quantity: Float!
     quantity_fulfilled: Float!
     note: String
     date_added: String!
     product: ProductInterface
-    customizable_options: [SelectedCustomizableOption]
+    customizable_options: [SelectedCustomizableOption] # added support for customizable options
 }
 
-type SimpleGiftRegistryItem implements GiftRegistryItemInterface {
+type GiftRegistryItem implements GiftRegistryItemInterface {
 }
 
 type BundleGiftRegistryItem implements GiftRegistryItemInterface {
