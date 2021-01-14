@@ -21,8 +21,8 @@ type Mutation {
     updateCustomer (input: CustomerInput!): CustomerOutput @resolver(class: "\\Magento\\CustomerGraphQl\\Model\\Resolver\\UpdateCustomer") @doc(description:"Update the customer's personal information")
     revokeCustomerToken: RevokeCustomerTokenOutput @resolver(class: "\\Magento\\CustomerGraphQl\\Model\\Resolver\\RevokeCustomerToken") @doc(description:"Revoke the customer token")
     createCustomerAddress(input: CustomerAddressInput!): CustomerAddress @resolver(class: "Magento\\CustomerGraphQl\\Model\\Resolver\\CreateCustomerAddress") @doc(description: "Create customer address")
-    updateCustomerAddress(id: Int!, input: CustomerAddressInput): CustomerAddress @resolver(class: "Magento\\CustomerGraphQl\\Model\\Resolver\\UpdateCustomerAddress") @doc(description: "Update customer address")
-    deleteCustomerAddress(id: Int!): Boolean @resolver(class: "Magento\\CustomerGraphQl\\Model\\Resolver\\DeleteCustomerAddress") @doc(description: "Delete customer address")
+    updateCustomerAddress(uid: ID!, input: CustomerAddressInput): CustomerAddress @resolver(class: "Magento\\CustomerGraphQl\\Model\\Resolver\\UpdateCustomerAddress") @doc(description: "Update customer address")
+    deleteCustomerAddress(uid: ID!): Boolean @resolver(class: "Magento\\CustomerGraphQl\\Model\\Resolver\\DeleteCustomerAddress") @doc(description: "Delete customer address")
     requestPasswordResetEmail(email: String!): Boolean  @resolver(class: "\\Magento\\CustomerGraphQl\\Model\\Resolver\\RequestPasswordResetEmail") @doc(description: "Request an email with a reset password token for the registered customer identified by the specified email.")
     resetPassword(email: String!, resetPasswordToken: String!, newPassword: String!): Boolean  @resolver(class: "\\Magento\\CustomerGraphQl\\Model\\Resolver\\ResetPassword") @doc(description: "Reset a customer's password using the reset password token that the customer received in an email after requesting it using requestPasswordResetEmail.")
 }
@@ -51,7 +51,7 @@ input CustomerAddressInput {
 input CustomerAddressRegionInput @doc(description: "CustomerAddressRegionInput defines the customer's state or province") {
     region_code: String @doc(description: "The address region code")
     region: String @doc(description: "The state or province name")
-    region_id: Int @doc(description: "The unique ID for a pre-defined region")
+    region_uid: ID @doc(description: "The unique ID for a pre-defined region")
 }
 
 input CustomerAddressAttributeInput {
@@ -88,7 +88,7 @@ type RevokeCustomerTokenOutput {
 
 type Customer @doc(description: "Customer defines the customer name and address and other details") {
     created_at: String @doc(description: "Timestamp indicating when the account was created")
-    group_id: Int @deprecated(reason: "Customer group should not be exposed in the storefront scenarios")
+    group_uid: ID @deprecated(reason: "Customer group should not be exposed in the storefront scenarios")
     prefix: String @doc(description: "An honorific, such as Dr., Mr., or Mrs.")
     firstname: String @doc(description: "The customer's first name")
     middlename: String @doc(description: "The customer's middle name")
@@ -100,17 +100,17 @@ type Customer @doc(description: "Customer defines the customer name and address 
     dob: String @doc(description: "The customer's date of birth") @deprecated(reason: "Use `date_of_birth` instead")
     date_of_birth: String @doc(description: "The customer's date of birth")
     taxvat: String @doc(description: "The customer's Value-added tax (VAT) number (for corporate customers)")
-    id: Int @doc(description: "The ID assigned to the customer") @deprecated(reason: "id is not needed as part of Customer because on server side it can be identified based on customer token used for authentication. There is no need to know customer ID on the client side.")
+    uid: ID @doc(description: "The ID assigned to the customer") @deprecated(reason: "id is not needed as part of Customer because on server side it can be identified based on customer token used for authentication. There is no need to know customer ID on the client side.")
     is_subscribed: Boolean @doc(description: "Indicates whether the customer is subscribed to the company's newsletter") @resolver(class: "\\Magento\\CustomerGraphQl\\Model\\Resolver\\IsSubscribed")
     addresses: [CustomerAddress] @doc(description: "An array containing the customer's shipping and billing addresses") @resolver(class: "\\Magento\\CustomerGraphQl\\Model\\Resolver\\CustomerAddresses")
     gender: Int @doc(description: "The customer's gender (Male - 1, Female - 2)")
 }
 
 type CustomerAddress @doc(description: "CustomerAddress contains detailed information about a customer's billing and shipping addresses"){
-    id: Int @doc(description: "The ID assigned to the address object")
-    customer_id: Int @doc(description: "The customer ID") @deprecated(reason: "customer_id is not needed as part of CustomerAddress, address ID (id) is unique identifier for the addresses.")
+    uid: ID @doc(description: "The ID assigned to the address object")
+    customer_uid: ID @doc(description: "The customer ID") @deprecated(reason: "customer_id is not needed as part of CustomerAddress, address ID (id) is unique identifier for the addresses.")
     region: CustomerAddressRegion @doc(description: "An object containing the region name, region code, and region ID")
-    region_id: Int @doc(description: "The unique ID for a pre-defined region") @deprecated(reason: "Use `region` instead.")
+    region_uid: ID @doc(description: "The unique ID for a pre-defined region") @deprecated(reason: "Use `region` instead.")
     country_id: String @doc(description: "The customer's country") @deprecated(reason: "Use `country_code` instead.")
     country_code: CountryCodeEnum @doc(description: "The customer's country") @deprecated(reason: "Use `country` instead.")
     country: Country @doc(description: "The customer's country")
@@ -135,7 +135,7 @@ type CustomerAddress @doc(description: "CustomerAddress contains detailed inform
 type CustomerAddressRegion @doc(description: "CustomerAddressRegion defines the customer's state or province") {
     region_code: String @doc(description: "The address region code")
     region: String @doc(description: "The state or province name")
-    region_id: Int @doc(description: "The unique ID for a pre-defined region")
+    region_uid: ID @doc(description: "The unique ID for a pre-defined region")
 }
 
 type CustomerAddressAttribute {
