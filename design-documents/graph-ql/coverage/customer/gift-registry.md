@@ -134,10 +134,10 @@ The following JSON represents query variables for the `CreateGiftRegistryWithReg
 ```graphql
 {
   customer {
-    gift_registry_list {
+    gift_registries {
       uid
       event_name
-      created_on
+      created_at
       message
     }
   }
@@ -444,7 +444,7 @@ mutation AddGiftRegistryItems($giftRegistryUid: ID!, $giftRegistryItems: [AddGif
             label
           }
         }
-        added_on
+        added_at
         note
         quantity
         quantity_fulfilled
