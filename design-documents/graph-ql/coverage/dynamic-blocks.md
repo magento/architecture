@@ -19,12 +19,26 @@ In Luma dynamic blocks rendered to a JavaScript component definition that does r
     </ul>
 </div>
 ```
+By parsing `<div class="widget block block-banners" ..>` we get the following relevant data:
 
-PWA will receive similar JavaScript component definition that can be parsed to extract parameters and make a [GraphQL query](./dynamic-blocks.graphqls) to load dynamic blocks.
+* `data-banner-id` is the id of the actual widget that contains the dynamic blocks
+
+* `data-ids="1,3"` are the ids of the dynamic blocks
+
+* `data-rotate="random"` is an obsolete behavior that we chose not to have in GraphQl
+
+
+Ideally we want these to be rendered with graphql uid and not be exposed with real numeric ids coming from the database. 
+
+Next the PWA will receive similar JavaScript component definition that can be parsed to extract parameters and make a [GraphQL query](./dynamic-blocks.graphqls) to load dynamic blocks.
 
 ```graphql
 {
-    dynamic_blocks(input: {type: SPECIFIED, locations: [CONTENT], rotation_mode: RANDOM, dynamic_block_uids: [1, 2]}) {
+    dynamic_blocks(
+      input: {type: SPECIFIED, locations: [CONTENT], dynamic_block_uids: ["MQ==", "Mg=="]}
+      pageSize:10
+      currentPage: 1
+    ) {
         items {
             uid
             content {
