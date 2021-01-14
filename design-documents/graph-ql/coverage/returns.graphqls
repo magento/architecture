@@ -106,14 +106,19 @@ type Return @doc(description: "Customer return") {
     uid: ID!
     number: String! @doc(description: "Human-readable return number")
     order: CustomerOrder @doc(description: "The order associated with the return.")
-    creation_date: String! @doc(description: "The date when the return was requested.")
-    customer_email: String! @doc(description: "Email of the customer who created the return.")
-    customer_name: String @doc(description: "The name of the person returning the item")
+    created_at: String! @doc(description: "The date when the return was requested.")
+    customer: ReturnCustomer! @doc(description: "The data for the customer who created the return request")
     status: ReturnStatus @doc(description: "Return status.")
     shipping: ReturnShipping @doc(description: "Shipping information for the return.")
     comments: [ReturnComment] @doc(description: "A list of comments posted for the return.")
     items: [ReturnItem] @doc(description: "A list of items being returned.")
     available_shipping_carriers: [ReturnShippingCarrier] @doc(description: "A list of shipping carriers available for returns.")
+}
+
+type ReturnCustomer @doc(description: "The Customer information for the return.") {
+    email: String! @doc(description: "Customer email address.")
+    firstname: String @doc(description: "Customer first name.")
+    lastname: String @doc(description: "Customer last name.")
 }
 
 type ReturnItem {
@@ -134,8 +139,7 @@ type CustomAttribute {
 
 type ReturnComment {
     uid: ID! @doc(description: "Comment ID.")
-    author_firstname: String! @doc(description: "First name of the user who posted the comment.")
-    author_lastname: String! @doc(description: "Last name of the user who posted the comment.")
+    author_name: String! @doc(description: "The name of the author who posted the comment.")
     created_at: String! @doc(description: "The date and time when the comment was posted.")
     text: String! @doc(description: "The comment text.")
 }
