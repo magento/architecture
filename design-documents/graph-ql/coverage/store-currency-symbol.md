@@ -5,19 +5,32 @@ Magento allows to use custom currency symbol.The current graphql implementation 
  
  ## Schema
 ```graphql
-type CurrencyData {
+type CurrencyObject {
     currency_code: String
     currency_symbol: String
 }
 
-type Currency {
-    available_currency_codes: [String] @deprecated
+type CurrencySettings {
     base_currency_code: String
     base_currency_symbol: String
     default_display_currency_code: String
     default_display_currency_symbol: String
     exchange_rates: [ExchangeRate]
-    available_currency: [CurrencyData!]!
+    available_currency: [CurrencyObject!]!
+}
+
+type Currency @deprecated {
+ available_currency_codes: [String]
+ base_currency_code: String
+ base_currency_symbol: String
+ default_display_currency_code: String
+ default_display_currency_symbol: String
+ exchange_rates: [ExchangeRate]
+}
+
+type Query {
+ currency: Currency @deprecated(description: "use `currency_settings` instead")
+ currency_settings: CurrencySettings
 }
 ```
 
