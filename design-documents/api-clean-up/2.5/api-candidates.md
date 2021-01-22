@@ -1516,3 +1516,7 @@ Motivation for having these overrides should be analyzed in each case separately
 1. Magento\Customer\Setup\CustomerSetup	
 1. Magento\Checkout\Controller\Cart	
 1. Magento\Framework\View\DesignInterface	
+
+# Requests from community members
+
+1. Magento\Quote\Model\Quote\Item\CartItemOptionsProcessor This class is used by at least one VBE and is necessary for loading Cart Item Options for quotes that are not "active" (for example, when wanting to retrieve option information for an order that has already been placed)
