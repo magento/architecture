@@ -841,3 +841,94 @@ Motivation for having these overrides should be analyzed in each case separately
 1. lib/internal/Magento/Framework/View/Page/ConfigFactory.php
 1. magento2ee/app/code/Magento/VisualMerchandiser/Model/Rules/Factory.php
 1. magento2ee/app/code/Magento/VisualMerchandiser/Model/Sorting/Factory.php
+
+
+# API candidates based on Marketplace extensions usage analysis
+
+1. Magento\Framework\App\Helper\AbstractHelper	Must be deprecated and marked as @api
+1. Magento\Framework\Data\FormFactory	
+1. Magento\Framework\View\Element\UiComponent\Control\ButtonProviderInterface	
+1. Magento\Framework\Event\ManagerInterfac	
+1. Magento\Framework\App\Filesystem\DirectoryList	
+1. Magento\Framework\Api\AbstractSimpleObject	
+1. Magento\Framework\Controller\Result\JsonFactory	
+1. Magento\Framework\App\Response\RedirectInterface	
+1. Magento\Framework\DataObject\IdentityInterface	
+1. Magento\Framework\App\Area	Change visibility of protected properties/methods to private before marking as API
+1. Magento\Framework\Api\SearchCriteriaBuilder	Change visibility of protected properties to private before marking as API. Stop inheriting from deprecated class, implement recommended interface instead
+1. Magento\Framework\Api\DataObjectHelper	Must be deprecated and mareked as @api. Change visibility of protected properties/methods to private before marking as API. Deprecate
+1. Magento\Framework\App\Response\Http\FileFactory	
+1. Magento\Framework\Module\Manager	Remove deprecated methods
+1. Magento\Framework\Logger\Handler\Base	
+1. Magento\Framework\Controller\Result\Raw	
+1. Magento\Framework\View\LayoutFactory	
+1. Magento\Sales\Model\ResourceModel\Order\CollectionFactory	
+1. Magento\Widget\Block\BlockInterface	
+1. Magento\Shipping\Model\Carrier\CarrierInterface	
+1. Magento\Framework\View\Element\Html\Select	
+1. Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult	
+1. Magento\Customer\Controller\AbstractAccount	Is already deprecated
+1. Magento\Customer\Controller\RegistryConstants	
+1. Magento\Framework\App\Http\Context	
+1. Magento\Framework\App\Action\HttpPostActionInterface	
+1. Magento\Framework\HTTP\Client\Curl	Change visibility of protected properties to private before marking as API
+1. Magento\Customer\Model\Context	
+1. Magento\Ui\Component\Layout\Tabs\TabInterface	
+1. Magento\Framework\Filesystem\DirectoryList	
+1. Magento\Framework\View\Element\UiComponent\ContextInterface	
+1. Magento\Framework\App\Action\HttpGetActionInterface	
+1. Magento\Framework\Controller\Result\Forward	Change visibility of protected properties to private before marking as API
+1. Magento\Framework\Filesystem\Io\File	Change visibility of protected properties to private before marking as API
+1. Magento\Framework\DataObject\Factory	
+1. Magento\Framework\Webapi\Exception	Change visibility of protected properties to private before marking as API
+1. Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider	Layer supertype, do we want to mark it considering that it is widely used?
+1. Magento\Framework\App\CsrfAwareActionInterface	
+1. Magento\Framework\DB\Transaction	Change visibility of protected properties and methods to private before marking as API
+1. Magento\Ui\DataProvider\Modifier\PoolInterface	
+1. Magento\Framework\App\RouterInterface	
+1. Magento\Framework\Setup\Patch\DataPatchInterface	
+1. Magento\Sales\Setup\SalesSetup	Change visibility of protected properties and methods to private before marking as API
+1. Magento\Framework\App\Request\Http	Change visibility of protected properties to private before marking as API
+1. Magento\Framework\Console\Cli	
+1. Magento\Framework\HTTP\PhpEnvironment\RemoteAddress	Change visibility of protected properties to private before marking as API
+1. Magento\Catalog\Controller\Adminhtml\Product	
+1. Magento\Framework\App\Config\ValueFactory	
+1. Magento\Framework\Module\ModuleListInterface	
+1. Magento\Catalog\Model\Layer\Resolver	Change visibility of protected properties to private before marking as API
+1. Magento\Framework\File\Csv	Change visibility of protected properties to private before marking as API
+1. Magento\Catalog\Pricing\Price\FinalPrice	
+1. Magento\Framework\Data\Form\Element\Factory	Change visibility of protected properties to private before marking as API
+1. Magento\Framework\App\Config\ConfigResource\ConfigInterface	
+1. Magento\Customer\Controller\Adminhtml\Index	Remove deprecated methods and properties before marking as API
+1. Magento\Sales\Model\Order\Email\Sender\OrderSender	Change visibility of protected properties and methods to private before marking as API
+1. Magento\Framework\Module\Dir	
+1. Magento\Framework\App\Cache\Type\Config	
+1. Magento\Sales\Model\Order\Email\Sender\InvoiceSender	Change visibility of protected properties and methods to private before marking as API
+1. Magento\Customer\Model\Url	Change visibility of protected properties to private before marking as API
+1. Magento\Store\Ui\Component\Listing\Column\Store\Options	
+1. Magento\Framework\UrlFactory	Change visibility of protected properties to private before marking as API
+1. Magento\Cms\Model\Template\FilterProvider	Change visibility of protected properties to private before marking as API
+1. Magento\Sales\Model\Service\InvoiceService	Change visibility of protected properties to private before marking as API
+1. Magento\Framework\Mview\ActionInterface	
+1. Magento\Framework\HTTP\Adapter\Curl	Change visibility of protected properties  and methods to private before marking as API
+1. Magento\Ui\DataProvider\AddFieldToCollectionInterface	
+1. Magento\Framework\Filesystem\Directory\ReadFactory	
+1. Magento\Framework\Convert\DataObject	Change visibility of protected properties and methods to private before marking as API
+1. Magento\Framework\GraphQl\Query\ResolverInterface	
+1. Magento\Payment\Gateway\Config\Config	
+1. Magento\Ui\DataProvider\AddFilterToCollectionInterface	
+1. Magento\Customer\Block\Adminhtml\Edit\GenericButton	
+1. Magento\Checkout\Model\Type\Onepage	Create a new interface and move constants there. Current class must implement the new interface to maintain backward compatibility
+1. Magento\Framework\Image\AdapterFactory	Change visibility of protected properties to private before marking as API
+1. Magento\Catalog\Model\Config	Change visibility of protected properties/methods to private before marking as API
+1. Magento\Customer\Model\CustomerRegistry	Change visibility of protected properties/methods to private before marking as API
+1. Magento\Quote\Setup\QuoteSetup	Change visibility of protected properties/methods to private before marking as API
+1. Magento\Ui\Component\Control\Container	Change visibility of createButton() method to private before marking as API
+1. Magento\Framework\Data\Form\Element\Image	
+1. Magento\Sales\Model\Order\Pdf\Total\DefaultTotal	
+1. Magento\Catalog\Block\Adminhtml\Product\Edit\Button\Generic	
+1. Magento\Catalog\Model\Layer\Filter\Item	Change visibility of protected properties/methods to private before marking as API
+1. Magento\Sales\Controller\Adminhtml\Order	
+1. Magento\Customer\Setup\CustomerSetup	
+1. Magento\Checkout\Controller\Cart	
+1. Magento\Framework\View\DesignInterface	
