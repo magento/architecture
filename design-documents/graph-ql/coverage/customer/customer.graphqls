@@ -63,9 +63,8 @@ input CustomerAddressAttributeInput {
 }
 
 input StoredAttributeInput {
-    attribute_uid: ID! @doc(description: "Attribute UID as attrbute code")
-    selected_attribute_values: [ID]
-    entered_attribute_values: [String]
+    selected_attribute_option_values: [ID!]
+    entered_attributes_values: [EnteredCustomAttributeInput]
 }
 
 type CustomerToken {
@@ -176,15 +175,14 @@ type CustomerAddress @doc(description: "CustomerAddress contains detailed inform
 
 # See https://github.com/magento/architecture/blob/master/design-documents/graph-ql/custom-attributes-container.md
 type StoredAttribute {
-    selected_attribute_values: [ID]
-    entered_attribute_values: [String]
-    attributes: [Attribute]
+    selected_attributes_option_values: [ID] # unique value for attribute option
+    entered_attribute_values: [EnteredAttributeValue]
+    available_attributes: [Attribute]
 }
 
-type CustomAttribute {
-    uid: ID!
-    label: String!
-    values: [String]! @doc(description: "Array as container of values of the attribute. Can be string or JSON encoded")
+type EnteredAttributeValue {
+    attribute: Attribute
+    value: String
 }
 
 type CustomerAddressRegion @doc(description: "CustomerAddressRegion defines the customer's state or province") {

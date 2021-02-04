@@ -198,11 +198,3 @@ type StoreConfig {
     # sales_magento/rma/enabled
     returns_enabled: String! @doc(description: "Returns functionality status on the storefront: enabled/disabled.")
 }
-
-type Attribute {
-    uid: ID!
-}
-
-type AttributeOption {
-    uid: ID!
-}

@@ -29,6 +29,7 @@ type CustomAttributeMetadata {
 }
 
 type Attribute {
+    uid: ID!
     attribute_code: String
     attribute_options: [AttributeOption]
     attribute_type: String
@@ -38,8 +39,10 @@ type Attribute {
 }
 
 type AttributeOption {
+    uid: ID!
     label: String
-    value: String
+    value: String @deprecated(reason: "use `values` instead")
+    values: [ID]! @doc(description: "Array as container of values of the attribute")
 }
 ```
 
