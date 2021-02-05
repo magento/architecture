@@ -63,8 +63,13 @@ input CustomerAddressAttributeInput {
 }
 
 input StoredAttributeInput {
-    selected_attribute_option_values: [ID!]
-    entered_attributes_values: [EnteredCustomAttributeInput]
+    selected_attributes: [ID!]
+    entered_attributes: [EnteredAttributeInput]
+}
+
+input EnteredAttributeInput {
+    attribute_uid: ID!
+    value: String!
 }
 
 type CustomerToken {
@@ -84,7 +89,7 @@ input CustomerInput {
     gender: Int @doc(description: "The customer's gender (Male - 1, Female - 2)")
     password: String @doc(description: "The customer's password")
     is_subscribed: Boolean @doc(description: "Indicates whether the customer is subscribed to the company's newsletter")
-    stored_attributes: [CustomAttributeInput] @doc(description: "Stored custom attributes input.")
+    stored_attributes: [StoredAttributeInput] @doc(description: "Stored custom attributes input.")
 }
 
 input CustomerCreateInput {
@@ -143,7 +148,7 @@ type Customer @doc(description: "Customer defines the customer name and address 
     is_subscribed: Boolean @doc(description: "Indicates whether the customer is subscribed to the company's newsletter")
     addresses: [CustomerAddress] @doc(description: "An array containing the customer's shipping and billing addresses")
     gender: Int @doc(description: "The customer's gender (Male - 1, Female - 2)")
-    stored_attributes: [StoredCustomAttribute]! @doc(description: "Stored custom attributes")
+    stored_attributes: [StoredAttribute]! @doc(description: "Stored custom attributes")
 }
 
 type CustomerAddress @doc(description: "CustomerAddress contains detailed information about a customer's billing and shipping addresses"){
@@ -175,12 +180,17 @@ type CustomerAddress @doc(description: "CustomerAddress contains detailed inform
 
 # See https://github.com/magento/architecture/blob/master/design-documents/graph-ql/custom-attributes-container.md
 type StoredAttribute {
-    selected_attributes_option_values: [ID] # unique value for attribute option
-    entered_attribute_values: [EnteredAttributeValue]
+    selected_attributes: [SelectedAttribute] # unique values for the attribute options
+    entered_attributes: [EnteredAttribute]
     available_attributes: [Attribute]
 }
 
-type EnteredAttributeValue {
+type SelectedAttribute {
+    attribute: Attribute
+    options_uids: [ID]
+}
+
+type EnteredAttribute {
     attribute: Attribute
     value: String
 }

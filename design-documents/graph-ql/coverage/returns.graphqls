@@ -22,12 +22,12 @@ input RequestReturnInput {
 input RequestReturnItemInput {
     order_item_id: ID! @doc(description: "ID of the order item associated with the return.")
     quantity_to_return: Float! @doc(description: "The quantity of the item requested to be returned.")
-    selected_custom_attributes: [ID!] @doc(description: "Values of return item attributes defined by the merchant, e.g. select attributes.")
-    entered_custom_attributes: [EnteredCustomAttributeInput!] @doc(description: "Values of return item attributes defined by the merchant, e.g. file or text attributes.")
+    selected_attributes: [ID!] @doc(description: "Values of return item attributes defined by the merchant, e.g. select attributes.")
+    entered_attributes: [EnteredAttributeInput!] @doc(description: "Values of return item attributes defined by the merchant, e.g. file or text attributes.")
 }
 
-input EnteredCustomAttributeInput {
-    uid: ID!
+input EnteredAttributeInput {
+    attribute_uid: ID!
     value: String!
 }
 
