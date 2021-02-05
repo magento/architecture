@@ -29,16 +29,62 @@ type CustomAttributeMetadata {
 }
 
 type Attribute {
+    uid: String
     attribute_code: String
+    label: String
+    attribute_type: String @deprecated(reason: "use `attribute_data_type` instead")
+    attribute_data_type: ObjectDataType
+    entity_type: EntityType
+    input_type: UiInputType
+    sort_order: Int
+    metadata_values: [AttributeMetadataValue]
     attribute_options: [AttributeOption]
-    attribute_type: String
-    entity_type: String
-    input_type: String
+}
+
+enum ObjectDataType {
+   STRING
+   FLOAT
+   INT
+}
+
+enum EntityType {
+   customer
+   customer_address
+   catalog_category
+   catalog_product
+   order
+   invoice
+   creditmemo
+   shipment
+   rma_item
+}
+
+enum UiInputType {
+   text
+   dropdown
+   swatch
+   file
+   multi_line
+   #....
+}
+
+enum MetadataType {
+   Values_Unique
+   Values_validation
+   #...
+}
+
+type AttributeMetadataValue {
+   label: String
+   values: [String]
+   metadata_type: MetadataType
 }
 
 type AttributeOption {
-    label: String
-    value: String
+    uid: ID!
+    value: String @deprecated(reason: "use `uid` instead")
+    label
+    is_default
 }
 ```
 

@@ -8,7 +8,31 @@ One workaround for "getting all fields" is based on schema introspection, it all
 
 # Proposed solution
 
-To account for dynamic nature of EAV attributes and the need of "getting all fields" in product search queries, we can introduce `custom_attributes: [CustomAttribute]!` container (recommended approach). 
+To account for dynamic nature of EAV attributes and the need of "getting all fields" in product search queries, we can introduce `stored_attributes: [StoredAttribute]!` container (recommended approach). 
+The container will return the list of attributes plus the actual values stored for each entity. 
+
+```graphql
+type StoredAttribute {
+    selected_attributes: [SelectedAttribute] # used to store unique options values
+    entered_attributes: [EnteredAttribute] # used to store the freetype entered values like texts 
+    available_attributes: [Attribute] # metadata of the actual attribute not related to the stored Entity-Attribute value
+}
+
+type SelectedAttribute {
+    attribute: Attribute # existing type for metadata
+    options_uids: [ID]
+}
+
+type EnteredAttribute {
+    attribute: Attribute # existing type for metadata
+    value: String
+}
+```
+
+We could also make value complex type to be able add more complex fields values in the future, but this doesn't seem necessary at this point.
+This is also aligned with the Selected, Entered values from customizable options, or configurable product.
+
+Alternative approach would be is to introduce a type or an interface `custom_attributes: [CustomAttribute]!`.
 
 ```graphql
 type CustomAttribute {
@@ -16,32 +40,18 @@ type CustomAttribute {
     values: [String]! # We want to account fo attributes that have single (text, dropdown) and multiple values (checkbox, multiselect)
 }
 ```
-
-We could also make value complex type to be able add more fields in the future, but this doesn't seem necessary at this point.
-
-```graphql
-type CustomAttribute {
-    code: String!
-    values: [CustomAttributeValue]!
-}
-
-type CustomAttributeValue {
-    value: String!
-}
-```
-
-Alternative approach would be is to introduce an interface `custom_attributes: [CustomAttributeInterface]!`, but it seems more complicated.
+Or to introduce a type or an interface `custom_attributes: [CustomAttributeInterface]!`, but it seems more complicated.
 
 ```graphql
-type CustomAttributeInterface {
+interface CustomAttributeInterface {
     code: String!
 }
 
-type SingleValueCustomAttribute extends CustomAttributeInterface {
+type SingleValueCustomAttribute implements CustomAttributeInterface {
     value: String!
 }
 
-type MultipleValuesCustomAttribute extends CustomAttributeInterface {
+type MultipleValuesCustomAttribute implements CustomAttributeInterface {
     values: [String]!
 }
 ```
@@ -71,7 +81,7 @@ Current implementation allows the following query
 
 Let's assume the response will be
 
-```graphql
+```json
 {
   "data": {
     "products": {
@@ -114,7 +124,7 @@ With the proposed changes the above mentioned queries will still be supported. I
  ```
 Note that color and size are not applicable to some products in the search result. In the previous example they were returned as `null`. In the following example they are not returned at all
 
-```graphql
+```json
 {
   "data": {
     "products": {
