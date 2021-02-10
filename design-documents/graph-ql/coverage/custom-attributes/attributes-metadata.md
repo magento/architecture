@@ -11,95 +11,156 @@ Additionally, there should be a way to retrieve metadata for all storefront cust
 
 # Proposed solution
 
-Relaxing signature of existing `customAttributeMetadata` query by making its `attriubtes` argument optional will allow to fetch all storefront attributes metadata.
+Relaxing signature of existing `customAttributeMetadata` query by making its `attributes` argument optional will allow to fetch all storefront attributes metadata.
 
 Existing schema:
 ```graphql
-Query.customAttributeMetadata(
+Query.customAttributesMetadata(
     attributes: [AttributeInput!]!
 ): CustomAttributeMetadata
+```
 
+Added schema:
+
+```graphql
+#adding to existing type a choice of uid or code and 
 type AttributeInput {
-    attribute_code: String
-    entity_type: String
+    attribute_code: String #deprecated
+    entity_type: String #deprecated
+    uid: ID # we will use either uid or a (attribute_code, entity_type) pair.
 }
 
 type CustomAttributeMetadata {
-    items: [Attribute]
+    items: [AttributeMetadataInterface]
 }
 
-type Attribute {
-    uid: String
-    attribute_code: String
+#base metadata common to all attributes
+interface AttributeMetadataInterface {
+    uid: ID # base64Encode(entityID/codeID)
+    attribute_code: String @deprecated(reason: "Use `uid` instead")
     label: String
-    attribute_type: String @deprecated(reason: "use `attribute_data_type` instead")
-    attribute_data_type: ObjectDataType
-    entity_type: EntityType
-    input_type: UiInputType
+    data_type: ObjectDataTypeEnum # string, int, float, boolean etc
     sort_order: Int
-    metadata_values: [AttributeMetadataValue]
-    attribute_options: [AttributeOption]
 }
 
-enum ObjectDataType {
-   STRING
-   FLOAT
-   INT
+interface AttributeMetadataEntityTypeInterface {
+    entity_type: EntityTypeEnum
 }
 
-enum EntityType {
-   customer
-   customer_address
-   catalog_category
-   catalog_product
-   order
-   invoice
-   creditmemo
-   shipment
-   rma_item
+interface AttributeMetadataUiTypeInterface {
+    ui_input_type: UiInputTypeEnum
 }
 
-enum UiInputType {
-   text
-   dropdown
-   swatch
-   file
-   multi_line
-   #....
+type CustomerAttributeMetadata implements AttributeMetadataInterface, AttributeMetadataEntityTypeInterface, AttributeMetadataUiTypeInterface {
+    ui_input_type: UiInputTypeInterface!
+    forms_to_use_in: [CustomAttributesListingsEnum]
 }
 
-enum MetadataType {
-   Values_Unique
-   Values_validation
-   #...
+type CustomerAddressAttributeMetadata implements AttributeMetadataInterface {
 }
 
-type AttributeMetadataValue {
-   label: String
-   values: [String]
-   metadata_type: MetadataType
+type ProductAttributeMetadata implements AttributeMetadataInterface {
 }
 
-type AttributeOption {
-    uid: ID!
+# interfaces for different types used in inputs--------------
+
+interface UiInputTypeInterface {
+    ui_input_type: EntityTypeEnum
+    value_required: Boolean!
+}
+
+interface InputFilterInterface {
+    filter: InputValidationFilterEnum
+}
+
+interface InputValidationInterface {
+    input_validation_type: InputValidationTypeEnum
+}
+
+interface AttributeOptionsInterface {
+    attribute_options: [AttributeOptionInterface]
+}
+
+# --------------
+type TextInputType implements UiInputTypeInterface, InputFilterInterface, InputFilterInterface {
+    default_value: String
+}
+
+type InputValidationNone implements InputValidationInterface {
+}
+
+type InputValidationLength implements InputValidationInterface {
+    minimum_text_length: Int
+    maximum_text_length: Int
+}
+
+#--------------
+
+type TextAreaInputType implements UiInputTypeInterface, InputFilterInterface {
+    default_value: String
+}
+
+type MultipleLineInputType implements UiInputTypeInterface, InputValidationInterface, InputFilterInterface {
+    default_value: String
+    lines_count: Int
+}
+
+type FileInputType implements UiInputTypeInterface, InputValidationInterface {
+    default_value: String
+    maximum_file_size: Int # bytes
+    allowed_file_extensions: [String]
+}
+
+type DropDownInputType implements UiInputTypeInterface, InputValidationInterface, AttributeOptionsInterface {
+    default_value: String
+}
+
+#other types for other entities here
+
+type AttributeOptionInterface {
+    uid: ID! # base64Encode(entityID/codeID/OptionID)
+    is_default: Boolean # marks if an option should be default
+}
+
+# base type of an option existing type
+type AttributeOption implements AttributeOptionInterface {
+    # UID and is_default is imported
     value: String @deprecated(reason: "use `uid` instead")
-    label
-    is_default
+    label: String
+}
+
+# extended type of an option as it would look like for visual swatches
+type AttributeOptionSwatch implements AttributeOptionInterface {
+    swatch: SwatchOptionInterface
+}
+
+interface SwatchOptionInterface {
+}
+
+type SwatchOptionColor implements SwatchOptionInterface {
+    color: String # html hex code format
+}
+
+type SwatchOptionImage implements SwatchOptionInterface {
+    image_path: String # relative path
 }
 ```
 
 Additional fields should be added to the metadata response (`Attribute`  type), for example `is_dynamic`, `use_in_compare_products`, `display_in_product_listing`, `use_in_advanced_search`, `advanced_search_input_type`. The exact list of fields must be discussed and approved separately.
 
-Introduction of the following query will allow fetching lists of attributes applicable to specific pages:
+Introduction of the following query will allow fetching lists of attributes applicable to specific artifacts/listings:
 ```graphql
-pageSpecificCustomAttributes(
-    page_type: CustomAttributesPageEnum
+customAttributesListings(
+    listing_type: CustomAttributesListingsEnum
 ): CustomAttributeMetadata
 
-enum CustomAttributesPageEnum {
+enum CustomAttributesListingsEnum {
     PRODUCTS_COMPARE
     PRODUCTS_LISTING
     ADVANCED_CATALOG_SEARCH
+    RMA_FORM
+    CUSTOMER_REGISTRATION_FORM
+    CUSTOMER_ADDRESS_FORM
 }
 ```
 

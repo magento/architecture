@@ -1,0 +1,211 @@
+type AttributeInput {
+    attribute_code: String
+    entity_type: String
+    uid: ID
+}
+
+type CustomAttributeMetadata {
+    items: [AttributeMetadataInterface]
+}
+
+#base metadata common to all attributes
+interface AttributeMetadataInterface {
+    uid: ID # base64Encode(entityID/codeID)
+    label: String
+    data_type: ObjectDataTypeEnum # string, int, float, boolean etc
+    sort_order: Int
+}
+
+interface AttributeMetadataEntityTypeInterface {
+    entity_type: EntityTypeEnum
+}
+
+interface AttributeMetadataUiTypeInterface {
+    ui_input_type: UiInputTypeEnum
+}
+
+type CustomerAttributeMetadata implements AttributeMetadataInterface, AttributeMetadataEntityTypeInterface, AttributeMetadataUiTypeInterface {
+    ui_input_type: UiInputTypeInterface!
+    forms_to_use_in: [CustomAttributesListingsEnum]
+}
+
+type CustomerAddressAttributeMetadata implements AttributeMetadataInterface {
+}
+
+type ProductAttributeMetadata implements AttributeMetadataInterface {
+}
+
+# interfaces for different types used in inputs--------------
+
+interface UiInputTypeInterface {
+    ui_input_type: EntityTypeEnum
+    value_required: Boolean!
+}
+
+interface InputFilterInterface {
+    filter: InputValidationFilterEnum
+}
+
+interface InputValidationInterface {
+    input_validation_type: InputValidationTypeEnum
+}
+
+interface AttributeOptionsInterface {
+    attribute_options: [AttributeOptionInterface]
+}
+
+# --------------
+type TextInputType implements UiInputTypeInterface, InputFilterInterface, InputFilterInterface {
+    default_value: String
+}
+
+type InputValidationNone implements InputValidationInterface {
+}
+
+type InputValidationLength implements InputValidationInterface {
+    minimum_text_length: Int
+    maximum_text_length: Int
+}
+
+#--------------
+
+type TextAreaInputType implements UiInputTypeInterface, InputFilterInterface {
+    default_value: String
+}
+
+type MultipleLineInputType implements UiInputTypeInterface, InputValidationInterface, InputFilterInterface {
+    default_value: String
+    lines_count: Int
+}
+
+type DateInputType implements UiInputTypeInterface, InputValidationInterface {
+    default_value: String
+    minimum_date_allowed: String
+    maximum_date_allowed: String
+}
+
+type FileInputType implements UiInputTypeInterface, InputValidationInterface {
+    default_value: String
+    maximum_file_size: Int # bytes
+    allowed_file_extensions: [String]
+}
+
+type ImageInputType implements UiInputTypeInterface, InputValidationInterface {
+    default_value: String
+    maximum_file_size: Int # bytes
+    allowed_file_extensions: [String]
+    maximum_image_width: Int # in pixels
+    maximum_image_height: Int # in pixels
+}
+
+type DropDownInputType implements UiInputTypeInterface, InputValidationInterface, AttributeOptionsInterface {
+    default_value: String
+}
+
+#other types for other entities here
+
+
+type AttributeOptionInterface {
+    uid: ID! # base64Encode(entityID/codeID/OptionID)
+    is_default: Boolean # marks if an option should be default
+}
+
+# base type of an option existing type
+type AttributeOption implements AttributeOptionInterface {
+    # UID and is_default is imported
+    value: String @deprecated(reason: "use `uid` instead")
+    label: String
+}
+
+# extended type of an option as it would look like for visual swatches
+type AttributeOptionSwatch implements AttributeOptionInterface {
+    swatch: SwatchOptionInterface
+}
+
+interface SwatchOptionInterface {
+}
+
+type SwatchOptionColor implements SwatchOptionInterface {
+    color: String # html hex code format
+}
+
+type SwatchOptionImage implements SwatchOptionInterface {
+    image_path: String # relative path
+}
+# end of swatches variation
+
+#enums to support above queries
+enum ObjectDataTypeEnum {
+    STRING
+    FLOAT
+    INT
+    BOOLEAN
+}
+
+enum EntityTypeEnum {
+    CUSTOMER
+    CUSTOMER_ADDRESS
+    CATALOG_CATEGORY
+    CATALOG_PRODUCT
+    ORDER
+    INVOICE
+    CREDITMEMO
+    SHIPMENT
+    RMA_ITEM
+    GENERIC
+}
+
+enum UiInputTypeEnum {
+    TEXT
+    TEXTAREA
+    MULTILINE
+    DATE
+    DATETIME
+    SELECT
+    MULTISELECT
+    BOOLEAN
+    FILE
+    IMAGE
+    SWATCH_VISUAL
+    SWATCH_TEXT
+    PRICE
+    MEDIA_IMAGE
+    WEEE
+}
+
+enum InputValidationTypeEnum {
+    ALPHANUMERIC
+    ALPHANUMERIC_WITH_SPACES
+    NUMERIC_ONLY
+    ALLPHA_ONLY
+    DATE
+    URL
+    EMAIL
+    LENGTH_ONLY
+}
+
+enum InputValidationFilterEnum {
+    STRIPTAGS
+    ESCAPEHTML
+    DATE
+}
+
+enum CustomerAttributeFormsEnum {
+    CUSTOMER_ACCOUNT_CREATE
+    CUSTOMER_ACCOUNT_EDIT
+    ADMINHTML_CHECKOUT
+}
+
+type Query {
+    customAttributesListings(
+    listing_type: CustomAttributesListingsEnum
+    ): CustomAttributeMetadata
+}
+enum CustomAttributesListingsEnum {
+    PRODUCTS_COMPARE
+    PRODUCTS_LISTING
+    ADVANCED_CATALOG_SEARCH
+    RMA_FORM
+    CUSTOMER_REGISTRATION_FORM
+    CUSTOMER_ADDRESS_FORM
+}
