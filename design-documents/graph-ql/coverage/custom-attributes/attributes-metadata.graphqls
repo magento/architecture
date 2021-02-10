@@ -56,6 +56,11 @@ interface AttributeOptionsInterface {
     attribute_options: [AttributeOptionInterface]
 }
 
+interface AttributeOptionInterface {
+    uid: ID!
+    is_default: Boolean
+}
+
 # --------------
 type TextInputType implements UiInputTypeInterface, InputValidationInterface, InputFilterInterface {
     default_value: String
@@ -100,42 +105,44 @@ type MultipleSelectInputType implements UiInputTypeInterface, AttributeOptionsIn
     default_options: [ID]
 }
 
-type SwatchInputType implements UiInputTypeInterface, AttributeOptionsInterface {
-    default_options: [ID]
+type VisualSwatchInputType implements UiInputTypeInterface, AttributeOptionsInterface {
+    default_option: [ID]
     update_product_preview_image: Boolean
     use_product_image_for_swatch_if_possible: Boolean
 }
 
-#other types for other entities here
-
-
-type AttributeOptionInterface {
-    uid: ID! # base64Encode(entityID/codeID/OptionID)
-    is_default: Boolean # marks if an option should be default
+type TextSwatchInputType implements UiInputTypeInterface, AttributeOptionsInterface {
+    default_option: [ID]
+    update_product_preview_image: Boolean
 }
 
-# base type of an option existing type
+
+#other types definitions for other entities -------
 type AttributeOption implements AttributeOptionInterface {
-    # UID and is_default is imported
     value: String @deprecated(reason: "use `uid` instead")
     label: String
 }
 
 # extended type of an option as it would look like for visual swatches
-type AttributeOptionSwatch implements AttributeOptionInterface {
-    swatch: SwatchOptionInterface
-}
+#type AttributeOptionSwatch implements AttributeOptionInterface {
+#    swatch: SwatchOptionInterface
+#}
 
-interface SwatchOptionInterface {
-}
-
-type SwatchOptionColor implements SwatchOptionInterface {
+type ColorSwatchAttributeOption implements AttributeOptionInterface {
     color: String # html hex code format
+    label: String
 }
 
-type SwatchOptionImage implements SwatchOptionInterface {
+type ImageSwatchAttributeOption implements AttributeOptionInterface {
     image_path: String # relative path
+    label: String
 }
+
+type TextSwatchAttributeOption implements AttributeOptionInterface {
+    title: String
+    description: String
+}
+
 # end of swatches variation
 
 #enums to support above queries
@@ -205,6 +212,7 @@ type Query {
     list_type: CustomAttributesListsEnum
     ): CustomAttributeMetadata
 }
+
 enum CustomAttributesListsEnum {
     PRODUCTS_COMPARE
     PRODUCTS_LISTING
