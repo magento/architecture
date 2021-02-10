@@ -23,11 +23,13 @@ Query.customAttributesMetadata(
 Added schema:
 
 ```graphql
+Query.customAttributesMetadataV2(
+    attributes: [AttributeInput!]!
+): CustomAttributeMetadata
+
 #adding to existing type a choice of uid or code and 
-type AttributeInput {
-    attribute_code: String #deprecated
-    entity_type: String #deprecated
-    uid: ID # we will use either uid or a (attribute_code, entity_type) pair.
+type AttributeMetadataInput {
+    attribute_uid: ID
 }
 
 type CustomAttributeMetadata {
@@ -37,10 +39,9 @@ type CustomAttributeMetadata {
 #base metadata common to all attributes
 interface AttributeMetadataInterface {
     uid: ID # base64Encode(entityID/codeID)
-    attribute_code: String @deprecated(reason: "Use `uid` instead")
     label: String
     data_type: ObjectDataTypeEnum # string, int, float, boolean etc
-    sort_order: Int
+    sort_order: Int 
 }
 
 interface AttributeMetadataEntityTypeInterface {
@@ -48,7 +49,7 @@ interface AttributeMetadataEntityTypeInterface {
 }
 
 interface AttributeMetadataUiTypeInterface {
-    ui_input_type: UiInputTypeEnum
+    ui_input: UiInputTypeEnum
 }
 
 type CustomerAttributeMetadata implements AttributeMetadataInterface, AttributeMetadataEntityTypeInterface, AttributeMetadataUiTypeInterface {
@@ -66,7 +67,7 @@ type ProductAttributeMetadata implements AttributeMetadataInterface {
 
 interface UiInputTypeInterface {
     ui_input_type: EntityTypeEnum
-    value_required: Boolean!
+    is_value_required: Boolean!
 }
 
 interface InputFilterInterface {
@@ -75,6 +76,8 @@ interface InputFilterInterface {
 
 interface InputValidationInterface {
     input_validation_type: InputValidationTypeEnum
+    minimum_text_length: Int
+    maximum_text_length: Int
 }
 
 interface AttributeOptionsInterface {
@@ -82,16 +85,8 @@ interface AttributeOptionsInterface {
 }
 
 # --------------
-type TextInputType implements UiInputTypeInterface, InputFilterInterface, InputFilterInterface {
+type TextInputType implements UiInputTypeInterface, InputValidationInterface, InputFilterInterface {
     default_value: String
-}
-
-type InputValidationNone implements InputValidationInterface {
-}
-
-type InputValidationLength implements InputValidationInterface {
-    minimum_text_length: Int
-    maximum_text_length: Int
 }
 
 #--------------
@@ -111,8 +106,18 @@ type FileInputType implements UiInputTypeInterface, InputValidationInterface {
     allowed_file_extensions: [String]
 }
 
-type DropDownInputType implements UiInputTypeInterface, InputValidationInterface, AttributeOptionsInterface {
-    default_value: String
+type DropDownInputType implements UiInputTypeInterface, AttributeOptionsInterface {
+    default_option: ID
+}
+
+type MultipleSelectInputType implements UiInputTypeInterface, AttributeOptionsInterface {
+    default_options: [ID]
+}
+
+type SwatchInputType implements UiInputTypeInterface, AttributeOptionsInterface {
+    default_options: [ID]
+    update_product_preview_image: Boolean
+    use_product_image_for_swatch_if_possible: Boolean
 }
 
 #other types for other entities here
@@ -143,6 +148,11 @@ type SwatchOptionColor implements SwatchOptionInterface {
 
 type SwatchOptionImage implements SwatchOptionInterface {
     image_path: String # relative path
+}
+
+type SwatchOptionText implements SwatchOptionInterface {
+    title: String
+    description: String
 }
 ```
 

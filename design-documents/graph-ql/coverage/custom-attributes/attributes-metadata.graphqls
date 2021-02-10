@@ -1,14 +1,12 @@
-type AttributeInput {
-    attribute_code: String
-    entity_type: String
-    uid: ID
+type AttributeMetadataInput {
+    attribute_uid: ID
 }
 
 type CustomAttributeMetadata {
     items: [AttributeMetadataInterface]
 }
 
-#base metadata common to all attributes
+# base metadata common to all attributes
 interface AttributeMetadataInterface {
     uid: ID # base64Encode(entityID/codeID)
     label: String
@@ -21,25 +19,27 @@ interface AttributeMetadataEntityTypeInterface {
 }
 
 interface AttributeMetadataUiTypeInterface {
-    ui_input_type: UiInputTypeEnum
+    ui_input: UiInputTypeInterface!
 }
 
 type CustomerAttributeMetadata implements AttributeMetadataInterface, AttributeMetadataEntityTypeInterface, AttributeMetadataUiTypeInterface {
-    ui_input_type: UiInputTypeInterface!
-    forms_to_use_in: [CustomAttributesListingsEnum]
+    # ui_input_type: UiInputTypeInterface!
+    # entity_type: EntityTypeEnum
+    forms_to_use_in: [CustomAttributesListsEnum]
 }
 
 type CustomerAddressAttributeMetadata implements AttributeMetadataInterface {
 }
 
 type ProductAttributeMetadata implements AttributeMetadataInterface {
+    lists_to_use_in: [CustomAttributesListsEnum]
 }
 
-# interfaces for different types used in inputs--------------
+# interfaces for different types used in inputs --------------
 
 interface UiInputTypeInterface {
     ui_input_type: EntityTypeEnum
-    value_required: Boolean!
+    is_value_required: Boolean!
 }
 
 interface InputFilterInterface {
@@ -48,6 +48,8 @@ interface InputFilterInterface {
 
 interface InputValidationInterface {
     input_validation_type: InputValidationTypeEnum
+    minimum_text_length: Int
+    maximum_text_length: Int
 }
 
 interface AttributeOptionsInterface {
@@ -55,21 +57,13 @@ interface AttributeOptionsInterface {
 }
 
 # --------------
-type TextInputType implements UiInputTypeInterface, InputFilterInterface, InputFilterInterface {
+type TextInputType implements UiInputTypeInterface, InputValidationInterface, InputFilterInterface {
     default_value: String
-}
-
-type InputValidationNone implements InputValidationInterface {
-}
-
-type InputValidationLength implements InputValidationInterface {
-    minimum_text_length: Int
-    maximum_text_length: Int
 }
 
 #--------------
 
-type TextAreaInputType implements UiInputTypeInterface, InputFilterInterface {
+type TextAreaInputType implements UiInputTypeInterface, InputValidationInterface, InputFilterInterface {
     default_value: String
 }
 
@@ -98,8 +92,18 @@ type ImageInputType implements UiInputTypeInterface, InputValidationInterface {
     maximum_image_height: Int # in pixels
 }
 
-type DropDownInputType implements UiInputTypeInterface, InputValidationInterface, AttributeOptionsInterface {
-    default_value: String
+type DropDownInputType implements UiInputTypeInterface, AttributeOptionsInterface {
+    default_option: ID
+}
+
+type MultipleSelectInputType implements UiInputTypeInterface, AttributeOptionsInterface {
+    default_options: [ID]
+}
+
+type SwatchInputType implements UiInputTypeInterface, AttributeOptionsInterface {
+    default_options: [ID]
+    update_product_preview_image: Boolean
+    use_product_image_for_swatch_if_possible: Boolean
 }
 
 #other types for other entities here
@@ -197,14 +201,18 @@ enum CustomerAttributeFormsEnum {
 }
 
 type Query {
-    customAttributesListings(
-    listing_type: CustomAttributesListingsEnum
+    customAttributesLists(
+    list_type: CustomAttributesListsEnum
     ): CustomAttributeMetadata
 }
-enum CustomAttributesListingsEnum {
+enum CustomAttributesListsEnum {
     PRODUCTS_COMPARE
     PRODUCTS_LISTING
     ADVANCED_CATALOG_SEARCH
+    PRODUCT_SORT
+    PRODUCT_FILTER
+    PRODUCT_SEARCH_RESULTS
+    PRODUCT_AGGREGATIONS
     RMA_FORM
     CUSTOMER_REGISTRATION_FORM
     CUSTOMER_ADDRESS_FORM
