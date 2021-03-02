@@ -367,7 +367,8 @@ type Discount @doc(description:"Defines an individual discount. A discount can b
 }
 
 type CartItemPrices {
-    price: Money!
+    price: Money! @doc(description:"Item price that might include tax depending on display settings for cart")
+    fixed_product_taxes: [FixedProductTax] @doc(description:"Applied FPT to the cart item")
     row_total: Money!
     row_total_including_tax: Money!
     discounts: [Discount] @doc(description:"An array of discounts to be applied to the cart item")
