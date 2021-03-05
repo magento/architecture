@@ -85,43 +85,48 @@ interface AttributeOptionsInterface {
 }
 
 # --------------
-type TextInputType implements UiInputTypeInterface, InputValidationInterface, InputFilterInterface {
+type TextUiInputType implements UiInputTypeInterface, InputValidationInterface, InputFilterInterface {
     default_value: String
 }
 
 #--------------
 
-type TextAreaInputType implements UiInputTypeInterface, InputFilterInterface {
+type TextAreaUiInputType implements UiInputTypeInterface, InputFilterInterface {
     default_value: String
 }
 
-type MultipleLineInputType implements UiInputTypeInterface, InputValidationInterface, InputFilterInterface {
+type MultipleLineUiInputType implements UiInputTypeInterface, InputValidationInterface, InputFilterInterface {
     default_value: String
     lines_count: Int
 }
 
-type FileInputType implements UiInputTypeInterface, InputValidationInterface {
+type FileUiInputType implements UiInputTypeInterface, InputValidationInterface {
     default_value: String
     maximum_file_size: Int # bytes
     allowed_file_extensions: [String]
 }
 
-type DropDownInputType implements UiInputTypeInterface, AttributeOptionsInterface {
-    default_option: ID
+interface SingleSelectionUiInputTypeInterface {
+    default_option_id: ID
 }
 
-type MultipleSelectInputType implements UiInputTypeInterface, AttributeOptionsInterface {
-    default_options: [ID]
+interface MultipleSelectionUiInputTypeInterface {
+    default_options_ids: [ID]
 }
 
-type VisualSwatchInputType implements UiInputTypeInterface, AttributeOptionsInterface {
-    default_options: [ID]
+type DropDownUiInputType implements UiInputTypeInterface, AttributeOptionsInterface, MultipleSelectionUiInputTypeInterface {
+    default_option_id: ID
+}
+
+type MultipleSelectUiInputType implements UiInputTypeInterface, AttributeOptionsInterface, SingleSelectionUiInputTypeInterface {
+}
+
+type VisualSwatchUiInputType implements UiInputTypeInterface, AttributeOptionsInterface, SingleSelectionUiInputTypeInterface {
     update_product_preview_image: Boolean
     use_product_image: Boolean
 }
 
-type TextSwatchInputType implements UiInputTypeInterface, AttributeOptionsInterface {
-    default_options: [ID]
+type TextSwatchUiInputType implements UiInputTypeInterface, AttributeOptionsInterface, SingleSelectionUiInputTypeInterface {
     update_product_preview_image: Boolean
 }
 
