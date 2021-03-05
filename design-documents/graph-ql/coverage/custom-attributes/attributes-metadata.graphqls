@@ -1,13 +1,17 @@
+type Query {
+    customAttributeMetadataV2(attributes: [AttributeMetadataInput!]!): CustomAttributeMetadata
+    customAttributesLists(listType: CustomAttributesListsEnum): CustomAttributeMetadata
+}
+
 type AttributeMetadataInput {
     attribute_uid: ID
 }
 
-type CustomAttributeMetadata {
+type CustomAttributeMetadata { # this replaces existing Attribute type
     items: [AttributeMetadataInterface]
 }
 
-# base metadata common to all attributes
-interface AttributeMetadataInterface {
+interface AttributeMetadataInterface { # base metadata common to all attributes
     uid: ID # base64Encode(entityID/codeID)
     label: String
     data_type: ObjectDataTypeEnum # string, int, float, boolean etc
@@ -23,8 +27,8 @@ interface AttributeMetadataUiTypeInterface {
 }
 
 type CustomerAttributeMetadata implements AttributeMetadataInterface, AttributeMetadataEntityTypeInterface, AttributeMetadataUiTypeInterface {
-    # ui_input_type: UiInputTypeInterface!
-    # entity_type: EntityTypeEnum
+    # ui_input_type: UiInputTypeInterface! #imported
+    # entity_type: EntityTypeEnum #imported
     forms_to_use_in: [CustomAttributesListsEnum]
 }
 
@@ -106,13 +110,13 @@ type MultipleSelectInputType implements UiInputTypeInterface, AttributeOptionsIn
 }
 
 type VisualSwatchInputType implements UiInputTypeInterface, AttributeOptionsInterface {
-    default_option: [ID]
+    default_options: [ID]
     update_product_preview_image: Boolean
-    use_product_image_for_swatch_if_possible: Boolean
+    use_product_image: Boolean # use product image for swatch if possible
 }
 
 type TextSwatchInputType implements UiInputTypeInterface, AttributeOptionsInterface {
-    default_option: [ID]
+    default_options: [ID]
     update_product_preview_image: Boolean
 }
 
@@ -122,11 +126,6 @@ type AttributeOption implements AttributeOptionInterface {
     value: String @deprecated(reason: "use `uid` instead")
     label: String
 }
-
-# extended type of an option as it would look like for visual swatches
-#type AttributeOptionSwatch implements AttributeOptionInterface {
-#    swatch: SwatchOptionInterface
-#}
 
 type ColorSwatchAttributeOption implements AttributeOptionInterface {
     color: String # html hex code format
@@ -142,8 +141,6 @@ type TextSwatchAttributeOption implements AttributeOptionInterface {
     title: String
     description: String
 }
-
-# end of swatches variation
 
 #enums to support above queries
 enum ObjectDataTypeEnum {
@@ -205,12 +202,6 @@ enum CustomerAttributeFormsEnum {
     CUSTOMER_ACCOUNT_CREATE
     CUSTOMER_ACCOUNT_EDIT
     ADMINHTML_CHECKOUT
-}
-
-type Query {
-    customAttributesLists(
-    list_type: CustomAttributesListsEnum
-    ): CustomAttributeMetadata
 }
 
 enum CustomAttributesListsEnum {

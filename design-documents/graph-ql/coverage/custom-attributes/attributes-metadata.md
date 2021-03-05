@@ -24,7 +24,7 @@ Added schema:
 
 ```graphql
 Query.customAttributesMetadataV2(
-    attributes: [AttributeInput!]!
+    attributes: [AttributeMetadataInput!]!
 ): CustomAttributeMetadata
 
 #adding to existing type a choice of uid or code and 
@@ -114,10 +114,15 @@ type MultipleSelectInputType implements UiInputTypeInterface, AttributeOptionsIn
     default_options: [ID]
 }
 
-type SwatchInputType implements UiInputTypeInterface, AttributeOptionsInterface {
+type VisualSwatchInputType implements UiInputTypeInterface, AttributeOptionsInterface {
     default_options: [ID]
     update_product_preview_image: Boolean
-    use_product_image_for_swatch_if_possible: Boolean
+    use_product_image: Boolean
+}
+
+type TextSwatchInputType implements UiInputTypeInterface, AttributeOptionsInterface {
+    default_options: [ID]
+    update_product_preview_image: Boolean
 }
 
 #other types for other entities here
@@ -134,23 +139,17 @@ type AttributeOption implements AttributeOptionInterface {
     label: String
 }
 
-# extended type of an option as it would look like for visual swatches
-type AttributeOptionSwatch implements AttributeOptionInterface {
-    swatch: SwatchOptionInterface
-}
-
-interface SwatchOptionInterface {
-}
-
-type SwatchOptionColor implements SwatchOptionInterface {
+type ColorSwatchAttributeOption implements AttributeOptionInterface {
     color: String # html hex code format
+    label: String
 }
 
-type SwatchOptionImage implements SwatchOptionInterface {
+type ImageSwatchAttributeOption implements AttributeOptionInterface {
     image_path: String # relative path
+    label: String
 }
 
-type SwatchOptionText implements SwatchOptionInterface {
+type TextSwatchAttributeOption implements AttributeOptionInterface {
     title: String
     description: String
 }
@@ -160,19 +159,25 @@ Additional fields should be added to the metadata response (`Attribute`  type), 
 
 Introduction of the following query will allow fetching lists of attributes applicable to specific artifacts/listings:
 ```graphql
-customAttributesListings(
-    listing_type: CustomAttributesListingsEnum
+customAttributesLists(
+    listType: CustomAttributesListingsEnum
 ): CustomAttributeMetadata
 
 enum CustomAttributesListingsEnum {
     PRODUCTS_COMPARE
     PRODUCTS_LISTING
     ADVANCED_CATALOG_SEARCH
+    PRODUCT_SORT
+    PRODUCT_FILTER
+    PRODUCT_SEARCH_RESULTS
+    PRODUCT_AGGREGATIONS
     RMA_FORM
     CUSTOMER_REGISTRATION_FORM
     CUSTOMER_ADDRESS_FORM
 }
 ```
+
+See full schema [attributes-metadata.graphqls](attributes-metadata.graphqls)
 
 # Alternative solutions
 
