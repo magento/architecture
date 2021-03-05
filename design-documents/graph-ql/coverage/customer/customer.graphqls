@@ -47,8 +47,8 @@ input CustomerAddressInput {
     prefix: String @doc(description: "An honorific, such as Dr., Mr., or Mrs.")
     suffix: String @doc(description: "A value such as Sr., Jr., or III")
     vat_id: String @doc(description: "The customer's Tax/VAT number (for corporate customers)")
-    custom_attributes: [CustomerAddressAttributeInput] @deprecated(reason: "Use `stored_attributes`instead.")
-    stored_attributes: [StoredAttributeInput] @doc(description: "Stored custom attributes input.")
+    custom_attributes: [CustomerAddressAttributeInput] @deprecated(reason: "Use `custom_attributes`instead.")
+    custom_attributes: [CustomAttributeInput] @doc(description: "Stored custom attributes input.")
 }
 
 input CustomerAddressRegionInput @doc(description: "CustomerAddressRegionInput defines the customer's state or province") {
@@ -62,13 +62,13 @@ input CustomerAddressAttributeInput {
     value: String! @doc(description: "Attribute value")
 }
 
-input StoredAttributeInput {
-    selected_attributes: [ID!]
+input CustomAttributeInput {
+    selected_attribute_options: [ID!] # this is a unique id that identifies a unique attribute option(value). It doesn't need an additional attribute uid.
     entered_attributes: [EnteredAttributeInput]
 }
 
 input EnteredAttributeInput {
-    attribute_uid: ID!
+    attribute_uid: ID! # since the value is string we need the attribute uid here.
     value: String!
 }
 
@@ -89,7 +89,7 @@ input CustomerInput {
     gender: Int @doc(description: "The customer's gender (Male - 1, Female - 2)")
     password: String @doc(description: "The customer's password")
     is_subscribed: Boolean @doc(description: "Indicates whether the customer is subscribed to the company's newsletter")
-    stored_attributes: [StoredAttributeInput] @doc(description: "Stored custom attributes input.")
+    custom_attributes: [CustomAttributeInput] @doc(description: "Stored custom attributes input.")
 }
 
 input CustomerCreateInput {
@@ -105,7 +105,7 @@ input CustomerCreateInput {
     gender: Int @doc(description: "The customer's gender (Male - 1, Female - 2)")
     password: String @doc(description: "The customer's password")
     is_subscribed: Boolean @doc(description: "Indicates whether the customer is subscribed to the company's newsletter")
-    stored_attributes: [StoredAttributeInput] @doc(description: "Stored custom attributes input.")
+    custom_attributes: [CustomAttributeInput] @doc(description: "Stored custom attributes input.")
 }
 
 input CustomerUpdateInput {
@@ -119,7 +119,7 @@ input CustomerUpdateInput {
     prefix: String @doc(description: "An honorific, such as Dr., Mr., or Mrs.")
     suffix: String @doc(description: "A value such as Sr., Jr., or III")
     taxvat: String @doc(description: "The customer's Tax/VAT number (for corporate customers)")
-    stored_attributes: [StoredAttributeInput] @doc(description: "Stored custom attributes input.")
+    custom_attributes: [CustomAttributeInput] @doc(description: "Stored custom attributes input.")
 }
 
 type CustomerOutput {
@@ -148,7 +148,7 @@ type Customer @doc(description: "Customer defines the customer name and address 
     is_subscribed: Boolean @doc(description: "Indicates whether the customer is subscribed to the company's newsletter")
     addresses: [CustomerAddress] @doc(description: "An array containing the customer's shipping and billing addresses")
     gender: Int @doc(description: "The customer's gender (Male - 1, Female - 2)")
-    stored_attributes: [StoredAttribute]! @doc(description: "Stored custom attributes")
+    custom_attributes: [CustomAttribute]! @doc(description: "Stored custom attributes")
 }
 
 type CustomerAddress @doc(description: "CustomerAddress contains detailed information about a customer's billing and shipping addresses"){
@@ -174,24 +174,25 @@ type CustomerAddress @doc(description: "CustomerAddress contains detailed inform
     default_shipping: Boolean @doc(description: "Indicates whether the address is the default shipping address")
     default_billing: Boolean @doc(description: "Indicates whether the address is the default billing address")
     custom_attributes: [CustomerAddressAttribute] @deprecated(reason: "Use `stored_custom_attributes` instead.")
-    stored_attributes: [StoredAttribute]! @doc(description: "Stored custom attributes")
+    custom_attributes: [CustomAttribute]! @doc(description: "Stored custom attributes")
     extension_attributes: [CustomerAddressAttribute] @doc(description: "Address extension attributes")
 }
 
 # See https://github.com/magento/architecture/blob/master/design-documents/graph-ql/custom-attributes-container.md
-type StoredAttribute {
-    selected_attributes: [SelectedAttribute] # unique values for the attribute options
-    entered_attributes: [EnteredAttribute]
-    available_attributes: [Attribute]
+# See https://github.com/magento/architecture/blob/master/design-documents/graph-ql/attributes-metadata.md
+type CustomAttribute {
+    selected_attribute_options: [SelectedAttributeOption] # unique value for attribute option
+    entered_attribute_value: EnteredAttributeValue
+    attribute_metadata: AttributeMetadataInterface # used to get full metadata info and avoid another query to customAttributeMetadata
 }
 
-type SelectedAttribute {
-    attribute: Attribute
-    options_uids: [ID]
+type SelectedAttributeOption {
+    attribute_option: AttributeOptionInterface
+    attribute_metadata: AttributeMetadataInterface
 }
 
-type EnteredAttribute {
-    attribute: Attribute
+type EnteredAttributeValue {
+    attribute_metadata: AttributeMetadataInterface
     value: String
 }
 
