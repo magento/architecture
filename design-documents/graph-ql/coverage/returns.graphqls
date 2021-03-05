@@ -119,7 +119,7 @@ type Return @doc(description: "Customer return") {
 type ReturnItem {
     uid: ID!
     order_item: OrderItemInterface! @doc(description: "Order item provides access to the product being returned, including selected/entered options information.")
-    stored_attributes: [StoredAttribute] @doc(description: "Return item custom attributes, which are marked by the admin to be visible on the storefront.")
+    custom_attributes: [CustomAttribute]! @doc(description: "Return item custom attributes, which are marked by the admin to be visible on the storefront.")
     request_quantity: Float! @doc(description: "The quantity of the item requested to be returned.")
     quantity: Float! @doc(description: "The quantity of the items authorized by the merchant to be returned .")
     status: ReturnItemStatus! @doc(description: "The return status of the item being returned.")

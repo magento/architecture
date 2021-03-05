@@ -173,8 +173,8 @@ type CustomerAddress @doc(description: "CustomerAddress contains detailed inform
     vat_id: String @doc(description: "The customer's Value-added tax (VAT) number (for corporate customers)")
     default_shipping: Boolean @doc(description: "Indicates whether the address is the default shipping address")
     default_billing: Boolean @doc(description: "Indicates whether the address is the default billing address")
-    custom_attributes: [CustomerAddressAttribute] @deprecated(reason: "Use `stored_custom_attributes` instead.")
-    custom_attributes: [CustomAttribute]! @doc(description: "Stored custom attributes")
+    custom_attributes: [CustomerAddressAttribute] @deprecated(reason: "Use `custom_attributesV2` instead.")
+    custom_attributes_v2: [CustomAttribute]! @doc(description: "Stored custom attributes")
     extension_attributes: [CustomerAddressAttribute] @doc(description: "Address extension attributes")
 }
 
