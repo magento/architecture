@@ -48,7 +48,7 @@ input CustomerAddressInput {
     suffix: String @doc(description: "A value such as Sr., Jr., or III")
     vat_id: String @doc(description: "The customer's Tax/VAT number (for corporate customers)")
     custom_attributes: [CustomerAddressAttributeInput] @deprecated(reason: "Use `custom_attributes`instead.")
-    custom_attributes: [CustomAttributeInput] @doc(description: "Stored custom attributes input.")
+    custom_attributes_v2: [CustomAttributeInput] @doc(description: "Stored custom attributes input.")
 }
 
 input CustomerAddressRegionInput @doc(description: "CustomerAddressRegionInput defines the customer's state or province") {
