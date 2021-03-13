@@ -32,135 +32,98 @@ type AttributeMetadataInput {
     attribute_uid: ID
 }
 
-type CustomAttributeMetadata {
+type CustomAttributeMetadata { # this replaces existing Attribute type
     items: [AttributeMetadataInterface]
 }
 
-#base metadata common to all attributes
-interface AttributeMetadataInterface {
+interface AttributeMetadataInterface { # base metadata common to all attributes
     uid: ID # base64Encode(entityID/codeID)
     label: String
     data_type: ObjectDataTypeEnum # string, int, float, boolean etc
-    sort_order: Int 
-}
-
-interface AttributeMetadataEntityTypeInterface {
+    sort_order: Int
     entity_type: EntityTypeEnum
+    ui_input: UiInputTypeInterface!
 }
 
-interface AttributeMetadataUiTypeInterface {
-    ui_input: UiInputTypeEnum
-}
-
-type CustomerAttributeMetadata implements AttributeMetadataInterface, AttributeMetadataEntityTypeInterface, AttributeMetadataUiTypeInterface {
-    ui_input_type: UiInputTypeInterface!
-    forms_to_use_in: [CustomAttributesListingsEnum]
+type CustomerAttributeMetadata implements AttributeMetadataInterface {
+    forms_to_use_in: [CustomAttributesListsEnum]
 }
 
 type CustomerAddressAttributeMetadata implements AttributeMetadataInterface {
 }
 
 type ProductAttributeMetadata implements AttributeMetadataInterface {
+    lists_to_use_in: [CustomAttributesListsEnum]
 }
 
-# interfaces for different types used in inputs--------------
+type TextUiInputType implements UiInputTypeInterface, TextInputTypeInterface, FilterableTextInputTypeInterface, ValidationTextInputTypeInterface {
 
-interface UiInputTypeInterface {
-    ui_input_type: EntityTypeEnum
-    is_value_required: Boolean!
 }
 
-interface InputFilterInterface {
-    filter: InputValidationFilterEnum
+type TextAreaUiInputType implements UiInputTypeInterface, TextInputTypeInterface, FilterableTextInputTypeInterface, ValidationTextInputTypeInterface {
+
 }
 
-interface InputValidationInterface {
-    input_validation_type: InputValidationTypeEnum
-    minimum_text_length: Int
-    maximum_text_length: Int
-}
-
-interface AttributeOptionsInterface {
-    attribute_options: [AttributeOptionInterface]
-}
-
-# --------------
-type TextUiInputType implements UiInputTypeInterface, InputValidationInterface, InputFilterInterface {
-    default_value: String
-}
-
-#--------------
-
-type TextAreaUiInputType implements UiInputTypeInterface, InputFilterInterface {
-    default_value: String
-}
-
-type MultipleLineUiInputType implements UiInputTypeInterface, InputValidationInterface, InputFilterInterface {
-    default_value: String
+type MultipleLineUiInputType implements UiInputTypeInterface, TextInputTypeInterface, FilterableTextInputTypeInterface, ValidationTextInputTypeInterface {
     lines_count: Int
 }
 
-type FileUiInputType implements UiInputTypeInterface, InputValidationInterface {
-    default_value: String
+type DateUiInputType implements UiInputTypeInterface, TextInputTypeInterface, FilterableTextInputTypeInterface {
+    minimum_date_allowed: String
+    maximum_date_allowed: String
+}
+
+type FileUiInputType implements UiInputTypeInterface, TextInputTypeInterface, FilterableTextInputTypeInterface {
     maximum_file_size: Int # bytes
     allowed_file_extensions: [String]
 }
 
-interface SingleSelectionUiInputTypeInterface {
-    default_option_id: ID
+type ImageUiInputType implements UiInputTypeInterface, TextInputTypeInterface, FilterableTextInputTypeInterface {
+    maximum_file_size: Int # bytes
+    allowed_file_extensions: [String]
+    maximum_image_width: Int # in pixels
+    maximum_image_height: Int # in pixels
 }
 
-interface MultipleSelectionUiInputTypeInterface {
-    default_options_ids: [ID]
+type DropDownUiInputType implements UiInputTypeInterface, SelectableInputTypeInterface, AttributeOptionsInterface {
 }
 
-type DropDownUiInputType implements UiInputTypeInterface, AttributeOptionsInterface, MultipleSelectionUiInputTypeInterface {
-    default_option_id: ID
+type MultipleSelectUiInputType implements UiInputTypeInterface, SelectableInputTypeInterface, AttributeOptionsInterface {
 }
 
-type MultipleSelectUiInputType implements UiInputTypeInterface, AttributeOptionsInterface, SingleSelectionUiInputTypeInterface {
-}
-
-type VisualSwatchUiInputType implements UiInputTypeInterface, AttributeOptionsInterface, SingleSelectionUiInputTypeInterface {
-    update_product_preview_image: Boolean
-    use_product_image: Boolean
-}
-
-type TextSwatchUiInputType implements UiInputTypeInterface, AttributeOptionsInterface, SingleSelectionUiInputTypeInterface {
+interface SwatchInputTypeInterface {
     update_product_preview_image: Boolean
 }
 
-#other types for other entities here
-
-type AttributeOptionInterface {
-    uid: ID! # base64Encode(entityID/codeID/OptionID)
-    is_default: Boolean # marks if an option should be default
+type VisualSwatchUiInputType implements UiInputTypeInterface, SelectableInputTypeInterface, AttributeOptionsInterface, SwatchInputTypeInterface {
+    use_product_image_for_swatch_if_possible: Boolean
 }
 
-# base type of an option existing type
+type TextSwatchUiInputType implements UiInputTypeInterface, SelectableInputTypeInterface, AttributeOptionsInterface, SwatchInputTypeInterface {
+
+}
+
 type AttributeOption implements AttributeOptionInterface {
-    # UID and is_default is imported
     value: String @deprecated(reason: "use `uid` instead")
     label: String
 }
 
 type ColorSwatchAttributeOption implements AttributeOptionInterface {
     color: String # html hex code format
-    label: String
 }
 
 type ImageSwatchAttributeOption implements AttributeOptionInterface {
     image_path: String # relative path
-    label: String
 }
 
 type TextSwatchAttributeOption implements AttributeOptionInterface {
-    title: String
     description: String
 }
 ```
 
 Additional fields should be added to the metadata response (`Attribute`  type), for example `is_dynamic`, `use_in_compare_products`, `display_in_product_listing`, `use_in_advanced_search`, `advanced_search_input_type`. The exact list of fields must be discussed and approved separately.
+
+See full schema [attributes-metadata.graphqls](attributes-metadata.graphqls)
 
 Introduction of the following query will allow fetching lists of attributes applicable to specific artifacts/listings:
 ```graphql
@@ -181,8 +144,6 @@ enum CustomAttributesListingsEnum {
     CUSTOMER_ADDRESS_FORM
 }
 ```
-
-See full schema [attributes-metadata.graphqls](attributes-metadata.graphqls)
 
 # Alternative solutions
 

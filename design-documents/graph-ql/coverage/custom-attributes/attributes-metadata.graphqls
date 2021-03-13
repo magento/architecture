@@ -16,19 +16,11 @@ interface AttributeMetadataInterface { # base metadata common to all attributes
     label: String
     data_type: ObjectDataTypeEnum # string, int, float, boolean etc
     sort_order: Int
-}
-
-interface AttributeMetadataEntityTypeInterface {
     entity_type: EntityTypeEnum
-}
-
-interface AttributeMetadataUiTypeInterface {
     ui_input: UiInputTypeInterface!
 }
 
-type CustomerAttributeMetadata implements AttributeMetadataInterface, AttributeMetadataEntityTypeInterface, AttributeMetadataUiTypeInterface {
-    # ui_input_type: UiInputTypeInterface! #imported
-    # entity_type: EntityTypeEnum #imported
+type CustomerAttributeMetadata implements AttributeMetadataInterface {
     forms_to_use_in: [CustomAttributesListsEnum]
 }
 
@@ -46,14 +38,12 @@ interface UiInputTypeInterface {
     is_value_required: Boolean!
 }
 
-interface InputFilterInterface {
+interface ValidationTextInputTypeInterface {
     filter: InputValidationFilterEnum
 }
 
-interface InputValidationInterface {
-    input_validation_type: InputValidationTypeEnum
-    minimum_text_length: Int
-    maximum_text_length: Int
+interface FilterableTextInputTypeInterface {
+    input_validation: FilterableText
 }
 
 interface AttributeOptionsInterface {
@@ -63,86 +53,88 @@ interface AttributeOptionsInterface {
 interface AttributeOptionInterface {
     uid: ID!
     is_default: Boolean
+    label: String
 }
 
-# --------------
-type TextUiInputType implements UiInputTypeInterface, InputValidationInterface, InputFilterInterface {
+interface SelectableInputTypeInterface {
+
+}
+
+interface TextInputTypeInterface {
     default_value: String
 }
 
-#--------------
-
-type TextAreaUiInputType implements UiInputTypeInterface, InputValidationInterface, InputFilterInterface {
-    default_value: String
+type FilterableText {
+    input_validation_type: InputValidationTypeEnum
+    minimum_text_length: Int
+    maximum_text_length: Int
 }
 
-type MultipleLineUiInputType implements UiInputTypeInterface, InputValidationInterface, InputFilterInterface {
-    default_value: String
+type TextUiInputType implements UiInputTypeInterface, TextInputTypeInterface, FilterableTextInputTypeInterface, ValidationTextInputTypeInterface {
+
+}
+
+type TextAreaUiInputType implements UiInputTypeInterface, TextInputTypeInterface, FilterableTextInputTypeInterface, ValidationTextInputTypeInterface {
+
+}
+
+type MultipleLineUiInputType implements UiInputTypeInterface, TextInputTypeInterface, FilterableTextInputTypeInterface, ValidationTextInputTypeInterface {
     lines_count: Int
 }
 
-type DateUiInputType implements UiInputTypeInterface, InputValidationInterface {
-    default_value: String
+type DateUiInputType implements UiInputTypeInterface, TextInputTypeInterface, FilterableTextInputTypeInterface {
     minimum_date_allowed: String
     maximum_date_allowed: String
 }
 
-type FileUiInputType implements UiInputTypeInterface, InputValidationInterface {
-    default_value: String
+type FileUiInputType implements UiInputTypeInterface, TextInputTypeInterface, FilterableTextInputTypeInterface {
     maximum_file_size: Int # bytes
     allowed_file_extensions: [String]
 }
 
-type ImageUiInputType implements UiInputTypeInterface, InputValidationInterface {
-    default_value: String
+type ImageUiInputType implements UiInputTypeInterface, TextInputTypeInterface, FilterableTextInputTypeInterface {
     maximum_file_size: Int # bytes
     allowed_file_extensions: [String]
     maximum_image_width: Int # in pixels
     maximum_image_height: Int # in pixels
 }
 
-interface SingleSelectionUiInputTypeInterface {
-    default_option_id: ID
+type DropDownUiInputType implements UiInputTypeInterface, SelectableInputTypeInterface, AttributeOptionsInterface {
 }
 
-interface MultipleSelectionUiInputTypeInterface {
-    default_options_ids: [ID]
+type MultipleSelectUiInputType implements UiInputTypeInterface, SelectableInputTypeInterface, AttributeOptionsInterface {
 }
 
-type DropDownUiInputType implements UiInputTypeInterface, AttributeOptionsInterface, SingleSelectionUiInputTypeInterface {
-}
-
-type MultipleSelectUiInputType implements UiInputTypeInterface, AttributeOptionsInterface, MultipleSelectionUiInputTypeInterface {
-}
-
-type VisualSwatchUiInputType implements UiInputTypeInterface, AttributeOptionsInterface, SingleSelectionUiInputTypeInterface {
-    update_product_preview_image: Boolean
-    use_product_image: Boolean # use product image for swatch if possible
-}
-
-type TextSwatchUiInputType implements UiInputTypeInterface, AttributeOptionsInterface, SingleSelectionUiInputTypeInterface {
+interface SwatchInputTypeInterface {
     update_product_preview_image: Boolean
 }
 
+type VisualSwatchUiInputType implements UiInputTypeInterface, SelectableInputTypeInterface, AttributeOptionsInterface, SwatchInputTypeInterface {
+    use_product_image_for_swatch_if_possible: Boolean
+}
 
-#other types definitions for other entities -------
+type TextSwatchUiInputType implements UiInputTypeInterface, SelectableInputTypeInterface, AttributeOptionsInterface, SwatchInputTypeInterface {
+
+}
+
 type AttributeOption implements AttributeOptionInterface {
     value: String @deprecated(reason: "use `uid` instead")
     label: String
 }
 
+interface SelectableInputTypeInterface {
+
+}
+
 type ColorSwatchAttributeOption implements AttributeOptionInterface {
     color: String # html hex code format
-    label: String
 }
 
 type ImageSwatchAttributeOption implements AttributeOptionInterface {
     image_path: String # relative path
-    label: String
 }
 
 type TextSwatchAttributeOption implements AttributeOptionInterface {
-    title: String
     description: String
 }
 

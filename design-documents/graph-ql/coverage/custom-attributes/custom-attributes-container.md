@@ -41,18 +41,13 @@ type EntityAttributeMetadata implements AttributeMetadataInterface, AttributeMet
     forms_to_use_in: [CustomAttributesListingsEnum]
 }
 # --------
-interface AttributeMetadataInterface {
+interface AttributeMetadataInterface { # base metadata common to all attributes
     uid: ID # base64Encode(entityID/codeID)
     label: String
     data_type: ObjectDataTypeEnum # string, int, float, boolean etc
-    sort_order: Int 
-}
-
-interface AttributeMetadataEntityTypeInterface {
+    sort_order: Int
     entity_type: EntityTypeEnum
-}
-interface AttributeMetadataUiTypeInterface {
-    ui_input: UiInputTypeEnum
+    ui_input: UiInputTypeInterface!
 }
 ```
 #### Sample queries for this alternative
@@ -84,75 +79,59 @@ interface AttributeMetadataUiTypeInterface {
         value
       }
       attribute_metadata {
-        uid
-        code
-        label # all attributes have a label per store
-        data_type # enum : string, int, float etc
-        sort_order # needed for ordering
-        ... on CustomerAttributeMetadata {
-          entity_type # enum
-          forms_to_use_in # only in CustomerAttributeMetadata
-          ui_input {
-            ui_input_type
-            is_value_required
-            ... on DropDownInputType {
-              default_option_id #id
-              attribute_options {
-                uid
-                is_default
-                ... on AttributeOption {
-                  label
-                }
-              }
-            }
-            ... on TextInputType {
-              default_value #sting
-              filter
-              input_validation {
-                input_validation_type
-                minimum_text_length
-                maximum_text_length
-              }
-            }
-          }
-        }
-        ... on ProductAttributeMetadata {
-          entity_type # enum
-          lists_to_use_in # only in ProductAttributeMetadata. As opposed to Customer which only had forms
-          ui_input {
-            ui_input_type
-            is_value_required
-            ... on VisualSwatchInputType {
-              default_option_id #id
-              update_product_preview_image
-              use_product_image_for_swatch_if_possible
-              attribute_options {
-                uid
-                is_default
-                ... on ColorSwatchAttributeOption {
-                  color
-                  label
-                }
-                ... on ImageSwatchAttributeOption {
-                  image_path
-                  label
-                }
-              }
-            }
-            ... on TextSwatchInputType {
-              default_option_id #id
-              update_product_preview_image
-              attribute_options {
-                uid
-                is_default
-                ... on SwatchOptionText {
-                  title
-                  description
-                }
-              }
-            }
-          }
-        }
+         uid
+         code
+         label # all attributes have a label per store
+         data_type # enum : string, int, float etc
+         sort_order # needed for ordering
+
+         entity_type # enum
+         ... on CustomerAttributeMetadata {
+             forms_to_use_in # only in CustomerAttributeMetadata
+         }
+         ... on ProductAttributeMetadata {
+             lists_to_use_in # only in ProductAttributeMetadata. As opposed to Customer which only had forms
+         }
+         ui_input {
+             __typename
+             ui_input_type
+             is_value_required
+             ... on SelectableInputTypeInterface {
+                 ... on SwatchInputTypeInterface {
+                     update_product_preview_image
+                 }
+                 ... on VisualSwatchInputType {
+                     use_product_image_for_swatch_if_possible
+                 }
+                 attribute_options {
+                     uid
+                     is_default
+                     label
+                     ... on ColorSwatchAttributeOption {
+                         color
+                     }
+                     ... on ImageSwatchAttributeOption {
+                         image_path
+                     }
+                     ... on TextSwatchAttributeOption {
+                         description
+                     }
+                 }
+             }
+             ... on TextInputTypeInterface {
+                 default_value # string
+                 ... on FilterableTextInputTypeInterface {
+                     filter # enum
+                 }
+                 ... on ValidationTextInputTypeInterface {
+                     input_validation {
+                         input_validation_type
+                         minimum_text_length
+                         maximum_text_length
+                     }
+                 }
+             }
+         }
       }
     }
   }
