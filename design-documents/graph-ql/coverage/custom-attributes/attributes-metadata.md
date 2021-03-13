@@ -24,11 +24,11 @@ Added schema:
 
 ```graphql
 Query.customAttributesMetadataV2(
-    attributes: [AttributeMetadataInput!]!
+    attributes: [AttributeMetadataInput!]
 ): CustomAttributeMetadata
 
 #adding to existing type a choice of uid or code and 
-type AttributeMetadataInput {
+input AttributeMetadataInput {
     attribute_uid: ID
 }
 
