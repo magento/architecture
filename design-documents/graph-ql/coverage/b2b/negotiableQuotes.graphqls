@@ -136,7 +136,7 @@ input NegotiableQuoteItemQuantityInput {
 }
 
 input RequestNegotiableQuoteInput {
-    cart_id: Int
+    cart_uid: ID
     quote_name: String!
     comment: NegotiableQuoteCommentInput!
     # files (attachments) to be added at a later date when file upload design has been finalized
