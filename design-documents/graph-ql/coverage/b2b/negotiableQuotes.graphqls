@@ -122,7 +122,7 @@ type CloseNegotiableQuotesOutput {
 
 input RemoveNegotiableQuoteItemsInput {
     quote_uid: ID!
-    quote_item_uids: [ID!]!
+    quote_item_uids: [ID!]! @doc(description:"Cart Item uids")
 }
 
 input UpdateNegotiableQuoteQuantitiesInput {
@@ -131,7 +131,7 @@ input UpdateNegotiableQuoteQuantitiesInput {
 }
 
 input NegotiableQuoteItemQuantityInput {
-    quote_item_uid: ID!
+    quote_item_uid: ID! @doc(description:"Cart Item uid")
     quantity: Float!
 }
 
