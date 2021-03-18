@@ -136,7 +136,7 @@ input NegotiableQuoteItemQuantityInput {
 }
 
 input RequestNegotiableQuoteInput {
-    cart_uid: ID
+    quote_uid: ID! @doc(description: "Cart uid")
     quote_name: String!
     comment: NegotiableQuoteCommentInput!
     # files (attachments) to be added at a later date when file upload design has been finalized
@@ -195,7 +195,7 @@ enum NegotiableQuoteStatus {
 }
 
 input NegotiableQuoteFilterInput {
-    negotiable_quote_uid: FilterEqualTypeInput @doc(description: "Filter by negotiable quote ID(s)")
+    quote_uid: FilterEqualTypeInput @doc(description: "Filter by quote UID(s)")
     name: FilterMatchTypeInput @doc(description: "Filter by negotiable quote name")
 }
 
@@ -276,8 +276,8 @@ type NegotiableQuoteHistoryProductsChange {
 # Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L132-L146
 type NegotiableQuoteHistoryProductsRemovedChange {
     # Open Question: Should `removed_from_catalog` ID type represent the SKU or the product id?
-    removed_products_uids_from_catalog: [ID!] @doc(description: "List of product skus removed from seller's catalog")
-    removed_products_from_quotes: [ProductInterface!] @doc(description: "List of products removed by a buyer or seller")
+    removed_from_catalog_product_uids: [ID!] @doc(description: "List of product UIDs removed from seller's catalog")
+    removed_from_quote_products: [ProductInterface!] @doc(description: "List of products removed by a buyer or seller")
 }
 
 # Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L148-L169
