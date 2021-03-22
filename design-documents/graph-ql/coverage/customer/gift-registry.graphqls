@@ -9,7 +9,7 @@ type Query {
         email: String! @doc(description: "The registrant's email")
     ): [GiftRegistrySearchResult] @doc(description: "Search for gift registries by specifying a registrant email address")
     giftRegistryIdSearch(
-        giftRegistryUid: String! @doc(description: "The ID of the gift registry")
+        giftRegistryUid: ID! @doc(description: "The ID of the gift registry")
     ): [GiftRegistrySearchResult] @doc(description: "Search for gift registries by specifying a registry URL key")
     giftRegistryTypeSearch(
         firstName: String! @doc(description: "The first name of the registrant")
@@ -26,7 +26,10 @@ type Mutation {
     updateGiftRegistry(giftRegistryUid: ID!, giftRegistry: UpdateGiftRegistryInput!): UpdateGiftRegistryOutput
     removeGiftRegistry(giftRegistryUid: ID!): RemoveGiftRegistryOutput
 
-    addGiftRegistryItems(giftRegistryUid: ID!, items: [AddGiftRegistryItemInput!]!): AddGiftRegistryItemsOutput
+    addGiftRegistryItems(giftRegistryUid: ID!, items: [AddGiftRegistryItemInput!]!): AddGiftRegistryItemsOutput @doc(description: "Adds individual items to the gift registry")
+    addGiftRegistryItemsFromCart(giftRegistryUid: ID!, cartUid: ID!, emptyCart: Boolean = true): AddGiftRegistryItemsFromCartOutput @doc(description: "Adds the whole cart with all items to the gift registry with option to empty the cart")
+    moveCartItemsToGiftRegistry(cartUid: ID!, giftRegistryUid: ID!): MoveCartItemsToGiftRegistryOutput @doc(description: "Moves all items items from cart to the gift registry")
+
     removeGiftRegistryItems(giftRegistryUid: ID!, itemUids: [ID!]!): RemoveGiftRegistryItemsOutput
     updateGiftRegistryItems(giftRegistryUid: ID!, items: [UpdateGiftRegistryItemInput!]!): UpdateGiftRegistryItemsOutput
 
@@ -92,7 +95,8 @@ input UpdateGiftRegistryInput {
 }
 
 input CreateGiftRegistryInput {
-    giftRegistryUid: ID @doc(description: "Optional uid, can be generated on the client and used for sending multiple gift-registry related mutations in a single request. For example, create registry and immediatly add items or registrants.")
+    giftRegistryUid: ID @deprecated(reason: "Use `gift_registry_uid` instead") @doc(description: "Optional uid, can be generated on the client and used for sending multiple gift-registry related mutations in a single request. For example, create registry and immediatly add items or registrants.")
+    gift_registry_uid: ID
     event_name: String!
     giftRegistryTypeUid: ID!
     message: String!
@@ -109,7 +113,8 @@ input GiftRegistryShippingAddressInput @doc(description: "Either address data or
 }
 
 input UpdateGiftRegistryRegistrantInput {
-    giftRegistryRegistrantUid: ID!
+    giftRegistryRegistrantUid: ID! @deprecated(reason: "Use `gift_registry_registrant_uid` instead")
+    gift_registry_registrant_uid: ID
     first_name: String
     last_name: String
     email: String
@@ -129,26 +134,55 @@ input GiftRegistryDynamicAttributeInput {
 }
 
 type CreateGiftRegistryOutput {
+    status: Boolean!
+    create_gift_registry_user_errors: [GiftRegistryItemsUserError]!
     gift_registry: GiftRegistry
 }
 
 type UpdateGiftRegistryOutput {
+    status: Boolean!
+    update_gift_registry_user_errors: [GiftRegistryItemsUserError]!
     gift_registry: GiftRegistry
 }
 
 type RemoveGiftRegistryOutput {
+    status: Boolean!
+    remove_gift_registry_user_errors: [GiftRegistryItemsUserError]!
     is_removed: Boolean!
 }
 
 type AddGiftRegistryItemsOutput {
+    status: Boolean!
+    add_gift_registry_items_user_errors: [GiftRegistryItemsUserError]!
     gift_registry: GiftRegistry
 }
 
+type MoveCartItemsToGiftRegistryOutput {
+    status: Boolean!
+    move_cart_items_to_gift_registry_user_errors: [GiftRegistryItemsUserError]!
+    gift_registry: GiftRegistry
+}
+
+type AddGiftRegistryItemsFromCartOutput {
+    status: Boolean!
+    add_gift_registry_items_user_errors: [GiftRegistryItemsUserError]!
+    gift_registry: GiftRegistry
+}
+
+enum GiftRegistryItemsUserError {
+    OUT_OF_STOCK
+    NOT_AVAILABLE
+}
+
 type RemoveGiftRegistryItemsOutput {
+    status: Boolean!
+    remove_gift_registry_items_user_errors: [GiftRegistryItemsUserError]!
     gift_registry: GiftRegistry
 }
 
 type UpdateGiftRegistryItemsOutput {
+    status: Boolean!
+    update_gift_registry_items_user_errors: [GiftRegistryItemsUserError]!
     gift_registry: GiftRegistry
 }
 
