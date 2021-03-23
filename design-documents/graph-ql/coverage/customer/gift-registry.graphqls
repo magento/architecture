@@ -26,8 +26,7 @@ type Mutation {
     updateGiftRegistry(giftRegistryUid: ID!, giftRegistry: UpdateGiftRegistryInput!): UpdateGiftRegistryOutput
     removeGiftRegistry(giftRegistryUid: ID!): RemoveGiftRegistryOutput
 
-    addGiftRegistryItems(giftRegistryUid: ID!, items: [AddGiftRegistryItemInput!]!): AddGiftRegistryItemsOutput @doc(description: "Adds individual items to the gift registry")
-    addGiftRegistryItemsFromCart(giftRegistryUid: ID!, cartUid: ID!, emptyCart: Boolean = true): AddGiftRegistryItemsFromCartOutput @doc(description: "Adds the whole cart with all items to the gift registry with option to empty the cart")
+    addGiftRegistryItems(giftRegistryUid: ID!, items: [AddGiftRegistryItemInput!]!): AddGiftRegistryItemsOutput @deprecated(reason: "Use `moveCartItemsToGiftRegistry` instead. Not supported for gift registry") @doc(description: "Adds individual items to the gift registry")
     moveCartItemsToGiftRegistry(cartUid: ID!, giftRegistryUid: ID!): MoveCartItemsToGiftRegistryOutput @doc(description: "Moves all items items from cart to the gift registry")
 
     removeGiftRegistryItems(giftRegistryUid: ID!, itemUids: [ID!]!): RemoveGiftRegistryItemsOutput
@@ -133,39 +132,28 @@ input GiftRegistryDynamicAttributeInput {
     value: String!
 }
 
-type CreateGiftRegistryOutput {
+interface GiftRegistryUserErrors {
     status: Boolean!
-    create_gift_registry_user_errors: [GiftRegistryItemsUserError]!
+    gift_registry_user_errors: [GiftRegistryItemsUserError]!
+}
+
+type CreateGiftRegistryOutput {
     gift_registry: GiftRegistry
 }
 
 type UpdateGiftRegistryOutput {
-    status: Boolean!
-    update_gift_registry_user_errors: [GiftRegistryItemsUserError]!
     gift_registry: GiftRegistry
 }
 
 type RemoveGiftRegistryOutput {
-    status: Boolean!
-    remove_gift_registry_user_errors: [GiftRegistryItemsUserError]!
     is_removed: Boolean!
 }
 
 type AddGiftRegistryItemsOutput {
-    status: Boolean!
-    add_gift_registry_items_user_errors: [GiftRegistryItemsUserError]!
     gift_registry: GiftRegistry
 }
 
-type MoveCartItemsToGiftRegistryOutput {
-    status: Boolean!
-    move_cart_items_to_gift_registry_user_errors: [GiftRegistryItemsUserError]!
-    gift_registry: GiftRegistry
-}
-
-type AddGiftRegistryItemsFromCartOutput {
-    status: Boolean!
-    add_gift_registry_items_user_errors: [GiftRegistryItemsUserError]!
+type MoveCartItemsToGiftRegistryOutput implements GiftRegistryUserErrors {
     gift_registry: GiftRegistry
 }
 
@@ -175,14 +163,10 @@ enum GiftRegistryItemsUserError {
 }
 
 type RemoveGiftRegistryItemsOutput {
-    status: Boolean!
-    remove_gift_registry_items_user_errors: [GiftRegistryItemsUserError]!
     gift_registry: GiftRegistry
 }
 
-type UpdateGiftRegistryItemsOutput {
-    status: Boolean!
-    update_gift_registry_items_user_errors: [GiftRegistryItemsUserError]!
+type UpdateGiftRegistryItemsOutput implements GiftRegistryUserErrors {
     gift_registry: GiftRegistry
 }
 
