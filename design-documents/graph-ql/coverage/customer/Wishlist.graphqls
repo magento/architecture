@@ -193,5 +193,10 @@ type StoreConfig {
 
 #Allow Products to show assigned wishlists
 type ProductInterface {
-    wishlists: [Wishlist]! @doc(description: "A product can be assigned to multiple wishlist or none")
+    wishlists: [WishlistReference]! @doc(description: "A product can be assigned to multiple wishlists, and by default is not assigned to any wishlist")
+}
+
+type WishlistReference {
+    wishlist_uid: ID!
+    name: String
 }
