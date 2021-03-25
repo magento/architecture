@@ -193,5 +193,5 @@ type StoreConfig {
 
 #Allow Products to show assigned wishlists
 type ProductInterface {
-    wishlists: [Wishlist]! @doc(description: "A product can be assigned to multiple wishlist of none")
+    wishlists: [Wishlist]! @doc(description: "A product can be assigned to multiple wishlist or none")
 }
