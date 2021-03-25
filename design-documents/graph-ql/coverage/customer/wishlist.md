@@ -138,7 +138,7 @@ The question is: Do we reference the Wishlist and create a minimal type based on
 Example:
 ``` graphql
 type ProductInterface {
-    wishlists: [Wishlist]! @doc(description: "A product can be assigned to multiple wishlist of none")
+    wishlists: [Wishlist]! @doc(description: "A product can be assigned to multiple wishlist or now wishlist")
 }
 ```
 
