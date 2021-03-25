@@ -125,9 +125,12 @@ type ProductInterface {
 By default a product is not assigned to any wishlist
 
 ### Considerations of performance versus graphql specs
-Do we reference the Wishlist and create a minimal type based on what the UI would need or do we just output the whole Wishlist as a true graph would do?
+The UI really needs this to render a PDP page or Category with products page and list a dropdown of wishlists of which the product is assigned to.
+It won't need all the data in wishlist for this purpose. However it would need all the wish lists available and only check the ones that the product belongs to.
 
-Alternatively we can do
+The question is: Do we reference the Wishlist and create a minimal type based on what the UI would need or do we just output the whole Wishlist as a true graph would do?
+
+Example:
 ``` graphql
 type ProductInterface {
     wishlists: [AssignedWishlist]! @doc(description: "A product can be assigned to multiple wishlist of none")
