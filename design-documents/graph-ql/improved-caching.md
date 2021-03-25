@@ -40,7 +40,7 @@ Vary: Accept-Encoding, Cookie
 
 All components/headers that compose cache key should be included in the Vary.
 
-## Solution
+## The Solution
 Graphql would compute the cache key and return a header with the same function as the Luma cookie (`X-Magento-Vary`), except we won't name it that way. The `Vary` header is not meant to have a hash.
 ````
 X-Magento-Request-Id: 85a0b196524c60eaeb7c87d1aa4708a3fb20c6a1
@@ -63,4 +63,5 @@ The `X-Magento-Request-Id` will take into account `X-Magento-Request-Id` and res
 Vary: X-Magento-Request-Id
 ````
 
-This is all we need. we don't need to add Store and Content-Currency to Vary anymore, though if we want to be transparent for the public headers we still can.
+This should suffice all explained. We don't need to add Store and Content-Currency to Vary anymore, though if we want to be transparent for the public headers we still can.
+For FPC built in cache there would be no changes besides outputing X-Magento-Request-Id and the proper Vary. We already have the code that computes the cookie hash value.
