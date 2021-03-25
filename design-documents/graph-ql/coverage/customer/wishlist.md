@@ -111,3 +111,32 @@ type WishlistItem {
 }
 ```
 This value was previously used for display only, other operations like update or delete are not implemented yet.
+
+## Exposure through product interface
+
+Products need to know which wishlists are they assigned to. Just like categories
+
+``` graphql
+type ProductInterface {
+    wishlists: [Wishlist]! @doc(description: "A product can be assigned to multiple wishlist of none")
+}
+```
+
+By default a product is not assigned to any wishlist
+
+### Considerations of performance versus graphql specs
+Do we reference the Wishlist and create a minimal type based on what the UI would need or do we just output the whole Wishlist as a true graph would do?
+
+Alternatively we can do
+``` graphql
+type ProductInterface {
+    wishlists: [AssignedWishlist]! @doc(description: "A product can be assigned to multiple wishlist of none")
+}
+type AssignedWishlist {
+   wishlist_uid: ID!
+   name: String
+   number_of_items: Int
+}
+```
+
+We can improve performance by "cutting the graph" and returning something fit for UI needs rather than loop through all the wishlist
