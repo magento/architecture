@@ -1,35 +1,49 @@
 type Customer {
-    gift_registry_list: [GiftRegistry]
-    gift_registry(id: ID!): GiftRegistry
+    gift_registries: [GiftRegistry]
+    gift_registry(uid: ID!): GiftRegistry
 }
 
 type Query {
     giftRegistryTypes: [GiftRegistryType] @doc(description: "Get a list of available gift registry types")
-    giftRegistrySearch(
-        registrantFirstname: String!,
-        registrantLastname: String!,
-        giftRegistryTypeId: ID,
-        searchableDynamicAttributes: [GiftRegistryDynamicAttributeInput] @doc(description: "For select attributes ID should be provided expected. For range search, '_from' and '_to' suffixes can be added to the attribute code. For text attributes provide value for exact matching.")
-    ): [GiftRegistry] @doc(description: "Gift registry search by registrant name and additional searchable attributes.")
-    giftRegistry(id: ID!): GiftRegistry @doc(description: "This query is intended for guests and some fields of GiftRegistry will not be availalbe")
+    giftRegistryEmailSearch(
+        email: String! @doc(description: "The registrant's email")
+    ): [GiftRegistrySearchResult] @doc(description: "Search for gift registries by specifying a registrant email address")
+    giftRegistryIdSearch(
+        giftRegistryUid: String! @doc(description: "The ID of the gift registry")
+    ): [GiftRegistrySearchResult] @doc(description: "Search for gift registries by specifying a registry URL key")
+    giftRegistryTypeSearch(
+        firstName: String! @doc(description: "The first name of the registrant")
+        lastName: String! @doc(description: "The last name of the registrant")
+        typeUid: String @doc(description: "The type UID of the registry")
+    ): [GiftRegistrySearchResult] @doc(description: "Search for gift registries by specifying the registrant name and registry type ID")
+    giftRegistry(giftRegistryUid: ID!): GiftRegistry @doc(description: "This query is intended for guests and some fields of GiftRegistry will not be availalbe")
 }
 
 type Mutation {
     # All mutations below should only be accessible to the registry owner. Guest users should be getting authorization error
 
     createGiftRegistry(giftRegistry: CreateGiftRegistryInput!): CreateGiftRegistryOutput
-    updateGiftRegistry(id: ID!, giftRegistry: UpdateGiftRegistryInput!): UpdateGiftRegistryOutput
-    removeGiftRegistry(id: ID!): RemoveGiftRegistryOutput
+    updateGiftRegistry(giftRegistryUid: ID!, giftRegistry: UpdateGiftRegistryInput!): UpdateGiftRegistryOutput
+    removeGiftRegistry(giftRegistryUid: ID!): RemoveGiftRegistryOutput
 
-    addGiftRegistryItems(giftRegistryId: ID!, items: [AddGiftRegistryItemInput!]!): AddGiftRegistryItemsOutput
-    removeGiftRegistryItems(giftRegistryId: ID!, itemIds: [ID!]!): RemoveGiftRegistryItemsOutput
-    updateGiftRegistryItems(giftRegistryId: ID!, items: [UpdateGiftRegistryItemInput!]!): UpdateGiftRegistryItemsOutput
+    addGiftRegistryItems(giftRegistryUid: ID!, items: [AddGiftRegistryItemInput!]!): AddGiftRegistryItemsOutput
+    removeGiftRegistryItems(giftRegistryUid: ID!, itemUids: [ID!]!): RemoveGiftRegistryItemsOutput
+    updateGiftRegistryItems(giftRegistryUid: ID!, items: [UpdateGiftRegistryItemInput!]!): UpdateGiftRegistryItemsOutput
 
-    addGiftRegistryRegistrants(giftRegistryId: ID!, registrants: [AddGiftRegistryRegistrantInput!]!): AddGiftRegistryRegistrantsOutput
-    updateGiftRegistryRegistrants(giftRegistryId: ID!, registrants: [UpdateGiftRegistryRegistrantInput!]!): UpdateGiftRegistryRegistrantsOutput
-    removeGiftRegistryRegistrants(giftRegistryId: ID!, registrantIds: [ID!]!): RemoveGiftRegistryRegistrantsOutput
+    addGiftRegistryRegistrants(giftRegistryUid: ID!, registrants: [AddGiftRegistryRegistrantInput!]!): AddGiftRegistryRegistrantsOutput
+    updateGiftRegistryRegistrants(giftRegistryUid: ID!, registrants: [UpdateGiftRegistryRegistrantInput!]!): UpdateGiftRegistryRegistrantsOutput
+    removeGiftRegistryRegistrants(giftRegistryUid: ID!, registrantUids: [ID!]!): RemoveGiftRegistryRegistrantsOutput
 
-    shareGiftRegistry(id: ID!, sender: ShareGiftRegistrySenderInput!, invitees: [ShareGiftRegistryInviteeInput!]!): ShareGiftRegistryOutput
+    shareGiftRegistry(giftRegistryUid: ID!, sender: ShareGiftRegistrySenderInput!, invitees: [ShareGiftRegistryInviteeInput!]!): ShareGiftRegistryOutput
+}
+
+type GiftRegistrySearchResult {
+    gift_registry_uid: ID! @doc(description: "The URL key of the gift registry")
+    name: String!
+    event_title: String! @doc(description: "The title given to the event")
+    type: String @doc(description: "The type of event being held")
+    location: String @doc(description: "The location of the event")
+    event_date: String @doc(description: "The date of the event")
 }
 
 input ShareGiftRegistryInviteeInput
@@ -58,19 +72,18 @@ input AddGiftRegistryItemInput {
 
 # Should be defined in scope of https://github.com/magento/architecture/blob/master/design-documents/graph-ql/coverage/add-items-to-cart-single-mutation.md
 input EnteredOptionInput {
-    id: String!
+    uid: ID!
     value: String!
 }
 
 input UpdateGiftRegistryItemInput {
-    id: ID!
+    giftRegistryItemUid: ID!
     quantity: Float!
     note: String
 }
 
 input UpdateGiftRegistryInput {
     event_name: String
-    type_id: String
     message: String
     privacy_settings: GiftRegistryPrivacySettings
     status: GiftRegistryStatus
@@ -79,23 +92,24 @@ input UpdateGiftRegistryInput {
 }
 
 input CreateGiftRegistryInput {
-    id: ID @doc(description: "Optional id, can be generated on the client and used for sending multiple gift-registry related mutations in a single request. For example, create registry and immediatly add items or registrants.")
+    giftRegistryUid: ID @doc(description: "Optional uid, can be generated on the client and used for sending multiple gift-registry related mutations in a single request. For example, create registry and immediatly add items or registrants.")
     event_name: String!
-    type_id: String!
+    giftRegistryTypeUid: ID!
     message: String!
     privacy_settings: GiftRegistryPrivacySettings!
     status: GiftRegistryStatus!
     shipping_address: GiftRegistryShippingAddressInput
+    registrants: [AddGiftRegistryRegistrantInput!]!
     dynamic_attributes: [GiftRegistryDynamicAttributeInput]
 }
 
 input GiftRegistryShippingAddressInput @doc(description: "Either address data or address ID should be provided. In case both are provided, validation will fail") {
     address_data: CustomerAddressInput
-    address_id: Int
+    address_id: ID
 }
 
 input UpdateGiftRegistryRegistrantInput {
-    id: ID!
+    giftRegistryRegistrantUid: ID!
     first_name: String
     last_name: String
     email: String
@@ -155,7 +169,7 @@ type ShareGiftRegistryOutput {
 }
 
 type GiftRegistryType {
-    id: ID!
+    uid: ID!
     label: String!
     dynamic_attributes_metadata: [GiftRegistryDynamicAttributeMetadataInterface]
 }
@@ -224,11 +238,11 @@ type GiftRegistrySelectAttributeOptionMetadata {
 }
 
 type GiftRegistry {
-    id: ID!
+    uid: ID!
     event_name: String!
     type: GiftRegistryType
     message: String!
-    created_on: String! @doc(description: "Creation date") @doc(description: "Accessible to the registry owner only")
+    created_at: String! @doc(description: "Creation date")
     privacy_settings: GiftRegistryPrivacySettings! @doc(description: "Accessible to the registry owner only")
     status: GiftRegistryStatus! @doc(description: "Accessible to the registry owner only")
     owner_name: String!
@@ -239,16 +253,16 @@ type GiftRegistry {
 }
 
 interface GiftRegistryItemInterface {
-    id: String!
+    uid: ID!
     quantity: Float!
     quantity_fulfilled: Float!
     note: String
-    added_on: String!
+    date_added: String!
     product: ProductInterface
-    customizable_options: [SelectedCustomizableOption]
+    customizable_options: [SelectedCustomizableOption] # added support for customizable options
 }
 
-type SimpleGiftRegistryItem implements GiftRegistryItemInterface {
+type GiftRegistryItem implements GiftRegistryItemInterface {
 }
 
 type BundleGiftRegistryItem implements GiftRegistryItemInterface {
@@ -301,9 +315,9 @@ enum GiftRegistryDynamicAttributeGroup {
 }
 
 type GiftRegistryRegistrant {
-    id: ID!
-    first_name: String!
-    last_name: String!
+    uid: ID!
+    firstname: String!
+    lastname: String!
     email: String! @doc(description: "Accessible to the registry owner only")
     dynamic_attributes: [GiftRegistryRegistrantDynamicAttribute]
 }

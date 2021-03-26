@@ -1,9 +1,16 @@
 type Mutation {
-    createWishlist(name: String!): ID # Multiple wishlists Commerce functionality
-    removeWishlist(id: ID!): Boolean # Commerce fucntionality - in Opens Source we assume customer always has one wishlist
-    addProductsToWishlist(wishlistId: ID!, wishlistItems: [WishlistItemInput!]!): AddProductsToWishlistOutput
+    createWishlist(input: CreateWishlistInput!): CreateWishlistOutput # Multiple wishlists Commerce functionality
+    deleteWishlist(wishlistUid: ID!): DeleteWishlistOutput # Commerce fucntionality - in Opens Source we assume customer always has one wishlist
+    addProductsToWishlist(wishlistId: ID!, wishlistItems: [WishlistItemInput!]!): AddProductsToWishlistOutput 
     removeProductsFromWishlist(wishlistId: ID!, wishlistItemsIds: [ID!]!): RemoveProductsFromWishlistOutput
     updateProductsInWishlist(wishlistId: ID!, wishlistItems: [WishlistItemUpdateInput!]!): UpdateProductsInWishlistOutput
+    copyProductsBetweenWishlists(sourceWishlistUid: ID!, destinationWishlistUid: ID!, wishlistItems: [WishlistItemCopyInput!]!): CopyProductsBetweenWishlistsOutput  @doc(description: "Copy a product to the wish list")
+    moveProductsBetweenWishlists(sourceWishlistUid: ID!, destinationWishlistUid: ID!, wishlistItems: [WishlistItemMoveInput!]!): MoveProductsBetweenWishlistsOutput  @doc(description: "Move products from one wish list to another")
+    updateWishlist( wishlistUid: ID!, input: UpdateWishlistInput!): UpdateWishlistOutput @doc(description: "Change the name and visibility of the specified wish list")
+    addWishlistItemsToCart(
+        wishlistUid: ID!, @doc(description: "unique Id of wishlist")
+        wishlistItemUids: [ID!] @doc(description: "Optional param. selected wish list items that are to be added")
+    ): AddWishlistItemsToCartOutput @doc(description: "Add Requisition List Items To Customer Cart")
 }
 
 type Customer {
@@ -14,16 +21,32 @@ type Customer {
 
 type Wishlist {
     id: ID
-    items: [WishlistItem] @deprecated(reason: "Use field `items_v3` from type `Wishlist` instead")
-    items_v2: [WishlistItemInterface] @doc(description: "An array of items in the customer's wishlist") @deprecated(reason: "Use field `items_v3` from type `Wishlist` instead")
-    items_v3(
-        currentPage: Int = 1 @doc(description: "current page of the customer wishlist items. default is 1")
-        pageSize: Int = 20 @doc(description: "page size for the customer wishlist items. default is 20")
-    ): WishlistItems! @doc(description: "An array of items in the customer's wishlist")
+    items: [WishlistItem] @deprecated(reason: "Use field `items_v2` from type `Wishlist` instead")
+    items_v2(
+        currentPage: Int = 1,
+        pageSize: Int = 20
+    ): WishlistItems @doc(description: "An array of items in the customer's wishlist")
     items_count: Int
     sharing_code: String
     updated_at: String
     name: String @doc(description: "Avaialble in Commerce edition only")
+    visibility: WishlistVisibilityEnum!
+}
+
+type WishlistItems {
+    items: [WishlistItemInterface]! @doc(description: "Wishlist items list")
+    page_info: SearchResultPageInfo
+    total_pages: Int! @doc(description: "total count of wishlist items")
+}
+
+input CreateWishlistInput {
+    name: String!
+    visibility: WishlistVisibilityEnum!
+}
+
+input UpdateWishlistInput {
+    name: String
+    visibility: WishlistVisibilityEnum
 }
 
 type WishlistItems {
@@ -33,8 +56,9 @@ type WishlistItems {
 }
 
 input WishlistItemUpdateInput {
-    wishlist_item_id: ID
+    wishlist_item_id: ID!
     quantity: Float
+    description: String
     selected_options: [ID!]
     entered_options: [EnteredOptionInput!]
 }
@@ -44,6 +68,7 @@ type AddProductsToWishlistOutput {
 }
 
 type RemoveProductsFromWishlistOutput {
+    status: Boolean!
     wishlist: Wishlist!
 }
 
@@ -51,9 +76,25 @@ type UpdateProductsInWishlistOutput {
     wishlist: Wishlist!
 }
 
+type AddWishlistItemsToCartOutput {
+    status: Boolean!
+    add_wishlist_items_to_cart_user_errors: [AddWishlistItemUserError]!
+}
+
+type AddWishlistItemUserError {
+    message: String!
+    type: AddWishlistItemUserErrorType!
+}
+
+enum AddWishlistItemUserErrorType {
+    OUT_OF_STOCK
+    MAX_QTY_FOR_USER
+    NOT_AVAILABLE
+}
+
 input WishlistItemInput {
-    sku: String
-    quantity: Float
+    sku: String!
+    quantity: Float!
     parent_sku: String,
     parent_quantity: Float,
     selected_options: [ID!]
@@ -90,10 +131,62 @@ type BundleWishlistItem implements WishlistItemInterface {
 }
 
 type GiftCardWishlistItem implements WishlistItemInterface {
-    sender_name: String!
-    sender_email: String!
+    gift_card_options: GiftCardOptions!
+}
+
+type GiftCardOptions {
+    sender_name: String
+    sender_email: String
     recipient_name: String
     recipient_email: String
-    amount: SelectedGiftCardAmount
+    amount: Money
+    custom_giftcard_amount: Money
     message: String
+}
+
+type GroupedProductWishlistItem implements WishlistItemInterface {
+    grouped_products: [GroupedProductItem!]!
+}
+
+enum WishlistVisibilityEnum @doc(description: "This enumeration defines the wish list visibility types") {
+    PUBLIC
+    PRIVATE
+}
+
+type CreateWishlistOutput {
+    wishlist: Wishlist!
+}
+
+type DeleteWishlistOutput {
+    status: Boolean!
+    wishlists: [Wishlist!]!
+}
+
+input WishlistItemCopyInput {
+    wishlist_item_id: ID! @doc(description: "The ID of the item to be copied")
+    quantity: Float @doc(description: "The quantity of this item to copy to the destination wish list. This value can't be greater than the quantity in the source wish list.")
+}
+
+input WishlistItemMoveInput {
+    wishlist_item_id: ID! @doc(description: "The ID of the item to be moved")
+    quantity: Float @doc(description: "The quantity of this item to move to the destination wish list. This value can't be greater than the quantity in the source wish list.")
+}
+
+type UpdateWishlistOutput {
+    wishlist: Wishlist
+}
+
+type CopyProductsBetweenWishlistsOutput {
+    source_wishlist: Wishlist!
+    destination_wishlist: Wishlist!
+}
+
+type MoveProductsBetweenWishlistsOutput {
+    source_wishlist: Wishlist!
+    destination_wishlist: Wishlist!
+}
+
+type StoreConfig {
+    maximum_number_of_wishlists: Int @doc(description: "If multiple wish lists are enabled, the maximum number of wish lists the customer can have")
+    enable_multiple_wishlists: Boolean @doc(description: "Indicates whether customers can have multiple wish lists.")
 }

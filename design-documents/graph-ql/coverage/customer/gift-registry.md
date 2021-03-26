@@ -12,7 +12,7 @@ First, get a list of available gift registry types and dynamic attributes metada
 ```graphql
 {
   giftRegistryTypes {
-    id
+    uid
     label
     dynamic_attributes_metadata {
       code
@@ -48,10 +48,10 @@ First, get a list of available gift registry types and dynamic attributes metada
 Then create a new gift registry based on the user input. Registrants are added using a separate mutation, which can be sent in the same request if gift registry ID is client-side generated.
 ```graphql
 # In real query only one should be provided: existing address ID OR address data
-mutation CreateGiftRegistryWithRegistrants($giftRegistryData: CreateGiftRegistryInput!, $giftRegistryId: ID!, $registrantsData: [AddGiftRegistryRegistrantInput!]!) {
+mutation CreateGiftRegistryWithRegistrants($giftRegistryData: CreateGiftRegistryInput!, $giftRegistryUid: ID!, $registrantsData: [AddGiftRegistryRegistrantInput!]!) {
   createGiftRegistry(giftRegistry: $giftRegistryData) {
     gift_registry {
-      id
+      uid
       event_name
       shipping_address {
         id
@@ -59,10 +59,10 @@ mutation CreateGiftRegistryWithRegistrants($giftRegistryData: CreateGiftRegistry
     	}
     }
   }
-  addGiftRegistryRegistrants(giftRegistryId: $giftRegistryId, registrants: $registrantsData) {
+  addGiftRegistryRegistrants(giftRegistryUid: $giftRegistryUid, registrants: $registrantsData) {
     gift_registry {
       registrants {
-        id
+        iud
         first_name
         last_name
         email
@@ -79,11 +79,11 @@ mutation CreateGiftRegistryWithRegistrants($giftRegistryData: CreateGiftRegistry
 The following JSON represents query variables for the `CreateGiftRegistryWithRegistrants` mutation above.
 ```json
 {
-  "giftRegistryId": "optional client-generated ID",
+  "giftRegistryUid": "optional client-generated UID",
   "giftRegistryData": {
-      "id": "optional client-generated ID",
+      "uid": "optional client-generated UID",
       "event_name": "My Birthday",
-      "type_id": "2",
+      "giftRegistryTypeUid": "2",
       "message": "Pleas come to my birthday",
       "privacy_settings":"PUBLIC",
       "status": "ACTIVE",
@@ -134,10 +134,10 @@ The following JSON represents query variables for the `CreateGiftRegistryWithReg
 ```graphql
 {
   customer {
-    gift_registry_list {
-      id
+    gift_registries {
+      uid
       event_name
-      created_on
+      created_at
       message
     }
   }
@@ -151,13 +151,13 @@ Render the edit gift registry form and populate it with current gift registry pr
 ```graphql
 {
   customer {
-    gift_registry(id: "ID obtained from the list query") {
+    gift_registry(giftRegistryUid: "ID obtained from the list query") {
       event_name
       message
       privacy_settings
       status
       registrants {
-        id
+        uid
         first_name
         last_name
         email
@@ -224,10 +224,10 @@ Render the edit gift registry form and populate it with current gift registry pr
 Modify gift registry data:
 
 ```graphql
-mutation UpdateGiftRegistryWithRegistrants($giftRegistryId: ID!, $giftRegistryData: UpdateGiftRegistryInput!, $registrantsData: [UpdateGiftRegistryRegistrantInput!]!) {
-  updateGiftRegistry(id: $giftRegistryId, giftRegistry: $giftRegistryData) {
+mutation UpdateGiftRegistryWithRegistrants($giftRegistryUid: ID!, $giftRegistryData: UpdateGiftRegistryInput!, $registrantsData: [UpdateGiftRegistryRegistrantInput!]!) {
+  updateGiftRegistry(giftRegistryUid: $giftRegistryUid, giftRegistry: $giftRegistryData) {
     gift_registry {
-      id
+      uid
       event_name
       shipping_address {
         id
@@ -235,10 +235,10 @@ mutation UpdateGiftRegistryWithRegistrants($giftRegistryId: ID!, $giftRegistryDa
     	}
     }
   }
-  updateGiftRegistryRegistrants(giftRegistryId: $giftRegistryId, registrants: $registrantsData) {
+  updateGiftRegistryRegistrants(giftRegistryUid: $giftRegistryUid, registrants: $registrantsData) {
     gift_registry {
       registrants {
-        id
+        uid
         first_name
         last_name
         email
@@ -255,10 +255,10 @@ mutation UpdateGiftRegistryWithRegistrants($giftRegistryId: ID!, $giftRegistryDa
 The JSON below should be used as query variable for the gift registry update mutation above:
 ```json
 {
-  "giftRegistryId": "existing-gift-registry-ID",
+  "giftRegistryUid": "existing-gift-registry-ID",
   "giftRegistryData": {
       "event_name": "My Birthday",
-      "type_id": "2",
+      "giftRegistryTypeUid": "2",
       "message": "Pleas come to my birthday",
       "privacy_settings":"PUBLIC",
       "status": "ACTIVE",
@@ -290,7 +290,7 @@ The JSON below should be used as query variable for the gift registry update mut
   },
   "registrantsData": [
     {
-      "id": "existing-registrant-id",
+      "uid": "existing-registrant-uid",
       "email": "John@example.com",
       "first_name": "John",
       "last_name": "Roller",
@@ -308,8 +308,8 @@ The JSON below should be used as query variable for the gift registry update mut
 ### Gift registry owner removes an existing gift registry
 
 ```graphql
-mutation RemoveGiftRegistry($giftRegistryId: ID!) {
-  removeGiftRegistry(id: $giftRegistryId) {
+mutation RemoveGiftRegistry($giftRegistryUid: ID!) {
+  removeGiftRegistry(giftRegistryUid: $giftRegistryUid) {
     is_removed
   }
 }
@@ -327,13 +327,13 @@ It is critical to have ability to avoid the hash generation on the client, that 
 {
   customerCart {
     items {
-      id
+      uid
       quantity
       product {
         sku
       }
       customizable_options {
-        id_v2
+        uid
       }
       ... on BundleCartItem {
         bundle_options {
@@ -346,17 +346,17 @@ It is critical to have ability to avoid the hash generation on the client, that 
       ... on ConfigurableCartItem {
         child_sku
         configurable_options {
-          id_v2
+          uid
         }
       }
       ... on DownloadableCartItem {
         links_v2 {
-          id
+          uid
         }
       }
       ... on GiftCardCartItem {
         amount {
-          id
+          uid
         }
       }
     }
@@ -375,13 +375,13 @@ Query structure is almost identical to the query for getting items
   customer {
     wishlist {
       items {
-        id
+        uid
         quantity
         product {
           sku
         }
         customizable_options {
-          id_v2
+          uid
         }
         ... on BundleWishlistItem {
           bundle_options {
@@ -394,16 +394,16 @@ Query structure is almost identical to the query for getting items
         ... on ConfigurableWishlistItem {
           child_sku
           configurable_options {
-            id_v2
+            uid
           }
         }
         ... on DownloadableWishlistItem {
           links_v2 {
-            id
+            uid
           }
         }
         ... on GiftCardWishlistItem {
-          id
+          uid
         }
       }
     }
@@ -416,12 +416,12 @@ Query structure is almost identical to the query for getting items
 Based on that information we can send a mutation to add the selected item to gift registry.
 
 ```graphql
-mutation AddGiftRegistryItems($giftRegistryId: ID!, $giftRegistryItems: [AddGiftRegistryItemInput!]!) {
-  addGiftRegistryItems(giftRegistryId: $giftRegistryId, items: $giftRegistryItems) {
+mutation AddGiftRegistryItems($giftRegistryUid: ID!, $giftRegistryItems: [AddGiftRegistryItemInput!]!) {
+  addGiftRegistryItems(giftRegistryUid: $giftRegistryUid, items: $giftRegistryItems) {
     gift_registry {
       event_name
       items {
-        id
+        uid
         product {
           name
           thumbnail {
@@ -429,12 +429,12 @@ mutation AddGiftRegistryItems($giftRegistryId: ID!, $giftRegistryItems: [AddGift
           }
         }
         selected_customizable_options {
-          id
+          uid
           is_required
           label
           sort_order
           values {
-            id
+            uid
             price {
               type
               units
@@ -444,17 +444,17 @@ mutation AddGiftRegistryItems($giftRegistryId: ID!, $giftRegistryItems: [AddGift
             label
           }
         }
-        added_on
+        added_at
         note
         quantity
         quantity_fulfilled
         ... on BundleGiftRegistryItem {
             selected_bundle_options {
-            	id
+            	uid
               label
               type
               values {
-                id
+                uid
                 label
                 price
                 quantity
@@ -463,7 +463,7 @@ mutation AddGiftRegistryItems($giftRegistryId: ID!, $giftRegistryItems: [AddGift
           }
         ... on ConfigurableGiftRegistryItem {
           selected_configurable_options {
-            id
+            uid
             option_label
             value_id
             value_label
@@ -503,7 +503,7 @@ Simple product with custom options:
 
 ```json
 {
-  "giftRegistryId": "existing-gift-registry-id",
+  "giftRegistryUid": "existing-gift-registry-uid",
   "giftRegistryItems": [
     {
       "sku": "simple-hat",
@@ -514,7 +514,7 @@ Simple product with custom options:
       ],
       "entered_options": [
       	{
-          "id": "hash from custom phrase option ID",
+          "uid": "hash from custom phrase option UID",
           "value": "Custom Hat"
         }
       ]
@@ -526,7 +526,7 @@ Simple product with custom options:
 Configurable product with custom options:
 ```json
 {
-  "giftRegistryId": "existing-gift-registry-id",
+  "giftRegistryUid": "existing-gift-registry-uid",
   "giftRegistryItems": [
     {
       "sku": "custom-hat",
@@ -539,7 +539,7 @@ Configurable product with custom options:
       ],
       "entered_options": [
       	{
-          "id": "hash from custom phrase option ID",
+          "uid": "hash from custom phrase option UID",
           "value": "Custom Hat"
         }
       ]
@@ -552,7 +552,7 @@ Bundle product with custom options:
 
 ```json
 {
-  "giftRegistryId": "existing-gift-registry-id",
+  "giftRegistryUid": "existing-gift-registry-uid",
   "giftRegistryItems": [
     {
       "sku": "fan-kit-hat",
@@ -565,7 +565,7 @@ Bundle product with custom options:
       ],
       "entered_options": [
       	{
-          "id": "hash based on custom phrase option goes here. Must be identical for all bundle children.",
+          "uid": "hash based on custom phrase option goes here. Must be identical for all bundle children.",
           "value": "Custom Text"
         }
       ]
@@ -581,7 +581,7 @@ Bundle product with custom options:
       ],
       "entered_options": [
       	{
-          "id": "hash based on custom phrase option goes here. Must be identical for all bundle children.",
+          "uid": "hash based on custom phrase option goes here. Must be identical for all bundle children.",
           "value": "Custom Text"
         }
       ]
@@ -593,7 +593,7 @@ Bundle product with custom options:
 Downloadable product with custom options:
 ```json
 {
-  "giftRegistryId": "existing-gift-registry-id",
+  "giftRegistryUid": "existing-gift-registry-uid",
   "giftRegistryItems": [
     {
       "sku": "downloadable-product",
@@ -605,7 +605,7 @@ Downloadable product with custom options:
       ],
       "entered_options": [
       	{
-          "id": "hash from custom text option ID",
+          "uid": "hash from custom text option UID",
           "value": "Custom Entry"
         }
       ]
@@ -617,7 +617,7 @@ Downloadable product with custom options:
 Gift card product with custom options:
 ```json
 {
-  "giftRegistryId": "existing-gift-registry-id",
+  "giftRegistryUid": "existing-gift-registry-uid",
   "giftRegistryItems": [
     {
       "sku": "giftcard-product",
@@ -628,7 +628,7 @@ Gift card product with custom options:
       ],
       "entered_options": [
       	{
-          "id": "hash from custom text option ID",
+          "uid": "hash from custom text option UID",
           "value": "Custom Entry"
         }
       ]
@@ -640,7 +640,7 @@ Gift card product with custom options:
 Virtual card product with custom options:
 ```json
 {
-  "giftRegistryId": "existing-gift-registry-id",
+  "giftRegistryUid": "existing-gift-registry-uid",
   "giftRegistryItems": [
     {
       "sku": "virtual-product",
@@ -650,7 +650,7 @@ Virtual card product with custom options:
       ],
       "entered_options": [
       	{
-          "id": "hash from custom text option ID",
+          "uid": "hash from custom text option ID",
           "value": "Custom Entry"
         }
       ]
@@ -664,15 +664,15 @@ Virtual card product with custom options:
 The following query returns enough data to add product to cart or wishlist.
 ```graphql
 {
-  giftRegistry(id: "existing-gift-registry-id") {
+  giftRegistry(uid: "existing-gift-registry-uid") {
     items {
-      id
+      uid
       quantity
       product {
         sku
       }
       customizable_options {
-        id_v2
+        uid
       }
       ... on BundleGiftRegistryItem {
         bundle_options {
@@ -685,16 +685,16 @@ The following query returns enough data to add product to cart or wishlist.
         ... on ConfigurableGiftRegistryItem {
         child_sku
         configurable_options {
-          id_v2
+          uid
         }
       }
       ... on DownloadableGiftRegistryItem {
         links {
-          id
+          uid
         }
       }
       ... on GiftCardGiftRegistryItem {
-        id
+        uid
       }
     }
   }
@@ -704,11 +704,11 @@ The following query returns enough data to add product to cart or wishlist.
 ### Gift registry owner removes items from an existing gift registry
 
 ```graphql
-mutation RemoveGiftRegistryItem($giftRegistryId: ID!, $itemIds: [ID!]!) {
-  removeGiftRegistryItems(giftRegistryId: $giftRegistryId, itemIds: $itemIds) {
+mutation RemoveGiftRegistryItem($giftRegistryUid: ID!, $itemUids: [ID!]!) {
+  removeGiftRegistryItems(giftRegistryUid: $giftRegistryUid, itemUids: $itemUids) {
     gift_registry {
       items {
-        id
+        uid
       }
     }
   }
@@ -718,8 +718,8 @@ mutation RemoveGiftRegistryItem($giftRegistryId: ID!, $itemIds: [ID!]!) {
 Query variables:
 ```json
 {
-  "giftRegistryId": "existing-gift-registry-id",
-  "itemIds": ["item-one-id", "item-two-id"]
+  "giftRegistryUid": "existing-gift-registry-uid",
+  "itemIds": ["item-one-uid", "item-two-uid"]
 }
 ```
 
@@ -730,7 +730,7 @@ First, storefront application retrieves gift registry search form metadata:
 ```graphql
 {
   giftRegistryTypes {
-    id
+    uid
     label
     dynamic_attributes_metadata {
       code
@@ -772,10 +772,10 @@ Explicitly excluded scenarios: search by ID and by email.
   giftRegistrySearch(
     registrantFirstname: "John", 
     registrantLastname: "Roller", 
-    giftRegistryTypeId: "2",
+    giftRegistryTypeUid: "2",
     searchableDynamicAttributes: [{code: "event_country", value: "US"}]
   ) {
-    id
+    uid
     event_name
     dynamic_attributes {
       code
@@ -794,8 +794,8 @@ This link will contain gift registry hash as query parameter and should lead to 
 The application should parse the URL, extract gift registry ID hash and query gift registry details by ID. 
 
 ```graphql
-mutation ShareGiftRegistry($id: ID!, $sender: ShareGiftRegistrySenderInput!, $invitees: [ShareGiftRegistryInviteeInput!]!) {
-  shareGiftRegistry(id: $id, sender: $sender, invitees: $invitees) {
+mutation ShareGiftRegistry($giftRegistryUid: ID!, $sender: ShareGiftRegistrySenderInput!, $invitees: [ShareGiftRegistryInviteeInput!]!) {
+  shareGiftRegistry(giftRegistryUid: $uid, sender: $sender, invitees: $invitees) {
     is_shared
   }
 }
@@ -805,7 +805,7 @@ The following JSON should be provided as query variables:
 
 ```json
 {
-  "id": "existing-gift-registry-id",
+  "uid": "existing-gift-registry-uid",
   "sender": {
     "message": "Hi, please come to my birth day",
     "name": "John Roller"
@@ -823,7 +823,7 @@ The following JSON should be provided as query variables:
 
 ```graphql
 {
-  giftRegistry(id: "ID obtained from the invitation link in email") {
+  giftRegistry(uid: "ID obtained from the invitation link in email") {
     event_name
     message
     dynamic_attributes {

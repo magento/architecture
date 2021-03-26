@@ -1,21 +1,28 @@
 type ConfigurableProduct {
-    configurable_options_selection_metadata(selectedConfigurableOptionValues: [ID!]): ConfigurableOptionsSelectionMetadata @doc(description: "Metadata for the specified configurable options selection")
+    configurable_product_options_selection(configurableOptionValueUids: [ID!]): ConfigurableProductOptionsSelection @doc(description: "Specified configurable product options selection")
+    variants: [ConfigurableVariant] @deprecated(reason: "Use configurable_options_selection_metadata instead.") @doc(description: "An array of variants of products") @resolver(class: "Magento\\ConfigurableProductGraphQl\\Model\\Resolver\\ConfigurableVariant")
+    configurable_options: [ConfigurableProductOptions] @deprecated(reason: "Use configurable_options_selection_metadata instead.") @doc(description: "An array of linked simple product items") @resolver(class: "Magento\\ConfigurableProductGraphQl\\Model\\Resolver\\Options")
 }
 
-type ConfigurableOptionsSelectionMetadata @doc(description: "Metadata corresponding to the configurable options selection.")
+type ConfigurableProductOptionsSelection @doc(description: "Metadata corresponding to the configurable options selection.")
 {
-    options_available_for_selection: [ConfigurableOptionAvailableForSelection!] @doc(description: "Configurable options available for further selection based on current selection.")
+    configurable_options: [ConfigurableProductOption!] @doc(description: "Configurable options available for further selection based on current selection.")
     media_gallery: [MediaGalleryInterface!] @doc(description: "Product images and videos corresponding to the specified configurable options selection.")
     variant: SimpleProduct @doc(description: "Variant represented by the specified configurable options selection. It is expected to be null, until selections are made for each configurable option.")
 }
 
-type ConfigurableOptionAvailableForSelection @doc(description: "Configurable option available for further selection based on current selection.") {
-    option_value_uids: [ID!]! @doc(description: "Configurable option values available for further selection.")
-    attribute_code: String! @doc(description: "Attribute code that uniquely identifies configurable option.")
+type ConfigurableProductOption {
+    uid: ID! 
+    attribute_code: String!
+    label: String!
+    values: [ConfigurableProductOptionValue!]
 }
 
-# Configurable option value type has to be extended to include ID which can be used to uniquely identify the option value across the system. This is consistent with proposal of single mutation for add-to-cart
-type ConfigurableProductOptionsValues {
-    uid: ID!
-    is_available_for_selection: Boolean!
+type ConfigurableProductOptionValue {
+    uid: ID! # Encoding of this uid should respect encode_algm(format: configurable/<attribute-id>/<value_index>)
+             # refer to https://github.com/magento/architecture/blob/master/design-documents/graph-ql/coverage/cart/add-items-to-cart-single-mutation.md#single-mutation-for-adding-products-to-cart
+    is_available: Boolean! # When display out of stock is enabled, if the option value is out of stock, this will return false
+    is_default: Boolean!
+    label: String!
+    swatch: SwatchDataInterface
 }

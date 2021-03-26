@@ -7,8 +7,8 @@ type Cart {
 }
 
 type Mutation {
-    applyRewardPointsToCart(cartId: ID!): ApplyRewardPointsToCartOutput @doc(description: "Apply all available points up to the cart total. Partial redemption is not available")
-    removeRewardPointsFromCart(cartId: ID!): RemoveRewardPointsFromCartOutput @doc(description: "Cancel usage of the previously applied reward points to cart")
+    applyRewardPointsToCart(cartUid: ID!): ApplyRewardPointsToCartOutput @doc(description: "Apply all available points up to the cart total. Partial redemption is not available")
+    removeRewardPointsFromCart(cartUid: ID!): RemoveRewardPointsFromCartOutput @doc(description: "Cancel usage of the previously applied reward points to cart")
 }
 
 type ApplyRewardPointsToCartOutput {
