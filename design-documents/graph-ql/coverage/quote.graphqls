@@ -226,14 +226,14 @@ type PlaceOrderOutput {
 
 interface QuoteInterface {
     uid: ID!
-    items: [CartItemInterface]
+    items: [CartItemInterface]!
     total_quantity: Float!
     is_virtual: Boolean!
     prices: CartPrices!
-    applied_coupons: [AppliedCoupon] @doc(description:"An array of `AppliedCoupon` objects. Each object contains the `code` text attribute, which specifies the coupon code")
-    shipping_addresses: [ShippingCartAddress]!
+    applied_coupons: [AppliedCoupon]! @doc(description:"An array of `AppliedCoupon` objects. Each object contains the `code` text attribute, which specifies the coupon code")
+    shipping_addresses: [ShippingCartAddress] @doc(description: "Shipping addresses, if applicable or set")
     billing_address: BillingCartAddress
-    available_payment_methods: [AvailablePaymentMethod] @doc(description: "Available payment methods")
+    available_payment_methods: [AvailablePaymentMethod] @doc(description: "Available payment methods, if applicable")
     selected_payment_method: SelectedPaymentMethod
 }
 
@@ -243,8 +243,7 @@ interface QuoteItemInterface {
 
 type Cart implements QuoteInterface{
     id: ID! @deprecated(reason: "Use `QuoteInterface.uid` instead") @doc(description: "The ID of the cart.")
-    items: [CartItemInterface]
-    applied_coupon: AppliedCoupon @deprecated(reason: "Use `applied_coupons` instead") @doc(description:"An array of coupons that have been applied to the cart") @deprecated(reason: "Use applied_coupons instead ")
+    applied_coupon: AppliedCoupon @deprecated(reason: "Use `applied_coupons` instead ") @doc(description:"An array of coupons that have been applied to the cart")
     email: String
 }
 
