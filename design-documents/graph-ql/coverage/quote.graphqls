@@ -245,10 +245,10 @@ type Cart implements QuoteInterface{
     id: ID! @deprecated(reason: "Use `QuoteInterface.uid` instead") @doc(description: "The ID of the cart.")
     items: [CartItemInterface]
     applied_coupon: AppliedCoupon @deprecated(reason: "Use `applied_coupons` instead") @doc(description:"An array of coupons that have been applied to the cart") @deprecated(reason: "Use applied_coupons instead ")
-    email: String @resolver (class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\CartEmail")
+    email: String
 }
 
-interface CartAddressInterface @typeResolver(class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\CartAddressTypeResolver") {
+interface CartAddressInterface {
     firstname: String!
     lastname: String!
     company: String
@@ -362,7 +362,7 @@ type VirtualCartItem implements CartItemInterface @doc(description: "Virtual Car
     customizable_options: [SelectedCustomizableOption]
 }
 
-interface CartItemInterface @typeResolver(class: "Magento\\QuoteGraphQl\\Model\\Resolver\\CartItemTypeResolver") {
+interface CartItemInterface {
     id: String! @deprecated(reason: "Use CartItemInterface.uid instead")
     uid: ID! @doc(description: "Unique identifier for a Cart Item")
     quantity: Float!
