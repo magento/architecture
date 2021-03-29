@@ -279,7 +279,7 @@ type NegotiableQuoteHistoryProductsRemovedChange {
 
 # Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L148-L169
 type NegotiableQuoteHistoryProductsAddedChange {
-    # TODO: List of products added and their respective options.   
+    # TODO: List of products added and their respective options.
 }
 
 # Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L172-L197
