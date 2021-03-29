@@ -231,9 +231,9 @@ interface QuoteInterface {
     is_virtual: Boolean!
     prices: CartPrices!
     applied_coupons: [AppliedCoupon]! @doc(description:"An array of `AppliedCoupon` objects. Each object contains the `code` text attribute, which specifies the coupon code")
-    shipping_addresses: [ShippingCartAddress] @doc(description: "Shipping addresses, if applicable or set")
+    shipping_addresses: [ShippingCartAddress]! @doc(description: "Set Shipping addresses")
     billing_address: BillingCartAddress
-    available_payment_methods: [AvailablePaymentMethod] @doc(description: "Available payment methods, if applicable")
+    available_payment_methods: [AvailablePaymentMethod]! @doc(description: "Available payment methods based on different factors")
     selected_payment_method: SelectedPaymentMethod
 }
 
