@@ -207,6 +207,17 @@ type NegotiableQuoteHistoryEntry {
     changes: NegotiableQuoteHistoryChanges
 }
 
+type CartPrices {
+    grand_total: Money
+    subtotal_including_tax: Money
+    subtotal_excluding_tax: Money
+    discount: CartDiscount @deprecated(reason: "Use discounts instead ")
+    subtotal_with_discount_excluding_tax: Money
+    applied_taxes: [CartTaxItem]
+    discounts: [Discount] @doc(description:"An array of applied discounts")
+    original_total_price: Money
+}
+
 # Note: Most of these HistoryChange types were built based on looking through UI code in Luma, because we don't have existing API
 #       support for the Negotiable Quote history log feature. If we find these types aren't ideal during implementation,
 #       let's iterate rather than stay glued to them.
