@@ -327,3 +327,7 @@ type NegotiableQuoteUser @doc(description: "A limited view of a Buyer or Seller 
     firstname: String!
     lastname: String!
 }
+
+type StoreConfig {
+    is_negotiable_quote_active: Boolean @doc(description: "Indicates if negotiable quote functionality is enabled.")
+}
