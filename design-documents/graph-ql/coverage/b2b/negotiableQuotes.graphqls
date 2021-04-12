@@ -9,13 +9,15 @@ type Query {
         filter: NegotiableQuoteFilterInput,
         pageSize: Int = 20,
         currentPage: Int = 1
+        sort: NegotiableQuoteSortInput
     ): NegotiableQuotesOutput @doc(description: "A (optionally filtered) list of negotiable quotes viewable by the logged-in customer")
 }
 
 type NegotiableQuotesOutput {
-    items: [NegotiableQuote]!
+    items: [NegotiableQuote!]!
     page_info: SearchResultPageInfo!
     total_count: Int!
+    sort_fields: SortFields
 }
 
 # Coverage missing:
@@ -103,6 +105,7 @@ type DeleteNegotiableQuotesOutput {
         filter: NegotiableQuoteFilterInput,
         pageSize: Int = 20,
         currentPage: Int = 1
+        sort: NegotiableQuoteSortInput
     ): NegotiableQuotesOutput @doc(description: "List of negotiable quotes available to customer")
 }
 
@@ -111,12 +114,18 @@ input CloseNegotiableQuotesInput {
 }
 
 type CloseNegotiableQuotesOutput {
-    closed_quotes: [NegotiableQuote!] @doc(description: "Quotes that were just closed")
+    closed_quotes(
+        filter: NegotiableQuoteFilterInput,
+        pageSize: Int = 20,
+        currentPage: Int = 1
+        sort: NegotiableQuoteSortInput
+    ): NegotiableQuotesOutput @doc(description: "Quotes that were just closed")
     #optionally display all negotiable quotes
     negotiable_quotes(
         filter: NegotiableQuoteFilterInput,
         pageSize: Int = 20,
         currentPage: Int = 1
+        sort: NegotiableQuoteSortInput
     ): NegotiableQuotesOutput @doc(description: "A (optionally filtered) list of negotiable quotes viewable by the logged-in customer")
 }
 
@@ -197,6 +206,17 @@ enum NegotiableQuoteStatus {
 input NegotiableQuoteFilterInput {
     quote_uid: FilterEqualTypeInput @doc(description: "Filter by quote UID(s)")
     name: FilterMatchTypeInput @doc(description: "Filter by negotiable quote name")
+}
+
+input NegotiableQuoteSortInput {
+    name: SortEnum @doc(description: "Sort by negotiable quote name")
+    status: SortEnum
+    created_at: SortEnum
+    updated_at: SortEnum
+    # Some other nice to have fields are, which will not be part of MVP
+    is_virtual: SortEnum
+    grand_total: SortEnum
+    total_quantity: SortEnum
 }
 
 type NegotiableQuoteHistoryEntry {
