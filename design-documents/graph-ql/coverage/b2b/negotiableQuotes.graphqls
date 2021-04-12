@@ -14,7 +14,7 @@ type Query {
 }
 
 type NegotiableQuotesOutput {
-    items: [NegotiableQuote]
+    items: [NegotiableQuote!]!
     page_info: SearchResultPageInfo!
     total_count: Int!
 }
@@ -97,7 +97,6 @@ input DeleteNegotiableQuotesInput {
 }
 
 type DeleteNegotiableQuotesOutput {
-    status: Boolean!
     # Implementation Note: We don't make the deleted quotes accessible
     # because "deleted" means they're hidden from the storefront UI. They will
     # still be visible (and labeled as deleted) for a Seller in the admin
@@ -114,7 +113,6 @@ input CloseNegotiableQuotesInput {
 }
 
 type CloseNegotiableQuotesOutput {
-    status: Boolean!
     closed_quotes(
         filter: NegotiableQuoteFilterInput,
         pageSize: Int = 20,
