@@ -227,6 +227,16 @@ type NegotiableQuoteHistoryEntry {
     changes: NegotiableQuoteHistoryChanges
 }
 
+type CartPrices {
+    initial_total_price: Money
+}
+
+type CartItemPrices {
+    initial_price: Money
+    initial_row_total: Money
+    initial_row_total_including_tax: Money
+}
+
 # Note: Most of these HistoryChange types were built based on looking through UI code in Luma, because we don't have existing API
 #       support for the Negotiable Quote history log feature. If we find these types aren't ideal during implementation,
 #       let's iterate rather than stay glued to them.
