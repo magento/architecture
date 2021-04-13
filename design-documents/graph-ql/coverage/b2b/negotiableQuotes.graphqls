@@ -208,13 +208,13 @@ type NegotiableQuoteHistoryEntry {
 }
 
 type CartPrices {
-    original_total_price: Money
+    initial_total_price: Money
 }
 
 type CartItemPrices {
-    original_price: Money
-    original_row_total: Money
-    original_row_total_including_tax: Money
+    initial_price: Money
+    initial_row_total: Money
+    initial_row_total_including_tax: Money
 }
 
 # Note: Most of these HistoryChange types were built based on looking through UI code in Luma, because we don't have existing API
