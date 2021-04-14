@@ -59,6 +59,10 @@ type Mutation {
     setNegotiableQuoteShippingAddress(
         input: SetNegotiableQuoteShippingAddressInput!
     ): SetNegotiableQuoteShippingAddressOutput @doc(description: "Assign one of buyers' existing addresses to a negotiable quote")
+    
+    sendNegotiableQuoteForReview(
+        input: SendNegotiableQuoteForReviewInput!
+    ) : SendNegotiableQuoteForReviewOutput @doc(description: "Send the negotiable quote for review to the seller")
 
     # Pending decision on design of file upload (design doc still pending decisions)
     # addNegotiableQuoteFiles(
@@ -80,6 +84,15 @@ input SetNegotiableQuoteShippingAddressInput {
     customer_address_id: Int! @doc(
         description: "ID obtained from the CustomerAddress type. A new address can be added using Mutation.createCustomerAddress"
     )
+}
+
+input SendNegotiableQuoteForReviewInput {
+    quote_uid: ID! @doc(description: "ID obtained from NegotiableQuote type")
+    comment: NegotiableQuoteCommentInput!
+}
+
+type SendNegotiableQuoteForReviewOutput {
+    quote: NegotiableQuote
 }
 
 type SetNegotiableQuoteShippingAddressOutput {
