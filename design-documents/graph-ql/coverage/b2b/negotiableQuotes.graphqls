@@ -29,11 +29,6 @@ type Mutation {
         input: RequestNegotiableQuoteInput!
     ): RequestNegotiableQuoteOutput @doc(description: "Request a new negotiable quote for a buyer")
 
-    # Covers "Add your Comment" section of https://docs.magento.com/user-guide/customers/account-dashboard-quotes-negotiate.html#shipping-information
-    addNegotiableQuoteComment(
-        input: AddNegotiableQuoteCommentInput!
-    ): AddNegotiableQuoteCommentOutput @doc(description: "Append a new comment from the buyer to a negotiable quote")
-
     # https://docs.magento.com/user-guide/customers/account-dashboard-quotes-negotiate.html#change-the-quantity
     updateNegotiableQuoteQuantities(
         input: UpdateNegotiableQuoteQuantitiesInput!
@@ -167,11 +162,6 @@ input RequestNegotiableQuoteInput {
 input NegotiableQuoteCommentInput {
     comment: String!
     # files (attachments) to be added at a later date when file upload design has been finalized
-}
-
-input AddNegotiableQuoteCommentInput {
-    quote_uid: ID!
-    comment: NegotiableQuoteCommentInput!
 }
 
 type NegotiableQuoteComment {
@@ -351,11 +341,6 @@ type RequestNegotiableQuoteOutput {
 }
 
 type RemoveNegotiableQuoteItemsOutput {
-    quote: NegotiableQuote
-}
-
-type AddNegotiableQuoteCommentOutput {
-    comment: NegotiableQuoteComment @doc(description: "The newly added comment")
     quote: NegotiableQuote
 }
 
