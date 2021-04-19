@@ -83,7 +83,7 @@ input SetNegotiableQuoteShippingAddressInput {
 
 input SendNegotiableQuoteForReviewInput {
     quote_uid: ID! @doc(description: "ID obtained from NegotiableQuote type")
-    comment: NegotiableQuoteCommentInput!
+    comment: NegotiableQuoteCommentInput
 }
 
 type SendNegotiableQuoteForReviewOutput {
