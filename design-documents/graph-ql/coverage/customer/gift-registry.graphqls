@@ -26,7 +26,7 @@ type Mutation {
     updateGiftRegistry(giftRegistryUid: ID!, giftRegistry: UpdateGiftRegistryInput!): UpdateGiftRegistryOutput
     removeGiftRegistry(giftRegistryUid: ID!): RemoveGiftRegistryOutput
 
-    addGiftRegistryItems(giftRegistryUid: ID!, items: [AddGiftRegistryItemInput!]!): AddGiftRegistryItemsOutput @deprecated(reason: "Use `moveCartItemsToGiftRegistry` instead. Not supported for gift registry") @doc(description: "Adds individual items to the gift registry")
+    addGiftRegistryItems(giftRegistryUid: ID!, items: [AddGiftRegistryItemInput!]!): AddGiftRegistryItemsOutput @doc(description: "Adds individual items to the gift registry")
     moveCartItemsToGiftRegistry(cartUid: ID!, giftRegistryUid: ID!): MoveCartItemsToGiftRegistryOutput @doc(description: "Moves all items items from cart to the gift registry")
 
     removeGiftRegistryItems(giftRegistryUid: ID!, itemUids: [ID!]!): RemoveGiftRegistryItemsOutput
@@ -79,7 +79,7 @@ input EnteredOptionInput {
 }
 
 input UpdateGiftRegistryItemInput {
-    giftRegistryItemUid: ID!
+    gift_registry_item_uid: ID!
     quantity: Float!
     note: String
 }
@@ -94,10 +94,9 @@ input UpdateGiftRegistryInput {
 }
 
 input CreateGiftRegistryInput {
-    giftRegistryUid: ID @deprecated(reason: "Use `gift_registry_uid` instead") @doc(description: "Optional uid, can be generated on the client and used for sending multiple gift-registry related mutations in a single request. For example, create registry and immediatly add items or registrants.")
-    gift_registry_uid: ID
+    gift_registry_uid: ID @doc(description: "Optional uid, can be generated on the client and used for sending multiple gift-registry related mutations in a single request. For example, create registry and immediatly add items or registrants.")
     event_name: String!
-    giftRegistryTypeUid: ID!
+    gift_registry_type_uid: ID!
     message: String!
     privacy_settings: GiftRegistryPrivacySettings!
     status: GiftRegistryStatus!
@@ -112,7 +111,6 @@ input GiftRegistryShippingAddressInput @doc(description: "Either address data or
 }
 
 input UpdateGiftRegistryRegistrantInput {
-    giftRegistryRegistrantUid: ID! @deprecated(reason: "Use `gift_registry_registrant_uid` instead")
     gift_registry_registrant_uid: ID
     first_name: String
     last_name: String
@@ -137,49 +135,63 @@ interface GiftRegistryUserErrors {
     gift_registry_user_errors: [GiftRegistryItemsUserError]!
 }
 
-type CreateGiftRegistryOutput {
+
+interface GiftRegistryUserErrors {
+    status: Boolean!
+    gift_registry_user_errors: [GiftRegistryItemsUserError]!
+}
+
+interface GiftRegistryItemUserError {
+    status: Boolean!
+    gift_registry_user_errors: GiftRegistryItemsUserError
+}
+
+interface GiftRegistryOutputInterface {
     gift_registry: GiftRegistry
 }
 
-type UpdateGiftRegistryOutput {
-    gift_registry: GiftRegistry
+type CreateGiftRegistryOutput implements GiftRegistryOutputInterface {
+}
+
+type UpdateGiftRegistryOutput implements GiftRegistryOutputInterface  {
 }
 
 type RemoveGiftRegistryOutput {
     is_removed: Boolean!
 }
 
-type AddGiftRegistryItemsOutput {
-    gift_registry: GiftRegistry
+type AddGiftRegistryItemsOutput implements GiftRegistryOutputInterface, GiftRegistryItemUserError {
 }
 
-type MoveCartItemsToGiftRegistryOutput implements GiftRegistryUserErrors {
-    gift_registry: GiftRegistry
+type MoveCartItemsToGiftRegistryOutput implements GiftRegistryOutputInterface, GiftRegistryUserErrors {
 }
 
-enum GiftRegistryItemsUserError {
+type GiftRegistryItemsUserError {
+    message: String!
+    product_uid: ID
+    gift_registry_item_uid: ID
+    code: GiftRegistryItemsUserErrorType!
+}
+
+enum GiftRegistryItemsUserErrorType {
     OUT_OF_STOCK
     NOT_AVAILABLE
+    UNDEFINED @doc(description: "Used for other exceptions like db connection failures or others")
 }
 
-type RemoveGiftRegistryItemsOutput {
-    gift_registry: GiftRegistry
+type RemoveGiftRegistryItemsOutput implements GiftRegistryOutputInterface, GiftRegistryItemUserError {
 }
 
-type UpdateGiftRegistryItemsOutput implements GiftRegistryUserErrors {
-    gift_registry: GiftRegistry
+type UpdateGiftRegistryItemsOutput implements GiftRegistryOutputInterface, GiftRegistryItemUserError {
 }
 
-type AddGiftRegistryRegistrantsOutput {
-    gift_registry: GiftRegistry
+type AddGiftRegistryRegistrantsOutput implements GiftRegistryOutputInterface {
 }
 
-type UpdateGiftRegistryRegistrantsOutput {
-    gift_registry: GiftRegistry
+type UpdateGiftRegistryRegistrantsOutput implements GiftRegistryOutputInterface {
 }
 
-type RemoveGiftRegistryRegistrantsOutput {
-    gift_registry: GiftRegistry
+type RemoveGiftRegistryRegistrantsOutput implements GiftRegistryOutputInterface {
 }
 
 type ShareGiftRegistryOutput {
