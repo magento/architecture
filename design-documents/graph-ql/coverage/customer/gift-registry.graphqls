@@ -132,18 +132,12 @@ input GiftRegistryDynamicAttributeInput {
 
 interface GiftRegistryUserErrors {
     status: Boolean!
-    gift_registry_user_errors: [GiftRegistryItemsUserError]!
-}
-
-
-interface GiftRegistryUserErrors {
-    status: Boolean!
-    gift_registry_user_errors: [GiftRegistryItemsUserError]!
+    user_errors: [GiftRegistryItemsUserError]!
 }
 
 interface GiftRegistryItemUserError {
     status: Boolean!
-    gift_registry_user_errors: GiftRegistryItemsUserError
+    user_errors: GiftRegistryItemsUserError
 }
 
 interface GiftRegistryOutputInterface {
