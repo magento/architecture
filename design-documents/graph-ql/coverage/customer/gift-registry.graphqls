@@ -164,6 +164,7 @@ type GiftRegistryItemsUserError {
     message: String!
     product_uid: ID
     gift_registry_item_uid: ID
+    gift_registry_uid: ID
     code: GiftRegistryItemsUserErrorType!
 }
 
