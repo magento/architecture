@@ -130,12 +130,12 @@ input GiftRegistryDynamicAttributeInput {
     value: String!
 }
 
-interface GiftRegistryUserErrors {
+interface GiftRegistryUserErrorsInterface {
     status: Boolean!
     user_errors: [GiftRegistryItemsUserError]!
 }
 
-interface GiftRegistryItemUserError {
+interface GiftRegistryItemUserErrorInterface {
     status: Boolean!
     user_errors: GiftRegistryItemsUserError
 }
@@ -154,10 +154,10 @@ type RemoveGiftRegistryOutput {
     is_removed: Boolean!
 }
 
-type AddGiftRegistryItemsOutput implements GiftRegistryOutputInterface, GiftRegistryItemUserError {
+type AddGiftRegistryItemsOutput implements GiftRegistryOutputInterface, GiftRegistryItemUserErrorInterface {
 }
 
-type MoveCartItemsToGiftRegistryOutput implements GiftRegistryOutputInterface, GiftRegistryUserErrors {
+type MoveCartItemsToGiftRegistryOutput implements GiftRegistryOutputInterface, GiftRegistryUserErrorsInterface {
 }
 
 type GiftRegistryItemsUserError {
@@ -173,10 +173,10 @@ enum GiftRegistryItemsUserErrorType {
     UNDEFINED @doc(description: "Used for other exceptions like db connection failures or others")
 }
 
-type RemoveGiftRegistryItemsOutput implements GiftRegistryOutputInterface, GiftRegistryItemUserError {
+type RemoveGiftRegistryItemsOutput implements GiftRegistryOutputInterface, GiftRegistryItemUserErrorInterface {
 }
 
-type UpdateGiftRegistryItemsOutput implements GiftRegistryOutputInterface, GiftRegistryItemUserError {
+type UpdateGiftRegistryItemsOutput implements GiftRegistryOutputInterface, GiftRegistryItemUserErrorInterface {
 }
 
 type AddGiftRegistryRegistrantsOutput implements GiftRegistryOutputInterface {
