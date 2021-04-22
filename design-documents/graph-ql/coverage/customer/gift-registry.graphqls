@@ -170,8 +170,8 @@ type GiftRegistryItemsUserError {
 
 enum GiftRegistryItemsUserErrorType {
     OUT_OF_STOCK
-    NOT_AVAILABLE
-    UNDEFINED @doc(description: "Used for other exceptions like db connection failures or others")
+    NOT_FOUND @doc(description: "Used for exceptions like EntityNotFound")
+    UNDEFINED @doc(description: "Used for other exceptions like db connection failures or other exceptions")
 }
 
 type RemoveGiftRegistryItemsOutput implements GiftRegistryOutputInterface, GiftRegistryItemUserErrorInterface {
