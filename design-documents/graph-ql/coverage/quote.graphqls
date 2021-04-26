@@ -180,7 +180,7 @@ input SetGuestEmailOnCartInput {
     email: String!
 }
 
-type CartPrices {
+interface QuotePricesInterface {
     grand_total: Money
     subtotal_including_tax: Money
     subtotal_excluding_tax: Money
@@ -188,6 +188,9 @@ type CartPrices {
     subtotal_with_discount_excluding_tax: Money
     applied_taxes: [CartTaxItem]
     discounts: [Discount] @doc(description:"An array of applied discounts") @resolver(class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\Discounts")
+}
+
+type CartPrices implements QuotePricesInterface {
 }
 
 type CartTaxItem {
@@ -366,13 +369,20 @@ type Discount @doc(description:"Defines an individual discount. A discount can b
     label: String! @doc(description:"A description of the discount")
 }
 
-type CartItemPrices {
-    price: Money! @doc(description:"Item price that might include tax depending on display settings for cart")
-    fixed_product_taxes: [FixedProductTax] @doc(description:"Applied FPT to the cart item")
-    row_total: Money!
-    row_total_including_tax: Money!
+type QuoteItemPricesInterface {
     discounts: [Discount] @doc(description:"An array of discounts to be applied to the cart item")
     total_item_discount: Money @doc(description:"The total of all discounts applied to the item")
+    price: Money! @doc(description:"Item display price according to settings that might include tax depending on display settings for cart")
+    price_including_tax: Money!
+    price_excluding_tax: Money!
+    row_total: Money! @doc(description:"Row total display total according to settings that might include tax depending on display settings for cart for prices")
+    row_total_excluding_tax: Money!
+    row_total_including_tax: Money!
+    fixed_product_taxes: [FixedProductTax] @doc(description:"The list of all  FPT taxes applied to the cart item")
+}
+
+type CartItemPrices implements QuoteItemPricesInterface {
+    custom_price: Money!
 }
 
 type SelectedCustomizableOption {
