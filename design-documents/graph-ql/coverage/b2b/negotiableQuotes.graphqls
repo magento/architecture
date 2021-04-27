@@ -212,14 +212,14 @@ input NegotiableQuoteFilterInput {
 }
 
 input NegotiableQuoteSortInput {
-    name: SortEnum @doc(description: "Sort by negotiable quote name")
-    status: SortEnum
-    created_at: SortEnum
-    updated_at: SortEnum
-    # Some other nice to have fields are, which will not be part of MVP
-    is_virtual: SortEnum
-    grand_total: SortEnum
-    total_quantity: SortEnum
+    sort_field: NegotiableQuoteSortableField!
+    sort_direction: SortEnum!
+}
+
+enum NegotiableQuoteSortableField {
+    QUOTE_NAME
+    CREATED_AT
+    UPDATED_AT
 }
 
 type NegotiableQuoteHistoryEntry {
