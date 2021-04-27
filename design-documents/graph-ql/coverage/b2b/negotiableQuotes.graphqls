@@ -218,7 +218,6 @@ input NegotiableQuoteSortInput {
 
 enum NegotiableQuoteSortableField {
     QUOTE_NAME
-    STATUS
     CREATED_AT
     UPDATED_AT
 }
