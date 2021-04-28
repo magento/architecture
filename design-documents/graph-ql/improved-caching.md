@@ -43,10 +43,10 @@ All components/headers that compose cache key should be included in the Vary.
 ## The Solution
 Graphql would compute the cache key and return a header with the same function as the Luma cookie (`X-Magento-Vary`), except we won't name it that way. The `Vary` header is not meant to have a hash.
 ````
-X-Magento-Request-Id: 85a0b196524c60eaeb7c87d1aa4708a3fb20c6a1
+X-Magento-Cache-Id: 85a0b196524c60eaeb7c87d1aa4708a3fb20c6a1
 ````
 
-PWA would send `X-Magento-Request-Id` back to GraphQL. So it will act like the cookie in Luma. 
+PWA would send `X-Magento-Cache-Id` back to GraphQL. So it will act like the cookie in Luma. 
 This way we solve the public-private without adding more haders than we have. Just this one time.
 
 This will require a change in VCL but only once. With all the other changes if we change the way cache key is computed, no VCL changes would be required nor in PWA.
@@ -58,10 +58,19 @@ Currently, Fastly has this:
 X-Request-Id: chn45aznc4feogj23ssw3y7k
 ````
 
-The `X-Magento-Request-Id` will take into account `X-Magento-Request-Id` and respond with a propper Vary header:
+The `X-Magento-Cache-Id` will take into account `X-Magento-Cache-Id` and respond with a propper Vary header:
 ````
-Vary: X-Magento-Request-Id
+Vary: X-Magento-Cache-Id
 ````
 
-This should suffice all explained. We don't need to add Store and Content-Currency to Vary anymore, though if we want to be transparent for the public headers we still can.
-For FPC built in cache there would be no changes besides outputing X-Magento-Request-Id and the proper Vary. We already have the code that computes the cookie hash value.
+We don't need to add Store and Content-Currency to Vary anymore, though if we want to be transparent for the public headers we still can.
+For FPC built in cache there would be no changes besides outputing X-Magento-Cache-Id and the proper Vary. We already have the code that computes the cookie hash value.
+This should suffice all explained above except for a major possible security flaw explained below.
+
+### The Solution's major flaw
+Since we're caching the whole query and the caching server is hit first, and we don't have yet an auth session service nor a differentiator between auth token and session token
+we wouldn't check if the barer token is valid or not. 
+This works in Luma because they have blocks and in graphql we don't have the equivlent of that. In luma we don't cache blocks marked as private. We use separate ajax to pupulate those after we retrieve the page from cache.
+In graphql we could say that we have as blocks any node Example: product {block { subblock }}. However our use cases here are catalog, prices (which we could populate and not cache).
+In category permissions and shared catalogs, suddenly the whole reponse becomes uncacheable because whole products and categories might be different.
+We couldn't find a viable solution here unless there's some high availability service that checks session token once this will be available part of a full oauth2 protocol in 2.5
