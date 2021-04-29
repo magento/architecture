@@ -177,15 +177,12 @@ enum NegotiableQuoteCommentCreatorType {
     SELLER
 }
 
-type NegotiableQuote {
-    uid: ID!
+type NegotiableQuote implements QuoteInterface {
     name: String!
-    items: [CartItemInterface!]
     # Attachment Support is dependent on headless File Upload design
     # attachments: [AttachmentContent]
     comments: [NegotiableQuoteComment!]
     history: [NegotiableQuoteHistoryEntry!]
-    prices: CartPrices
     buyer: NegotiableQuoteUser!
     created_at: String @doc(description: "Timestamp indicating when the negotiable quote was created.")
     updated_at: String @doc(description: "Timestamp indicating when the negotiable quote was updated.")
@@ -315,7 +312,7 @@ type NegotiableQuoteHistoryProductsRemovedChange {
 
 # Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L148-L169
 type NegotiableQuoteHistoryProductsAddedChange {
-    # TODO: List of products added and their respective options.   
+    # TODO: List of products added and their respective options.
 }
 
 # Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L172-L197
