@@ -185,7 +185,7 @@ type NegotiableQuote {
     # attachments: [AttachmentContent]
     comments: [NegotiableQuoteComment!]
     history: [NegotiableQuoteHistoryEntry!]
-    prices: CartPrices
+    prices: NegotiableQuotePrices
     buyer: NegotiableQuoteUser!
     created_at: String @doc(description: "Timestamp indicating when the negotiable quote was created.")
     updated_at: String @doc(description: "Timestamp indicating when the negotiable quote was updated.")
