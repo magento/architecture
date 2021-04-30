@@ -360,7 +360,8 @@ interface CartItemInterface @typeResolver(class: "Magento\\QuoteGraphQl\\Model\\
     id: String! @deprecated(reason: "Use CartItemInterface.uid instead")
     uid: ID! @doc(description: "Unique identifier for a Cart Item")
     quantity: Float!
-    prices: CartItemPrices @resolver(class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\CartItemPrices")
+    prices: CartItemPrices @deprecated(reason: "Use `itemPrices` instead") @resolver(class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\CartItemPrices")
+    itemPrices: QuoteItemPricesInterface @resolver(class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\CartItemPrices")
     product: ProductInterface!
 }
 
