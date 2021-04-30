@@ -237,7 +237,6 @@ type NegotiableQuotePrices implements QuotePricesInterface {
 type NegotiableQuoteItemPrices implements QuoteItemPricesInterface {
     initial_price: Money!
     initial_row_total: Money!
-    initial_row_total_excluding_tax: Money!
     initial_row_total_including_tax: Money!
 }
 

@@ -360,8 +360,7 @@ interface CartItemInterface @typeResolver(class: "Magento\\QuoteGraphQl\\Model\\
     id: String! @deprecated(reason: "Use CartItemInterface.uid instead")
     uid: ID! @doc(description: "Unique identifier for a Cart Item")
     quantity: Float!
-    prices: CartItemPrices @deprecated(reason: "Use `itemPrices` instead") @resolver(class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\CartItemPrices")
-    itemPrices: QuoteItemPricesInterface @resolver(class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\CartItemPrices")
+    prices: QuoteItemPricesInterface @resolver(class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\CartItemPrices")
     product: ProductInterface!
 }
 
@@ -374,16 +373,12 @@ type QuoteItemPricesInterface {
     discounts: [Discount] @doc(description:"An array of discounts to be applied to the cart item")
     total_item_discount: Money @doc(description:"The total of all discounts applied to the item")
     price: Money! @doc(description:"Item display price according to settings that might include tax depending on display settings for cart")
-    price_including_tax: Money!
-    price_excluding_tax: Money!
     row_total: Money! @doc(description:"Row total display total according to settings that might include tax depending on display settings for cart for prices")
-    row_total_excluding_tax: Money!
     row_total_including_tax: Money!
     fixed_product_taxes: [FixedProductTax] @doc(description:"The list of all  FPT taxes applied to the cart item")
 }
 
 type CartItemPrices implements QuoteItemPricesInterface {
-    custom_price: Money!
 }
 
 type SelectedCustomizableOption {
