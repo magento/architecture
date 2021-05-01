@@ -163,10 +163,10 @@ type GiftRegistryItemError {
     product_uid: ID
     gift_registry_item_uid: ID
     gift_registry_uid: ID
-    code: GiftRegistryItemsErrorType!
+    code: GiftRegistryItemErrorType!
 }
 
-enum GiftRegistryItemsErrorType {
+enum GiftRegistryItemErrorType {
     OUT_OF_STOCK
     NOT_FOUND @doc(description: "Used for exceptions like EntityNotFound")
     UNDEFINED @doc(description: "Used for other exceptions like db connection failures or other exceptions")
