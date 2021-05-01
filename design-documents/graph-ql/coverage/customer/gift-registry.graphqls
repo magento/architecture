@@ -27,7 +27,7 @@ type Mutation {
     removeGiftRegistry(giftRegistryUid: ID!): RemoveGiftRegistryOutput
 
     addGiftRegistryItems(giftRegistryUid: ID!, items: [AddGiftRegistryItemInput!]!): AddGiftRegistryItemsOutput @doc(description: "Adds individual items to the gift registry")
-    moveCartItemsToGiftRegistry(cartUid: ID!, giftRegistryUid: ID!): MoveCartItemsToGiftRegistryOutput @doc(description: "Moves all items items from cart to the gift registry")
+    moveCartItemsToGiftRegistry(cartUid: ID!, giftRegistryUid: ID!): MoveCartItemsToGiftRegistryOutput @doc(description: "Moves all items from cart to the gift registry")
 
     removeGiftRegistryItems(giftRegistryUid: ID!, itemUids: [ID!]!): RemoveGiftRegistryItemsOutput
     updateGiftRegistryItems(giftRegistryUid: ID!, items: [UpdateGiftRegistryItemInput!]!): UpdateGiftRegistryItemsOutput
@@ -130,14 +130,12 @@ input GiftRegistryDynamicAttributeInput {
     value: String!
 }
 
-interface GiftRegistryUserErrorsInterface {
-    status: Boolean!
-    user_errors: [GiftRegistryItemsUserError]!
+interface GiftRegistryErrorsInterface {
+    errors: [GiftRegistryItemUserError]!
 }
 
-interface GiftRegistryItemUserErrorInterface {
-    status: Boolean!
-    user_errors: GiftRegistryItemsUserError
+interface GiftRegistryItemErrorInterface {
+    error: GiftRegistryItemUserError
 }
 
 interface GiftRegistryOutputInterface {
@@ -154,13 +152,13 @@ type RemoveGiftRegistryOutput {
     is_removed: Boolean!
 }
 
-type AddGiftRegistryItemsOutput implements GiftRegistryOutputInterface, GiftRegistryItemUserErrorInterface {
+type AddGiftRegistryItemsOutput implements GiftRegistryOutputInterface, GiftRegistryItemErrorInterface {
 }
 
-type MoveCartItemsToGiftRegistryOutput implements GiftRegistryOutputInterface, GiftRegistryUserErrorsInterface {
+type MoveCartItemsToGiftRegistryOutput implements GiftRegistryOutputInterface, GiftRegistryErrorsInterface {
 }
 
-type GiftRegistryItemsUserError {
+type GiftRegistryItemUserError {
     message: String!
     product_uid: ID
     gift_registry_item_uid: ID
@@ -174,10 +172,10 @@ enum GiftRegistryItemsUserErrorType {
     UNDEFINED @doc(description: "Used for other exceptions like db connection failures or other exceptions")
 }
 
-type RemoveGiftRegistryItemsOutput implements GiftRegistryOutputInterface, GiftRegistryItemUserErrorInterface {
+type RemoveGiftRegistryItemsOutput implements GiftRegistryOutputInterface, GiftRegistryItemErrorInterface {
 }
 
-type UpdateGiftRegistryItemsOutput implements GiftRegistryOutputInterface, GiftRegistryItemUserErrorInterface {
+type UpdateGiftRegistryItemsOutput implements GiftRegistryOutputInterface, GiftRegistryItemErrorInterface {
 }
 
 type AddGiftRegistryRegistrantsOutput implements GiftRegistryOutputInterface {
