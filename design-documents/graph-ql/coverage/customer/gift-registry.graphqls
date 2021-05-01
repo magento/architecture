@@ -131,11 +131,11 @@ input GiftRegistryDynamicAttributeInput {
 }
 
 interface GiftRegistryErrorsInterface {
-    errors: [GiftRegistryItemUserError]!
+    errors: [GiftRegistryItemError]!
 }
 
 interface GiftRegistryItemErrorInterface {
-    error: GiftRegistryItemUserError
+    error: GiftRegistryItemError
 }
 
 interface GiftRegistryOutputInterface {
@@ -158,15 +158,15 @@ type AddGiftRegistryItemsOutput implements GiftRegistryOutputInterface, GiftRegi
 type MoveCartItemsToGiftRegistryOutput implements GiftRegistryOutputInterface, GiftRegistryErrorsInterface {
 }
 
-type GiftRegistryItemUserError {
+type GiftRegistryItemError {
     message: String!
     product_uid: ID
     gift_registry_item_uid: ID
     gift_registry_uid: ID
-    code: GiftRegistryItemsUserErrorType!
+    code: GiftRegistryItemsErrorType!
 }
 
-enum GiftRegistryItemsUserErrorType {
+enum GiftRegistryItemsErrorType {
     OUT_OF_STOCK
     NOT_FOUND @doc(description: "Used for exceptions like EntityNotFound")
     UNDEFINED @doc(description: "Used for other exceptions like db connection failures or other exceptions")
