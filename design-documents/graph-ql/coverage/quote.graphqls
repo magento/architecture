@@ -2,27 +2,27 @@
 # See COPYING.txt for license details.
 
 type Query {
-    cart(cart_id: String!): Cart @resolver (class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\Cart") @doc(description:"Returns information about shopping cart") @cache(cacheable: false)
-    customerCart: Cart! @resolver (class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\CustomerCart") @doc(description:"Returns information about the customer shopping cart") @cache(cacheable: false)
+    cart(cart_id: String!): Cart @doc(description:"Returns information about shopping cart") @cache(cacheable: false)
+    customerCart: Cart! @doc(description:"Returns information about the customer shopping cart") @cache(cacheable: false)
 }
 
 type Mutation {
-    createEmptyCart(input: createEmptyCartInput): String @resolver(class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\CreateEmptyCart") @doc(description:"Creates an empty shopping cart for a guest or logged in user")
-    addSimpleProductsToCart(input: AddSimpleProductsToCartInput): AddSimpleProductsToCartOutput @resolver(class: "Magento\\QuoteGraphQl\\Model\\Resolver\\AddSimpleProductsToCart")
-    addVirtualProductsToCart(input: AddVirtualProductsToCartInput): AddVirtualProductsToCartOutput @resolver(class: "Magento\\QuoteGraphQl\\Model\\Resolver\\AddSimpleProductsToCart")
-    applyCouponToCart(input: ApplyCouponToCartInput): ApplyCouponToCartOutput @resolver(class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\ApplyCouponToCart")
-    removeCouponFromCart(input: RemoveCouponFromCartInput): RemoveCouponFromCartOutput @resolver(class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\RemoveCouponFromCart")
-    updateCartItems(input: UpdateCartItemsInput): UpdateCartItemsOutput @resolver(class: "Magento\\QuoteGraphQl\\Model\\Resolver\\UpdateCartItems")
-    removeItemFromCart(input: RemoveItemFromCartInput): RemoveItemFromCartOutput @resolver(class: "Magento\\QuoteGraphQl\\Model\\Resolver\\RemoveItemFromCart")
-    setShippingAddressesOnCart(input: SetShippingAddressesOnCartInput): SetShippingAddressesOnCartOutput @resolver(class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\SetShippingAddressesOnCart")
-    setBillingAddressOnCart(input: SetBillingAddressOnCartInput): SetBillingAddressOnCartOutput @resolver(class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\SetBillingAddressOnCart")
-    setShippingMethodsOnCart(input: SetShippingMethodsOnCartInput): SetShippingMethodsOnCartOutput @resolver(class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\SetShippingMethodsOnCart")
-    setPaymentMethodOnCart(input: SetPaymentMethodOnCartInput): SetPaymentMethodOnCartOutput @resolver(class: "Magento\\QuoteGraphQl\\Model\\Resolver\\SetPaymentMethodOnCart")
-    setGuestEmailOnCart(input: SetGuestEmailOnCartInput): SetGuestEmailOnCartOutput @resolver(class: "Magento\\QuoteGraphQl\\Model\\Resolver\\SetGuestEmailOnCart")
-    setPaymentMethodAndPlaceOrder(input: SetPaymentMethodAndPlaceOrderInput): PlaceOrderOutput @deprecated(reason: "Should use setPaymentMethodOnCart and placeOrder mutations in single request.") @resolver(class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\SetPaymentAndPlaceOrder")
-    mergeCarts(source_cart_id: String!, destination_cart_id: String!): Cart! @doc(description:"Merges the source cart into the destination cart") @resolver(class: "Magento\\QuoteGraphQl\\Model\\Resolver\\MergeCarts")
-    placeOrder(input: PlaceOrderInput): PlaceOrderOutput @resolver(class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\PlaceOrder")
-    addProductsToCart(cartId: String!, cartItems: [CartItemInput!]!): AddProductsToCartOutput @doc(description:"Add any type of product to the cart") @resolver(class: "Magento\\QuoteGraphQl\\Model\\Resolver\\AddProductsToCart")
+    createEmptyCart(input: createEmptyCartInput): String @doc(description:"Creates an empty shopping cart for a guest or logged in user")
+    addSimpleProductsToCart(input: AddSimpleProductsToCartInput): AddSimpleProductsToCartOutput
+    addVirtualProductsToCart(input: AddVirtualProductsToCartInput): AddVirtualProductsToCartOutput
+    applyCouponToCart(input: ApplyCouponToCartInput): ApplyCouponToCartOutput
+    removeCouponFromCart(input: RemoveCouponFromCartInput): RemoveCouponFromCartOutput
+    updateCartItems(input: UpdateCartItemsInput): UpdateCartItemsOutput
+    removeItemFromCart(input: RemoveItemFromCartInput): RemoveItemFromCartOutput
+    setShippingAddressesOnCart(input: SetShippingAddressesOnCartInput): SetShippingAddressesOnCartOutput
+    setBillingAddressOnCart(input: SetBillingAddressOnCartInput): SetBillingAddressOnCartOutput
+    setShippingMethodsOnCart(input: SetShippingMethodsOnCartInput): SetShippingMethodsOnCartOutput
+    setPaymentMethodOnCart(input: SetPaymentMethodOnCartInput): SetPaymentMethodOnCartOutput
+    setGuestEmailOnCart(input: SetGuestEmailOnCartInput): SetGuestEmailOnCartOutput
+    setPaymentMethodAndPlaceOrder(input: SetPaymentMethodAndPlaceOrderInput): PlaceOrderOutput @deprecated(reason: "Should use setPaymentMethodOnCart and placeOrder mutations in single request.")
+    mergeCarts(source_cart_id: String!, destination_cart_id: String!): Cart! @doc(description:"Merges the source cart into the destination cart")
+    placeOrder(input: PlaceOrderInput): PlaceOrderOutput
+    addProductsToCart(cartId: String!, cartItems: [CartItemInput!]!): AddProductsToCartOutput @doc(description:"Add any type of product to the cart")
 }
 
 input createEmptyCartInput {
@@ -180,14 +180,17 @@ input SetGuestEmailOnCartInput {
     email: String!
 }
 
-type CartPrices {
+interface QuotePricesInterface {
     grand_total: Money
     subtotal_including_tax: Money
     subtotal_excluding_tax: Money
     discount: CartDiscount @deprecated(reason: "Use discounts instead ")
     subtotal_with_discount_excluding_tax: Money
     applied_taxes: [CartTaxItem]
-    discounts: [Discount] @doc(description:"An array of applied discounts") @resolver(class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\Discounts")
+    discounts: [Discount] @doc(description:"An array of applied discounts")
+}
+
+type CartPrices implements QuotePricesInterface {
 }
 
 type CartTaxItem {
@@ -225,21 +228,21 @@ type PlaceOrderOutput {
 }
 
 type Cart {
-    id: ID! @resolver(class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\MaskedCartId") @doc(description: "The ID of the cart.")
-    items: [CartItemInterface] @resolver(class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\CartItems")
-    applied_coupon: AppliedCoupon @resolver(class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\AppliedCoupon") @doc(description:"An array of coupons that have been applied to the cart") @deprecated(reason: "Use applied_coupons instead ")
-    applied_coupons: [AppliedCoupon] @resolver(class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\AppliedCoupons") @doc(description:"An array of `AppliedCoupon` objects. Each object contains the `code` text attribute, which specifies the coupon code")
-    email: String @resolver (class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\CartEmail")
-    shipping_addresses: [ShippingCartAddress]! @resolver(class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\ShippingAddresses")
-    billing_address: BillingCartAddress @resolver(class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\BillingAddress")
-    available_payment_methods: [AvailablePaymentMethod] @resolver(class: "Magento\\QuoteGraphQl\\Model\\Resolver\\AvailablePaymentMethods") @doc(description: "Available payment methods")
-    selected_payment_method: SelectedPaymentMethod @resolver(class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\SelectedPaymentMethod")
-    prices: CartPrices @resolver(class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\CartPrices")
-    total_quantity: Float! @resolver(class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\CartTotalQuantity")
-    is_virtual: Boolean! @resolver(class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\CartIsVirtual")
+    id: ID! @doc(description: "The ID of the cart.")
+    items: [CartItemInterface]
+    applied_coupon: AppliedCoupon @doc(description:"An array of coupons that have been applied to the cart") @deprecated(reason: "Use applied_coupons instead ")
+    applied_coupons: [AppliedCoupon] @doc(description:"An array of `AppliedCoupon` objects. Each object contains the `code` text attribute, which specifies the coupon code")
+    email: String
+    shipping_addresses: [ShippingCartAddress]!
+    billing_address: BillingCartAddress
+    available_payment_methods: [AvailablePaymentMethod] @doc(description: "Available payment methods")
+    selected_payment_method: SelectedPaymentMethod
+    prices: CartPrices
+    total_quantity: Float!
+    is_virtual: Boolean!
 }
 
-interface CartAddressInterface @typeResolver(class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\CartAddressTypeResolver") {
+interface CartAddressInterface {
     firstname: String!
     lastname: String!
     company: String
@@ -252,8 +255,8 @@ interface CartAddressInterface @typeResolver(class: "\\Magento\\QuoteGraphQl\\Mo
 }
 
 type ShippingCartAddress implements CartAddressInterface {
-    available_shipping_methods: [AvailableShippingMethod] @resolver(class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\ShippingAddress\\AvailableShippingMethods")
-    selected_shipping_method: SelectedShippingMethod @resolver(class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\ShippingAddress\\SelectedShippingMethod")
+    available_shipping_methods: [AvailableShippingMethod]
+    selected_shipping_method: SelectedShippingMethod
     customer_notes: String
     items_weight: Float @deprecated(reason: "This information shoud not be exposed on frontend")
     cart_items: [CartItemQuantity] @deprecated(reason: "`cart_items_v2` should be used instead")
@@ -346,18 +349,18 @@ type SetGuestEmailOnCartOutput {
 }
 
 type SimpleCartItem implements CartItemInterface @doc(description: "Simple Cart Item") {
-    customizable_options: [SelectedCustomizableOption] @resolver(class: "Magento\\QuoteGraphQl\\Model\\Resolver\\CustomizableOptions")
+    customizable_options: [SelectedCustomizableOption]
 }
 
 type VirtualCartItem implements CartItemInterface @doc(description: "Virtual Cart Item") {
-    customizable_options: [SelectedCustomizableOption] @resolver(class: "Magento\\QuoteGraphQl\\Model\\Resolver\\CustomizableOptions")
+    customizable_options: [SelectedCustomizableOption]
 }
 
-interface CartItemInterface @typeResolver(class: "Magento\\QuoteGraphQl\\Model\\Resolver\\CartItemTypeResolver") {
+interface CartItemInterface {
     id: String! @deprecated(reason: "Use CartItemInterface.uid instead")
     uid: ID! @doc(description: "Unique identifier for a Cart Item")
     quantity: Float!
-    prices: CartItemPrices @resolver(class: "\\Magento\\QuoteGraphQl\\Model\\Resolver\\CartItemPrices")
+    prices: QuoteItemPricesInterface
     product: ProductInterface!
 }
 
@@ -366,13 +369,16 @@ type Discount @doc(description:"Defines an individual discount. A discount can b
     label: String! @doc(description:"A description of the discount")
 }
 
-type CartItemPrices {
+type QuoteItemPricesInterface {
     price: Money! @doc(description:"Item price that might include tax depending on display settings for cart")
     fixed_product_taxes: [FixedProductTax] @doc(description:"Applied FPT to the cart item")
     row_total: Money!
     row_total_including_tax: Money!
     discounts: [Discount] @doc(description:"An array of discounts to be applied to the cart item")
     total_item_discount: Money @doc(description:"The total of all discounts applied to the item")
+}
+
+type CartItemPrices implements QuoteItemPricesInterface {
 }
 
 type SelectedCustomizableOption {

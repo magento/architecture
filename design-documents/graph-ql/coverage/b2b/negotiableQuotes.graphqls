@@ -185,7 +185,7 @@ type NegotiableQuote {
     # attachments: [AttachmentContent]
     comments: [NegotiableQuoteComment!]
     history: [NegotiableQuoteHistoryEntry!]
-    prices: CartPrices
+    prices: NegotiableQuotePrices
     buyer: NegotiableQuoteUser!
     created_at: String @doc(description: "Timestamp indicating when the negotiable quote was created.")
     updated_at: String @doc(description: "Timestamp indicating when the negotiable quote was updated.")
@@ -230,14 +230,14 @@ type NegotiableQuoteHistoryEntry {
     changes: NegotiableQuoteHistoryChanges
 }
 
-type CartPrices {
-    initial_total_price: Money
+type NegotiableQuotePrices implements QuotePricesInterface {
+    initial_grand_total: Money!
 }
 
-type CartItemPrices {
-    initial_price: Money
-    initial_row_total: Money
-    initial_row_total_including_tax: Money
+type NegotiableQuoteItemPrices implements QuoteItemPricesInterface {
+    initial_price: Money!
+    initial_row_total: Money!
+    initial_row_total_including_tax: Money!
 }
 
 # Note: Most of these HistoryChange types were built based on looking through UI code in Luma, because we don't have existing API
