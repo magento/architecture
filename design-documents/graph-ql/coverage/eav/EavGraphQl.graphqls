@@ -23,11 +23,13 @@ type StorefrontProperties {
    position: Int
    visible_on_catalog_storefront: Boolean
    use_in_layered_navigation: UseInLayeredNavigationOptions
+   use_in_search_results_layered_navigation: Boolean
+   use_in_search: Boolean
 }
 
 enum UseInLayeredNavigationOptions {
   NO
-  FILTERABLE_WTH_RESULTS
+  FILTERABLE_WITH_RESULTS
   FILTERABLE_NO_RESULT
 }
 
@@ -39,4 +41,9 @@ type AttributeOption @doc(description: "Attribute option.") {
 input AttributeInput @doc(description: "AttributeInput specifies the attribute_code and entity_type to search") {
     attribute_code: String @doc(description: "The unique identifier for an attribute code. This value should be in lowercase letters without spaces.")
     entity_type: String @doc(description: "The type of entity that defines the attribute")
+}
+
+# Additional changes made in CatalogGraphQl schema
+type Aggregation @doc(description: "A bucket that contains information for each filterable option (such as price, category `UID`, and custom attributes).") {
+    position: Int @doc(description: "The position of attribute in layered navigation block.")
 }
