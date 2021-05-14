@@ -1,0 +1,214 @@
+type Query {
+    customAttributeMetadataV2(attributes: [AttributeMetadataInput!]!): CustomAttributeMetadata
+    customAttributesLists(listType: CustomAttributesListsEnum): CustomAttributeMetadata
+}
+
+type AttributeMetadataInput {
+    attribute_uid: ID
+}
+
+type CustomAttributeMetadata { # this replaces existing Attribute type
+    items: [AttributeMetadataInterface]
+}
+
+interface AttributeMetadataInterface { # base metadata common to all attributes
+    uid: ID # base64Encode(entityID/codeID)
+    label: String
+    data_type: ObjectDataTypeEnum # string, int, float, boolean etc
+    sort_order: Int
+    entity_type: EntityTypeEnum
+    ui_input: UiInputTypeInterface!
+}
+
+type CustomerAttributeMetadata implements AttributeMetadataInterface {
+    forms_to_use_in: [CustomAttributesListsEnum]
+}
+
+type CustomerAddressAttributeMetadata implements AttributeMetadataInterface {
+}
+
+type ProductAttributeMetadata implements AttributeMetadataInterface {
+    lists_to_use_in: [CustomAttributesListsEnum]
+}
+
+# interfaces for different types used in inputs --------------
+
+interface UiInputTypeInterface {
+    ui_input_type: EntityTypeEnum
+    is_value_required: Boolean!
+}
+
+interface ValidationTextInputTypeInterface {
+    filter: InputValidationFilterEnum
+}
+
+interface FilterableTextInputTypeInterface {
+    input_validation: FilterableText
+}
+
+interface AttributeOptionsInterface {
+    attribute_options: [AttributeOptionInterface]
+}
+
+interface AttributeOptionInterface {
+    uid: ID!
+    is_default: Boolean
+    label: String
+}
+
+interface SelectableInputTypeInterface {
+
+}
+
+interface TextInputTypeInterface {
+    default_value: String
+}
+
+type FilterableText {
+    input_validation_type: InputValidationTypeEnum
+    minimum_text_length: Int
+    maximum_text_length: Int
+}
+
+type TextUiInputType implements UiInputTypeInterface, TextInputTypeInterface, FilterableTextInputTypeInterface, ValidationTextInputTypeInterface {
+
+}
+
+type TextAreaUiInputType implements UiInputTypeInterface, TextInputTypeInterface, FilterableTextInputTypeInterface, ValidationTextInputTypeInterface {
+
+}
+
+type MultipleLineUiInputType implements UiInputTypeInterface, TextInputTypeInterface, FilterableTextInputTypeInterface, ValidationTextInputTypeInterface {
+    lines_count: Int
+}
+
+type DateUiInputType implements UiInputTypeInterface, TextInputTypeInterface, FilterableTextInputTypeInterface {
+    minimum_date_allowed: String
+    maximum_date_allowed: String
+}
+
+type FileUiInputType implements UiInputTypeInterface, TextInputTypeInterface, FilterableTextInputTypeInterface {
+    maximum_file_size: Int # bytes
+    allowed_file_extensions: [String]
+}
+
+type ImageUiInputType implements UiInputTypeInterface, TextInputTypeInterface, FilterableTextInputTypeInterface {
+    maximum_file_size: Int # bytes
+    allowed_file_extensions: [String]
+    maximum_image_width: Int # in pixels
+    maximum_image_height: Int # in pixels
+}
+
+type DropDownUiInputType implements UiInputTypeInterface, SelectableInputTypeInterface, AttributeOptionsInterface {
+}
+
+type MultipleSelectUiInputType implements UiInputTypeInterface, SelectableInputTypeInterface, AttributeOptionsInterface {
+}
+
+interface SwatchInputTypeInterface {
+    update_product_preview_image: Boolean
+}
+
+type VisualSwatchUiInputType implements UiInputTypeInterface, SelectableInputTypeInterface, AttributeOptionsInterface, SwatchInputTypeInterface {
+    use_product_image_for_swatch_if_possible: Boolean
+}
+
+type TextSwatchUiInputType implements UiInputTypeInterface, SelectableInputTypeInterface, AttributeOptionsInterface, SwatchInputTypeInterface {
+
+}
+
+type AttributeOption implements AttributeOptionInterface {
+    value: String @deprecated(reason: "use `uid` instead")
+    label: String
+}
+
+interface SelectableInputTypeInterface {
+
+}
+
+type ColorSwatchAttributeOption implements AttributeOptionInterface {
+    color: String # html hex code format
+}
+
+type ImageSwatchAttributeOption implements AttributeOptionInterface {
+    image_path: String # relative path
+}
+
+type TextSwatchAttributeOption implements AttributeOptionInterface {
+    description: String
+}
+
+#enums to support above queries
+enum ObjectDataTypeEnum {
+    STRING
+    FLOAT
+    INT
+    BOOLEAN
+}
+
+enum EntityTypeEnum {
+    CUSTOMER
+    CUSTOMER_ADDRESS
+    CATALOG_CATEGORY
+    CATALOG_PRODUCT
+    ORDER
+    INVOICE
+    CREDITMEMO
+    SHIPMENT
+    RMA_ITEM
+    GENERIC
+}
+
+enum UiInputTypeEnum {
+    TEXT
+    TEXTAREA
+    MULTILINE
+    DATE
+    DATETIME
+    SELECT
+    MULTISELECT
+    BOOLEAN
+    FILE
+    IMAGE
+    SWATCH_VISUAL
+    SWATCH_TEXT
+    PRICE
+    MEDIA_IMAGE
+    WEEE
+}
+
+enum InputValidationTypeEnum {
+    ALPHANUMERIC
+    ALPHANUMERIC_WITH_SPACES
+    NUMERIC_ONLY
+    ALLPHA_ONLY
+    DATE
+    URL
+    EMAIL
+    LENGTH_ONLY
+}
+
+enum InputValidationFilterEnum {
+    STRIPTAGS
+    ESCAPEHTML
+    DATE
+}
+
+enum CustomerAttributeFormsEnum {
+    CUSTOMER_ACCOUNT_CREATE
+    CUSTOMER_ACCOUNT_EDIT
+    ADMINHTML_CHECKOUT
+}
+
+enum CustomAttributesListsEnum {
+    PRODUCTS_COMPARE
+    PRODUCTS_LISTING
+    ADVANCED_CATALOG_SEARCH
+    PRODUCT_SORT
+    PRODUCT_FILTER
+    PRODUCT_SEARCH_RESULTS
+    PRODUCT_AGGREGATIONS
+    RMA_FORM
+    CUSTOMER_REGISTRATION_FORM
+    CUSTOMER_ADDRESS_FORM
+}

@@ -11,49 +11,137 @@ Additionally, there should be a way to retrieve metadata for all storefront cust
 
 # Proposed solution
 
-Relaxing signature of existing `customAttributeMetadata` query by making its `attriubtes` argument optional will allow to fetch all storefront attributes metadata.
+Relaxing signature of existing `customAttributeMetadata` query by making its `attributes` argument optional will allow to fetch all storefront attributes metadata.
 
 Existing schema:
 ```graphql
-Query.customAttributeMetadata(
+Query.customAttributesMetadata(
     attributes: [AttributeInput!]!
 ): CustomAttributeMetadata
+```
 
-type AttributeInput {
-    attribute_code: String
-    entity_type: String
+Added schema:
+
+```graphql
+Query.customAttributesMetadataV2(
+    attributes: [AttributeMetadataInput!]
+): CustomAttributeMetadata
+
+#adding to existing type a choice of uid or code and 
+input AttributeMetadataInput {
+    attribute_uid: ID
 }
 
-type CustomAttributeMetadata {
-    items: [Attribute]
+type CustomAttributeMetadata { # this replaces existing Attribute type
+    items: [AttributeMetadataInterface]
 }
 
-type Attribute {
-    attribute_code: String
-    attribute_options: [AttributeOption]
-    attribute_type: String
-    entity_type: String
-    input_type: String
-}
-
-type AttributeOption {
+interface AttributeMetadataInterface { # base metadata common to all attributes
+    uid: ID # base64Encode(entityID/codeID)
     label: String
-    value: String
+    data_type: ObjectDataTypeEnum # string, int, float, boolean etc
+    sort_order: Int
+    entity_type: EntityTypeEnum
+    ui_input: UiInputTypeInterface!
+}
+
+type CustomerAttributeMetadata implements AttributeMetadataInterface {
+    forms_to_use_in: [CustomAttributesListsEnum]
+}
+
+type CustomerAddressAttributeMetadata implements AttributeMetadataInterface {
+}
+
+type ProductAttributeMetadata implements AttributeMetadataInterface {
+    lists_to_use_in: [CustomAttributesListsEnum]
+}
+
+type TextUiInputType implements UiInputTypeInterface, TextInputTypeInterface, FilterableTextInputTypeInterface, ValidationTextInputTypeInterface {
+
+}
+
+type TextAreaUiInputType implements UiInputTypeInterface, TextInputTypeInterface, FilterableTextInputTypeInterface, ValidationTextInputTypeInterface {
+
+}
+
+type MultipleLineUiInputType implements UiInputTypeInterface, TextInputTypeInterface, FilterableTextInputTypeInterface, ValidationTextInputTypeInterface {
+    lines_count: Int
+}
+
+type DateUiInputType implements UiInputTypeInterface, TextInputTypeInterface, FilterableTextInputTypeInterface {
+    minimum_date_allowed: String
+    maximum_date_allowed: String
+}
+
+type FileUiInputType implements UiInputTypeInterface, TextInputTypeInterface, FilterableTextInputTypeInterface {
+    maximum_file_size: Int # bytes
+    allowed_file_extensions: [String]
+}
+
+type ImageUiInputType implements UiInputTypeInterface, TextInputTypeInterface, FilterableTextInputTypeInterface {
+    maximum_file_size: Int # bytes
+    allowed_file_extensions: [String]
+    maximum_image_width: Int # in pixels
+    maximum_image_height: Int # in pixels
+}
+
+type DropDownUiInputType implements UiInputTypeInterface, SelectableInputTypeInterface, AttributeOptionsInterface {
+}
+
+type MultipleSelectUiInputType implements UiInputTypeInterface, SelectableInputTypeInterface, AttributeOptionsInterface {
+}
+
+interface SwatchInputTypeInterface {
+    update_product_preview_image: Boolean
+}
+
+type VisualSwatchUiInputType implements UiInputTypeInterface, SelectableInputTypeInterface, AttributeOptionsInterface, SwatchInputTypeInterface {
+    use_product_image_for_swatch_if_possible: Boolean
+}
+
+type TextSwatchUiInputType implements UiInputTypeInterface, SelectableInputTypeInterface, AttributeOptionsInterface, SwatchInputTypeInterface {
+
+}
+
+type AttributeOption implements AttributeOptionInterface {
+    value: String @deprecated(reason: "use `uid` instead")
+    label: String
+}
+
+type ColorSwatchAttributeOption implements AttributeOptionInterface {
+    color: String # html hex code format
+}
+
+type ImageSwatchAttributeOption implements AttributeOptionInterface {
+    image_path: String # relative path
+}
+
+type TextSwatchAttributeOption implements AttributeOptionInterface {
+    description: String
 }
 ```
 
 Additional fields should be added to the metadata response (`Attribute`  type), for example `is_dynamic`, `use_in_compare_products`, `display_in_product_listing`, `use_in_advanced_search`, `advanced_search_input_type`. The exact list of fields must be discussed and approved separately.
 
-Introduction of the following query will allow fetching lists of attributes applicable to specific pages:
+See full schema [attributes-metadata.graphqls](attributes-metadata.graphqls)
+
+Introduction of the following query will allow fetching lists of attributes applicable to specific artifacts/listings:
 ```graphql
-pageSpecificCustomAttributes(
-    page_type: CustomAttributesPageEnum
+customAttributesLists(
+    listType: CustomAttributesListingsEnum
 ): CustomAttributeMetadata
 
-enum CustomAttributesPageEnum {
+enum CustomAttributesListingsEnum {
     PRODUCTS_COMPARE
     PRODUCTS_LISTING
     ADVANCED_CATALOG_SEARCH
+    PRODUCT_SORT
+    PRODUCT_FILTER
+    PRODUCT_SEARCH_RESULTS
+    PRODUCT_AGGREGATIONS
+    RMA_FORM
+    CUSTOMER_REGISTRATION_FORM
+    CUSTOMER_ADDRESS_FORM
 }
 ```
 
