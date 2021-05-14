@@ -1,0 +1,41 @@
+type Query {
+    #initially we have to still support numeric ids
+    node(id: Int & uid: ID): Node
+}
+
+interface NodeInterface {
+    uid: ID! @doc(description: "The unique ID for a `Node")
+}
+
+type Node implements NodeInterface {
+    # inherits uid: ID! @doc(description: "The unique ID for a `Node")
+}
+
+#adding to every product type a node interface
+type SimpleProduct implements ProductInterface & NodeInterface & PhysicalProductInterface & CustomizableProductInterface {
+}
+
+type VirtualProduct implements ProductInterface & NodeInterface & CustomizableProductInterface {
+}
+
+#adding to every product type a node interface & also look for additional modules
+type ConfigurableProduct implements ProductInterface & NodeInterface & PhysicalProductInterface & CustomizableProductInterface {
+}
+
+type BundleProduct implements ProductInterface & NodeInterface & PhysicalProductInterface & CustomizableProductInterface {
+}
+
+type DownloadableProduct implements ProductInterface & NodeInterface & CustomizableProductInterface {
+}
+
+type GroupedProduct implements ProductInterface & NodeInterface & PhysicalProductInterface {
+}
+
+type GiftCardProduct implements ProductInterface & PhysicalProductInterface & CustomizableProductInterface {
+}
+
+type CategoryTree implements CategoryInterface & NodeInterface {
+}
+
+type CmsPage implements NodeInterface {
+}
