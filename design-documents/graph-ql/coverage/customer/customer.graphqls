@@ -27,6 +27,7 @@ type Mutation {
     resetPassword(email: String!, resetPasswordToken: String!, newPassword: String!): Boolean  @resolver(class: "\\Magento\\CustomerGraphQl\\Model\\Resolver\\ResetPassword") @doc(description: "Reset a customer's password using the reset password token that the customer received in an email after requesting it using requestPasswordResetEmail.")
 }
 
+# todo: We have a problem here that some fields should be required, but that is a breaking schema change?
 input CustomerAddressInput {
     firstname: String @doc(description: "The first name of the person associated with the shipping/billing address")
     lastname: String @doc(description: "The family name of the person associated with the shipping/billing address")
@@ -36,8 +37,9 @@ input CustomerAddressInput {
     city: String @doc(description: "The city or town")
     region: CustomerAddressRegionInput @doc(description: "An object containing the region name, region code, and region ID")
     postcode: String @doc(description: "The customer's ZIP or postal code")
-    country_id: CountryCodeEnum @doc(description: "Deprecated: use `country_code` instead.")
-    country_code: CountryCodeEnum @doc(description: "The customer's country")
+    country_id: CountryCodeEnum @deprecated(reason: "Use `country_code_v2` instead.")
+    country_code: CountryCodeEnum @doc(description: "The customer's country") @deprecated(reason: "Use `country_code_v2` instead.")
+    country_code_v2: String @doc(description: "The customer's country. See 'countries' query.")
     default_shipping: Boolean @doc(description: "Indicates whether the address is the default shipping address")
     default_billing: Boolean @doc(description: "Indicates whether the address is the default billing address")
     fax: String @doc(description: "The fax number")
@@ -147,7 +149,7 @@ type IsEmailAvailableOutput {
     is_email_available: Boolean @doc(description: "Is email availabel value")
 }
 
-enum CountryCodeEnum @doc(description: "The list of countries codes") {
+enum CountryCodeEnum @doc(description: "The list of countries codes") @deprecated(reason: "Use in favor of the id type Country") {
     AF @doc(description: "Afghanistan")
     AX @doc(description: "Åland Islands")
     AL @doc(description: "Albania")

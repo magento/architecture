@@ -38,17 +38,25 @@ input ShippingAddressInput {
 }
 
 input CartAddressInput {
+    prefix: String  @doc(description: "An honorific, such as Dr., Mr., or Mrs. See StoreConfig.address_prefix and StoreConfig.address_prefix_options")
     firstname: String!
+    middlename: String @doc(description: "Middlename of a person. See StoreConfig.address_middlename")
     lastname: String!
-    company: String
+    suffix: String  @doc(description: "A value such as Sr., Jr., or III. See StoreConfig.address_suffix and StoreConfig.address_suffix_options")
+    gender: GenderEnum @doc(description: "Please check StoreConfig.address_gender if field is required")
+    company: String  @doc(description: "Please check StoreConfig.address_company if field is required")
     street: [String!]!
     city: String!
-    region: String
-    postcode: String
+    region: String @doc(description: "See Country type for field requirements")
+    postcode: String @doc(description: "See Country type for field requirements")
     country_code: String!
-    telephone: String!
+    date_of_birth: String @doc(description: "Please check StoreConfig.address_date_of_birth if field is required"),
+    telephone: String @doc(description: "Please check StoreConfig.address_telephone if field is required"),
+    fax: String @doc(description: "Please check StoreConfig.address_fax if field is required"),
+    vat_id: String @doc(description: "Please check StoreConfig.address_taxvat if field is required"),
     save_in_address_book: Boolean!
 }
+
 
 type SetShippingAddressesOnCartOutput {
     cart: Cart!
@@ -68,15 +76,24 @@ type Cart {
 }
 
 interface CartAddressInterface {
-    firstname: String
-    lastname: String
+    prefix: String @doc(description: "An honorific, such as Dr., Mr., or Mrs.")
+    firstname: String!
+    middlename: String
+    lastname: String!
+    suffix: String @doc(description: "A value such as Sr., Jr., or III.")
+    gender: GenderEnum
     company: String
     street: [String]
-    city: String
-    region: CartAddressRegion
+    city: String!
+    region: CartAddressRegion @deprecated(reason: "Deprecated use `region_v2`")
+    region_v2: Region
     postcode: String
-    country: CartAddressCountry
+    country: CartAddressCountry @deprecated(reason: "Deprecated use `country_v2`")
+    country_v2: Country
+    date_of_birth: String
     telephone: String
+    fax: String
+    vat_id: String
 }
 
 type ShippingCartAddress implements CartAddressInterface {

@@ -53,7 +53,8 @@ type CompanyLegalAddress @doc(description: "Company legal address output data sc
     street: [String] @doc(description: "An array of strings that defines the Company's street address.")
     city: String @doc(description: "City name.")
     region: CustomerAddressRegion @doc(description: "An object containing region data for the Company.")
-    country_code: CountryCodeEnum @doc(description: "Country code.")
+    country_code: String @doc(description: "Country code.") @deprecated(reason: "Use country instead")
+    country: Country
     postcode: String @doc(description: "ZIP/postal code.")
     telephone: String @doc(description: "Company's phone number.")
 }
@@ -230,7 +231,8 @@ input CompanyAdminInput @doc(description: "Defines the Company's Administrator i
 input CompanyLegalAddressCreateInput @doc(description: "Defines the Company legal address input data schema for creating a new entity.") {
     street: [String!]! @doc(description: "An array of strings that define the Company street address. Required array value for a field with strings as values of array.")
     city: String! @doc(description: "Company's city name. Required.")
-    country_id: CountryCodeEnum! @doc(description: "Company's country ID. Required. See 'countries' query. Required.")
+    country_id: String! @doc(description: "Company's country ID. Required. See 'countries' query. Required.") @deprecated(reason: "Use `country_code` instead")
+    country_code: String! @doc(description: "Company's country code. Required. See 'countries query. Required.")
     region: CustomerAddressRegionInput! @doc(description: "An object containing the region name and/or region ID. Required.")
     postcode: String! @doc(description: "Company's ZIP/postal code. Required.")
     telephone: String! @doc(description: "Company's phone number. Required.")
@@ -248,7 +250,8 @@ input CompanyUpdateInput @doc(description: "Defines the Company input data schem
 input CompanyLegalAddressUpdateInput @doc(description: "Defines the Company legal address input data schema for updating an existing entity. Allows only needed fields to be passed for update.") {
     street: [String!] @doc(description: "An array of strings that define the Company street address.")
     city: String @doc(description: "Company's city name.")
-    country_id: CountryCodeEnum @doc(description: "Company's country ID. See 'countries' query.")
+    country_id: String @doc(description: "Company's country ID. See 'countries' query.") @deprecated(reason: "Use `country_code` instead")
+    country_code: String @doc(description: "Company's country ID. See 'countries' query.")
     region: CustomerAddressRegionInput @doc(description: "An object containing the region name and/or region ID. Required.")
     postcode: String @doc(description: "Company's ZIP/postal code.")
     telephone: String @doc(description: "Company's phone number.")
