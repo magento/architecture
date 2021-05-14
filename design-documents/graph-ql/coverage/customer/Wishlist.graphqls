@@ -159,7 +159,7 @@ type CreateWishlistOutput {
 
 type DeleteWishlistOutput {
     status: Boolean!
-    wishlists: [Wishlist!]!
+    wishlists: [Wishlist!]! @doc(description: "A customer will always have at least one wishlist")
 }
 
 input WishlistItemCopyInput {
@@ -189,4 +189,14 @@ type MoveProductsBetweenWishlistsOutput {
 type StoreConfig {
     maximum_number_of_wishlists: Int @doc(description: "If multiple wish lists are enabled, the maximum number of wish lists the customer can have")
     enable_multiple_wishlists: Boolean @doc(description: "Indicates whether customers can have multiple wish lists.")
+}
+
+#Allow Products to show assigned wishlists
+type ProductInterface {
+    wishlists: [WishlistReference]! @doc(description: "A product can be assigned to multiple wishlists, and by default is not assigned to any wishlist")
+}
+
+type WishlistReference {
+    wishlist_uid: ID!
+    name: String
 }

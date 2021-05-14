@@ -111,3 +111,35 @@ type WishlistItem {
 }
 ```
 This value was previously used for display only, other operations like update or delete are not implemented yet.
+
+## Exposure through product interface
+
+When rendering a product you need to know which wishlists a particular product is assigned to. This is in a way just like categories.
+
+Example:
+``` graphql
+type ProductInterface {
+    wishlists: [WishlistReference]! @doc(description: "A product can be assigned to multiple wishlist of none")
+}
+type WishlistReference {
+   wishlist_uid: ID!
+   name: String
+}
+```
+
+By default a product is not assigned to any wishlist
+
+### Considerations of performance optimizations and usages
+The UI really needs this to render a PDP page or Category with products page and list a dropdown of wishlists of which the product is assigned to.
+It won't need all the data in wishlist for this purpose. However, it would need all the wish lists available and only check the ones that the product belongs to.
+
+The question is: Do we reference the Wishlist and create a minimal type based on what the UI would need or do we just output the whole Wishlist as a true graph would do?
+
+Example:
+``` graphql
+type ProductInterface {
+    wishlists: [Wishlist]! @doc(description: "A product can be assigned to multiple wishlist or now wishlist")
+}
+```
+
+By only going with a small subset of the Wishlist type (`WishlistRerefence`) can improve performance by "cutting the graph" and returning something fit for UI needs rather than loop through all the wishlist.

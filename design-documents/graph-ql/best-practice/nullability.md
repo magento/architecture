@@ -51,7 +51,7 @@ type Query {
    product(id: ID): Product
 }
 
-type Product {
+type ProductInterface {
     id: ID!
     name: String!
     price: Money!
@@ -128,7 +128,7 @@ It very rarely makes sense to have a resource that _can_ have an ID but might no
 IDs are extremely important for caching in most GraphQL clients, so it's worthwhile to be safe here.
 
 ```graphql
-type Product {
+type ProductInterface {
     id: ID! # Rarely makes sense for this to be nullable
 }
 ```
@@ -152,7 +152,7 @@ If you're not dealing with an `id` field or a top-level `Query` field, the most 
 #### Example: Parent still usable with field error
 
 ```graphql
-type Product {
+type ProductInterface {
     # Recommended products are not critical data on a product page, and a UI can represent
     # a product safely without related products, so we keep the field nullable
     recommended_products: ProductRecommendations
@@ -162,7 +162,7 @@ type Product {
 #### Example: Parent not usable with field error
 
 ```graphql
-type Product {
+type ProductInterface {
     # A user would not be able to add a product to the cart from the Product
     # details page if this field fails, because it may have required options.
     # We make the field's type non-nullable
@@ -196,7 +196,7 @@ When deciding whether _List items_ should be nullable, the most important questi
 #### Example: Parent not usable if an item in List has an error
 
 ```graphql
-type Product {
+type ProductInterface {
    # Note: The "!" inside of the List ([]) means the list items are non-nullable
    # Making the list items non-nullable guarantees to the client that, if they receive
    # a list of product options, it will be complete/without errors
@@ -207,7 +207,7 @@ type Product {
 #### Example: Parent still usable if an item in List has an error
 
 ```graphql
-type Product {
+type ProductInterface {
     # The absence of a "!" inside the list means that we could fail
     # to fetch a nested field in a related product, and it won't
     # impact our ability to render the rest of the product page
