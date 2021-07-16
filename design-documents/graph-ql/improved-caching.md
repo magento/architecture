@@ -52,20 +52,20 @@ This requires a VCL change, but only once; the VCL code will not care about the 
 PWA will continue to capture the header on every response, and when it makes a new request it will send the most recent value it has received.
 This way, if something happens that changes a customer's cache key such as updating their shipping address, PWA will immediately pick it up and use the correct key on the next request.
 
-A different value for `X-Magento-Cache-Id` can be sent with than Magento calculates for the request, such as when a user changes their currency (which does not use a mutation).
-When this happens, we cannot cache the response under the `X-Magento-Cache-Id` that was on the request, otherwise incorrect values will be returned for other requests also using the initial value.
+A different value for `X-Magento-Cache-Id` can be sent by PWA than Magento calculates for the response, such as when a user changes their currency (which does not use a mutation).
+When this happens, we cannot cache the response under the `X-Magento-Cache-Id` that was on the request, or else incorrect results will be returned for other requests also using that initial value.
 To avoid this issue, the VCL code will compare the `X-Magento-Cache-Id` values on the request and the response and not store the result in the cache if they do not match.
 
-The cache node will respond with a proper `Vary` header for the browser cache to use:
+The cache node will also respond with a proper `Vary` header for the browser cache to use:
 ````
 Vary: Store, Content-Currency, Authorization, X-Magento-Cache-Id
 ````
 There is no mutation for changing Store or Currency, so they need to remain in `Vary` for the browser cache to know to use them as keys.
-Likewise, a customer logging out does not use a mutation; instead, PWA just stops sending the `Authorization` header. The browser cache needs to know that this could cause a change in result values, so `Authorization` also needs to be in the `Vary` header. Of note: The VCL code will not consider the full bearer token when doing a cache lookup, just whether it exists on the request at all.
+Likewise, a customer logging out does not use a mutation; instead, PWA just stops sending the `Authorization` header. The browser cache needs to know that this could cause a change in result values, so `Authorization` also needs to be in `Vary`. Of note: The VCL code will not consider the full bearer token when doing a cache lookup, just whether it exists on the request at all.
 
-Like `X-Magento-Vary`, the hash calculation for the `X-Magento-Cache-Id` header will use an unpredictably random salt. To ensure the salt is consistent between requests, we will store it in the environment configuration.
-However, as this will happen as part of the first GraphQL request without a pre-existing salt, multiple attempts to update the config could occur simultaneously.
-To avoid issues with concurrent write attempts, we will use a lock when writing to the `app/etc/env.php` file while adding the salt.
+Like `X-Magento-Vary`, the hash calculation for the `X-Magento-Cache-Id` header will use an unpredictably random salt. To ensure this salt is consistent between requests, we will store it in the environment configuration.
+However, as this will happen as part of the first GraphQL request without a pre-existing salt, multiple attempts to update the config could occur simultaneously before the first finishes.
+To avoid issues with concurrent writes to the same file, we will use a lock when writing to `app/etc/env.php` while adding the salt.
 Generating this value automatically instead of through an admin interaction will avoid adding a step to the upgrade process and allow us to ensure the salt is sufficiently random.
 
 For built-in FPC, there will be no changes other than outputting `X-Magento-Cache-Id` and the proper `Vary`.
