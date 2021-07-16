@@ -89,6 +89,8 @@ input CartItemUpdateInput {
     cart_item_interface_uid: ID @doc(description: "Required field. Unique Identifier from objects implementing `CartItemInterface`")
     quantity: Float
     customizable_options: [CustomizableOptionInput!]
+    selected_options: [ID!]
+    entered_options: [EnteredOptionInput!]
 }
 
 input RemoveItemFromCartInput {
