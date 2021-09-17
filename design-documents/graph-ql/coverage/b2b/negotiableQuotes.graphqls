@@ -54,7 +54,7 @@ type Mutation {
     setNegotiableQuoteShippingAddress(
         input: SetNegotiableQuoteShippingAddressInput!
     ): SetNegotiableQuoteShippingAddressOutput @doc(description: "Assign one of buyers' existing addresses to a negotiable quote")
-    
+
     sendNegotiableQuoteForReview(
         input: SendNegotiableQuoteForReviewInput!
     ) : SendNegotiableQuoteForReviewOutput @doc(description: "Send the negotiable quote for review to the seller")
@@ -63,6 +63,10 @@ type Mutation {
     # addNegotiableQuoteFiles(
     #     input: AddNegotiableQuoteFilesInput!
     # ): AddNegotiableQuoteFilesInput
+
+    setNegotiableQuotePaymentMethod(
+        input: SetNegotiableQuotePaymentMethodInput!
+    ): SetNegotiableQuotePaymentMethodOutput @doc(description: "Set the payment method on the negotiable quote")
 }
 
 type AddNegotiableQuoteItemsOutput {
@@ -315,7 +319,7 @@ type NegotiableQuoteHistoryProductsRemovedChange {
 
 # Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L148-L169
 type NegotiableQuoteHistoryProductsAddedChange {
-    # TODO: List of products added and their respective options.   
+    # TODO: List of products added and their respective options.
 }
 
 # Usage in Luma: https://github.com/magento/magento2b2b/blob/0e791b5f7cd604ee6ee40b7225807c01b7f70cf2/app/code/Magento/NegotiableQuote/view/base/templates/quote/history.phtml#L172-L197
@@ -358,4 +362,13 @@ type NegotiableQuoteUser @doc(description: "A limited view of a Buyer or Seller 
 
 type StoreConfig {
     is_negotiable_quote_active: Boolean @doc(description: "Indicates if negotiable quote functionality is enabled.")
+}
+
+input SetNegotiableQuotePaymentMethodInput {
+    quote_uid: ID! @doc(description: "ID obtained from NegotiableQuote object")
+    code: String! @doc(description:"Payment method code")
+}
+
+type SetNegotiableQuotePaymentMethodOutput {
+    quote: NegotiableQuote
 }
