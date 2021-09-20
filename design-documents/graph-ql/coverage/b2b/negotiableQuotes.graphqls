@@ -189,6 +189,8 @@ type NegotiableQuote {
     # attachments: [AttachmentContent]
     comments: [NegotiableQuoteComment!]
     history: [NegotiableQuoteHistoryEntry!]
+    available_payment_methods: [AvailablePaymentMethod]
+    selected_payment_method: SelectedPaymentMethod
     prices: NegotiableQuotePrices
     buyer: NegotiableQuoteUser!
     created_at: String @doc(description: "Timestamp indicating when the negotiable quote was created.")
