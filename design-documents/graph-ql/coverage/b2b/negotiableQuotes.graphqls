@@ -368,7 +368,12 @@ type StoreConfig {
 
 input SetNegotiableQuotePaymentMethodInput {
     quote_uid: ID! @doc(description: "ID obtained from NegotiableQuote object")
+    payment_method: NegotiableQuotePaymentMethodInput!
+}
+
+input NegotiableQuotePaymentMethodInput {
     code: String! @doc(description:"Payment method code")
+    purchase_order_number: String @doc(description:"Purchase order number")
 }
 
 type SetNegotiableQuotePaymentMethodOutput {
