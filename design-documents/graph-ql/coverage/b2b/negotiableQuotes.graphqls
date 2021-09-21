@@ -94,7 +94,7 @@ input NegotiableQuoteBillingAddressInput {
     customer_address_id: Int
     address: NegotiableQuoteAddressInput
     use_for_shipping: Boolean @doc(description: "Indicates whether to additionally set the shipping address based on the provided billing address")
-    same_as_shipping: Boolean @doc(description: "Indicates whether to set the billing address based on the existing shipping address on the cart")
+    same_as_shipping: Boolean @doc(description: "Indicates whether to set the billing address based on the existing shipping address on the negotiable quote")
 }
 
 input NegotiableQuoteAddressInput {
@@ -215,12 +215,37 @@ type NegotiableQuote {
     # attachments: [AttachmentContent]
     comments: [NegotiableQuoteComment!]
     history: [NegotiableQuoteHistoryEntry!]
-    billing_address: BillingCartAddress
+    billing_address: NegotiableQuoteAddress
     prices: NegotiableQuotePrices
     buyer: NegotiableQuoteUser!
     created_at: String @doc(description: "Timestamp indicating when the negotiable quote was created.")
     updated_at: String @doc(description: "Timestamp indicating when the negotiable quote was updated.")
     status: NegotiableQuoteStatus!
+}
+
+type NegotiableQuoteAddress implements NegotiableQuoteAddressInterface {
+}
+
+interface NegotiableQuoteAddressInterface {
+    firstname: String
+    lastname: String
+    company: String
+    street: [String]
+    city: String
+    region: NegotiableQuoteAddressRegion
+    postcode: String
+    country: NegotiableQuoteAddressCountry
+    telephone: String
+}
+
+type NegotiableQuoteAddressRegion {
+    code: String
+    label: String
+}
+
+type NegotiableQuoteAddressCountry {
+    code: String
+    label: String
 }
 
 # Implementation Note: Using the values from the "Buyer Status" column of the state mapping table in devdocs.
