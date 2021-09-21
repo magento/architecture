@@ -227,25 +227,26 @@ type NegotiableQuoteBillingAddress implements NegotiableQuoteAddressInterface {
 }
 
 interface NegotiableQuoteAddressInterface {
-    firstname: String
-    lastname: String
+    firstname: String!
+    lastname: String!
     company: String
-    street: [String]
-    city: String
+    street: [String!]!
+    city: String!
     region: NegotiableQuoteAddressRegion
     postcode: String
-    country: NegotiableQuoteAddressCountry
+    country: NegotiableQuoteAddressCountry!
     telephone: String
 }
 
 type NegotiableQuoteAddressRegion {
     code: String
     label: String
+    region_id: Int
 }
 
 type NegotiableQuoteAddressCountry {
-    code: String
-    label: String
+    code: String!
+    label: String!
 }
 
 # Implementation Note: Using the values from the "Buyer Status" column of the state mapping table in devdocs.
