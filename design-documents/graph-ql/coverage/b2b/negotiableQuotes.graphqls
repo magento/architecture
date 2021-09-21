@@ -80,9 +80,14 @@ type AddNegotiableQuoteItemsOutput {
 
 input SetNegotiableQuoteShippingAddressInput {
     quote_uid: ID! @doc(description: "ID obtained from NegotiableQuote type")
-    customer_address_id: Int! @doc(
-        description: "ID obtained from the CustomerAddress type. A new address can be added using Mutation.createCustomerAddress"
-    )
+    customer_address_id: Int @deprecated(reason: "Use NegotiableQuoteShippingAddressInput.customer_address_id instead")
+    shipping_addresses: [NegotiableQuoteShippingAddressInput!]!
+}
+
+input NegotiableQuoteShippingAddressInput {
+    customer_address_id: Int
+    address: NegotiableQuoteAddressInput
+    customer_notes: String
 }
 
 input SetNegotiableQuoteBillingAddressInput {
@@ -215,12 +220,16 @@ type NegotiableQuote {
     # attachments: [AttachmentContent]
     comments: [NegotiableQuoteComment!]
     history: [NegotiableQuoteHistoryEntry!]
+    shipping_addresses: [NegotiableQuoteShippingAddress]!
     billing_address: NegotiableQuoteBillingAddress
     prices: NegotiableQuotePrices
     buyer: NegotiableQuoteUser!
     created_at: String @doc(description: "Timestamp indicating when the negotiable quote was created.")
     updated_at: String @doc(description: "Timestamp indicating when the negotiable quote was updated.")
     status: NegotiableQuoteStatus!
+}
+
+type NegotiableQuoteShippingAddress implements NegotiableQuoteAddressInterface {
 }
 
 type NegotiableQuoteBillingAddress implements NegotiableQuoteAddressInterface {
