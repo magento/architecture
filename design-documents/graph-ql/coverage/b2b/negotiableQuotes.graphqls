@@ -215,7 +215,7 @@ type NegotiableQuote {
     # attachments: [AttachmentContent]
     comments: [NegotiableQuoteComment!]
     history: [NegotiableQuoteHistoryEntry!]
-    billing_address: NegotiableQuoteAddress
+    billing_address: NegotiableQuoteBillingAddress
     prices: NegotiableQuotePrices
     buyer: NegotiableQuoteUser!
     created_at: String @doc(description: "Timestamp indicating when the negotiable quote was created.")
@@ -223,7 +223,7 @@ type NegotiableQuote {
     status: NegotiableQuoteStatus!
 }
 
-type NegotiableQuoteAddress implements NegotiableQuoteAddressInterface {
+type NegotiableQuoteBillingAddress implements NegotiableQuoteAddressInterface {
 }
 
 interface NegotiableQuoteAddressInterface {
