@@ -61,7 +61,7 @@ type Mutation {
 
     setNegotiableQuoteBillingAddress(
         input: SetNegotiableQuoteBillingAddressInput!
-    ): SetNegotiableQuoteBillingAddressOutput @doc(description: "Assign one of buyers' existing addresses to a negotiable quote")
+    ): SetNegotiableQuoteBillingAddressOutput @doc(description: "Assign a billing address to a negotiable quote")
 
     # Pending decision on design of file upload (design doc still pending decisions)
     # addNegotiableQuoteFiles(
@@ -87,7 +87,28 @@ input SetNegotiableQuoteShippingAddressInput {
 
 input SetNegotiableQuoteBillingAddressInput {
     quote_uid: ID! @doc(description: "ID obtained from NegotiableQuote type")
-    billing_address: BillingAddressInput!
+    billing_address: NegotiableQuoteBillingAddressInput!
+}
+
+input NegotiableQuoteBillingAddressInput {
+    customer_address_id: Int
+    address: NegotiableQuoteAddressInput
+    use_for_shipping: Boolean @doc(description: "Indicates whether to additionally set the shipping address based on the provided billing address")
+    same_as_shipping: Boolean @doc(description: "Indicates whether to set the billing address based on the existing shipping address on the cart")
+}
+
+input NegotiableQuoteAddressInput {
+    firstname: String!
+    lastname: String!
+    company: String
+    street: [String!]!
+    city: String!
+    region: String
+    region_id: Int
+    postcode: String
+    country_code: String!
+    telephone: String
+    save_in_address_book: Boolean
 }
 
 input SendNegotiableQuoteForReviewInput {
