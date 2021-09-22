@@ -67,6 +67,10 @@ type Mutation {
     # addNegotiableQuoteFiles(
     #     input: AddNegotiableQuoteFilesInput!
     # ): AddNegotiableQuoteFilesInput
+
+    setNegotiableQuotePaymentMethod(
+        input: SetNegotiableQuotePaymentMethodInput!
+    ): SetNegotiableQuotePaymentMethodOutput @doc(description: "Set the payment method on the negotiable quote")
 }
 
 type AddNegotiableQuoteItemsOutput {
@@ -216,6 +220,8 @@ type NegotiableQuote {
     comments: [NegotiableQuoteComment!]
     history: [NegotiableQuoteHistoryEntry!]
     billing_address: NegotiableQuoteBillingAddress
+    available_payment_methods: [NegotiableQuoteAvailablePaymentMethod]
+    selected_payment_method: NegotiableQuoteSelectedPaymentMethod
     prices: NegotiableQuotePrices
     buyer: NegotiableQuoteUser!
     created_at: String @doc(description: "Timestamp indicating when the negotiable quote was created.")
@@ -419,4 +425,29 @@ type StoreConfig {
 
 type SetNegotiableQuoteBillingAddressOutput {
     quote: NegotiableQuote
+}
+
+input SetNegotiableQuotePaymentMethodInput {
+    quote_uid: ID! @doc(description: "ID obtained from NegotiableQuote object")
+    payment_method: NegotiableQuotePaymentMethodInput!
+}
+
+input NegotiableQuotePaymentMethodInput {
+    code: String! @doc(description:"Payment method code")
+    purchase_order_number: String @doc(description:"Purchase order number")
+}
+
+type SetNegotiableQuotePaymentMethodOutput {
+    quote: NegotiableQuote
+}
+
+type NegotiableQuoteAvailablePaymentMethod {
+    code: String! @doc(description: "The payment method code")
+    title: String! @doc(description: "The payment method title.")
+}
+
+type NegotiableQuoteSelectedPaymentMethod {
+    code: String! @doc(description: "The payment method code")
+    title: String! @doc(description: "The payment method title.")
+    purchase_order_number: String @doc(description: "The purchase order number.")
 }
