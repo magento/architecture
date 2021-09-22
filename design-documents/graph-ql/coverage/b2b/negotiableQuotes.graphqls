@@ -59,6 +59,10 @@ type Mutation {
         input: SendNegotiableQuoteForReviewInput!
     ) : SendNegotiableQuoteForReviewOutput @doc(description: "Send the negotiable quote for review to the seller")
 
+    setNegotiableQuoteBillingAddress(
+        input: SetNegotiableQuoteBillingAddressInput!
+    ): SetNegotiableQuoteBillingAddressOutput @doc(description: "Assign a billing address to a negotiable quote")
+
     # Pending decision on design of file upload (design doc still pending decisions)
     # addNegotiableQuoteFiles(
     #     input: AddNegotiableQuoteFilesInput!
@@ -80,9 +84,66 @@ type AddNegotiableQuoteItemsOutput {
 
 input SetNegotiableQuoteShippingAddressInput {
     quote_uid: ID! @doc(description: "ID obtained from NegotiableQuote type")
-    customer_address_id: Int! @doc(
-        description: "ID obtained from the CustomerAddress type. A new address can be added using Mutation.createCustomerAddress"
-    )
+    customer_address_id: Int @deprecated(reason: "Use NegotiableQuoteShippingAddressInput.customer_address_id instead")
+    shipping_addresses: [NegotiableQuoteShippingAddressInput!]!
+}
+
+input NegotiableQuoteShippingAddressInput {
+    customer_address_id: Int
+    address: NegotiableQuoteAddressInput
+    customer_notes: String
+}
+
+input SetNegotiableQuoteBillingAddressInput {
+    quote_uid: ID! @doc(description: "ID obtained from NegotiableQuote type")
+    billing_address: NegotiableQuoteBillingAddressInput!
+}
+
+input NegotiableQuoteBillingAddressInput {
+    customer_address_id: Int
+    address: NegotiableQuoteAddressInput
+    use_for_shipping: Boolean @doc(description: "Indicates whether to additionally set the shipping address based on the provided billing address")
+    same_as_shipping: Boolean @doc(description: "Indicates whether to set the billing address based on the existing shipping address on the negotiable quote")
+}
+
+input NegotiableQuoteAddressInput {
+    firstname: String!
+    lastname: String!
+    company: String
+    street: [String!]!
+    city: String!
+    region: String
+    region_id: Int
+    postcode: String
+    country_code: String!
+    telephone: String
+    save_in_address_book: Boolean
+}
+
+input SetNegotiableQuoteBillingAddressInput {
+    quote_uid: ID! @doc(description: "ID obtained from NegotiableQuote type")
+    billing_address: NegotiableQuoteBillingAddressInput!
+}
+
+input NegotiableQuoteBillingAddressInput {
+    customer_address_id: Int
+    address: NegotiableQuoteAddressInput
+    use_for_shipping: Boolean @doc(description: "Indicates whether to additionally set the shipping address based on the provided billing address")
+    same_as_shipping: Boolean @doc(description: "Indicates whether to set the billing address based on the existing shipping address on the negotiable quote")
+}
+
+input NegotiableQuoteAddressInput {
+    firstname: String!
+    lastname: String!
+    company: String
+    street: [String!]!
+    city: String!
+    region: String
+    region_id: Int
+    postcode: String
+    country_code: String!
+    telephone: String
+    save_in_address_book: Boolean
 }
 
 input SendNegotiableQuoteForReviewInput {
@@ -189,6 +250,8 @@ type NegotiableQuote {
     # attachments: [AttachmentContent]
     comments: [NegotiableQuoteComment!]
     history: [NegotiableQuoteHistoryEntry!]
+    shipping_addresses: [NegotiableQuoteShippingAddress]!
+    billing_address: NegotiableQuoteBillingAddress
     available_payment_methods: [NegotiableQuoteAvailablePaymentMethod]
     selected_payment_method: NegotiableQuoteSelectedPaymentMethod
     prices: NegotiableQuotePrices
@@ -196,6 +259,35 @@ type NegotiableQuote {
     created_at: String @doc(description: "Timestamp indicating when the negotiable quote was created.")
     updated_at: String @doc(description: "Timestamp indicating when the negotiable quote was updated.")
     status: NegotiableQuoteStatus!
+}
+
+type NegotiableQuoteShippingAddress implements NegotiableQuoteAddressInterface {
+}
+
+type NegotiableQuoteBillingAddress implements NegotiableQuoteAddressInterface {
+}
+
+interface NegotiableQuoteAddressInterface {
+    firstname: String!
+    lastname: String!
+    company: String
+    street: [String!]!
+    city: String!
+    region: NegotiableQuoteAddressRegion
+    postcode: String
+    country: NegotiableQuoteAddressCountry!
+    telephone: String
+}
+
+type NegotiableQuoteAddressRegion {
+    code: String
+    label: String
+    region_id: Int
+}
+
+type NegotiableQuoteAddressCountry {
+    code: String!
+    label: String!
 }
 
 # Implementation Note: Using the values from the "Buyer Status" column of the state mapping table in devdocs.
@@ -364,6 +456,10 @@ type NegotiableQuoteUser @doc(description: "A limited view of a Buyer or Seller 
 
 type StoreConfig {
     is_negotiable_quote_active: Boolean @doc(description: "Indicates if negotiable quote functionality is enabled.")
+}
+
+type SetNegotiableQuoteBillingAddressOutput {
+    quote: NegotiableQuote
 }
 
 input SetNegotiableQuotePaymentMethodInput {
