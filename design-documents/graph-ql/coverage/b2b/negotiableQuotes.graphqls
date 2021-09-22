@@ -189,8 +189,8 @@ type NegotiableQuote {
     # attachments: [AttachmentContent]
     comments: [NegotiableQuoteComment!]
     history: [NegotiableQuoteHistoryEntry!]
-    available_payment_methods: [AvailablePaymentMethod]
-    selected_payment_method: SelectedPaymentMethod
+    available_payment_methods: [NegotiableQuoteAvailablePaymentMethod]
+    selected_payment_method: NegotiableQuoteSelectedPaymentMethod
     prices: NegotiableQuotePrices
     buyer: NegotiableQuoteUser!
     created_at: String @doc(description: "Timestamp indicating when the negotiable quote was created.")
@@ -378,4 +378,15 @@ input NegotiableQuotePaymentMethodInput {
 
 type SetNegotiableQuotePaymentMethodOutput {
     quote: NegotiableQuote
+}
+
+type NegotiableQuoteAvailablePaymentMethod {
+    code: String! @doc(description: "The payment method code")
+    title: String! @doc(description: "The payment method title.")
+}
+
+type NegotiableQuoteSelectedPaymentMethod {
+    code: String! @doc(description: "The payment method code")
+    title: String! @doc(description: "The payment method title.")
+    purchase_order_number: String @doc(description: "The purchase order number.")
 }
