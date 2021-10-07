@@ -14,13 +14,13 @@ type Mutation {
     removeCouponFromCart(input: RemoveCouponFromCartInput): RemoveCouponFromCartOutput
     updateCartItems(input: UpdateCartItemsInput): UpdateCartItemsOutput
     removeItemFromCart(input: RemoveItemFromCartInput): RemoveItemFromCartOutput
-    setShippingAddressesOnCart(input: SetShippingAddressesOnCartInput): SetShippingAddressesOnCartOutput
-    setBillingAddressOnCart(input: SetBillingAddressOnCartInput): SetBillingAddressOnCartOutput
-    setShippingMethodsOnCart(input: SetShippingMethodsOnCartInput): SetShippingMethodsOnCartOutput
-    setPaymentMethodOnCart(input: SetPaymentMethodOnCartInput): SetPaymentMethodOnCartOutput
-    setGuestEmailOnCart(input: SetGuestEmailOnCartInput): SetGuestEmailOnCartOutput
+    setShippingAddressesOnCart(input: SetShippingAddressesOnCartInput, check_inventory: Boolean): SetShippingAddressesOnCartOutput
+    setBillingAddressOnCart(input: SetBillingAddressOnCartInput, check_inventory: Boolean): SetBillingAddressOnCartOutput
+    setShippingMethodsOnCart(input: SetShippingMethodsOnCartInput, check_inventory: Boolean): SetShippingMethodsOnCartOutput
+    setPaymentMethodOnCart(input: SetPaymentMethodOnCartInput, check_inventory: Boolean): SetPaymentMethodOnCartOutput
+    setGuestEmailOnCart(input: SetGuestEmailOnCartInput, check_inventory: Boolean): SetGuestEmailOnCartOutput
     setPaymentMethodAndPlaceOrder(input: SetPaymentMethodAndPlaceOrderInput): PlaceOrderOutput @deprecated(reason: "Should use setPaymentMethodOnCart and placeOrder mutations in single request.")
-    mergeCarts(source_cart_id: String!, destination_cart_id: String!): Cart! @doc(description:"Merges the source cart into the destination cart")
+    mergeCarts(source_cart_id: String!, destination_cart_id: String, check_inventory: Boolean): Cart! @doc(description:"Merges the source cart into the destination cart")
     placeOrder(input: PlaceOrderInput): PlaceOrderOutput
     addProductsToCart(cartId: String!, cartItems: [CartItemInput!]!): AddProductsToCartOutput @doc(description:"Add any type of product to the cart")
 }

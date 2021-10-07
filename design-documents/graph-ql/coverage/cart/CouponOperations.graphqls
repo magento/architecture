@@ -1,6 +1,6 @@
 type Mutation {
-    applyCouponToCart(input: ApplyCouponToCartInput): ApplyCouponToCartOutput
-    removeCouponFromCart(input: RemoveCouponFromCartInput): RemoveCouponFromCartOutput
+    applyCouponToCart(input: ApplyCouponToCartInput, check_inventory: Boolean): ApplyCouponToCartOutput
+    removeCouponFromCart(input: RemoveCouponFromCartInput, check_inventory: Boolean): RemoveCouponFromCartOutput
 }
 
 input ApplyCouponToCartInput {

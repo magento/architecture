@@ -161,7 +161,8 @@ type Mutation {
     ): MoveItemsBetweenRequisitionListsOutput @doc(description: "Move Items from Requisition List to another requisition List")
 
     clearCustomerCart(
-        cartUid: String! @doc(description: "masked Cart Id")
+        cartUid: String!, @doc(description: "masked Cart Id")
+        check_inventory: Boolean @doc(description: "overrides the \"Check inventory on cart load\" admin setting")
     ): ClearCustomerCartOutput @doc(description: "Clears the cart items")
 }
 
