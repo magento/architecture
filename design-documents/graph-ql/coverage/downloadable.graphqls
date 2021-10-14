@@ -1,0 +1,25 @@
+# Copyright © Magento, Inc. All rights reserved.
+# See COPYING.txt for license details.
+
+type Mutation {
+    addDownloadableProductsToCart(input: AddDownloadableProductsToCartInput, check_inventory: Boolean): AddDownloadableProductsToCartOutput @resolver(class: "Magento\\QuoteGraphQl\\Model\\Resolver\\AddSimpleProductsToCart")
+}
+
+input AddDownloadableProductsToCartInput {
+    cart_id: String!
+    cart_items: [DownloadableProductCartItemInput!]!
+}
+
+input DownloadableProductCartItemInput {
+    data: CartItemInput!
+    downloadable_product_links: [DownloadableProductLinksInput!]
+    customizable_options:[CustomizableOptionInput!]
+}
+
+input DownloadableProductLinksInput {
+    link_id: Int!
+}
+
+type AddDownloadableProductsToCartOutput {
+    cart: Cart!
+}

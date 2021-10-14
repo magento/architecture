@@ -8,12 +8,12 @@ type Query {
 
 type Mutation {
     createEmptyCart(input: createEmptyCartInput): String @doc(description:"Creates an empty shopping cart for a guest or logged in user")
-    addSimpleProductsToCart(input: AddSimpleProductsToCartInput): AddSimpleProductsToCartOutput
-    addVirtualProductsToCart(input: AddVirtualProductsToCartInput): AddVirtualProductsToCartOutput
+    addSimpleProductsToCart(input: AddSimpleProductsToCartInput, check_inventory: Boolean): AddSimpleProductsToCartOutput
+    addVirtualProductsToCart(input: AddVirtualProductsToCartInput, check_inventory: Boolean): AddVirtualProductsToCartOutput
     applyCouponToCart(input: ApplyCouponToCartInput): ApplyCouponToCartOutput
     removeCouponFromCart(input: RemoveCouponFromCartInput): RemoveCouponFromCartOutput
-    updateCartItems(input: UpdateCartItemsInput): UpdateCartItemsOutput
-    removeItemFromCart(input: RemoveItemFromCartInput): RemoveItemFromCartOutput
+    updateCartItems(input: UpdateCartItemsInput, check_inventory: Boolean): UpdateCartItemsOutput
+    removeItemFromCart(input: RemoveItemFromCartInput, check_inventory: Boolean): RemoveItemFromCartOutput
     setShippingAddressesOnCart(input: SetShippingAddressesOnCartInput, check_inventory: Boolean): SetShippingAddressesOnCartOutput
     setBillingAddressOnCart(input: SetBillingAddressOnCartInput, check_inventory: Boolean): SetBillingAddressOnCartOutput
     setShippingMethodsOnCart(input: SetShippingMethodsOnCartInput, check_inventory: Boolean): SetShippingMethodsOnCartOutput
@@ -22,7 +22,7 @@ type Mutation {
     setPaymentMethodAndPlaceOrder(input: SetPaymentMethodAndPlaceOrderInput): PlaceOrderOutput @deprecated(reason: "Should use setPaymentMethodOnCart and placeOrder mutations in single request.")
     mergeCarts(source_cart_id: String!, destination_cart_id: String, check_inventory: Boolean): Cart! @doc(description:"Merges the source cart into the destination cart")
     placeOrder(input: PlaceOrderInput): PlaceOrderOutput
-    addProductsToCart(cartId: String!, cartItems: [CartItemInput!]!): AddProductsToCartOutput @doc(description:"Add any type of product to the cart")
+    addProductsToCart(cartId: String!, cartItems: [CartItemInput!]!, check_inventory: Boolean): AddProductsToCartOutput @doc(description:"Add any type of product to the cart")
 }
 
 input createEmptyCartInput {

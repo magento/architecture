@@ -1,0 +1,22 @@
+# Copyright © Magento, Inc. All rights reserved.
+# See COPYING.txt for license details.
+
+type Mutation {
+    addConfigurableProductsToCart(input: AddConfigurableProductsToCartInput, check_inventory: Boolean): AddConfigurableProductsToCartOutput @resolver(class: "Magento\\ConfigurableProductGraphQl\\Model\\Resolver\\AddConfigurableProductsToCart")
+}
+
+input AddConfigurableProductsToCartInput {
+    cart_id: String!
+    cart_items: [ConfigurableProductCartItemInput!]!
+}
+
+type AddConfigurableProductsToCartOutput {
+    cart: Cart!
+}
+
+input ConfigurableProductCartItemInput {
+    data: CartItemInput!
+    variant_sku: String @doc(description: "Deprecated. Use CartItemInput.sku instead.")
+    parent_sku: String @doc(description: "Configurable product SKU.")
+    customizable_options:[CustomizableOptionInput!]
+}
