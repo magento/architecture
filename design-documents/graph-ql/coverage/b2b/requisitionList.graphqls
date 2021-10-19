@@ -162,7 +162,7 @@ type Mutation {
 
     clearCustomerCart(
         cartUid: String!, @doc(description: "masked Cart Id")
-        check_inventory: Boolean @doc(description: "overrides the \"Check inventory on cart load\" admin setting")
+        check_inventory: Boolean @deprecated(reason: "An inventory check is not needed to perform this operation.") @doc(description: "overrides the \"Check inventory on cart load\" admin setting")
     ): ClearCustomerCartOutput @doc(description: "Clears the cart items")
 }
 
