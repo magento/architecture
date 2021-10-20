@@ -2,7 +2,10 @@
 # See COPYING.txt for license details.
 
 type Mutation {
-    reorderItems(orderNumber: String!, check_inventory: Boolean): ReorderItemsOutput @doc(description:"Adds all products from a customer's previous order to the cart.")
+    reorderItems(
+        orderNumber: String!,
+        check_inventory: Boolean @doc(description: "overrides the \"Check inventory on cart load\" admin setting")
+    ): ReorderItemsOutput @doc(description:"Adds all products from a customer's previous order to the cart.")
 }
 
 type ReorderItemsOutput {

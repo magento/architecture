@@ -7,8 +7,14 @@ type Cart {
 }
 
 type Mutation {
-    applyRewardPointsToCart(cartUid: ID!, check_inventory: Boolean): ApplyRewardPointsToCartOutput @doc(description: "Apply all available points up to the cart total. Partial redemption is not available")
-    removeRewardPointsFromCart(cartUid: ID!, check_inventory: Boolean): RemoveRewardPointsFromCartOutput @doc(description: "Cancel the application of reward points to the cart")
+    applyRewardPointsToCart(
+        cartUid: ID!,
+        check_inventory: Boolean @doc(description: "overrides the \"Check inventory on cart load\" admin setting")
+    ): ApplyRewardPointsToCartOutput @doc(description: "Apply all available points up to the cart total. Partial redemption is not available")
+    removeRewardPointsFromCart(
+        cartUid: ID!,
+        check_inventory: Boolean @doc(description: "overrides the \"Check inventory on cart load\" admin setting")
+    ): RemoveRewardPointsFromCartOutput @doc(description: "Cancel the application of reward points to the cart")
 }
 
 type ApplyRewardPointsToCartOutput {

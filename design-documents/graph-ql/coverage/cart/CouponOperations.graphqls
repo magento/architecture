@@ -1,6 +1,12 @@
 type Mutation {
-    applyCouponToCart(input: ApplyCouponToCartInput, check_inventory: Boolean): ApplyCouponToCartOutput
-    removeCouponFromCart(input: RemoveCouponFromCartInput, check_inventory: Boolean): RemoveCouponFromCartOutput
+    applyCouponToCart(
+        input: ApplyCouponToCartInput,
+        check_inventory: Boolean @doc(description: "overrides the \"Check inventory on cart load\" admin setting")
+    ): ApplyCouponToCartOutput
+    removeCouponFromCart(
+        input: RemoveCouponFromCartInput,
+        check_inventory: Boolean @doc(description: "overrides the \"Check inventory on cart load\" admin setting")
+    ): RemoveCouponFromCartOutput
 }
 
 input ApplyCouponToCartInput {

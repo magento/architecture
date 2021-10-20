@@ -2,14 +2,29 @@
 # See COPYING.txt for license details.
 
 type Query {
-    getPayflowLinkToken(input: PayflowLinkTokenInput!, check_inventory: Boolean @deprecated(reason: "An inventory check is not needed to perform this operation.")): PayflowLinkToken @doc(description: "Retrieve payment credentials for transaction. Use this query for Payflow Link and Payments Advanced payment methods.")
-    getHostedProUrl(input: HostedProUrlInput!, check_inventory: Boolean @deprecated(reason: "An inventory check is not needed to perform this operation.")): HostedProUrl @doc(description: "Retrieve secure PayPal url for Payments Pro Hosted Solution transaction.")
+    getPayflowLinkToken(
+        input: PayflowLinkTokenInput!,
+        check_inventory: Boolean @deprecated(reason: "An inventory check is not needed to perform this operation.") @doc(description: "overrides the \"Check inventory on cart load\" admin setting")
+    ): PayflowLinkToken @doc(description: "Retrieve payment credentials for transaction. Use this query for Payflow Link and Payments Advanced payment methods.")
+    getHostedProUrl(
+        input: HostedProUrlInput!,
+        check_inventory: Boolean @deprecated(reason: "An inventory check is not needed to perform this operation.") @doc(description: "overrides the \"Check inventory on cart load\" admin setting")
+    ): HostedProUrl @doc(description: "Retrieve secure PayPal url for Payments Pro Hosted Solution transaction.")
 }
 
 type Mutation {
-    createPaypalExpressToken(input: PaypalExpressTokenInput!, check_inventory: Boolean @deprecated(reason: "An inventory check is not needed to perform this operation.")): PaypalExpressTokenOutput @doc(description:"Initiates an Express Checkout transaction and receives a token. Use this mutation for Express Checkout and Payments Standard payment methods.")
-    createPayflowProToken(input: PayflowProTokenInput!, check_inventory: Boolean @deprecated(reason: "An inventory check is not needed to perform this operation.")): CreatePayflowProTokenOutput @doc(description: "Initiates a transaction and receives a token. Use this mutation for Payflow Pro and Payments Pro payment methods")
-    handlePayflowProResponse(input: PayflowProResponseInput!, check_inventory: Boolean): PayflowProResponseOutput @doc(description: "Handles payment response and saves payment in Quote. Use this mutations for Payflow Pro and Payments Pro payment methods.")
+    createPaypalExpressToken(
+        input: PaypalExpressTokenInput!,
+        check_inventory: Boolean @deprecated(reason: "An inventory check is not needed to perform this operation.") @doc(description: "overrides the \"Check inventory on cart load\" admin setting")
+    ): PaypalExpressTokenOutput @doc(description:"Initiates an Express Checkout transaction and receives a token. Use this mutation for Express Checkout and Payments Standard payment methods.")
+    createPayflowProToken(
+        input: PayflowProTokenInput!,
+        check_inventory: Boolean @deprecated(reason: "An inventory check is not needed to perform this operation.") @doc(description: "overrides the \"Check inventory on cart load\" admin setting")
+    ): CreatePayflowProTokenOutput @doc(description: "Initiates a transaction and receives a token. Use this mutation for Payflow Pro and Payments Pro payment methods")
+    handlePayflowProResponse(
+        input: PayflowProResponseInput!,
+        check_inventory: Boolean @doc(description: "overrides the \"Check inventory on cart load\" admin setting")
+    ): PayflowProResponseOutput @doc(description: "Handles payment response and saves payment in Quote. Use this mutations for Payflow Pro and Payments Pro payment methods.")
 }
 
 input PaypalExpressTokenInput @doc(description: "Defines the attributes required to receive a payment token for Express Checkout and Payments Standard payment methods.") {

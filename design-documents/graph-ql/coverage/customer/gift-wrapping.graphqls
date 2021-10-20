@@ -2,7 +2,10 @@
 # See COPYING.txt for license details.
 
 type Mutation {
-    setGiftOptionsOnCart(input: SetGiftOptionsOnCartInput, check_inventory: Boolean) : SetGiftOptionsOnCartOutput  @doc(description: "Set gift options like gift wrapping or gift message for the entire cart")
+    setGiftOptionsOnCart(
+        input: SetGiftOptionsOnCartInput,
+        check_inventory: Boolean @doc(description: "overrides the \"Check inventory on cart load\" admin setting")
+    ) : SetGiftOptionsOnCartOutput  @doc(description: "Set gift options like gift wrapping or gift message for the entire cart")
 }
 
 input SetGiftOptionsOnCartInput {

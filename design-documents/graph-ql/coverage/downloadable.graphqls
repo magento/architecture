@@ -2,7 +2,10 @@
 # See COPYING.txt for license details.
 
 type Mutation {
-    addDownloadableProductsToCart(input: AddDownloadableProductsToCartInput, check_inventory: Boolean): AddDownloadableProductsToCartOutput
+    addDownloadableProductsToCart(
+        input: AddDownloadableProductsToCartInput,
+        check_inventory: Boolean @doc(description: "overrides the \"Check inventory on cart load\" admin setting")
+    ): AddDownloadableProductsToCartOutput
 }
 
 input AddDownloadableProductsToCartInput {
