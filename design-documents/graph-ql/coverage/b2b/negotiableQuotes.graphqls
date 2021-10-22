@@ -84,12 +84,12 @@ type AddNegotiableQuoteItemsOutput {
 
 input SetNegotiableQuoteShippingAddressInput {
     quote_uid: ID! @doc(description: "ID obtained from NegotiableQuote type")
-    customer_address_id: Int @deprecated(reason: "Use NegotiableQuoteShippingAddressInput.customer_address_id instead")
-    shipping_addresses: [NegotiableQuoteShippingAddressInput!]!
+    customer_address_id: ID @deprecated(reason: "Use NegotiableQuoteShippingAddressInput.customer_address_id instead")
+    shipping_addresses: [NegotiableQuoteShippingAddressInput!]
 }
 
 input NegotiableQuoteShippingAddressInput {
-    customer_address_id: Int
+    customer_address_id: ID
     address: NegotiableQuoteAddressInput
     customer_notes: String
 }
@@ -126,7 +126,7 @@ input SetNegotiableQuoteBillingAddressInput {
 }
 
 input NegotiableQuoteBillingAddressInput {
-    customer_address_id: Int
+    customer_address_id: ID
     address: NegotiableQuoteAddressInput
     use_for_shipping: Boolean @doc(description: "Indicates whether to additionally set the shipping address based on the provided billing address")
     same_as_shipping: Boolean @doc(description: "Indicates whether to set the billing address based on the existing shipping address on the negotiable quote")
