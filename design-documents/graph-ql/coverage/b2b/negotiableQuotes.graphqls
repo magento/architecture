@@ -49,28 +49,32 @@ type Mutation {
         input: DeleteNegotiableQuotesInput!
     ): DeleteNegotiableQuotesOutput @doc(description: "Delete a negotiable quote, removing it from the display in the storefront")
 
+    sendNegotiableQuoteForReview(
+        input: SendNegotiableQuoteForReviewInput!
+    ) : SendNegotiableQuoteForReviewOutput @doc(description: "Send the negotiable quote for review to the seller")
+
     # Covers "Select Existing Address" in https://docs.magento.com/user-guide/customers/account-dashboard-quotes-negotiate.html#shipping-information
     # "New Address" flow is covered by Mutation.createCustomerAddress
     setNegotiableQuoteShippingAddress(
         input: SetNegotiableQuoteShippingAddressInput!
     ): SetNegotiableQuoteShippingAddressOutput @doc(description: "Assign one of buyers' existing addresses to a negotiable quote")
 
-    sendNegotiableQuoteForReview(
-        input: SendNegotiableQuoteForReviewInput!
-    ) : SendNegotiableQuoteForReviewOutput @doc(description: "Send the negotiable quote for review to the seller")
-
     setNegotiableQuoteBillingAddress(
         input: SetNegotiableQuoteBillingAddressInput!
     ): SetNegotiableQuoteBillingAddressOutput @doc(description: "Assign a billing address to a negotiable quote")
+
+    setNegotiableQuoteShippingMethods(
+        input: SetNegotiableQuoteShippingMethodsInput!
+    ): SetNegotiableQuoteShippingMethodsOutput @doc(description: "Assign the shipping methods on the negotiable quote")
+
+    setNegotiableQuotePaymentMethod(
+        input: SetNegotiableQuotePaymentMethodInput!
+    ): SetNegotiableQuotePaymentMethodOutput @doc(description: "Set the payment method on the negotiable quote")
 
     # Pending decision on design of file upload (design doc still pending decisions)
     # addNegotiableQuoteFiles(
     #     input: AddNegotiableQuoteFilesInput!
     # ): AddNegotiableQuoteFilesInput
-
-    setNegotiableQuotePaymentMethod(
-        input: SetNegotiableQuotePaymentMethodInput!
-    ): SetNegotiableQuotePaymentMethodOutput @doc(description: "Set the payment method on the negotiable quote")
 }
 
 type AddNegotiableQuoteItemsOutput {
@@ -118,6 +122,15 @@ input NegotiableQuoteAddressInput {
     country_code: String!
     telephone: String
     save_in_address_book: Boolean
+}
+
+input SetNegotiableQuoteShippingMethodsInput {
+    quote_uid: ID!
+    shipping_methods: [ShippingMethodInput!]!
+}
+
+type SetNegotiableQuoteShippingMethodsOutput {
+    quote: NegotiableQuote
 }
 
 input SendNegotiableQuoteForReviewInput {
@@ -236,6 +249,8 @@ type NegotiableQuote {
 }
 
 type NegotiableQuoteShippingAddress implements NegotiableQuoteAddressInterface {
+    available_shipping_methods: [AvailableShippingMethod]
+    selected_shipping_method: SelectedShippingMethod
 }
 
 type NegotiableQuoteBillingAddress implements NegotiableQuoteAddressInterface {
