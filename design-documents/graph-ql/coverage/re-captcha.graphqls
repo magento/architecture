@@ -1,0 +1,31 @@
+enum ReCaptchaVersion {
+  V3
+}
+
+enum ReCaptchaForms {
+  APPLY_GIFT_CARD
+  APPLY_COUPON
+  CHANGE_PASSWORD
+  CHECKOUT
+  LOGIN
+  CREATE_CUSTOMER
+  EDIT_CUSTOMER
+  NEWSLETTER
+}
+
+type ReCaptchaConfiguration {
+  type: ReCaptchaVersion!
+  website_key: String!
+  minimum_score: Float!
+  badge_position: String!
+  language_code: String
+  failure_message: String!
+  forms: [ReCaptchaForms!]!
+}
+
+# Google reCAPTCHA config - will return null if v3 invisible is not configured
+# for at least one Storefront form.
+type StoreConfig {
+  recaptcha: ReCaptchaConfiguration
+    @doc(description: "Google reCAPTCHA Configuration")
+}
