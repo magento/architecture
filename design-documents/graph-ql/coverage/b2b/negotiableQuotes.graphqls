@@ -73,7 +73,7 @@ type Mutation {
 
     placeNegotiableQuoteOrder(
         input: PlaceNegotiableQuoteOrderInput
-    ): PlaceOrderOutput @doc(description: "Place an order using the negotiable quote")
+    ): PlaceNegotiableQuoteOrderOutput @doc(description: "Place an order using the negotiable quote")
 
     # Pending decision on design of file upload (design doc still pending decisions)
     # addNegotiableQuoteFiles(
@@ -144,6 +144,10 @@ input SendNegotiableQuoteForReviewInput {
 
 input PlaceNegotiableQuoteOrderInput {
     quote_uid: ID! @doc(description: "ID obtained from NegotiableQuote type")
+}
+
+type PlaceNegotiableQuoteOrderOutput {
+    order: Order!
 }
 
 type SendNegotiableQuoteForReviewOutput {
