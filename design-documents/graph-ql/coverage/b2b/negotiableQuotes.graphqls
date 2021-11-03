@@ -71,8 +71,8 @@ type Mutation {
         input: SetNegotiableQuotePaymentMethodInput!
     ): SetNegotiableQuotePaymentMethodOutput @doc(description: "Set the payment method on the negotiable quote")
 
-    placeOrder(
-        input: PlaceOrderInput
+    placeNegotiableQuoteOrder(
+        input: PlaceNegotiableQuoteOrderInput
     ): PlaceOrderOutput @doc(description: "Place an order using the negotiable quote")
 
     # Pending decision on design of file upload (design doc still pending decisions)
@@ -140,6 +140,10 @@ type SetNegotiableQuoteShippingMethodsOutput {
 input SendNegotiableQuoteForReviewInput {
     quote_uid: ID! @doc(description: "ID obtained from NegotiableQuote type")
     comment: NegotiableQuoteCommentInput
+}
+
+input PlaceNegotiableQuoteOrderInput {
+    quote_uid: ID! @doc(description: "ID obtained from NegotiableQuote type")
 }
 
 type SendNegotiableQuoteForReviewOutput {
