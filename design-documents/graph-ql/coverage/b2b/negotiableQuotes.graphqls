@@ -237,11 +237,15 @@ type NegotiableQuote {
     # attachments: [AttachmentContent]
     comments: [NegotiableQuoteComment!]
     history: [NegotiableQuoteHistoryEntry!]
+    applied_coupons: [AppliedCoupon] @doc(description:"An array of `AppliedCoupon` objects. Each object contains the `code` text attribute, which specifies the coupon code")
+    email: String
     shipping_addresses: [NegotiableQuoteShippingAddress]!
     billing_address: NegotiableQuoteBillingAddress
     available_payment_methods: [NegotiableQuoteAvailablePaymentMethod]
     selected_payment_method: NegotiableQuoteSelectedPaymentMethod
     prices: NegotiableQuotePrices
+    total_quantity: Float!
+    is_virtual: Boolean!
     buyer: NegotiableQuoteUser!
     created_at: String @doc(description: "Timestamp indicating when the negotiable quote was created.")
     updated_at: String @doc(description: "Timestamp indicating when the negotiable quote was updated.")
