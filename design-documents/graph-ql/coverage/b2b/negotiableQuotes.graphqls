@@ -462,7 +462,7 @@ interface NegotiableQuoteItemOperationErrorInterface {
 type NegotiableQuoteItemNotFoundError implements NegotiableQuoteItemOperationErrorInterface {
 }
 
-type NegotiableQuoteUndefinedError implements NegotiableQuoteItemOperationErrorInterface {
+type NegotiableQuoteItemUndefinedError implements NegotiableQuoteItemOperationErrorInterface {
 }
 
 union NegotiableQuoteItemOperationResult = NegotiableQuoteItemOperationSuccess | NegotiableQuoteItemOperationErrorInterface
