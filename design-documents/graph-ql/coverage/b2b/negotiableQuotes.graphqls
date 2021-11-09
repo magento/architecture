@@ -178,7 +178,7 @@ type NegotiableQuoteUndefinedError implements NegotiableQuoteOperationErrorInter
 union NegotiableQuoteOperationResult = NegotiableQuoteOperationSuccess | NegotiableQuoteOperationErrorInterface
 
 type DeleteNegotiableQuotesOutput {
-    result_status: TriStateMutationResultStatus
+    result_status: TriStateMutationResultStatus!
     operation_results: [NegotiableQuoteOperationResult!]!
     # Implementation Note: We don't make the deleted quotes accessible
     # because "deleted" means they're hidden from the storefront UI. They will
@@ -196,7 +196,7 @@ input CloseNegotiableQuotesInput {
 }
 
 type CloseNegotiableQuotesOutput {
-    result_status: TriStateMutationResultStatus
+    result_status: TriStateMutationResultStatus!
     operation_results: [NegotiableQuoteOperationResult!]!
     closed_quotes: [NegotiableQuote!] @doc(description: "An array containing the negotiable quotes that were just closed") @deprecated(reason: "Replaced with operation_results")
     #optionally display all negotiable quotes
@@ -468,7 +468,7 @@ type NegotiableQuoteItemUndefinedError implements NegotiableQuoteItemOperationEr
 union NegotiableQuoteItemOperationResult = NegotiableQuoteItemOperationSuccess | NegotiableQuoteItemOperationErrorInterface
 
 type RemoveNegotiableQuoteItemsOutput {
-    result_status: TriStateMutationResultStatus
+    result_status: TriStateMutationResultStatus!
     operation_results: [NegotiableQuoteItemOperationResult!]!
     quote: NegotiableQuote
 }
