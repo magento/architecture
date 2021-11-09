@@ -157,7 +157,29 @@ input DeleteNegotiableQuotesInput {
     quote_uids: [ID!]! @doc(description: "A List of UIDs obtained from negotiable quote types")
 }
 
+type NegotiableQuoteOperationSuccess {
+    quote_uid: ID!
+}
+
+interface NegotiableQuoteOperationErrorInterface {
+    quote_uid: ID!
+    message: String
+}
+
+type NegotiableQuoteInvalidStateError implements NegotiableQuoteOperationErrorInterface {
+}
+
+type NegotiableQuoteNotFoundError implements NegotiableQuoteOperationErrorInterface {
+}
+
+type NegotiableQuoteUndefinedError implements NegotiableQuoteOperationErrorInterface {
+}
+
+union NegotiableQuoteOperationResult = NegotiableQuoteOperationSuccess | NegotiableQuoteOperationErrorInterface
+
 type DeleteNegotiableQuotesOutput {
+    result_status: TriStateMutationResultStatus
+    operation_results: [NegotiableQuoteOperationResult!]!
     # Implementation Note: We don't make the deleted quotes accessible
     # because "deleted" means they're hidden from the storefront UI. They will
     # still be visible (and labeled as deleted) for a Seller in the admin
@@ -174,12 +196,9 @@ input CloseNegotiableQuotesInput {
 }
 
 type CloseNegotiableQuotesOutput {
-    closed_quotes(
-        filter: NegotiableQuoteFilterInput,
-        pageSize: Int = 20,
-        currentPage: Int = 1
-        sort: NegotiableQuoteSortInput
-    ): NegotiableQuotesOutput @doc(description: "Quotes that were just closed")
+    result_status: TriStateMutationResultStatus
+    operation_results: [NegotiableQuoteOperationResult!]!
+    closed_quotes: [NegotiableQuote!] @doc(description: "An array containing the negotiable quotes that were just closed") @deprecated(reason: "Replaced with operation_results")
     #optionally display all negotiable quotes
     negotiable_quotes(
         filter: NegotiableQuoteFilterInput,
@@ -431,7 +450,26 @@ type RequestNegotiableQuoteOutput {
     quote: NegotiableQuote
 }
 
+type NegotiableQuoteItemOperationSuccess {
+    quote_item_uid: ID!
+}
+
+interface NegotiableQuoteItemOperationErrorInterface {
+    quote_item_uid: ID!
+    message: String
+}
+
+type NegotiableQuoteItemNotFoundError implements NegotiableQuoteItemOperationErrorInterface {
+}
+
+type NegotiableQuoteUndefinedError implements NegotiableQuoteItemOperationErrorInterface {
+}
+
+union NegotiableQuoteItemOperationResult = NegotiableQuoteItemOperationSuccess | NegotiableQuoteItemOperationErrorInterface
+
 type RemoveNegotiableQuoteItemsOutput {
+    result_status: TriStateMutationResultStatus
+    operation_results: [NegotiableQuoteItemOperationResult!]!
     quote: NegotiableQuote
 }
 
