@@ -38,7 +38,7 @@ directive @typeResolver(class: String="") on UNION
 
 directive @cache(cacheIdentity: String="" cacheable: Boolean=true) on QUERY
 
-enum TriStateMutationResultStatus {
+enum MutationResultStatus {
     SUCCESS
     FAILURE
     PARTIAL_SUCCESS
