@@ -11,31 +11,40 @@ NOTE: We do not guarantee that approved changes will be delivered into Magento c
 *New documents* are processed through PRs targeting the `master` branch.
 As a result, the `master` branch must contain content approved by Magento architects only.
 
-All closed (not merged) PRs represent *declined documents*.
-Note that abandoned PRs may be closed as irrelevant.
-
-All open PRs represent *open discussions*. 
-
-## Glossary
-
-author
-: a Magento core engineer, or any community member
+* [Active discussions](https://github.com/magento/architecture/pulls) are represented by open PRs.
+* [Approved proposals](https://github.com/magento/architecture/pulls?utf8=%E2%9C%93&q=is%3Apr+is%3Amerged+) are represented by merged PRs.
+* [Declined proposals](https://github.com/magento/architecture/pulls?utf8=%E2%9C%93&q=is%3Apr+is%3Aunmerged+is%3Aclosed) are represented by closed (not merged) PRs.
 
 ## The Workflow
 
-1. Fork the repository and add or edit a document in your branch
-   1. Design Documents must be stored in `design-documents` directory. Contributions are expected from Magento core engineers mostly, although the community members are able to contribute.
-   1. Proposals are contributed into the `proposals` directory. Contributions are expected from both Magento core engineers and the community members.
-   1. We may add more categories in future
+1. Fork the repository and add or edit a document in your branch.
+Contributions are expected from Magento core engineers mostly, although the community members are able to contribute as well.
 1. Create a PR with the new or updated document to discuss
+   1. Use [Design Document template](https://raw.githubusercontent.com/magento/architecture/master/design-documents/README.md) for a new document
 1. Share the PR with internal team(s) and the Magento community through existing channels (Twitter, Slack, blog post, etc)
    1. Suggestion: include deadline for receiving feedback
 1. Get a feedback. We expect a feedback as:
    1. Comments into the PR thread
    1. Likes/dislikes/other emojis to the comments or the PR itself. We kindly encourage contributors to submit explanations about pros and cons that they have noticed.
 1. Update the PR to the received feedback accordingly or submit a reply if the proposed changes are not applicable with clear explanation.
-1. When all participants of the discussion have come to agreement and confirmed their approval, add "approved" label to the PR.
-1. A Magento core architect merges the PR. 
+   1. Add `needs update` label while the PR is in work
+1. When all participants of the discussion have come to agreement and confirmed their approval, a Magento core architect merges the PR.
+
+### Design Documents Review Requirements
+
+* Required reviewers are architects assigned to the [affected components](https://github.com/magento/architecture/wiki/Component-Assignments)
+* Anybody else may join the review and provide feedback, but they're not obligated to review the entire document or to meet deadlines
+* For existing (running or about to run) projects, a minimum time frame given for one round of review is 2 business days from the notification notice. The author may specify due date. For documents that do not block any existing projects (proposals or design documents that describe features for unforeseeable future), no due date is guaranteed.
+
+### Assigned Reviewer Responsibilities
+
+* Review the entire document by specified due date (if any)
+   * If it is impossible, find a replacement
+   * If the due date is unreasonable for the size of the document, agree on another due date with the author
+* Include a detailed feedback
+   * Ensure the feedback is objective
+   * Ensure the feedback provides value to the document. Avoid side-notes and off-topics (or mention explicitly that this is just a note for future)
+   * If the document is rejected, include clear and objective explanation for it. Rejection is final
 
 The implementation process is out of scope in this project.
 

@@ -1,0 +1,14 @@
+type Mutation {
+    subscribeEmailToNewsletter(email: String!): SubscribeEmailToNewsletterOutput @doc(description:"Adds an email into a newsletter subscription")
+}
+
+type SubscribeEmailToNewsletterOutput {
+    status: SubscriptionStatusesEnum @doc(description: "Returns a status of subscription")
+}
+
+enum SubscriptionStatusesEnum {
+    NOT_ACTIVE
+    SUBSCRIBED
+    UNSUBSCRIBED
+    UNCONFIRMED
+}

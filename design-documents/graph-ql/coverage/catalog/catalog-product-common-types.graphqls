@@ -1,0 +1,16 @@
+
+type ProductUrl {
+    link: String!
+    alt: String
+}
+
+type ProductImage {
+    link: String!
+    title: String
+    alt: String
+}
+
+type ProductAttribute {
+    code: String!
+    values: [String]
+}

@@ -1,0 +1,22 @@
+type Mutation {
+    addProductsToCart(cartId: String!, cartItems: [CartItemInput!]!): AddProductsToCartOutput
+}
+
+input CartItemInput {
+    sku: String! # already in use
+    quantity: Float # already in use
+    parent_sku: String, # will not be used in deprecated methods
+    parent_quantity: Float, # will not be used in deprecated methods
+    selected_options: [ID!] # will not be used in deprecated methods
+    entered_options: [EnteredOptionInput!] # will not be used in deprecated methods
+}
+
+# Place this input type in GraphQl Module to avoid dependency between WishlistGraphQl and QuoteGraphQl (And possible cross dependencies in the future).
+input EnteredOptionInput {
+    uid: ID!
+    value: String!
+}
+
+type AddProductsToCartOutput {
+    cart: Cart!
+}

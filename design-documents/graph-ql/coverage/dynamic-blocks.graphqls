@@ -1,0 +1,40 @@
+type DynamicBlock {
+    uid: ID! @doc(description: "The unique ID of the dynamic block")
+    content: ComplexTextValue! @doc(description: "Contains the renderable HTML code of the dynamic block")
+}
+
+# We don't need name, is_enabled, locations, ga_creative, catalog_price_rule_ids, cart_price_rules_ids, locations on storefront
+
+type DynamicBlocks {
+    items: [DynamicBlock]! @doc(description: "An array containing individual dynamic blocks")
+    page_info: SearchResultPageInfo @doc(description: "Metadata for pagination rendering")
+    total_count: Int! @doc(description: "The number of returned dynamic blocks")
+}
+
+input DynamicBlocksFilterInput {
+    type: DynamicBlockTypeEnum! @doc(description: "A value indicating the type of dynamic block to filter on")
+    locations: [DynamicBlockLocationEnum!] @doc(description: "An array indicating the locations the dynamic block can be placed") # Blocks for all locations will be displayed if not supplied
+    dynamic_block_uids: [ID!] # This value appplies when DynamicBlockTypeEnum is set to SPECIFIED
+}
+
+enum DynamicBlockTypeEnum {
+    SPECIFIED
+    CART_PRICE_RULE_RELATED
+    CATALOG_PRICE_RULE_RELATED
+}
+
+enum DynamicBlockLocationEnum {
+    CONTENT
+    HEADER
+    FOOTER
+    LEFT
+    RIGHT
+}
+
+type Query {
+    dynamic_blocks(
+        input: DynamicBlocksFilterInput
+        pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. The default is 20")
+        currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1"),
+    ): DynamicBlocks!
+}

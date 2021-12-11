@@ -1,0 +1,195 @@
+type Query {
+    cart(input: CartQueryInput): CartQueryOutput
+}
+
+input CartQueryInput {
+    cart_id: ID!
+}
+
+type CartQueryOutput {
+    cart: Cart
+}
+
+type Cart {
+    id: ID! @doc(description: "The ID of the cart.") @deprecated(reason: "use uid")
+    uid: ID! @doc(description: "The unique ID of the cart.")
+    items: [CartItemInterface] @deprecated(reason: "The `items` field is deprecated. Use `items_v2` instead.")
+    items_v2(
+        currentPage: Int = 1 @doc(description: "current page of the customer cart items. default is 1")
+        pageSize: Int = 20 @doc(description: "page size for the customer cart items. default is 20")
+    ): CartItems! @doc(description: "Cart items")
+    applied_coupons: [AppliedCoupon] @doc(description:"An array of `AppliedCoupon` objects. Each object contains the `code` text attribute, which specifies the coupon code. By default Magento supports only one coupon.")
+    email: String
+    shipping_addresses: [ShippingCartAddress]!
+    billing_address: BillingCartAddress
+    available_payment_methods: [AvailablePaymentMethod] @doc(description: "Available payment methods")
+    selected_payment_method: SelectedPaymentMethod
+    prices: CartPrices
+    total_quantity: Float!
+    is_virtual: Boolean!
+}
+
+type CartItems {
+    items: [CartItemInterface]! @doc(description: "Cart items list")
+    page_info: SearchResultPageInfo
+    total_count: Int!
+}
+
+type AvailablePaymentMethod {
+    code: String! @doc(description: "The payment method code")
+    title: String! @doc(description: "The payment method title.")
+}
+
+type SelectedPaymentMethod {
+    code: String! @doc(description: "The payment method code")
+    title: String! @doc(description: "The payment method title.")
+    purchase_order_number: String @doc(description: "The purchase order number.")
+}
+
+interface CartItemInterface @typeResolver(class: "Magento\\QuoteGraphQl\\Model\\Resolver\\CartItemTypeResolver") {
+    id: String! @deprecated(reason: "use uid")
+    uid: ID! @doc(description: "The unique ID of the cart item.")
+    quantity: Float!
+    prices: CartItemPrices
+    product: ProductInterface!
+    customizable_options: [SelectedCustomizableOption]
+}
+
+type SimpleCartItem implements CartItemInterface @doc(description: "Simple Cart Item") {
+}
+
+type VirtualCartItem implements CartItemInterface @doc(description: "Virtual Cart Item") {
+}
+
+type ConfigurableCartItem implements CartItemInterface {
+    configured_variant: SimpleProduct! @doc(description: "Simple product corresponding to configured product.")
+    configurable_options: [SelectedConfigurableOption!] @deprecated(reason: "use configured_options")
+    configured_options: [SelectedConfigurableOption!] @doc(description: "Configured options for product")
+}
+
+type DownloadableCartItem implements CartItemInterface @doc(description: "Downloadable Cart Item") {
+    links: [DownloadableProductLinks] @deprecated(description: "Type was renamed from plural to singular, also link now has different ID type")
+    links_v2: [DownloadableProductLink] @doc(description: "An array containing information about the selected links")
+    samples: [DownloadableProductSamples] @doc(description: "DownloadableProductSamples defines characteristics of a downloadable product")
+}
+
+type BundleCartItem implements CartItemInterface {
+    bundle_options: [SelectedBundleOption!]
+}
+
+type GiftCardCartItem implements CartItemInterface {
+    sender_name: String!
+    recipient_name: String!
+    amount: SelectedGiftCardAmount
+    message: String
+}
+
+type SelectedConfigurableOption {
+    # Hash which includes option ID, option type and slected values. Can be used to move configurable product to wishlist or gift registry
+    id_v2: ID! @deprecated(reason: "use uid")
+    id: Int! @deprecated(reason: "use uid")
+    uid: ID! @doc(description: "The unique ID of the cart.")
+    option_label: String!
+    value_id: Int!
+    value_label: String!
+}
+
+type DownloadableProductLink @doc(description: "Defines characteristics of a downloadable product") {
+    # Hash based on option type and slected link. Can be used to move downloadable product to wishlist or gift registry
+    id: ID! @deprecated(reason: "use uid")
+    uid: ID! @doc(description: "The unique ID of the cart.")
+    title: String @doc(description: "The display name of the link")
+    sort_order: Int @doc(description: "A number indicating the sort order")
+    price: Float @doc(description: "The price of the downloadable product")
+    sample_url: String @doc(description: "URL to the downloadable sample")
+}
+
+type DownloadableProductSamples @doc(description: "DownloadableProductSamples defines characteristics of a downloadable product") {
+    title: String @doc(description: "The display name of the sample")
+    sort_order: Int @doc(description: "A number indicating the sort order")
+    sample_url: String @doc(description: "URL to the downloadable sample")
+}
+
+type SelectedBundleOption {
+    id: Int! @deprecated(reason: "use uid")
+    uid: ID! @doc(description: "The unique ID of the cart.")
+    label: String!
+    type: String!
+    values: [SelectedBundleOptionValue!]!
+}
+
+type SelectedBundleOptionValue {
+    id: Int! @deprecated(reason: "use uid")
+    uid: ID! @doc(description: "The unique ID of the cart.")
+    label: String!
+    price: Float!
+    quantity: Float!
+    child_sku: String!
+}
+
+type SelectedCustomizableOption {
+    # Hash which includes option ID, option type and slected values. Can be used to move a product to wishlist or gift registry
+    id_v2: ID! @deprecated(reason: "use uid")
+    id: Int!  @deprecated(reason: "use uid")
+    uid: ID! @doc(description: "The unique ID of the selected option.")
+    label: String!
+    is_required: Boolean!
+    values: [SelectedCustomizableOptionValue!]!
+    sort_order: Int!
+}
+
+type SelectedCustomizableOptionValue {
+    id: Int! @deprecated(reason: "use uid")
+    uid: ID! @doc(description: "The unique ID of the selected option.")
+    label: String!
+    value: String!
+    price: CartItemSelectedOptionValuePrice!
+}
+
+type CartItemSelectedOptionValuePrice {
+    value: Float!
+    units: String!
+    type: PriceTypeEnum!
+}
+
+type SelectedGiftCardAmount {
+    # Hash from the type of the option and value
+    id: ID! @deprecated(reason: "use uid")
+    uid: ID! @doc(description: "The unique ID of the selected option.")
+    value: Money!
+}
+
+enum PriceTypeEnum {
+    FIXED
+    PERCENT
+    DYNAMIC
+}
+
+type CheckoutCustomer {
+    is_guest: Boolean!
+    email: String!
+    prefix: String
+    first_name: String!
+    last_name: String!
+    middle_name: String
+    suffix: String
+    gender: GenderEnum
+    date_of_birth: String
+    vat_number: String # Do we need it at all on storefront? Do we need more details
+}
+
+enum GenderEnum {
+    MALE
+    FEMALE
+}
+
+type CheckoutPaymentMethod {
+    code: String!
+    label: String!
+    balance: Money
+    sort_order: Int
+}
+
+type CartGiftCard {
+    code: String!
+}

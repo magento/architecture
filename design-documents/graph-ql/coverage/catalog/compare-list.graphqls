@@ -1,0 +1,55 @@
+type ComparableItem {
+    uid: ID!
+    product: ProductInterface!
+    attributes: [ProductAttribute]! @doc(description: "Product comparable attributes")
+}
+
+type ComparableAttribute {
+    uid: ID!
+    code: String! @doc(description: "Attribute code ")
+    label: String! @doc(description: "Attribute label")
+}
+
+type CompareList {
+    uid: ID! @doc(description: " Compare list unique id")
+    items: [ComparableItem] @doc(description: "Comparable products")
+    attributes: [ComparableAttribute] @doc(description: "Comparable attributes, provides codes and titles for the attributes")
+}
+
+type Customer {
+    compare_list: CompareList @doc(description: "Active customers compare list")
+}
+
+type Query {
+    compareList(uid: ID!): CompareList @doc(description: "Compare list")
+}
+
+type Mutation {
+    createCompareList(input: CreateCompareListInput): CompareList @doc(description: "Creates a new compare list. For a logged in user, the created list is assigned to the user")
+    addProductsToCompareList(
+        input: AddProductsToCompareListInput
+    ): CompareList
+    removeProductsFromCompareList(
+        input: RemoveProductsFromCompareListInput
+    ): CompareList
+    assignCompareListToCustomer(uid: ID!): CompareList # Customer token needs to be passed
+    deleteCompareList(uid: ID!): DeleteCompareListOutput
+}
+
+input CreateCompareListInput {
+    products: [ID!]
+}
+
+input AddProductsToCompareListInput {
+    uid: ID!,
+    products: [ID!]!
+}
+
+input RemoveProductsFromCompareListInput {
+    uid: ID!,
+    products: [ID!]!
+}
+
+type DeleteCompareListOutput {
+    result: Boolean!
+}

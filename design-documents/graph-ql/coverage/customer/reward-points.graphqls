@@ -1,0 +1,75 @@
+type Customer {
+    reward_points: RewardPoints @doc(description: "Customer reward points details")
+}
+
+type Cart {
+    applied_reward_points: RewardPointsAmount @doc(description: "Reward points ammount applied to the cart")
+}
+
+type Mutation {
+    applyRewardPointsToCart(cartUid: ID!): ApplyRewardPointsToCartOutput @doc(description: "Apply all available points up to the cart total. Partial redemption is not available")
+    removeRewardPointsFromCart(cartUid: ID!): RemoveRewardPointsFromCartOutput @doc(description: "Cancel usage of the previously applied reward points to cart")
+}
+
+type ApplyRewardPointsToCartOutput {
+    cart: Cart!
+}
+
+type RemoveRewardPointsFromCartOutput {
+    cart: Cart!
+}
+
+type RewardPoints {
+    balance: RewardPointsAmount @doc(description: "Current reward points balance")
+    exchange_rates: RewardPointsExchangeRates @doc(description: "Current reward points exchange rates")
+    subscription_status: RewardPointsSubscriptionStatus @doc(description: "Reward points related email subscription status")
+    balance_history: [RewardPointsBalanceHistoryItem!] @doc(description: "Reward points balance history. This field will be set to null if disabled in the admin")
+}
+
+type RewardPointsAmount {
+    points: Float! @doc(description: "Reward points amount in points")
+    money: Money! @doc(description: "Reward points amount in store currency")
+}
+
+type RewardPointsExchangeRates @doc (description: "Exchange rates depend on the customer group"){
+    earning: RewardPointsRate @doc(description: "How many points are earned for a given amount spent")
+    redemption: RewardPointsRate @doc(description: "How many points must be redeemed to get a given amount of currency discount at the checkout")
+}
+
+type RewardPointsRate {
+    points: Float! @doc(description: "The number of points for exchange rate. For earnings this this the number of points earned. For redemption this is the number of points needed for redemption.")
+    currency_amount: Float! @doc(description: "The money value for exchange rate. For earnings this is amount spent to earn the specified points. For redemption this is the amount of money the number of points represents.")
+}
+
+type RewardPointsSubscriptionStatus {
+    balance_updates: SubscriptionStatus! @doc(description: "Customer subscription status to 'Reward points balance updates' emails")
+    points_expiration_notifications: SubscriptionStatus! @doc(description: "Customer subscription status to 'Reward points expiration notifications' emails")
+}
+
+enum SubscriptionStatus {
+    SUBSCRIBED
+    NOT_SUBSCRIBED
+}
+
+type RewardPointsBalanceHistoryItem {
+    balance: RewardPointsAmount @doc(description: "Reward points balance after the completion of the transaction")
+    points_change: Float! @doc(description: "Number of points added or deducted in the transaction")
+    change_reason: String! @doc(description: "Reason for balance change")
+    date: String! @doc(description: "Transaction date")
+}
+
+type StoreConfig {
+    magento_reward_general_is_enabled: String @doc(description: "Reward points functionality status: enabled/disabled")
+    magento_reward_general_is_enabled_on_front: String @doc(description: "Reward points functionality status on the storefront: enabled/disabled")
+    magento_reward_general_publish_history: String @doc(description: "Enable reward points history for the customer")
+    magento_reward_general_min_points_balance: String @doc(description: "Reward points redemption minimum threshold")
+    magento_reward_points_order: String @doc(description: "Whether customer earns points for shopping according to the reward point exchange rate. In Luma this also controls whether to show a message in shopping cart about the rewards points earned for the purchase, as well as the customer’s current reward point balance")
+    magento_reward_points_register: String @doc(description: "Number of points customer gets for registration")
+    magento_reward_points_newsletter: String @doc(description: "Number of points for newsletter subscription")
+    magento_reward_points_invitation_customer: String @doc(description: "Number of points for referral, when invitee registers on the site")
+    magento_reward_points_invitation_customer_limit: String @doc(description: "Maximum number of registration referrals that will qualify for rewards")
+    magento_reward_points_invitation_order: String @doc(description: "Number of points for referral, when invitee places an initial order on the site")
+    magento_reward_points_invitation_order_limit: String @doc(description: "Maximum number of order placements by invitees that will qualify for rewards")
+    magento_reward_points_review: String @doc(description: "Number of points for writing a review")
+    magento_reward_points_review_limit: String @doc(description: "Maximum number of reviews that will qualify for the rewards")
+}

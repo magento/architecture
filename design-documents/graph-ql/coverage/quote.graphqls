@@ -1,0 +1,425 @@
+# Copyright © Magento, Inc. All rights reserved.
+# See COPYING.txt for license details.
+
+type Query {
+    cart(cart_id: String!): Cart @doc(description:"Returns information about shopping cart") @cache(cacheable: false)
+    customerCart: Cart! @doc(description:"Returns information about the customer shopping cart") @cache(cacheable: false)
+}
+
+type Mutation {
+    createEmptyCart(input: createEmptyCartInput): String @doc(description:"Creates an empty shopping cart for a guest or logged in user")
+    addSimpleProductsToCart(input: AddSimpleProductsToCartInput): AddSimpleProductsToCartOutput
+    addVirtualProductsToCart(input: AddVirtualProductsToCartInput): AddVirtualProductsToCartOutput
+    applyCouponToCart(input: ApplyCouponToCartInput): ApplyCouponToCartOutput
+    removeCouponFromCart(input: RemoveCouponFromCartInput): RemoveCouponFromCartOutput
+    updateCartItems(input: UpdateCartItemsInput): UpdateCartItemsOutput
+    removeItemFromCart(input: RemoveItemFromCartInput): RemoveItemFromCartOutput
+    setShippingAddressesOnCart(input: SetShippingAddressesOnCartInput): SetShippingAddressesOnCartOutput
+    setBillingAddressOnCart(input: SetBillingAddressOnCartInput): SetBillingAddressOnCartOutput
+    setShippingMethodsOnCart(input: SetShippingMethodsOnCartInput): SetShippingMethodsOnCartOutput
+    setPaymentMethodOnCart(input: SetPaymentMethodOnCartInput): SetPaymentMethodOnCartOutput
+    setGuestEmailOnCart(input: SetGuestEmailOnCartInput): SetGuestEmailOnCartOutput
+    setPaymentMethodAndPlaceOrder(input: SetPaymentMethodAndPlaceOrderInput): PlaceOrderOutput @deprecated(reason: "Should use setPaymentMethodOnCart and placeOrder mutations in single request.")
+    mergeCarts(source_cart_id: String!, destination_cart_id: String!): Cart! @doc(description:"Merges the source cart into the destination cart")
+    placeOrder(input: PlaceOrderInput): PlaceOrderOutput
+    addProductsToCart(cartId: String!, cartItems: [CartItemInput!]!): AddProductsToCartOutput @doc(description:"Add any type of product to the cart")
+}
+
+input createEmptyCartInput {
+    cart_id: String
+}
+
+input AddSimpleProductsToCartInput {
+    cart_id: String!
+    cart_items: [SimpleProductCartItemInput!]!
+}
+
+input SimpleProductCartItemInput {
+    data: CartItemInput!
+    customizable_options:[CustomizableOptionInput!]
+}
+
+input AddVirtualProductsToCartInput {
+    cart_id: String!
+    cart_items: [VirtualProductCartItemInput!]!
+}
+
+input VirtualProductCartItemInput {
+    data: CartItemInput!
+    customizable_options:[CustomizableOptionInput!]
+}
+
+input CartItemInput {
+    sku: String!
+    quantity: Float!
+    parent_sku: String @doc(description: "For child products, the SKU of its parent product")
+    selected_options: [ID!] @doc(description: "The selected options for the base product, such as color or size")
+    entered_options: [EnteredOptionInput!] @doc(description: "An array of entered options for the base product, such as personalization text")
+}
+
+input CustomizableOptionInput {
+    id: Int!
+    value_string: String!
+}
+
+input ApplyCouponToCartInput {
+    cart_id: String!
+    coupon_code: String!
+}
+
+input UpdateCartItemsInput {
+    cart_id: String!
+    cart_items: [CartItemUpdateInput!]!
+}
+
+input CartItemUpdateInput {
+    # Implementation Note: For back-compat reasons, the following rules should be applied to
+    # a resolver handling `CartItemUpdateInput` (see https://github.com/magento/architecture/pull/424)
+    #
+    # 1. Either `cart_item_id` or `cart_item_uid` _must_ be provided. If both are absent, raise
+    #    a field error advising the client that `cart_item_uid` is required
+    # 2. If _both_ `cart_item_id` and `cart_item_uid` are provided, raise a field error advising
+    #    the client to only use `cart_item_uid`
+    #
+    # GraphQL does not provide a way for an `input` field to allow use of only 1 field or another,
+    # which is why we're enforcing non-nullability in the resolver, instead of via the schema language.
+    # When `cart_item_id` is removed in a future version, we can mark `cart_item_uid` as non-nullable
+    # with minimal disruption
+    cart_item_id: Int @deprecated(reason: "Use the `cart_item_uid` field instead")
+    cart_item_interface_uid: ID @doc(description: "Required field. Unique Identifier from objects implementing `CartItemInterface`")
+    quantity: Float
+    customizable_options: [CustomizableOptionInput!]
+}
+
+input RemoveItemFromCartInput {
+    cart_id: String!
+    # Implementation Note: For back-compat reasons, the following rules should be applied to
+    # a resolver handling `RemoveItemFromCartInput` (see https://github.com/magento/architecture/pull/424)
+    #
+    # 1. Either `cart_item_id` or `cart_item_uid` _must_ be provided. If both are absent, raise
+    #    a field error advising the client that `cart_item_uid` is required
+    # 2. If _both_ `cart_item_id` and `cart_item_uid` are provided, raise a field error advising
+    #    the client to only use `cart_item_uid`
+    #
+    # GraphQL does not provide a way for an `input` field to allow use of only 1 field or another,
+    # which is why we're enforcing non-nullability in the resolver, instead of via the schema language.
+    # When `cart_item_id` is removed in a future version, we can mark `cart_item_uid` as non-nullable
+    # with minimal disruption
+    cart_item_id: Int @deprecated(reason: "Use the `cart_item_uid` field instead")
+    cart_item_interface_uid: ID @doc(description: "Required field. Unique Identifier from objects implementing `CartItemInterface`")
+}
+
+input SetShippingAddressesOnCartInput {
+    cart_id: String!
+    shipping_addresses: [ShippingAddressInput!]!
+}
+
+input ShippingAddressInput {
+    customer_address_id: Int # If provided then will be used address from address book
+    address: CartAddressInput
+    customer_notes: String
+}
+
+input SetBillingAddressOnCartInput {
+    cart_id: String!
+    billing_address: BillingAddressInput!
+}
+
+input BillingAddressInput {
+    customer_address_id: Int
+    address: CartAddressInput
+    use_for_shipping: Boolean @doc(description: "Deprecated: use `same_as_shipping` field instead")
+    same_as_shipping: Boolean @doc(description: "Set billing address same as shipping")
+}
+
+input CartAddressInput {
+    firstname: String!
+    lastname: String!
+    company: String
+    street: [String!]!
+    city: String!
+    region: String
+    region_id: Int
+    postcode: String
+    country_code: String!
+    telephone: String!
+    save_in_address_book: Boolean @doc(description: "Determines whether to save the address in the customer's address book. The default value is true")
+}
+
+input SetShippingMethodsOnCartInput {
+    cart_id: String!
+    shipping_methods: [ShippingMethodInput!]!
+}
+
+input ShippingMethodInput {
+    carrier_code: String!
+    method_code: String!
+}
+
+input SetPaymentMethodAndPlaceOrderInput {
+    cart_id: String!
+    payment_method: PaymentMethodInput!
+}
+
+input PlaceOrderInput {
+    cart_id: String!
+}
+
+input SetPaymentMethodOnCartInput {
+    cart_id: String!
+    payment_method: PaymentMethodInput!
+}
+
+input PaymentMethodInput {
+    code: String! @doc(description:"Payment method code")
+    purchase_order_number: String @doc(description:"Purchase order number")
+}
+
+input SetGuestEmailOnCartInput {
+    cart_id: String!
+    email: String!
+}
+
+interface QuotePricesInterface {
+    grand_total: Money
+    subtotal_including_tax: Money
+    subtotal_excluding_tax: Money
+    discount: CartDiscount @deprecated(reason: "Use discounts instead ")
+    subtotal_with_discount_excluding_tax: Money
+    applied_taxes: [CartTaxItem]
+    discounts: [Discount] @doc(description:"An array of applied discounts")
+}
+
+type CartPrices implements QuotePricesInterface {
+}
+
+type CartTaxItem {
+    amount: Money!
+    label: String!
+}
+
+type CartDiscount {
+    amount: Money!
+    label: [String!]!
+}
+
+type SetPaymentMethodOnCartOutput {
+    cart: Cart!
+}
+
+type SetBillingAddressOnCartOutput {
+    cart: Cart!
+}
+
+type SetShippingAddressesOnCartOutput {
+    cart: Cart!
+}
+
+type SetShippingMethodsOnCartOutput {
+    cart: Cart!
+}
+
+type ApplyCouponToCartOutput {
+    cart: Cart!
+}
+
+type PlaceOrderOutput {
+    order: Order!
+}
+
+type Cart {
+    id: ID! @doc(description: "The ID of the cart.")
+    items: [CartItemInterface]
+    applied_coupon: AppliedCoupon @doc(description:"An array of coupons that have been applied to the cart") @deprecated(reason: "Use applied_coupons instead ")
+    applied_coupons: [AppliedCoupon] @doc(description:"An array of `AppliedCoupon` objects. Each object contains the `code` text attribute, which specifies the coupon code")
+    email: String
+    shipping_addresses: [ShippingCartAddress]!
+    billing_address: BillingCartAddress
+    available_payment_methods: [AvailablePaymentMethod] @doc(description: "Available payment methods")
+    selected_payment_method: SelectedPaymentMethod
+    prices: CartPrices
+    total_quantity: Float!
+    is_virtual: Boolean!
+}
+
+interface CartAddressInterface {
+    firstname: String!
+    lastname: String!
+    company: String
+    street: [String!]!
+    city: String!
+    region: CartAddressRegion
+    postcode: String
+    country: CartAddressCountry!
+    telephone: String!
+}
+
+type ShippingCartAddress implements CartAddressInterface {
+    available_shipping_methods: [AvailableShippingMethod]
+    selected_shipping_method: SelectedShippingMethod
+    customer_notes: String
+    items_weight: Float @deprecated(reason: "This information shoud not be exposed on frontend")
+    cart_items: [CartItemQuantity] @deprecated(reason: "`cart_items_v2` should be used instead")
+    cart_items_v2: [CartItemInterface]
+}
+
+type BillingCartAddress implements CartAddressInterface {
+    customer_notes: String @deprecated (reason: "The field is used only in shipping address")
+}
+
+type CartItemQuantity @deprecated(description:"Deprecated: `cart_items` field of `ShippingCartAddress` returns now  `CartItemInterface` instead of `CartItemQuantity`") {
+    cart_item_id: Int! @deprecated(reason: "`cart_items` field of `ShippingCartAddress` returns now `CartItemInterface` instead of `CartItemQuantity`")
+    quantity: Float! @deprecated(reason: "`cart_items` field of `ShippingCartAddress` returns now `CartItemInterface` instead of `CartItemQuantity`")
+}
+
+type CartAddressRegion {
+    code: String
+    label: String
+    region_id: Int
+}
+
+type CartAddressCountry {
+    code: String!
+    label: String!
+}
+
+type SelectedShippingMethod {
+    carrier_code: String!
+    method_code: String!
+    carrier_title: String!
+    method_title: String!
+    amount: Money!
+    base_amount: Money @deprecated(reason: "The field should not be used on the storefront")
+}
+
+type AvailableShippingMethod {
+    carrier_code: String!
+    carrier_title: String!
+    method_code: String @doc(description: "Could be null if method is not available")
+    method_title: String @doc(description: "Could be null if method is not available")
+    error_message: String
+    amount: Money!
+    base_amount: Money @deprecated(reason: "The field should not be used on the storefront")
+    price_excl_tax: Money!
+    price_incl_tax: Money!
+    available: Boolean!
+}
+
+type AvailablePaymentMethod {
+    code: String! @doc(description: "The payment method code")
+    title: String! @doc(description: "The payment method title.")
+}
+
+type SelectedPaymentMethod {
+    code: String! @doc(description: "The payment method code")
+    title: String! @doc(description: "The payment method title.")
+    purchase_order_number: String @doc(description: "The purchase order number.")
+}
+
+type AppliedCoupon {
+    code: String!
+}
+
+input RemoveCouponFromCartInput {
+    cart_id: String!
+}
+
+type RemoveCouponFromCartOutput {
+    cart: Cart
+}
+
+type AddSimpleProductsToCartOutput {
+    cart: Cart!
+}
+
+type AddVirtualProductsToCartOutput {
+    cart: Cart!
+}
+
+type UpdateCartItemsOutput {
+    cart: Cart!
+}
+
+type RemoveItemFromCartOutput {
+    cart: Cart!
+}
+
+type SetGuestEmailOnCartOutput {
+    cart: Cart!
+}
+
+type SimpleCartItem implements CartItemInterface @doc(description: "Simple Cart Item") {
+    customizable_options: [SelectedCustomizableOption]
+}
+
+type VirtualCartItem implements CartItemInterface @doc(description: "Virtual Cart Item") {
+    customizable_options: [SelectedCustomizableOption]
+}
+
+interface CartItemInterface {
+    id: String! @deprecated(reason: "Use CartItemInterface.uid instead")
+    uid: ID! @doc(description: "Unique identifier for a Cart Item")
+    quantity: Float!
+    prices: QuoteItemPricesInterface
+    product: ProductInterface!
+}
+
+type Discount @doc(description:"Defines an individual discount. A discount can be applied to the cart as a whole or to an item.") {
+    amount: Money! @doc(description:"The amount of the discount")
+    label: String! @doc(description:"A description of the discount")
+}
+
+type QuoteItemPricesInterface {
+    price: Money! @doc(description:"Item price that might include tax depending on display settings for cart")
+    fixed_product_taxes: [FixedProductTax] @doc(description:"Applied FPT to the cart item")
+    row_total: Money!
+    row_total_including_tax: Money!
+    discounts: [Discount] @doc(description:"An array of discounts to be applied to the cart item")
+    total_item_discount: Money @doc(description:"The total of all discounts applied to the item")
+}
+
+type CartItemPrices implements QuoteItemPricesInterface {
+}
+
+type SelectedCustomizableOption {
+    id: Int!
+    label: String!
+    is_required: Boolean!
+    values: [SelectedCustomizableOptionValue!]!
+    sort_order: Int!
+}
+
+type SelectedCustomizableOptionValue {
+    id: Int!
+    label: String!
+    value: String!
+    price: CartItemSelectedOptionValuePrice!
+}
+
+type CartItemSelectedOptionValuePrice {
+    value: Float!
+    units: String!
+    type: PriceTypeEnum!
+}
+
+type Order {
+    order_number: String!
+    order_id: String @deprecated(reason: "The order_id field is deprecated, use order_number instead.")
+}
+
+type CartUserInputError @doc(description:"An error encountered while adding an item to the the cart.") {
+    message: String! @doc(description: "A localized error message")
+    code: CartUserInputErrorType! @doc(description: "Cart-specific error code")
+}
+
+type AddProductsToCartOutput {
+    cart: Cart! @doc(description: "The cart after products have been added")
+    user_errors: [CartUserInputError!]! @doc(description: "An error encountered while adding an item to the cart.")
+}
+
+enum CartUserInputErrorType {
+    PRODUCT_NOT_FOUND
+    NOT_SALABLE
+    INSUFFICIENT_STOCK
+    UNDEFINED
+}

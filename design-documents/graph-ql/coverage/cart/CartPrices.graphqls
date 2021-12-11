@@ -1,0 +1,55 @@
+interface CartItemInterface {
+    prices: CartItemPrices
+}
+
+type Cart {
+    prices: CartPrices
+}
+
+type CartAddress {
+    prices: CartAddressPrices
+    # additional fields will be added later
+}
+
+interface CartPricesInterface {
+    grand_total: Money
+
+    # price display settings should be requested via store config query
+    subtotal_including_tax: Money
+    subtotal_excluding_tax: Money
+
+    subtotal_with_discount_excluding_tax: Money
+    discount_tax_compensation: Money #Should we have subtotal with discount including tax instead, is it different from grand_total?
+
+    applied_taxes: [CartTaxItem]! # Should include regular taxes and WEEE taxes
+    applied_discounts: [CartDiscountItem]!
+}
+
+type CartItemPrices implements CartPricesInterface {
+    price_including_tax: Money
+    price_excluding_tax: Money
+
+    custom_price: Money
+}
+
+type CartAddressPrices implements CartPricesInterface {
+
+    shipping_including_tax: Money
+    shipping_excluding_tax: Money
+
+    shipping_discount: Money # Do we need shipping_with_discount_including_tax?
+    shipping_discount_tax_compensation: Money
+}
+
+type CartPrices implements CartPricesInterface {
+}
+
+type CartTaxItem {
+    amount: Money!
+    label: String!
+}
+
+type CartDiscountItem {
+    amount: Money!
+    label: String!
+}

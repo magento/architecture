@@ -1,0 +1,34 @@
+type Mutation {
+    applyCouponToCart(input: ApplyCouponToCartInput): ApplyCouponToCartOutput
+    removeCouponFromCart(input: RemoveCouponFromCartInput): RemoveCouponFromCartOutput
+}
+
+input ApplyCouponToCartInput {
+    cart_id: String!
+    coupon_code: String!
+}
+
+type ApplyCouponToCartOutput {
+    cart: Cart!
+}
+
+type Cart {
+    applied_coupon: AppliedCoupon
+}
+
+type CartAddress {
+    applied_coupon: AppliedCoupon
+}
+
+type AppliedCoupon {
+    # Wrapper allows for future extension of coupon info
+    code: String!
+}
+
+input RemoveCouponFromCartInput {
+    cart_id: String!
+}
+
+type RemoveCouponFromCartOutput {
+    cart: Cart
+}
