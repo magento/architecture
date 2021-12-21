@@ -81,6 +81,16 @@ type Mutation {
     # ): AddNegotiableQuoteFilesInput
 }
 
+interface NegotiableQuoteUidNonFatalResultInterface {
+    quote_uid: ID!
+}
+
+type NegotiableQuoteUidOperationSuccess implements NegotiableQuoteUidNonFatalResultInterface {
+}
+
+type NegotiableQuoteInvalidStateError implements ErrorInterface {
+}
+
 type AddNegotiableQuoteItemsOutput {
     quote: NegotiableQuote
     # TODO: We'll probably want to add the same
@@ -169,7 +179,18 @@ input DeleteNegotiableQuotesInput {
     quote_uids: [ID!]! @doc(description: "A List of UIDs obtained from negotiable quote types")
 }
 
+union DeleteNegotiableQuoteError = NegotiableQuoteInvalidStateError | NoSuchEntityUidError | InternalError
+
+type DeleteNegotiableQuoteOperationFailure {
+    quote_uid: ID!
+    errors: [DeleteNegotiableQuoteError!]!
+}
+
+union DeleteNegotiableQuoteOperationResult = NegotiableQuoteUidOperationSuccess | DeleteNegotiableQuoteOperationFailure
+
 type DeleteNegotiableQuotesOutput {
+    result_status: BatchMutationStatus!
+    operation_results: [DeleteNegotiableQuoteOperationResult!]!
     # Implementation Note: We don't make the deleted quotes accessible
     # because "deleted" means they're hidden from the storefront UI. They will
     # still be visible (and labeled as deleted) for a Seller in the admin
@@ -185,13 +206,19 @@ input CloseNegotiableQuotesInput {
     quote_uids: [ID!]! @doc(description: "A List of IDs from negotiable quote objects")
 }
 
+union CloseNegotiableQuoteError = NegotiableQuoteInvalidStateError | NoSuchEntityUidError | InternalError
+
+type CloseNegotiableQuoteOperationFailure {
+    quote_uid: ID!
+    errors: [CloseNegotiableQuoteError!]!
+}
+
+union CloseNegotiableQuoteOperationResult = NegotiableQuoteUidOperationSuccess | CloseNegotiableQuoteOperationFailure
+
 type CloseNegotiableQuotesOutput {
-    closed_quotes(
-        filter: NegotiableQuoteFilterInput,
-        pageSize: Int = 20,
-        currentPage: Int = 1
-        sort: NegotiableQuoteSortInput
-    ): NegotiableQuotesOutput @doc(description: "Quotes that were just closed")
+    result_status: BatchMutationStatus!
+    operation_results: [CloseNegotiableQuoteOperationResult!]!
+    closed_quotes: [NegotiableQuote!] @doc(description: "An array containing the negotiable quotes that were just closed") @deprecated(reason: "Replaced with operation_results")
     #optionally display all negotiable quotes
     negotiable_quotes(
         filter: NegotiableQuoteFilterInput,
