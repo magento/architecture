@@ -1,0 +1,16 @@
+enum BatchMutationStatus {
+    SUCCESS
+    FAILURE
+    MIXED_RESULTS
+}
+
+interface ErrorInterface {
+    message: String!
+}
+
+type NoSuchEntityUidError implements ErrorInterface {
+    uid: ID!
+}
+
+type InternalError implements ErrorInterface {
+}
