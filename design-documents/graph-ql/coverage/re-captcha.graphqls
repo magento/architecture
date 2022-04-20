@@ -1,0 +1,44 @@
+enum ReCaptchaFormEnum {
+  PLACE_ORDER
+  CONTACT
+  CUSTOMER_LOGIN
+  CUSTOMER_FORGOT_PASSWORD
+  CUSTOMER_CREATE
+  CUSTOMER_EDIT
+  NEWSLETTER
+  PRODUCT_REVIEW
+  SENDFRIEND
+  BRAINTREE
+}
+
+type ReCaptchaConfigurationV3 {
+  website_key: String!
+    @doc(
+      description: "The website key that is created when you register your Google reCAPTCHA account"
+    )
+  minimum_score: Float!
+    @doc(
+      description: "The minimum score that identifies a user interaction as a potential risk"
+    )
+  badge_position: String!
+    @doc(
+      description: "The position of the invisible reCAPTCHA badge on each page"
+    )
+  language_code: String
+    @doc(
+      description: "A two-character code that specifies the language that is used for Google reCAPTCHA text and messaging."
+    )
+  failure_message: String!
+    @doc(
+      description: "The message that appears to the user if validation fails"
+    )
+  forms: [ReCaptchaFormEnum!]!
+    @doc(description: "A list of forms that have reCAPTCHA V3 enabled")
+}
+
+# Google reCAPTCHA config - will return null if v3 invisible is not configured
+# for at least one Storefront form.
+type Query {
+  recaptchaV3Config: ReCaptchaConfigurationV3
+    @doc(description: "Google reCAPTCHA V3-Invisible Configuration")
+}
