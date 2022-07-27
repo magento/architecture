@@ -30,6 +30,8 @@ input ValidatePurchaseOrderInput {
 
 type ValidatePurchaseOrderOutput {
     purchase_order: PurchaseOrder
+    status: Boolean! @doc(description: "Indicates whether the operation was successful.")
+    errors: [String] @doc(description: "An array of error messages encountered while performing the operation.")
 }
 
 input ApprovePurchaseOrderInput {
@@ -38,6 +40,8 @@ input ApprovePurchaseOrderInput {
 
 type ApprovePurchaseOrderOutput {
     purchase_order: PurchaseOrder
+    status: Boolean! @doc(description: "Indicates whether the operation was successful.")
+    errors: [String] @doc(description: "An array of error messages encountered while performing the operation.")
 }
 
 input CancelPurchaseOrderInput {
@@ -46,6 +50,8 @@ input CancelPurchaseOrderInput {
 
 type CancelPurchaseOrderOutput {
     purchase_order: PurchaseOrder
+    status: Boolean! @doc(description: "Indicates whether the operation was successful.")
+    errors: [String] @doc(description: "An array of error messages encountered while performing the operation.")
 }
 
 input RejectPurchaseOrderInput {
@@ -54,6 +60,8 @@ input RejectPurchaseOrderInput {
 
 type RejectPurchaseOrderOutput {
     purchase_order: PurchaseOrder
+    status: Boolean! @doc(description: "Indicates whether the operation was successful.")
+    errors: [String] @doc(description: "An array of error messages encountered while performing the operation.")
 }
 
 input AddPurchaseOrderCommentInput {
@@ -64,6 +72,8 @@ input AddPurchaseOrderCommentInput {
 type AddPurchaseOrderCommentOutput {
     purchase_order: PurchaseOrder
     comment: PurchaseOrderComment
+    status: Boolean! @doc(description: "Indicates whether the operation was successful.")
+    errors: [String] @doc(description: "An array of error messages encountered while performing the operation.")
 }
 
 type Customer {

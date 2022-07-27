@@ -7,15 +7,21 @@ type Mutation {
 type CreatePurchaseOrderApprovalRuleOutput {
     approval_rule: PurchaseOrderApprovalRule @doc(description: "Created purchase order approval rule")
     approval_rules(currentPage: Int = 1, pageSize: Int = 20): PurchaseOrderApprovalRules @doc(description: "A list of purchase order approval rules visible to the customer")
+    status: Boolean! @doc(description: "Indicates whether the operation was successful.")
+    errors: [String] @doc(description: "An array of error messages encountered while performing the operation.")
 }
 
 type UpdatePurchaseOrderApprovalRuleOutput {
     approval_rule: PurchaseOrderApprovalRule @doc(description: "Updated purchase order approval rule")
     approval_rules(currentPage: Int = 1, pageSize: Int = 20): PurchaseOrderApprovalRules @doc(description: "A list of purchase order approval rules visible to the customer")
+    status: Boolean! @doc(description: "Indicates whether the operation was successful.")
+    errors: [String] @doc(description: "An array of error messages encountered while performing the operation.")
 }
 
 type DeletePurchaseOrderApprovalRuleOutput {
     approval_rules(currentPage: Int = 1, pageSize: Int = 20): PurchaseOrderApprovalRules @doc(description: "A list of purchase order approval rules visible to the customer")
+    status: Boolean! @doc(description: "Indicates whether the operation was successful.")
+    errors: [String] @doc(description: "An array of error messages encountered while performing the operation.")
 }
 
 input CreatePurchaseOrderApprovalRuleInput {
