@@ -13,11 +13,15 @@ input AddPurchaseOrderItemsToCartInput {
 
 type AddPurchaseOrderItemsToCartOutput {
     purchase_order: PurchaseOrder
-    status: Boolean! @doc(description: "Indicates whether the attempt to add items to the customer's cart was successful.")
-    add_purchase_order_items_to_cart_user_errors: [PurchaseOrderCartUserInputError!]! @doc(description: "An array of errors encountered while adding products to the customer's cart.")
+    add_purchase_order_items_to_cart_user_errors: [AddPurchaseOrderItemsToCartError!]! @doc(description: "An array of errors encountered while adding products to the customer's cart.")
 }
 
-enum PurchaseOrderCartUserInputError @doc(description: "A list of possible error types.") {
+type AddPurchaseOrderItemsToCartError {
+    message: string!
+    type: AddPurchaseOrderItemsToCartErrorType!
+}
+
+enum AddPurchaseOrderItemsToCartErrorType @doc(description: "A list of possible error types.") {
     PRODUCT_NOT_FOUND
     NOT_SALABLE
     INSUFFICIENT_STOCK
@@ -30,8 +34,16 @@ input ValidatePurchaseOrderInput {
 
 type ValidatePurchaseOrderOutput {
     purchase_order: PurchaseOrder
-    status: Boolean! @doc(description: "Indicates whether the operation was successful.")
-    errors: [String] @doc(description: "An array of error messages encountered while performing the operation.")
+    errors: [ValidatePurchaseOrderError!]! @doc(description: "An array of error messages encountered while performing the operation.")
+}
+
+type ValidatePurchaseOrderError {
+    message: string!
+    type: ValidatePurchaseOrderErrorType!
+}
+
+enum ValidatePurchaseOrderErrorType {
+    UNDEFINED
 }
 
 input ApprovePurchaseOrderInput {
@@ -40,8 +52,16 @@ input ApprovePurchaseOrderInput {
 
 type ApprovePurchaseOrderOutput {
     purchase_order: PurchaseOrder
-    status: Boolean! @doc(description: "Indicates whether the operation was successful.")
-    errors: [String] @doc(description: "An array of error messages encountered while performing the operation.")
+    errors: [ApprovePurchaseOrderError!]! @doc(description: "An array of error messages encountered while performing the operation.")
+}
+
+type ApprovePurchaseOrderError {
+    message: string!
+    type: ApprovePurchaseOrderErrorType!
+}
+
+enum ApprovePurchaseOrderErrorType {
+    UNDEFINED
 }
 
 input CancelPurchaseOrderInput {
@@ -50,8 +70,16 @@ input CancelPurchaseOrderInput {
 
 type CancelPurchaseOrderOutput {
     purchase_order: PurchaseOrder
-    status: Boolean! @doc(description: "Indicates whether the operation was successful.")
-    errors: [String] @doc(description: "An array of error messages encountered while performing the operation.")
+    errors: [CancelPurchaseOrderError!]! @doc(description: "An array of error messages encountered while performing the operation.")
+}
+
+type CancelPurchaseOrderError {
+    message: string!
+    type: CancelPurchaseOrderErrorType!
+}
+
+enum CancelPurchaseOrderErrorType {
+    UNDEFINED
 }
 
 input RejectPurchaseOrderInput {
@@ -60,8 +88,16 @@ input RejectPurchaseOrderInput {
 
 type RejectPurchaseOrderOutput {
     purchase_order: PurchaseOrder
-    status: Boolean! @doc(description: "Indicates whether the operation was successful.")
-    errors: [String] @doc(description: "An array of error messages encountered while performing the operation.")
+    errors: [RejectPurchaseOrderError!]! @doc(description: "An array of error messages encountered while performing the operation.")
+}
+
+type RejectPurchaseOrderError {
+    message: string!
+    type: RejectPurchaseOrderErrorType!
+}
+
+enum RejectPurchaseOrderErrorType {
+    UNDEFINED
 }
 
 input AddPurchaseOrderCommentInput {
@@ -72,8 +108,16 @@ input AddPurchaseOrderCommentInput {
 type AddPurchaseOrderCommentOutput {
     purchase_order: PurchaseOrder
     comment: PurchaseOrderComment
-    status: Boolean! @doc(description: "Indicates whether the operation was successful.")
-    errors: [String] @doc(description: "An array of error messages encountered while performing the operation.")
+    errors: [AddPurchaseOrderCommentError!]! @doc(description: "An array of error messages encountered while performing the operation.")
+}
+
+type AddPurchaseOrderCommentError {
+    message: string!
+    type: AddPurchaseOrderCommentErrorType!
+}
+
+enum AddPurchaseOrderCommentErrorType {
+    UNDEFINED
 }
 
 type Customer {
