@@ -157,3 +157,7 @@ enum PurchaseOrderApprovalFlowItemStatus {
     APPROVED
     REJECTED
 }
+
+type PurchaseOrder {
+    approval_flow: PurchaseOrderApprovalFlow @doc(description: "The log of the events related to the purchase order approval flow")
+}

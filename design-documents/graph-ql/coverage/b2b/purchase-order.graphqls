@@ -3,8 +3,10 @@ type Mutation {
     addPurchaseOrderItemsToCart(input: AddPurchaseOrderItemsToCartInput!): AddPurchaseOrderItemsToCartOutput @doc(description: "Add all items from the purchase order to shopping cart")
     validatePurchaseOrder(input: ValidatePurchaseOrderInput!): ValidatePurchaseOrderOutput @doc(description: "Validate purchase order")
     approvePurchaseOrder(input: ApprovePurchaseOrderInput!): ApprovePurchaseOrderOutput @doc(description: "Approve purchase order")
+    approvePurchaseOrders(input: ApprovePurchaseOrdersInput!): ApprovePurchaseOrdersOutput @doc(description: "Approve purchase orders")
     cancelPurchaseOrder(input: CancelPurchaseOrderInput!): CancelPurchaseOrderOutput @doc(description: "Cancel purchase order")
     rejectPurchaseOrder(input: RejectPurchaseOrderInput!): RejectPurchaseOrderOutput @doc(description: "Reject purchase order")
+    rejectPurchaseOrders(input: RejectPurchaseOrderInputs!): RejectPurchaseOrderOutputs @doc(description: "Reject purchase orders")
 }
 
 input AddPurchaseOrderItemsToCartInput {
@@ -55,6 +57,15 @@ type ApprovePurchaseOrderOutput {
     errors: [ApprovePurchaseOrderError!]! @doc(description: "An array of error messages encountered while performing the operation.")
 }
 
+input ApprovePurchaseOrdersInput {
+    purchase_order_uids: [ID!]!
+}
+
+type ApprovePurchaseOrdersOutput {
+    purchase_orders: [PurchaseOrder!]!
+    errors: [ApprovePurchaseOrderError!]! @doc(description: "An array of error messages encountered while performing the operation.")
+}
+
 type ApprovePurchaseOrderError {
     message: string!
     type: ApprovePurchaseOrderErrorType!
@@ -88,6 +99,15 @@ input RejectPurchaseOrderInput {
 
 type RejectPurchaseOrderOutput {
     purchase_order: PurchaseOrder
+    errors: [RejectPurchaseOrderError!]! @doc(description: "An array of error messages encountered while performing the operation.")
+}
+
+input RejectPurchaseOrdersInput {
+    purchase_order_uids: [ID!]!
+}
+
+type RejectPurchaseOrdersOutput {
+    purchase_orders: [PurchaseOrder!]!
     errors: [RejectPurchaseOrderError!]! @doc(description: "An array of error messages encountered while performing the operation.")
 }
 
@@ -155,7 +175,6 @@ type PurchaseOrder {
     shipping_method: String @doc(description: "The delivery method for the purchase order")
     items(currentPage: Int = 1, pageSize: Int = 20): PurchaseOrderItems @doc(description: "Items that belong to the purchase order")
     history_log(currentPage: Int = 1, pageSize: Int = 20): PurchaseOrderHistoryLog @doc(description: "The log of the events related to the purchase order")
-    approval_flow: PurchaseOrderApprovalFlow @doc(description: "The log of the events related to the purchase order approval flow")
     available_actions: [PurchaseOrderAction] @doc(description: "Purcahse order actions available to the customer. Can be used to display action buttons on the client")
 }
 
