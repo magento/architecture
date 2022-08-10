@@ -315,11 +315,13 @@ enum PurchaseOrderStatus {
     CANCELED
 }
 
-type StoreConfig {
-    purchaseorder_enabled: Boolean! @doc(description: "Whether purchase order functionality is enabled")
+### Changes to QuoteGraphQl module
+
+type AvailablePaymentMethod {
+    is_deferred: Boolean! @doc(description: "Whether the payment method is an online integration")
 }
 
-### Required changes in CE modules
+### Not related to purchase orders
 
 type CustomerAddress {
     # This field must be added to the CustomerAddress type definition directly in CustomerGraphQl module
@@ -329,9 +331,5 @@ type CustomerAddress {
 input CartItemInput {
     # This field must be added to the CartItemInput type definition directly in QuoteGraphQl module
     parent_quantity: Float @doc(description: "Parent quantity can be used when adding complex product to cart. For example bundle products")
-}
-
-type AvailablePaymentMethod {
-    is_online: Boolean! @doc(description: "Whether the payment method is an online integration")
 }
 
