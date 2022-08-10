@@ -2,15 +2,20 @@ type Mutation {
     addPurchaseOrderComment(input: AddPurchaseOrderCommentInput!): AddPurchaseOrderCommentOutput @doc(description: "Add a comment to an existing purchase order")
     addPurchaseOrderItemsToCart(input: AddPurchaseOrderItemsToCartInput!): AddPurchaseOrderItemsToCartOutput @doc(description: "Add all items from the purchase order to shopping cart")
     validatePurchaseOrder(input: ValidatePurchaseOrderInput!): ValidatePurchaseOrderOutput @doc(description: "Validate purchase order")
-    approvePurchaseOrder(input: ApprovePurchaseOrderInput!): ApprovePurchaseOrderOutput @doc(description: "Approve purchase order")
     approvePurchaseOrders(input: ApprovePurchaseOrdersInput!): ApprovePurchaseOrdersOutput @doc(description: "Approve purchase orders")
     cancelPurchaseOrder(input: CancelPurchaseOrderInput!): CancelPurchaseOrderOutput @doc(description: "Cancel purchase order")
-    rejectPurchaseOrder(input: RejectPurchaseOrderInput!): RejectPurchaseOrderOutput @doc(description: "Reject purchase order")
     rejectPurchaseOrders(input: RejectPurchaseOrderInputs!): RejectPurchaseOrderOutputs @doc(description: "Reject purchase orders")
+    placePurchaseOrder(input: PlacePurchaseOrderInput!): PlaceOrderOutput @doc(description: "Convert purchase order to an order")
+}
+
+input PlacePurchaseOrderInput {
+    purchase_order_uid: ID!
 }
 
 input AddPurchaseOrderItemsToCartInput {
     purchase_order_uid: ID!
+    cart_id: String! @doc(description: "The ID to assign to the cart.")
+    replace_existing_cart_items: Boolean! @doc(description: "Replace existing cart or merge items")
 }
 
 type AddPurchaseOrderItemsToCartOutput {
@@ -148,6 +153,8 @@ type Customer {
 
 input PurchaseOrdersFilterInput {
     status: PurchaseOrderStatus @doc(description: "Filter by the status of the purchase order")
+    company_purchase_orders: Boolean @doc(description: "Include only POs made by subordinate users within the company")
+    require_my_approval: Boolean @doc(description: "Include only POs that are waiting for the customer’s approval")
     createdBy: FilterStringTypeInput @doc(description: "Filter by the name of the user who created the purchase order")
     createdDate: FilterRangeTypeInput @doc(description: "Filter by the creation date of the purchase order")
 }
@@ -158,7 +165,7 @@ type PurchaseOrders {
     total_count: Int
 }
 
-type PurchaseOrder {
+type PurchaseOrder implements OrderInterface {
     uid: ID! @doc(description: "Unique identifier for the purcahse order")
     number: String! @doc(description: "The purchase order number")
     order: CustomerOrder @doc(description: "The reference to the order placed based on the purchase order")
@@ -288,6 +295,12 @@ enum PurchaseOrderStatus {
     CANCELED
 }
 
+type StoreConfig {
+    purchaseorder_enabled: Boolean! @doc(description: "Whether purchase order functionality is enabled")
+}
+
+### Required changes in CE modules
+
 type CustomerAddress {
     # This field must be added to the CustomerAddress type definition directly in CustomerGraphQl module
     country: Country @doc(description: "The customer's country")
@@ -297,3 +310,31 @@ input CartItemInput {
     # This field must be added to the CartItemInput type definition directly in QuoteGraphQl module
     parent_quantity: Float @doc(description: "Parent quantity can be used when adding complex product to cart. For example bundle products")
 }
+
+type AvailablePaymentMethod {
+    is_online: Boolean! @doc(description: "Whether the payment method is an online integration")
+}
+
+type PlaceOrderOutput @doc(description: "Contains the results of the request to place an order.") {
+    orderV2: OrderInteface!
+    errors: [PlaceOrderOutputError!]!
+}
+
+type PlaceOrderOutputError {
+    message: String!
+    type: PlaceOrderOutputErrorType!
+}
+
+enum PlaceOrderOutputErrorType {
+    INSUFFICIENT_STOCK
+}
+
+type Order implements OrderInterface {
+
+}
+
+interface OrderInterface {
+
+}
+
+
