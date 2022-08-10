@@ -212,23 +212,6 @@ enum PurchaseOrderAction {
     APPROVE
 }
 
-type PurchaseOrderApprovalFlow {
-    items: [PurchaseOrderApprovalFlowItem]!
-}
-
-type PurchaseOrderApprovalFlowItem {
-    uid: ID! @doc(description: "Unique identifier of the purchase order flow item.")
-    title: String! @doc(description: "Summary of the event related to purchase order approval flow")
-    description: String! @doc(description: "Description of the event related to purchase order approval flow")
-    status: PurchaseOrderApprovalFlowItemStatus! @doc(description: "Status associated with the event related to purchase order approval flow")
-}
-
-enum PurchaseOrderApprovalFlowItemStatus {
-    PENDING
-    APPROVED
-    REJECTED
-}
-
 type PurchaseOrderComments {
     items: [PurchaseOrderComment]!
     page_info: SearchResultPageInfo
