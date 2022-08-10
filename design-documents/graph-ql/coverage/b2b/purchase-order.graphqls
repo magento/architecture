@@ -6,10 +6,16 @@ type Mutation {
     cancelPurchaseOrder(input: CancelPurchaseOrderInput!): CancelPurchaseOrderOutput @doc(description: "Cancel purchase order")
     rejectPurchaseOrders(input: RejectPurchaseOrderInputs!): RejectPurchaseOrderOutputs @doc(description: "Reject purchase orders")
     placePurchaseOrder(input: PlacePurchaseOrderInput!): PlaceOrderOutput @doc(description: "Convert purchase order to an order")
+    setPaymentMethodAndPlacePurchaseOrder(input: SetPaymentMethodAndPlacePurchaseOrderInput!): PlaceOrderOutput @doc(description: "Convert purchase order to an order")
 }
 
 input PlacePurchaseOrderInput {
     purchase_order_uid: ID!
+}
+
+input SetPaymentMethodAndPlacePurchaseOrderInput {
+    purchase_order_uid: ID!,
+    payment_method: PaymentMethodInput! @doc(description: "The payment method data to apply to the purchase order.")
 }
 
 input AddPurchaseOrderItemsToCartInput {
@@ -176,13 +182,27 @@ type PurchaseOrder implements OrderInterface {
     total: PurchaseOrderTotal @doc(description: "Contains details about the calculated totals for the purchase order")
     comments(currentPage: Int = 1, pageSize: Int = 20): PurchaseOrderComments @doc(description: "Purchase order comments")
     payment_methods: [PaymentMethod] @doc(description: "Payment details for the purchase order")
-    shipping_address: CustomerAddress @doc(description: "The shipping address for the purchase order")
-    billing_address: CustomerAddress @doc(description: "The billing address for the purchase order")
-    carrier: String @doc(description: "The shipping carrier for the purchase order delivery")
-    shipping_method: String @doc(description: "The delivery method for the purchase order")
     items(currentPage: Int = 1, pageSize: Int = 20): PurchaseOrderItems @doc(description: "Items that belong to the purchase order")
     history_log(currentPage: Int = 1, pageSize: Int = 20): PurchaseOrderHistoryLog @doc(description: "The log of the events related to the purchase order")
     available_actions: [PurchaseOrderAction] @doc(description: "Purcahse order actions available to the customer. Can be used to display action buttons on the client")
+}
+
+type CustomerOrder @doc(description: "Contains details about each of the customer's orders.") {
+    id: ID! @doc(description: "The unique ID for a `CustomerOrder` object.")
+    order_date: String! @doc(description: "The date the order was placed.")
+    status: String! @doc(description: "The current status of the order.")
+    number: String! @doc(description: "The order number.")
+    items: [OrderItemInterface] @doc(description: "An array containing the items purchased in this order.") @resolver(class: "Magento\\SalesGraphQl\\Model\\Resolver\\OrderItems")
+    total: OrderTotal @doc(description: "Details about the calculated totals for this order.") @resolver(class: "Magento\\SalesGraphQl\\Model\\Resolver\\OrderTotal")
+    invoices: [Invoice]! @doc(description: "A list of invoices for the order.") @resolver(class: "Magento\\SalesGraphQl\\Model\\Resolver\\Invoices")
+    shipments: [OrderShipment] @doc(description: "A list of shipments for the order.") @resolver(class: "Magento\\SalesGraphQl\\Model\\Resolver\\Shipments")
+    credit_memos: [CreditMemo] @doc(description: "A list of credit memos.") @resolver(class: "Magento\\SalesGraphQl\\Model\\Resolver\\CreditMemos")
+    payment_methods: [OrderPaymentMethod] @doc(description: "Payment details for the order.")
+    comments: [SalesCommentItem] @doc(description: "Comments about the order.")
+    increment_id: String @deprecated(reason: "Use the `id` field instead.")
+    order_number: String! @deprecated(reason: "Use the `number` field instead.")
+    created_at: String @deprecated(reason: "Use the `order_date` field instead.")
+    grand_total: Float  @deprecated(reason: "Use the `totals.grand_total` field instead.")
 }
 
 enum PurchaseOrderAction {
@@ -314,27 +334,4 @@ input CartItemInput {
 type AvailablePaymentMethod {
     is_online: Boolean! @doc(description: "Whether the payment method is an online integration")
 }
-
-type PlaceOrderOutput @doc(description: "Contains the results of the request to place an order.") {
-    orderV2: OrderInteface!
-    errors: [PlaceOrderOutputError!]!
-}
-
-type PlaceOrderOutputError {
-    message: String!
-    type: PlaceOrderOutputErrorType!
-}
-
-enum PlaceOrderOutputErrorType {
-    INSUFFICIENT_STOCK
-}
-
-type Order implements OrderInterface {
-
-}
-
-interface OrderInterface {
-
-}
-
 
