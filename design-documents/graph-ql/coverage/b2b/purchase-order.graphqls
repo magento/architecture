@@ -1,60 +1,44 @@
 type Mutation {
     addPurchaseOrderComment(input: AddPurchaseOrderCommentInput!): AddPurchaseOrderCommentOutput @doc(description: "Add a comment to an existing purchase order")
+    addPurchaseOrderItemsToCart(input: AddPurchaseOrderItemsToCartInput!): AddPurchaseOrderItemsToCartOutput @doc(description: "Add all items from the purchase order to shopping cart")
     validatePurchaseOrder(input: ValidatePurchaseOrderInput!): ValidatePurchaseOrderOutput @doc(description: "Validate purchase order")
-    approvePurchaseOrder(input: ApprovePurchaseOrderInput!): ApprovePurchaseOrderOutput @doc(description: "Approve purchase order")
+    approvePurchaseOrders(input: ApprovePurchaseOrdersInput!): ApprovePurchaseOrdersOutput @doc(description: "Approve purchase orders")
     cancelPurchaseOrder(input: CancelPurchaseOrderInput!): CancelPurchaseOrderOutput @doc(description: "Cancel purchase order")
-    rejectPurchaseOrder(input: RejectPurchaseOrderInput!): RejectPurchaseOrderOutput @doc(description: "Reject purchase order")
-    createPurchaseOrderApprovalRule(input: CreatePurchaseOrderApprovalRuleInput!): CreatePurchaseOrderApprovalRuleOutput @doc(description: "Create purchase order approval rule")
-    updatePurchaseOrderApprovalRule(input: UpdatePurchaseOrderApprovalRuleInput!): UpdatePurchaseOrderApprovalRuleOutput @doc(description: "Update existing purchase order approval rule")
-    deletePurchaseOrderApprovalRule(input: DeletePurchaseOrderApprovalRuleInput!): DeletePurchaseOrderApprovalRuleOutput @doc(description: "Delete existing purchase order approval rule")
+    rejectPurchaseOrders(input: RejectPurchaseOrderInputs!): RejectPurchaseOrderOutputs @doc(description: "Reject purchase orders")
+    placePurchaseOrder(input: PlacePurchaseOrderInput!): PlaceOrderOutput @doc(description: "Convert purchase order to an order")
+    setPaymentMethodAndPlacePurchaseOrder(input: SetPaymentMethodAndPlacePurchaseOrderInput!): PlaceOrderOutput @doc(description: "Convert purchase order to an order")
 }
 
-type CreatePurchaseOrderApprovalRuleOutput {
-    approval_rule: PurchaseOrderApprovalRule @doc(description: "Created purchase order approval rule")
-    approval_rules(currentPage: Int = 1, pageSize: Int = 20): PurchaseOrderApprovalRules @doc(description: "A list of purchase order approval rules visible to the customer")
+input PlacePurchaseOrderInput {
+    purchase_order_uid: ID!
 }
 
-type UpdatePurchaseOrderApprovalRuleOutput {
-    approval_rule: PurchaseOrderApprovalRule @doc(description: "Updated purchase order approval rule")
-    approval_rules(currentPage: Int = 1, pageSize: Int = 20): PurchaseOrderApprovalRules @doc(description: "A list of purchase order approval rules visible to the customer")
+input SetPaymentMethodAndPlacePurchaseOrderInput {
+    purchase_order_uid: ID!,
+    payment_method: PaymentMethodInput! @doc(description: "The payment method data to apply to the purchase order.")
 }
 
-type DeletePurchaseOrderApprovalRuleOutput {
-    approval_rules(currentPage: Int = 1, pageSize: Int = 20): PurchaseOrderApprovalRules @doc(description: "A list of purchase order approval rules visible to the customer")
+input AddPurchaseOrderItemsToCartInput {
+    purchase_order_uid: ID!
+    cart_id: String! @doc(description: "The ID to assign to the cart.")
+    replace_existing_cart_items: Boolean! @doc(description: "Replace existing cart or merge items")
 }
 
-input CreatePurchaseOrderApprovalRuleInput {
-    approval_rule: PurchaseOrderApprovalRuleInput! @doc(description: "Purchase order approval rule data")
+type AddPurchaseOrderItemsToCartOutput {
+    purchase_order: PurchaseOrder
+    add_purchase_order_items_to_cart_user_errors: [AddPurchaseOrderItemsToCartError!]! @doc(description: "An array of errors encountered while adding products to the customer's cart.")
 }
 
-input UpdatePurchaseOrderApprovalRuleInput {
-    approval_rule_uid: ID! @doc(description: "Purchase order approval rule ID")
-    approval_rule: PurchaseOrderApprovalRuleInput! @doc(description: "Purchase order approval rule data")
+type AddPurchaseOrderItemsToCartError {
+    message: string!
+    type: AddPurchaseOrderItemsToCartErrorType!
 }
 
-input DeletePurchaseOrderApprovalRuleInput {
-    approval_rule_uid: ID! @doc(description: "Purchase order approval rule ID")
-}
-
-input PurchaseOrderApprovalRuleInput {
-    name: String! @doc(description: "Purchase order approval rule name")
-    description: String @doc(description: "Purchase order approval rule description")
-    applies_to: [ID!]! @doc(description: "A list of B2B user roles to which this purchase order approval rule should be applied. In case when empty array is provided, the rule will be applied to all user roles in the system, including those created in the future")
-    type: PurchaseOrderApprovalRuleType! @doc(description: "Purchase order approval rule type")
-    status: PurchaseOrderApprovalRuleStatus! @doc(description: "Purchase order approval rule status")
-    condition: CreatePurchaseOrderApprovalRuleConditionInput! @doc(description: "Purchase order approval rule condition")
-    requires_approval_from: [ID!]! @doc(description: "A list of B2B user roles that can approve this purchase order approval rule")
-}
-
-input CreatePurchaseOrderApprovalRuleConditionInput {
-    operator: PurchaseOrderApprovalRuleConditionOperator! @doc(description: "Purchase order approval rule condition operator")
-    amount: CreatePurchaseOrderApprovalRuleConditionAmountInput @doc(description: "Purchase order approval rule condition ammount. Is mutually exclusive with condition quantity")
-    quantity: Int @doc(description: "Purchase order approval rule condition quantity. Is mutually exclusive with condition amount")
-}
-
-input CreatePurchaseOrderApprovalRuleConditionAmountInput {
-    value: Float! @doc(description: "Purchase order approval rule condition ammount value")
-    currency: CurrencyEnum! @doc(description: "Purchase order approval rule condition ammount currency")
+enum AddPurchaseOrderItemsToCartErrorType @doc(description: "A list of possible error types.") {
+    PRODUCT_NOT_FOUND
+    NOT_SALABLE
+    INSUFFICIENT_STOCK
+    UNDEFINED
 }
 
 input ValidatePurchaseOrderInput {
@@ -63,6 +47,16 @@ input ValidatePurchaseOrderInput {
 
 type ValidatePurchaseOrderOutput {
     purchase_order: PurchaseOrder
+    errors: [ValidatePurchaseOrderError!]! @doc(description: "An array of error messages encountered while performing the operation.")
+}
+
+type ValidatePurchaseOrderError {
+    message: string!
+    type: ValidatePurchaseOrderErrorType!
+}
+
+enum ValidatePurchaseOrderErrorType {
+    UNDEFINED
 }
 
 input ApprovePurchaseOrderInput {
@@ -71,6 +65,25 @@ input ApprovePurchaseOrderInput {
 
 type ApprovePurchaseOrderOutput {
     purchase_order: PurchaseOrder
+    errors: [ApprovePurchaseOrderError!]! @doc(description: "An array of error messages encountered while performing the operation.")
+}
+
+input ApprovePurchaseOrdersInput {
+    purchase_order_uids: [ID!]!
+}
+
+type ApprovePurchaseOrdersOutput {
+    purchase_orders: [PurchaseOrder!]!
+    errors: [ApprovePurchaseOrderError!]! @doc(description: "An array of error messages encountered while performing the operation.")
+}
+
+type ApprovePurchaseOrderError {
+    message: string!
+    type: ApprovePurchaseOrderErrorType!
+}
+
+enum ApprovePurchaseOrderErrorType {
+    UNDEFINED
 }
 
 input CancelPurchaseOrderInput {
@@ -79,6 +92,16 @@ input CancelPurchaseOrderInput {
 
 type CancelPurchaseOrderOutput {
     purchase_order: PurchaseOrder
+    errors: [CancelPurchaseOrderError!]! @doc(description: "An array of error messages encountered while performing the operation.")
+}
+
+type CancelPurchaseOrderError {
+    message: string!
+    type: CancelPurchaseOrderErrorType!
+}
+
+enum CancelPurchaseOrderErrorType {
+    UNDEFINED
 }
 
 input RejectPurchaseOrderInput {
@@ -87,6 +110,25 @@ input RejectPurchaseOrderInput {
 
 type RejectPurchaseOrderOutput {
     purchase_order: PurchaseOrder
+    errors: [RejectPurchaseOrderError!]! @doc(description: "An array of error messages encountered while performing the operation.")
+}
+
+input RejectPurchaseOrdersInput {
+    purchase_order_uids: [ID!]!
+}
+
+type RejectPurchaseOrdersOutput {
+    purchase_orders: [PurchaseOrder!]!
+    errors: [RejectPurchaseOrderError!]! @doc(description: "An array of error messages encountered while performing the operation.")
+}
+
+type RejectPurchaseOrderError {
+    message: string!
+    type: RejectPurchaseOrderErrorType!
+}
+
+enum RejectPurchaseOrderErrorType {
+    UNDEFINED
 }
 
 input AddPurchaseOrderCommentInput {
@@ -97,25 +139,28 @@ input AddPurchaseOrderCommentInput {
 type AddPurchaseOrderCommentOutput {
     purchase_order: PurchaseOrder
     comment: PurchaseOrderComment
+    errors: [AddPurchaseOrderCommentError!]! @doc(description: "An array of error messages encountered while performing the operation.")
+}
+
+type AddPurchaseOrderCommentError {
+    message: string!
+    type: AddPurchaseOrderCommentErrorType!
+}
+
+enum AddPurchaseOrderCommentErrorType {
+    UNDEFINED
 }
 
 type Customer {
     purchase_orders(filter: PurchaseOrdersFilterInput, currentPage: Int = 1, pageSize: Int = 20): PurchaseOrders @doc(description: "A list of purchase orders visible to the customer")
     purchase_order(uid: ID!): PurchaseOrder @doc(description: "Purchase order details")
-    purchase_order_approval_rules(currentPage: Int = 1, pageSize: Int = 20): PurchaseOrderApprovalRules @doc(description: "A list of purchase order approval rules visible to the customer")
-    purchase_order_approval_rule(uid: ID!): PurchaseOrderApprovalRule @doc(description: "Purchase order approval rule details")
-    purchase_order_approval_rule_metadata: PurchaseOrderApprovalRuleMetadata @doc(description: "Purchase order approval rule metadata which is can be used for rule edit form rendering")
     purchase_orders_enabled: Boolean! @doc(description: "Whether purchase orders functionality is enabled for current customer. Takes into account global and company-level settings")
-}
-
-type PurchaseOrderApprovalRuleMetadata {
-    available_applies_to: [CompanyRole]! @doc(description: "A list of B2B user roles that the rule can be applied to")
-    available_condition_currencies: [CurrencyEnum]! @doc(description: "A list of currencies that can be used to create approval rules based on ammounts, for example shipping cost rules")
-    available_requires_approval_from: [CompanyRole]! @doc(description: "A list of B2B user roles that can be specified as approvers for the approval rules")
 }
 
 input PurchaseOrdersFilterInput {
     status: PurchaseOrderStatus @doc(description: "Filter by the status of the purchase order")
+    company_purchase_orders: Boolean @doc(description: "Include only POs made by subordinate users within the company")
+    require_my_approval: Boolean @doc(description: "Include only POs that are waiting for the customer’s approval")
     createdBy: FilterStringTypeInput @doc(description: "Filter by the name of the user who created the purchase order")
     createdDate: FilterRangeTypeInput @doc(description: "Filter by the creation date of the purchase order")
 }
@@ -126,71 +171,38 @@ type PurchaseOrders {
     total_count: Int
 }
 
-type PurchaseOrderApprovalRules {
-    items: [PurchaseOrderApprovalRule]!
-    page_info: SearchResultPageInfo
-    total_count: Int
-}
-
-type PurchaseOrderApprovalRule {
-    uid: ID! @doc(description: "Unique identifier for the purcahse order approval rule")
-    name: String! @doc(description: "Name of the purcahse order approval rule")
-    status: PurchaseOrderApprovalRuleStatus! @doc(description: "Status of the purcahse order approval rule")
-    type: PurchaseOrderApprovalRuleType! @doc(description: "Type of the purcahse order approval rule")
-    created_by: String! @doc(description: "The name of the user who created the purcahse order approval rule")
-    applies_to: String! @doc(description: "The name of the user(s) affected by the the purcahse order approval rule")
-    approver: String! @doc(description: "The name of the user who needs to approve purchase orders that trigger the approval rule")
-    condition: PurchaseOrderApprovalRuleConditionInterface! @doc(description: "Condition which triggers the approval rule")
-}
-
-interface PurchaseOrderApprovalRuleConditionInterface {
-    operator: PurchaseOrderApprovalRuleConditionOperator! @doc(description: "The operator to be used for evaluation of the approval rule condition")
-}
-
-enum PurchaseOrderApprovalRuleConditionOperator {
-    MORE_THAN
-    LESS_THAN
-    MORE_THAN_OR_EQUAL_TO
-    LESS_THAN_OR_EQUAL_TO
-}
-
-type PurchaseOrderApprovalRuleConditionAmount implements PurchaseOrderApprovalRuleConditionInterface {
-    amount: Money! @doc(description: "The amount to be be used for evaluation of the approval rule condition")
-}
-
-type PurchaseOrderApprovalRuleConditionQuantity implements PurchaseOrderApprovalRuleConditionInterface {
-    quantity: Int! @doc(description: "The quantity to be be used for evaluation of the approval rule condition")
-}
-
-enum PurchaseOrderApprovalRuleStatus {
-    ENABLED
-    DISABLED
-}
-
-enum PurchaseOrderApprovalRuleType {
-    ORDER_TOTAL
-    SHIPPING_COST
-    NUMBER_OF_SKUS
-}
-
 type PurchaseOrder {
     uid: ID! @doc(description: "Unique identifier for the purcahse order")
     number: String! @doc(description: "The purchase order number")
     order: CustomerOrder @doc(description: "The reference to the order placed based on the purchase order")
-    purchase_order_date: String! @doc(description: "The date the purchase order was created")
+    created_at: String! @doc(description: "The date the purchase order was created")
+    updated_at: String! @doc(description: "The date the purchase order was last updated")
     created_by: String! @doc(description: "The name of the user who created the purchase order")
     status: PurchaseOrderStatus! @doc(description: "The current status of the purcahse order")
     total: PurchaseOrderTotal @doc(description: "Contains details about the calculated totals for the purchase order")
     comments(currentPage: Int = 1, pageSize: Int = 20): PurchaseOrderComments @doc(description: "Purchase order comments")
     payment_methods: [PaymentMethod] @doc(description: "Payment details for the purchase order")
-    shipping_address: CustomerAddress @doc(description: "The shipping address for the purchase order")
-    billing_address: CustomerAddress @doc(description: "The billing address for the purchase order")
-    carrier: String @doc(description: "The shipping carrier for the purchase order delivery")
-    shipping_method: String @doc(description: "The delivery method for the purchase order")
     items(currentPage: Int = 1, pageSize: Int = 20): PurchaseOrderItems @doc(description: "Items that belong to the purchase order")
     history_log(currentPage: Int = 1, pageSize: Int = 20): PurchaseOrderHistoryLog @doc(description: "The log of the events related to the purchase order")
-    approval_flow: PurchaseOrderApprovalFlow @doc(description: "The log of the events related to the purchase order approval flow")
     available_actions: [PurchaseOrderAction] @doc(description: "Purcahse order actions available to the customer. Can be used to display action buttons on the client")
+}
+
+type CustomerOrder @doc(description: "Contains details about each of the customer's orders.") {
+    id: ID! @doc(description: "The unique ID for a `CustomerOrder` object.")
+    order_date: String! @doc(description: "The date the order was placed.")
+    status: String! @doc(description: "The current status of the order.")
+    number: String! @doc(description: "The order number.")
+    items: [OrderItemInterface] @doc(description: "An array containing the items purchased in this order.") @resolver(class: "Magento\\SalesGraphQl\\Model\\Resolver\\OrderItems")
+    total: OrderTotal @doc(description: "Details about the calculated totals for this order.") @resolver(class: "Magento\\SalesGraphQl\\Model\\Resolver\\OrderTotal")
+    invoices: [Invoice]! @doc(description: "A list of invoices for the order.") @resolver(class: "Magento\\SalesGraphQl\\Model\\Resolver\\Invoices")
+    shipments: [OrderShipment] @doc(description: "A list of shipments for the order.") @resolver(class: "Magento\\SalesGraphQl\\Model\\Resolver\\Shipments")
+    credit_memos: [CreditMemo] @doc(description: "A list of credit memos.") @resolver(class: "Magento\\SalesGraphQl\\Model\\Resolver\\CreditMemos")
+    payment_methods: [OrderPaymentMethod] @doc(description: "Payment details for the order.")
+    comments: [SalesCommentItem] @doc(description: "Comments about the order.")
+    increment_id: String @deprecated(reason: "Use the `id` field instead.")
+    order_number: String! @deprecated(reason: "Use the `number` field instead.")
+    created_at: String @deprecated(reason: "Use the `order_date` field instead.")
+    grand_total: Float  @deprecated(reason: "Use the `totals.grand_total` field instead.")
 }
 
 enum PurchaseOrderAction {
@@ -198,23 +210,6 @@ enum PurchaseOrderAction {
     CANCEL
     VALIDATE
     APPROVE
-}
-
-type PurchaseOrderApprovalFlow {
-    items: [PurchaseOrderApprovalFlowItem]!
-}
-
-type PurchaseOrderApprovalFlowItem {
-    uid: ID! @doc(description: "Unique identifier of the purchase order flow item.")
-    title: String! @doc(description: "Summary of the event related to purchase order approval flow")
-    description: String! @doc(description: "Description of the event related to purchase order approval flow")
-    status: PurchaseOrderApprovalFlowItemStatus! @doc(description: "Status associated with the event related to purchase order approval flow")
-}
-
-enum PurchaseOrderApprovalFlowItemStatus {
-    PENDING
-    APPROVED
-    REJECTED
 }
 
 type PurchaseOrderComments {
@@ -303,6 +298,14 @@ enum PurchaseOrderStatus {
     CANCELED
 }
 
+### Changes to QuoteGraphQl module
+
+type AvailablePaymentMethod {
+    is_deferred: Boolean! @doc(description: "Whether the payment method is an online integration")
+}
+
+### Not related to purchase orders
+
 type CustomerAddress {
     # This field must be added to the CustomerAddress type definition directly in CustomerGraphQl module
     country: Country @doc(description: "The customer's country")
@@ -312,3 +315,4 @@ input CartItemInput {
     # This field must be added to the CartItemInput type definition directly in QuoteGraphQl module
     parent_quantity: Float @doc(description: "Parent quantity can be used when adding complex product to cart. For example bundle products")
 }
+

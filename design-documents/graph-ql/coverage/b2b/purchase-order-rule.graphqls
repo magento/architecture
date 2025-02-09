@@ -1,0 +1,163 @@
+type Mutation {
+    createPurchaseOrderApprovalRule(input: CreatePurchaseOrderApprovalRuleInput!): CreatePurchaseOrderApprovalRuleOutput @doc(description: "Create purchase order approval rule")
+    updatePurchaseOrderApprovalRule(input: UpdatePurchaseOrderApprovalRuleInput!): UpdatePurchaseOrderApprovalRuleOutput @doc(description: "Update existing purchase order approval rule")
+    deletePurchaseOrderApprovalRule(input: DeletePurchaseOrderApprovalRuleInput!): DeletePurchaseOrderApprovalRuleOutput @doc(description: "Delete existing purchase order approval rule")
+}
+
+type CreatePurchaseOrderApprovalRuleOutput {
+    approval_rule: PurchaseOrderApprovalRule @doc(description: "Created purchase order approval rule")
+    approval_rules(currentPage: Int = 1, pageSize: Int = 20): PurchaseOrderApprovalRules @doc(description: "A list of purchase order approval rules visible to the customer")
+    errors: [String] @doc(description: "An array of error messages encountered while performing the operation.")
+}
+
+type CreatePurchaseOrderApprovalRuleError {
+    message: string!
+    type: CreatePurchaseOrderApprovalRuleErrorType!
+}
+
+enum CreatePurchaseOrderApprovalRuleErrorType {
+    UNDEFINED
+}
+
+type UpdatePurchaseOrderApprovalRuleOutput {
+    approval_rule: PurchaseOrderApprovalRule @doc(description: "Updated purchase order approval rule")
+    approval_rules(currentPage: Int = 1, pageSize: Int = 20): PurchaseOrderApprovalRules @doc(description: "A list of purchase order approval rules visible to the customer")
+    errors: [String] @doc(description: "An array of error messages encountered while performing the operation.")
+}
+
+type UpdatePurchaseOrderApprovalRuleError {
+    message: string!
+    type: UpdatePurchaseOrderApprovalRuleErrorType!
+}
+
+enum UpdatePurchaseOrderApprovalRuleErrorType {
+    UNDEFINED
+}
+
+type DeletePurchaseOrderApprovalRuleOutput {
+    approval_rules(currentPage: Int = 1, pageSize: Int = 20): PurchaseOrderApprovalRules @doc(description: "A list of purchase order approval rules visible to the customer")
+    errors: [String] @doc(description: "An array of error messages encountered while performing the operation.")
+}
+
+type DeletePurchaseOrderApprovalRuleError {
+    message: string!
+    type: DeletePurchaseOrderApprovalRuleErrorType!
+}
+
+enum DeletePurchaseOrderApprovalRuleErrorType {
+    UNDEFINED
+}
+
+input CreatePurchaseOrderApprovalRuleInput {
+    approval_rule: PurchaseOrderApprovalRuleInput! @doc(description: "Purchase order approval rule data")
+}
+
+input UpdatePurchaseOrderApprovalRuleInput {
+    approval_rule_uid: ID! @doc(description: "Purchase order approval rule ID")
+    approval_rule: PurchaseOrderApprovalRuleInput! @doc(description: "Purchase order approval rule data")
+}
+
+input DeletePurchaseOrderApprovalRuleInput {
+    approval_rule_uid: ID! @doc(description: "Purchase order approval rule ID")
+}
+
+input PurchaseOrderApprovalRuleInput {
+    name: String! @doc(description: "Purchase order approval rule name")
+    description: String @doc(description: "Purchase order approval rule description")
+    applies_to: [ID!]! @doc(description: "A list of B2B user roles to which this purchase order approval rule should be applied. In case when empty array is provided, the rule will be applied to all user roles in the system, including those created in the future")
+    type: PurchaseOrderApprovalRuleType! @doc(description: "Purchase order approval rule type")
+    status: PurchaseOrderApprovalRuleStatus! @doc(description: "Purchase order approval rule status")
+    condition: CreatePurchaseOrderApprovalRuleConditionInput! @doc(description: "Purchase order approval rule condition")
+    requires_approval_from: [ID!]! @doc(description: "A list of B2B user roles that can approve this purchase order approval rule")
+}
+
+input CreatePurchaseOrderApprovalRuleConditionInput {
+    operator: PurchaseOrderApprovalRuleConditionOperator! @doc(description: "Purchase order approval rule condition operator")
+    amount: CreatePurchaseOrderApprovalRuleConditionAmountInput @doc(description: "Purchase order approval rule condition ammount. Is mutually exclusive with condition quantity")
+    quantity: Int @doc(description: "Purchase order approval rule condition quantity. Is mutually exclusive with condition amount")
+}
+
+input CreatePurchaseOrderApprovalRuleConditionAmountInput {
+    value: Float! @doc(description: "Purchase order approval rule condition ammount value")
+    currency: CurrencyEnum! @doc(description: "Purchase order approval rule condition ammount currency")
+}
+
+type Customer {
+    purchase_order_approval_rules(currentPage: Int = 1, pageSize: Int = 20): PurchaseOrderApprovalRules @doc(description: "A list of purchase order approval rules visible to the customer")
+    purchase_order_approval_rule(uid: ID!): PurchaseOrderApprovalRule @doc(description: "Purchase order approval rule details")
+    purchase_order_approval_rule_metadata: PurchaseOrderApprovalRuleMetadata @doc(description: "Purchase order approval rule metadata which is can be used for rule edit form rendering")
+}
+
+type PurchaseOrderApprovalRuleMetadata {
+    available_applies_to: [CompanyRole]! @doc(description: "A list of B2B user roles that the rule can be applied to")
+    available_condition_currencies: [CurrencyEnum]! @doc(description: "A list of currencies that can be used to create approval rules based on ammounts, for example shipping cost rules")
+    available_requires_approval_from: [CompanyRole]! @doc(description: "A list of B2B user roles that can be specified as approvers for the approval rules")
+}
+
+type PurchaseOrderApprovalRules {
+    items: [PurchaseOrderApprovalRule]!
+    page_info: SearchResultPageInfo
+    total_count: Int
+}
+
+type PurchaseOrderApprovalRule {
+    uid: ID! @doc(description: "Unique identifier for the purcahse order approval rule")
+    name: String! @doc(description: "Name of the purcahse order approval rule")
+    status: PurchaseOrderApprovalRuleStatus! @doc(description: "Status of the purcahse order approval rule")
+    type: PurchaseOrderApprovalRuleType! @doc(description: "Type of the purcahse order approval rule")
+    created_by: String! @doc(description: "The name of the user who created the purcahse order approval rule")
+    applies_to: String! @doc(description: "The name of the user(s) affected by the the purcahse order approval rule")
+    approver: String! @doc(description: "The name of the user who needs to approve purchase orders that trigger the approval rule")
+    condition: PurchaseOrderApprovalRuleConditionInterface! @doc(description: "Condition which triggers the approval rule")
+}
+
+interface PurchaseOrderApprovalRuleConditionInterface {
+    operator: PurchaseOrderApprovalRuleConditionOperator! @doc(description: "The operator to be used for evaluation of the approval rule condition")
+}
+
+enum PurchaseOrderApprovalRuleConditionOperator {
+    MORE_THAN
+    LESS_THAN
+    MORE_THAN_OR_EQUAL_TO
+    LESS_THAN_OR_EQUAL_TO
+}
+
+type PurchaseOrderApprovalRuleConditionAmount implements PurchaseOrderApprovalRuleConditionInterface {
+    amount: Money! @doc(description: "The amount to be be used for evaluation of the approval rule condition")
+}
+
+type PurchaseOrderApprovalRuleConditionQuantity implements PurchaseOrderApprovalRuleConditionInterface {
+    quantity: Int! @doc(description: "The quantity to be be used for evaluation of the approval rule condition")
+}
+
+enum PurchaseOrderApprovalRuleStatus {
+    ENABLED
+    DISABLED
+}
+
+enum PurchaseOrderApprovalRuleType {
+    ORDER_TOTAL
+    SHIPPING_COST
+    NUMBER_OF_SKUS
+}
+
+type PurchaseOrderApprovalFlow {
+    items: [PurchaseOrderApprovalFlowItem]!
+}
+
+type PurchaseOrderApprovalFlowItem {
+    uid: ID! @doc(description: "Unique identifier of the purchase order flow item.")
+    title: String! @doc(description: "Summary of the event related to purchase order approval flow")
+    description: String! @doc(description: "Description of the event related to purchase order approval flow")
+    status: PurchaseOrderApprovalFlowItemStatus! @doc(description: "Status associated with the event related to purchase order approval flow")
+}
+
+enum PurchaseOrderApprovalFlowItemStatus {
+    PENDING
+    APPROVED
+    REJECTED
+}
+
+type PurchaseOrder {
+    approval_flow: PurchaseOrderApprovalFlow @doc(description: "The log of the events related to the purchase order approval flow")
+}
