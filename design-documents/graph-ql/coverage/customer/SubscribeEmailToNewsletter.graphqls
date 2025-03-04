@@ -3,11 +3,12 @@ type Mutation {
 }
 
 type SubscribeEmailToNewsletterOutput {
-    status: SubscriptionStatusesEnum @doc(description: "Returns a status of subscription")
+    status: SubscriptionStatusesEnum @doc(description: "Returns a status of newsletter subscription")
 }
 
 enum SubscriptionStatusesEnum {
-    NOT_ACTIVE
+    NOT_ACTIVE @deprecated(reason: "New value will be `INACTIVE`")
+    INACTIVE
     SUBSCRIBED
     UNSUBSCRIBED
     UNCONFIRMED
