@@ -39,8 +39,9 @@ input CustomerAddressInput {
     city: String @doc(description: "The city or town")
     region: CustomerAddressRegionInput @doc(description: "An object containing the region name, region code, and region ID")
     postcode: String @doc(description: "The customer's ZIP or postal code")
-    country_id: CountryCodeEnum @doc(description: "Deprecated: use `country_code` instead.")
-    country_code: CountryCodeEnum @doc(description: "The customer's country")
+    country_id: CountryCodeEnum @deprecated(reason: "Use `country_code_v2` instead.")
+    country_code: CountryCodeEnum @doc(description: "The customer's country") @deprecated(reason: "Use `country_code_v2` instead.")
+    country_code_v2: String @doc(description: "The customer's country. See 'countries' query.")
     default_shipping: Boolean @doc(description: "Indicates whether the address is the default shipping address")
     default_billing: Boolean @doc(description: "Indicates whether the address is the default billing address")
     fax: String @doc(description: "The fax number")
@@ -143,8 +144,9 @@ type CustomerAddress @doc(description: "CustomerAddress contains detailed inform
     customer_id: Int @doc(description: "The customer ID") @deprecated(reason: "customer_id is not needed as part of CustomerAddress, address ID (id) is unique identifier for the addresses.")
     region: CustomerAddressRegion @doc(description: "An object containing the region name, region code, and region ID")
     region_id: Int @doc(description: "The unique ID for a pre-defined region")
-    country_id: String @doc(description: "The customer's country") @deprecated(reason: "Use `country_code` instead.")
-    country_code: CountryCodeEnum @doc(description: "The customer's country")
+    country_id: String @doc(description: "The customer's country") @deprecated(reason: "Use `country` instead.")
+    country_code: String @doc(description: "The customer's country") @deprecated(reason: "Use `country` instead.")
+    country: Country @descrption(description: "The country of the user")
     street: [String] @doc(description: "An array of strings that define the street number and name")
     company: String @doc(description: "The customer's company")
     telephone: String @doc(description: "The telephone number")
@@ -178,7 +180,27 @@ type IsEmailAvailableOutput {
     is_email_available: Boolean @doc(description: "Is email availabel value")
 }
 
-enum CountryCodeEnum @doc(description: "The list of countries codes") {
+enum AddressFieldVisibilityEnum {
+    HIDDEN
+    OPTIONAL
+    REQUIRED
+}
+
+type StoreConfig {
+    address_prefix: AddressFieldVisibilityEnum! @doc(description: "Should field be hidden, optional or required")
+    address_prefix_options: [String!] @doc(description: "Possible dropdown options, returns null if it is free to fill in")
+    address_middlename: AddressFieldVisibilityEnum! @doc(description: "Should field be hidden, optional or required")
+    address_suffix: AddressFieldVisibilityEnum! @doc(description: "Possible dropdown options, returns null if it is free to fill in")
+    address_suffix_options: [String!] @doc(description: "Should field be hidden, optional or required")
+    address_date_of_birth: AddressFieldVisibilityEnum! @doc(description: "Should field be hidden, optional or required")
+    address_gender: AddressFieldVisibilityEnum! @doc(description: "Should field be hidden, optional or required")
+    address_telephone: AddressFieldVisibilityEnum! @doc(description: "Should field be hidden, optional or required")
+    address_fax: AddressFieldVisibilityEnum! @doc(description: "Should field be hidden, optional or required")
+    address_company: AddressFieldVisibilityEnum! @doc(description: "Should field be hidden, optional or required")
+    address_vat_id: AddressFieldVisibilityEnum! @doc(description: "Should field be hidden, optional or required")
+}
+
+enum CountryCodeEnum @doc(description: "The list of countries codes") @deprecated(reason: "Use in favor of the id type Country") {
     AF @doc(description: "Afghanistan")
     AX @doc(description: "Åland Islands")
     AL @doc(description: "Albania")

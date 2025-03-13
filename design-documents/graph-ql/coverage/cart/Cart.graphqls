@@ -181,6 +181,7 @@ type CheckoutCustomer {
 enum GenderEnum {
     MALE
     FEMALE
+    OTHER
 }
 
 type CheckoutPaymentMethod {
