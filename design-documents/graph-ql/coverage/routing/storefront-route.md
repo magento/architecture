@@ -68,7 +68,10 @@ Since the entity type is built in to GraphQL introspection, `RoutableInterface` 
 
 ```graphql
 interface RoutableInterface {
-  display_metadata: String
+    #copied from the deprecated EntityUrl type which will not be used anymore
+    relative_url: String @doc(description: "The internal relative URL. If the specified  url is a redirect, the query returns the redirected URL, not the original.")
+    redirectCode: Int @doc(description: "301 or 302 HTTP code for url permanent or temporary redirect or 0 for the 200 no redirect")
+    display_metadata: String
 }
 ```
 
@@ -90,7 +93,7 @@ type CmsPage implements RoutableInterface {
 # multiple interfaces
 type SimpleProduct implements ProductInterface & RoutableInterface {
   # [...other property definitions]
-  display_metadata: String
+  display_metadata: String # not to be confused with meta_description, meta_keywords, meta_title which is defined in each entity like cms
 }
 ```
 
@@ -100,6 +103,7 @@ To enable clients to query based on route, add a root query to the schema.
 
 ```graphql
 type Query {
+    urlResolver(url: String!): EntityUrl @deprecated(reason: "Use `route` instead")
     route(url: String!): RoutableInterface
 }
 ```
