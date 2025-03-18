@@ -1,3 +1,15 @@
+
+**Magento 2 Architecture Goals**
+
+
+1. *Streamline customizations*:  Reduce implementing time for frontend and backend features. 
+    - Loose coupling between modules. 
+    - Configuration over customization (Dependency Injection,Object Manager).
+    - Design Patterns
+- *Simplify external integrations:* Reduce complexity for integrations with 3rd party services 
+(e.g. Payment Service Providers, Shipping Providers, Mobile Apps, ERP  etc.).
+  - Service layer 
+
 ## Design Document Template
 
 Copy this document to start a new Design Document.
@@ -57,4 +69,5 @@ Hints:
 ### Data size and Performance Requirements
 
 <!-- If new behaviour is planned to be implemented, data and performance requirements must be described here. No significant resource consumption growth is allowed. --> 
+
 
